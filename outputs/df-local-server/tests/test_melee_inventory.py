@@ -39,7 +39,7 @@ class MeleeInventoryTests(unittest.TestCase):
         deposit = self.deposit()
         owned = {int(row['id']) for row in collection.get('weapon_skin_props', [])}
         self.assertIn(28101200002, owned)
-        self.assertEqual(len(owned), 15)
+        self.assertEqual(len({skin for skin in owned if str(skin).startswith('2810')}), 15)
         weapons = deposit['melee_weapons']
         self.assertEqual(len(weapons), 15)
         self.assertNotIn(18100000001, {int(row['id']) for row in weapons})

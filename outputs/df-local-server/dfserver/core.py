@@ -15,6 +15,7 @@ from .container_layouts import BACKPACK_LAYOUT, CHEST_RIG_LAYOUT
 from .weapon_components import default_components
 from .weapon_ammo import LOAD, UNLOAD, magazine_capacity, matches_ammo
 from .melee_weapons import DEFAULT_WEAPON, LOCAL_WEAPONS, MELEE_POSITION, WEAPONS, melee_prop
+from . import gun_skins
 
 
 class DomainError(Exception):
@@ -97,6 +98,22 @@ CREATE TABLE IF NOT EXISTS native_lobby_collection_props (
  player_id TEXT NOT NULL REFERENCES players(id), template_id INTEGER NOT NULL,
  quantity INTEGER NOT NULL CHECK(quantity>0),
  PRIMARY KEY(player_id,template_id));
+CREATE TABLE IF NOT EXISTS native_lobby_gun_skins (
+ player_id TEXT NOT NULL REFERENCES players(id), skin_id INTEGER NOT NULL,
+ gid INTEGER NOT NULL, mystical_json TEXT, PRIMARY KEY(player_id,skin_id,gid));
+CREATE TABLE IF NOT EXISTS native_lobby_weapon_skins (
+ weapon_gid INTEGER PRIMARY KEY REFERENCES native_lobby_props(gid) ON DELETE CASCADE,
+ skin_id INTEGER NOT NULL, skin_gid INTEGER NOT NULL);
+CREATE TABLE IF NOT EXISTS native_lobby_default_skins (
+ player_id TEXT NOT NULL REFERENCES players(id), weapon_id INTEGER NOT NULL,
+ skin_id INTEGER NOT NULL, skin_gid INTEGER NOT NULL, PRIMARY KEY(player_id,weapon_id));
+CREATE TABLE IF NOT EXISTS native_lobby_lottery_state (
+ player_id TEXT NOT NULL REFERENCES players(id), box_id INTEGER NOT NULL,
+ open_count INTEGER NOT NULL, since_core INTEGER NOT NULL,
+ PRIMARY KEY(player_id,box_id));
+CREATE TABLE IF NOT EXISTS native_lobby_lottery_history (
+ id INTEGER PRIMARY KEY, player_id TEXT NOT NULL REFERENCES players(id),
+ box_id INTEGER NOT NULL, record_json TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS native_lobby_melee_props (
  player_id TEXT PRIMARY KEY REFERENCES players(id), template_id INTEGER NOT NULL,
  gid INTEGER NOT NULL UNIQUE CHECK(gid>0));
@@ -172,6 +189,8 @@ class Backend:
             connection.execute(
                 "DELETE FROM native_lobby_props "
                 "WHERE template_id BETWEEN 16110000000 AND 16110099999")
+            from .mandel import migrate_keys
+            migrate_keys(connection)
             connection.commit()
 
     def _validate_definitions(self):
@@ -401,6 +420,8 @@ class Backend:
                 connection.execute("INSERT INTO native_lobby_currencies VALUES (?,?,?)", (player_id, currency_id, amount))
             connection.execute("DELETE FROM native_lobby_props WHERE player_id=?", (player_id,))
             connection.execute("DELETE FROM native_lobby_collection_props WHERE player_id=?", (player_id,))
+            from .mandel import migrate_keys
+            migrate_keys(connection, player_id)
             for prop in props:
                 values = {name: integer(prop[name], name, minimum, maximum)
                           for name, minimum, maximum in (
@@ -447,6 +468,7 @@ class Backend:
                     "currencies": [dict(row) for row in currencies],
                     "props": [self._container_prop(connection, player_id, row) for row in props],
                     "collection_props": [dict(row) for row in collection_props],
+                    "weapon_skin_setup": gun_skins.setups(connection, player_id),
                     "melee_props": [dict(row) for row in melee_props],
                     "selected_melee_id": selected_melee['template_id'] if selected_melee else None,
                     "devices": [dict(row) for row in devices],
@@ -497,6 +519,9 @@ class Backend:
             if capacity is not None:
                 prop['weapon']['magazine_capacity'] = capacity
         position = prop['grid_page_id']
+        skin = gun_skins.weapon_state(connection, player_id, prop)
+        if skin:
+            prop.setdefault('weapon', {'load_bullets': []}).update(skin)
         if position in (CHEST_RIG_POSITION, BACKPACK_POSITION):
             slot = 107 if position == CHEST_RIG_POSITION else 108
             equipped = connection.execute(
@@ -969,7 +994,7 @@ class Backend:
     def _next_native_prop_gid(connection):
         maximum = max(connection.execute(f'SELECT MAX(gid) FROM {table}').fetchone()[0] or 0
                       for table in ('native_lobby_props', 'native_lobby_weapon_parts', 'native_lobby_weapon_bullets',
-                                    'native_lobby_melee_props'))
+                                    'native_lobby_melee_props', 'native_lobby_gun_skins'))
         return max(6311504805269387000, maximum) + 1
 
     def native_lobby_operate_bullets(self, token, commands):

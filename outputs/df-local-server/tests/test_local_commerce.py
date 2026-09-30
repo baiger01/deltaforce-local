@@ -268,23 +268,26 @@ class LocalCommerceTests(unittest.TestCase):
             {'item_id': str(item_id), 'num': '10',
              'currency_type': str(MANDEL_BRICK_PURCHASE_CURRENCY), 'price': '20000'},
             {'item_id': str(MANDEL_KEY_ID), 'num': '10',
-             'currency_type': str(MANDEL_KEY_CURRENCY), 'price': '0'},
+             'currency_type': str(MANDEL_KEY_CURRENCY), 'price': '600'},
         ], 'is_open_directly': False})
         fields = response_fields(request, self.backend, self.token)
         self.codec.response(request, fields)
         self.assertEqual(fields['result'], 0)
         self.assertEqual(fields['change']['currency_changes'][0]['delta'], -200000)
-        self.assertEqual(fields['change']['currency_changes'][1], {
-            'currency_id': MANDEL_KEY_ID, 'delta': 10, 'current_num': 10})
+        self.assertEqual(fields['change']['currency_changes'][1]['delta'], -600)
+        self.assertEqual(fields['change']['prop_changes'][2]['prop'], {
+            'id': MANDEL_KEY_ID, 'gid': 0, 'num': 10})
         state = self.backend.native_lobby_profile(self.token)
         self.assertEqual(next(row['amount'] for row in state['currencies']
                               if row['currency_id'] == MANDEL_BRICK_PURCHASE_CURRENCY),
                          300000)
-        self.assertEqual(next(row['amount'] for row in state['currencies']
-                              if row['currency_id'] == MANDEL_KEY_ID), 10)
+        self.assertEqual(next(row['quantity'] for row in state['collection_props']
+                              if row['template_id'] == MANDEL_KEY_ID), 10)
         self.assertEqual(state['props'], [])
         self.assertEqual(state['collection_props'],
-                         [{'template_id': item_id, 'quantity': 10}])
+                         [{'template_id': item_id, 'quantity': 10},
+                          {'template_id': 32210000004, 'quantity': 10},
+                          {'template_id': MANDEL_KEY_ID, 'quantity': 10}])
 
         collection_frame = _candidate_local_collection_response(
             b'ABCD' + self.codec.encode('CSCollectionLoadPropsReq', {}, sequence=18),
@@ -302,7 +305,7 @@ class LocalCommerceTests(unittest.TestCase):
                                'currency_type': MANDEL_BRICK_PURCHASE_CURRENCY,
                                'price': 20000},
                               {'item_id': MANDEL_KEY_ID, 'num': 1,
-                               'currency_type': MANDEL_KEY_CURRENCY, 'price': 0}]},
+                               'currency_type': MANDEL_KEY_CURRENCY, 'price': 60}]},
                 sequence=19),
             self.backend, self.token, key, header_word4=12, header_word9=19)
         notification = _candidate_local_inventory_change_notification(
@@ -323,7 +326,9 @@ class LocalCommerceTests(unittest.TestCase):
         self.assertEqual(int(collection_push.fields['data_change'][0]['prop']['id']),
                          item_id)
         self.assertEqual(self.backend.native_lobby_profile(self.token)['collection_props'],
-                         [{'template_id': item_id, 'quantity': 11}])
+                         [{'template_id': item_id, 'quantity': 11},
+                          {'template_id': 32210000004, 'quantity': 11},
+                          {'template_id': MANDEL_KEY_ID, 'quantity': 11}])
 
     def test_direct_mandel_draw_does_not_charge_without_reward_handler(self):
         item_id = 16110000026
@@ -355,13 +360,11 @@ class LocalCommerceTests(unittest.TestCase):
         self.assertEqual(state['collection_props'],
                          [{'template_id': 16110000026, 'quantity': 10}])
 
-    def test_shop_item_descriptions_cover_mandel_purchase_rows(self):
+    def test_shop_item_descriptions_preserve_client_localization(self):
         request = self.request('CSShopGetGameItemConfigReq', {})
         fields = response_fields(request, self.backend, self.token)
         self.codec.response(request, fields)
-        names = {int(row['item_id']): row['Name'] for row in fields['descs']}
-        self.assertEqual(names[16110000026], '曼德尔砖')
-        self.assertEqual(names[MANDEL_KEY_ID], '量子密钥')
+        self.assertEqual(fields['descs'], [])
 
     def test_purchase_deducts_once_and_adds_nonoverlapping_warehouse_prop(self):
         item_id = 15080010001

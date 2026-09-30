@@ -11,6 +11,7 @@ from .client_errors import error_code, inventory_error
 from .weapon_components import default_components
 from .weapon_ammo import magazine_capacity
 from .melee_weapons import WEAPONS
+from . import gun_skins, mandel
 
 
 CURRENCY_ID = 17020000010
@@ -46,6 +47,10 @@ SUPPORTED_REQUESTS = frozenset({
     'CSShopGetGameItemConfigReq',
     'CSSerialCheapBuyReq',
     'CSMallSellReq',
+    'CSWAssemblySkinInfoGetReq', 'CSWAssemblyApplySkinReq',
+    'CSCollectionLoadMysticalSkinPropsReq',
+    'CSShopNewGetConfigReq', 'CSGetBoxInfoReq',
+    'CSLotteryBlindBoxDrawReq',
 })
 
 
@@ -317,6 +322,12 @@ def response_fields(request, backend, local_session):
     """Return declared commerce response fields, or None for unrelated requests."""
     name = request.name
     fields = request.fields
+    cosmetic = gun_skins.response_fields(request, backend, local_session)
+    if cosmetic is not None:
+        return cosmetic
+    lottery = mandel.response_fields(request, backend, local_session)
+    if lottery is not None:
+        return lottery
     catalog = stock_catalog()
     now = int(time.time())
     if name in ('CSMarketGetTypeListReq', 'CSAuctionGetTypeListReq'):
@@ -334,14 +345,6 @@ def response_fields(request, backend, local_session):
             result['tax_cfg'] = [{'tax_id': 0, 'percent': 0,
                                   'tax_rate_ten_thousand': 0}]
         return result
-    if name == 'CSShopGetGameItemConfigReq':
-        descs = [{'item_id': item_id, 'Name': '曼德尔砖',
-                  'Quality': row['quality'],
-                  'InitialGuidePrice': _price(row)}
-                 for item_id, row in catalog.items()
-                 if str(item_id).startswith(MANDEL_BRICK_PREFIX)]
-        descs.append({'item_id': MANDEL_KEY_ID, 'Name': '量子密钥', 'Quality': 5})
-        return {'descs': descs}
     if name == 'CSAuctionAutoLoadGuidePriceReq':
         return {'result': 0, 'finish': True,
                 'new_sync_digest': VERSION['ver'],
@@ -438,36 +441,6 @@ def response_fields(request, backend, local_session):
         if 'match_info' in fields:
             result['match_info'] = fields['match_info']
         return result
-    if name == 'CSShopBuyLotteryItemReq':
-        if fields.get('is_open_directly'):
-            # A draw is a separate state mutation and is not implemented yet.
-            return {'result': 1, 'is_open_directly': True}
-        purchases = fields.get('buy_props', [])
-        if len(purchases) != 2:
-            raise ValueError('Unsupported local Mandel purchase shape')
-        brick, key = purchases
-        item_id = int(brick.get('item_id') or 0)
-        count = int(brick.get('num') or 0)
-        if (str(item_id)[:6] != MANDEL_BRICK_PREFIX or item_id not in catalog
-                or count < 1 or count > 1000
-                or int(brick.get('currency_type') or 0) != MANDEL_BRICK_PURCHASE_CURRENCY
-                or int(brick.get('price') or 0) != _price(catalog[item_id])
-                or int(key.get('item_id') or 0) != MANDEL_KEY_ID
-                or int(key.get('num') or 0) != count
-                or int(key.get('currency_type') or 0) != MANDEL_KEY_CURRENCY
-                or int(key.get('price') or 0) != 0):
-            raise ValueError('Mandel purchase does not match local offer')
-        row = catalog[item_id]
-        try:
-            purchase = backend.native_lobby_collection_purchase(
-                local_session, template_id=item_id, quantity=count,
-                unit_price=_price(row), currency_id=MANDEL_BRICK_PURCHASE_CURRENCY,
-                bonus_currency_id=MANDEL_KEY_ID,
-                bonus_currency_amount=count)
-        except DomainError as error:
-            return {'result': inventory_error(error)}
-        return {'result': 0, 'change': _collection_purchase_change(purchase),
-                'is_open_directly': bool(fields.get('is_open_directly', False))}
     if name == 'CSMallSellReq':
         props = fields.get('sell_props') or []
         prices = fields.get('prices') or []

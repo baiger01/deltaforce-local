@@ -7,6 +7,7 @@ Internet account session. Reports contain only framing and field lengths.
 """
 import argparse
 from collections import deque
+from dataclasses import replace
 from datetime import datetime, timezone
 from functools import lru_cache
 import hashlib
@@ -98,7 +99,8 @@ def _log_request_progress(entry, phase):
               'response_sent', 'response_elapsed_ms', 'local_commerce_result',
               'request_not_answered', 'failure_code', 'local_bullet_commands',
               'local_body_container_snapshots', 'local_serial_buy_items',
-              'local_inventory_change_notification_sent')
+              'local_lottery_purchase_items', 'local_inventory_change_notification_sent',
+              'local_collection_change_notification_sent')
     event = {'event': 'business_request', 'phase': phase, 'observed_at_utc': _time()}
     event.update({name: entry[name] for name in fields if name in entry})
     print(json.dumps(event), flush=True)
@@ -708,15 +710,18 @@ def _candidate_local_inventory_change_notification(response_frame, key, *,
     if int(response.fields.get('result', 1)) != 0:
         return None
     change = (response.fields.get('change') or response.fields.get('changes')
+              or response.fields.get('data_change')
               or response.fields.get('deposit_change')
               or response.fields.get('prop_changes')
               or response.fields.get('mall_changes')
               or response.fields.get('auction_changes'))
     if not change:
         return None
-    if response.name == 'CSShopBuyLotteryItemRes':
+    if response.name in ('CSShopBuyLotteryItemRes', 'CSLotteryBlindBoxDrawRes'):
         # Its prop changes are consumed by CollectionServer, never DepositServer.
         change = {'currency_changes': change.get('currency_changes', [])}
+        if not change['currency_changes']:
+            return None
     notification = codec.encode('CSDepositChangeNtf',
                                 {'deposit_change': change}, sequence=0)
     return encode_data_frame((notification,), key, direction='server_to_client',
@@ -726,22 +731,23 @@ def _candidate_local_inventory_change_notification(response_frame, key, *,
 
 def _candidate_local_collection_change_notification(response_frame, key, *,
                                                     header_word4, header_word9):
-    """Push purchased Mandel bricks through the collection listener."""
+    """Push Mandel purchases and scan rewards through the collection listener."""
     codec = _candidate_codec()
     decoded = decode_data_frame(response_frame, key, direction='server_to_client',
                                 compression_method=1)
     if len(decoded.messages) != 1:
         raise ValueError('Expected one local purchase response')
     response = codec.decode(decoded.messages[0])
-    if response.name != 'CSShopBuyLotteryItemRes' or int(response.fields.get('result', 1)) != 0:
+    if (response.name not in ('CSShopBuyLotteryItemRes', 'CSLotteryBlindBoxDrawRes')
+            or int(response.fields.get('result', 1)) != 0):
         return None
     changes = []
-    for entry in response.fields.get('change', {}).get('prop_changes', []):
+    change = response.fields.get('change') or response.fields.get('data_change') or {}
+    for entry in change.get('prop_changes', []):
         prop = entry.get('prop') or {}
-        changes.append({'change_type': 1,
-                        'prop': {'id': int(prop['id']), 'gid': 0,
-                                 'num': int(prop['num'])},
-                        'delta_num': int(prop['num'])})
+        changes.append({'change_type': int(entry['change_type']), 'prop': prop,
+                        'delta_num': int(entry.get('delta', prop.get('num', 0))),
+                        'after_num': int(prop.get('num', 0))})
     if not changes:
         return None
     notification = codec.encode('CSCollectionPropChangeNtf',
@@ -749,6 +755,33 @@ def _candidate_local_collection_change_notification(response_frame, key, *,
     return encode_data_frame((notification,), key, direction='server_to_client',
                              opaque_flag=64, header_word4=header_word4,
                              header_word9=header_word9)
+
+
+def _candidate_local_collection_response_frames(response_frame, key):
+    """Update collection state before a purchase callback or scan animation starts."""
+    notification = _candidate_local_collection_change_notification(
+        response_frame, key, header_word4=response_frame.header_word4,
+        header_word9=response_frame.header_word9)
+    if notification is None:
+        return (response_frame,)
+    codec = _candidate_codec()
+    response = codec.decode(decode_data_frame(response_frame, key,
+        direction='server_to_client', compression_method=1).messages[0])
+    if response.name == 'CSLotteryBlindBoxDrawRes':
+        # RewardServer.lua 0.17.0 displays positive Modify stacks regardless of delta.
+        # Consumed stacks belong in the notification, not its ten-slot animation.
+        fields = dict(response.fields)
+        fields['data_change'] = {'prop_changes': [
+            row for row in fields['data_change']['prop_changes']
+            if int(row['change_type']) in (1, 3)
+            and int(row.get('delta', row['prop'].get('num', 0))) > 0]}
+        body = codec.encode(response.name, fields, sequence=response.sequence)
+        response_frame = encode_data_frame((body,), key, direction='server_to_client',
+            opaque_flag=64, header_word4=response_frame.header_word4,
+            header_word9=response_frame.header_word9 + 1)
+    else:
+        response_frame = replace(response_frame, header_word9=response_frame.header_word9 + 1)
+    return notification, response_frame
 
 
 def _candidate_local_hero_unlock_response(message, key, *, header_word4, header_word9):
@@ -855,10 +888,13 @@ def _candidate_local_collection_response(message, backend, local_session, key, *
         raise ValueError('Not a collection load request')
     backend.ensure_native_lobby_melee_collection(local_session)
     state = backend.native_lobby_profile(local_session)
+    from .gun_skins import collection as gun_skin_collection
+    skins = gun_skin_collection(backend, local_session)
     response = codec.response(request, {
         'result': 0,
         'weapon_skin_props': [{'id': WEAPONS[row['template_id']], 'gid': 0, 'num': 1}
-                              for row in state['melee_props']],
+                              for row in state['melee_props']] + [row for row in skins if not row['gid']],
+        'mystical_skin_props': [row for row in skins if row['gid']],
         'common_props': [
             {'id': row['template_id'], 'gid': 0, 'num': row['quantity']}
             for row in state['collection_props']],
@@ -978,6 +1014,7 @@ def _candidate_local_deposit_response(message, backend, local_session, key, *, h
         'result': 0,
         'grid_pages': [grid],
         'equiped_props': list(equipment.values()),
+        'weapon_skin_setup': state['weapon_skin_setup'],
         'melee_weapons': [{'id': row['template_id'], 'gid': row['gid'], 'num': 1,
                            'position': MELEE_POSITION if row['template_id'] == state['selected_melee_id'] else 0,
                            **item_condition_fields(row['template_id'])} for row in state['melee_props']],
@@ -1473,11 +1510,19 @@ def _continue_character_creation(connection, decoder, queue, current, ack,
                                          else type(error).__name__)
                 response = None
             if response is not None:
+                if name in ('CSShopBuyLotteryItemReq', 'CSLotteryBlindBoxDrawReq'):
+                    frames = _candidate_local_collection_response_frames(response, ack.session_key)
+                    for notification in frames[:-1]:
+                        connection.sendall(notification.encode())
+                        entry['local_collection_change_notification_sent'] = True
+                    response = frames[-1]
+                    outbound_sequence = response.header_word9
                 connection.sendall(response.encode())
                 entry['response_sent'] = True
                 entry['response_elapsed_ms'] = round((time.monotonic() - began) * 1000)
                 if name in ('CSDepositOperateBulletReq', 'CSDepositAssemblySyncBodyContainerReq',
-                            'CSShopBuyLotteryItemReq', 'CSMarketBuyTReq', 'CSAuctionBuyTReq',
+                            'CSShopBuyLotteryItemReq', 'CSLotteryBlindBoxDrawReq',
+                            'CSMarketBuyTReq', 'CSAuctionBuyTReq',
                             'CSMallBuyReq', 'CSSerialCheapBuyReq', 'CSMallSellReq'):
                     outbound_sequence += 1
                     notification = _candidate_local_inventory_change_notification(
@@ -2083,12 +2128,21 @@ def inspect_exchange(connection, modulus=None, *, timeout=12, diagnostic_exponen
                                                                         result['bounded_business_stop'] = 'client_closed_after_unanswered_request'
                                                                         break
                                                                     continue
+                                                                if name in ('CSShopBuyLotteryItemReq', 'CSLotteryBlindBoxDrawReq'):
+                                                                    frames = _candidate_local_collection_response_frames(
+                                                                        next_response, ack.session_key)
+                                                                    for collection_change in frames[:-1]:
+                                                                        connection.sendall(collection_change.encode())
+                                                                        entry['local_collection_change_notification_sent'] = True
+                                                                    next_response = frames[-1]
+                                                                    outbound_sequence = next_response.header_word9
                                                                 connection.sendall(next_response.encode())
                                                                 entry['response_sent'] = True
                                                                 entry['response_elapsed_ms'] = round(
                                                                     (time.monotonic() - continuation_began) * 1000)
                                                                 entry['response_header_word9'] = next_response.header_word9
                                                                 if (name in ('CSShopBuyLotteryItemReq',
+                                                                             'CSLotteryBlindBoxDrawReq',
                                                                              'CSMarketBuyTReq',
                                                                              'CSAuctionBuyTReq',
                                                                              'CSMallBuyReq',
@@ -2107,15 +2161,6 @@ def inspect_exchange(connection, modulus=None, *, timeout=12, diagnostic_exponen
                                                                     if inventory_change is not None:
                                                                         connection.sendall(inventory_change.encode())
                                                                         entry['local_inventory_change_notification_sent'] = True
-                                                                    if name == 'CSShopBuyLotteryItemReq':
-                                                                        outbound_sequence += 1
-                                                                        collection_change = _candidate_local_collection_change_notification(
-                                                                            next_response, ack.session_key,
-                                                                            header_word4=current.header_word4,
-                                                                            header_word9=outbound_sequence)
-                                                                        if collection_change is not None:
-                                                                            connection.sendall(collection_change.encode())
-                                                                            entry['local_collection_change_notification_sent'] = True
                                                                 _log_request_progress(entry, 'processed')
                                                                 try:
                                                                     current = _receive_one(connection, decoder, queue)

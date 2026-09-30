@@ -19,6 +19,8 @@ GitHub 协作仓库仅包含源码、静态 JSON 目录、重建描述符和来�
 | `weapon_ammo_catalog.json` | 基础包 `pakchunk2-WindowsClient.pak` 条目 4489/4555；热更新 PartsData/PartsFunction；基础包 Lua `cs_deposit_pb.lua` | `work/extract_weapon_ammo_catalog.py` 恢复弹药类别、已有弹匣容量与装卸弹枚举，交叉核对客户端 Lua 规则；未恢复的弹匣或武器关系保持未知。目录记录源哈希、行偏移与函数。 |
 | `client_error_catalog.json` | 基础包 `pakchunk1-WindowsClient.pak` 的 `errcode_pb.lua` 条目 6809 | `work/extract_client_error_catalog.py` 只读恢复实际错误名与值；不以统一猜测结果码代替库存业务错误。 |
 | `melee_weapon_catalog.json` | 当前安装 `DeltaForce/Content/Paks/pak-0-0-pakchunk2-WindowsClient.pak` 明文导出条目 7276 | `work/extract_melee_catalog.py` 读取 18 行中序列化字段索引 40/41 的外观 ID 与武器 ID。源文件 SHA-256 为 `e6ab2c414dc8b972b0f20b647a8deedcb39c82912d968209f057db469defb845`。15 组对应由原客户端 `MeleeWeaponSkinDataTable` 日志交叉确认；加密名称表未恢复，不能冒称已解出原属性名。每行保留偏移、GameItem 名称键与尺寸。 |
+| `gun_skin_catalog.json` | 当前安装基础包 `pak-0-0-pakchunk2-WindowsClient.pak` 明文导出条目 7292 | `work/extract_cosmetic_catalogs.py` 从 1781 行恢复可与 GameItem 核对的 1776 条外观；序列化字段 1820/1792/1794/1812 分别关联外观、武器、预设和收藏开放标志。源 SHA-256 为 `03929c8c36ef4bd21de0e6262809095a863f3e65d6e44e8eefcf6ac57a59cce7`。本地提供 1514 条开放普通皮肤，曼德尔实例单独保存。 |
+| `mandel_box_catalog.json` | 同一基础包条目 6764/6766/6768/7152/7134，以及已有 GameItem 导出 | `work/extract_cosmetic_catalogs.py` 保留 464 行箱体、558 行分组、3962 行奖励、11 项商城关联、5 项经验卡赠送配置及 34 种砖的 ConnectedPool。每行保留原始索引与偏移，各源 SHA-256 在目录头内；名称沿用客户端 GameItem 名称键。 |
 
 `work/evidence/` 在迁移包中仅保留上述小范围表提取物，以便不重新扫描整套游戏就能复核目录。大型原始 PAK、原始 Lua 缓存、历史抓包及日志不在包内。同版本游戏在新电脑上按相对目录可重新读取；重新提取前请先核对游戏版本与目录头内的源文件哈希。`work/evidence/character_avatar_tables/` 中 GameItem 的 `.uexp` 约 35 MiB，已压缩进迁移包，毋须额外复制游戏素材。
 
@@ -37,3 +39,17 @@ GitHub 协作仓库仅包含源码、静态 JSON 目录、重建描述符和来�
 已提取 `AuctionServer.lua` 函数 `0.45` 将 `auction_vaild_time_begin/end` 与 `ClockManager.GetLocalTimestamp()` 比较（SHA-256：`ad10c29ff0fa53ca89ebebf9f0ba447cae2e47195b8921b24731cd01e4a82a6c`）。错误的心跳时间会在商品详情拉取后将其判成未开放；首次目录尚无此时间窗口，因而首次有选项、再次进入丢失。使用 `work/scan_weapon_tables.py --baseline --pak-name pak-0-0-pakchunk1-WindowsClient.pak --lua-pattern 'ClockManager|TimeUtil|ProtoManager' --asset-pattern 'a^'` 可重新取得时钟来源，用 `work/summarize_weapon_lua.py` 静态查看函数，不执行客户端 Lua。
 
 单条防具报价的档位同样来自客户端逻辑：`AuctionServer.lua` 函数 `0.17`（指令 40-57）仅在头盔或护甲恰有三个报价档位时读取 1/2/3，否则读取档位 0。`GoodsItemStruct.lua` 函数 `0.13`（指令 8-15）把 `GetSaleInfo()` 是否有报价作为交易购买解锁条件；当前安装基础包 `pak-0-0-pakchunk1-WindowsClient.pak` 条目 1778 的该提取物 SHA-256 为 `34ae5cbc845b364949e34633630642150aced86398d1b6263b8b453a616f7ffa`。本地仅提供一个满耐久报价，类型目录及商品详情必须一致使用档位 0；此档位是报价索引，不能当成物品实际耐久。2026-09-30 原客户端请求并成功购买护甲 `11050006001` 到位置 105、头盔 `11010005011` 到位置 101，SQLite 重读确认两者持久化，用户确认四类装备均可购买。
+
+## 枪械皮肤与曼德尔协议
+
+普通外观归属是本地测试账号的提供策略。外观 ID、武器 ID 和预设关联来自客户端目录；`ItemHelperTool.lua` 函数 `0.40/0.60` 的 ID 分类规则用于区分普通与曼德尔外观。没有把未恢复的挂饰、花纹、磨损或材质 ID 写入账号。曼德尔奖励实例使用客户端 `CollectionServer.lua` 函数 `0.11.3/0.206` 明确支持的 `appearance.id=0` 默认查表分支；该值是客户端哨兵，不是假造 AppearanceID。
+
+`MandelDrawOnly.lua` 函数 `0.5` 通过 `GetCollectionPropById(GetKeyID())` 读取密钥，因此 `32320000001` 必须作为收藏道具下发。该提取物 SHA-256 为 `f02cd1f699e83b7884bdf0a40f5b494600ceff39d26e055354dd641a86b01118`。`CollectionServer.lua` SHA-256 为 `30fd97e50c22998e987b1fdcf8ee7a0e4edfe1ae51b93dc1d6e11ff5e7bf37f2`。商城条目 7134 的字段 19/11/21/9/20 对应赠品、货币、价格、商品、赠送数量；实际购买商品是 `32210000004` 武器次级经验卡，每个 60 三角币，附送一个量子密钥。密钥请求的 `price` 是该次经验卡购买总价，砖请求的 `price` 是单价，二者由原客户端实际请求交叉确认。旧密钥货币记录在同一个 SQLite 事务中迁移为收藏数量并删除旧记录，重复启动不会再次赠送。
+
+`StoreServer.lua` 函数 `0.119.0` 成功回调直接执行后续扫描；`MandelDrawOnly.lua` 函数 `0.36` 会再次检查收藏数量。因此本地购买先发送 `CSCollectionPropChangeNtf`，随后发送购买响应，保留请求业务序号并递增外层包序号。
+
+十连奖励展示的约束来自 `RewardServer.lua` 函数 `0.17.0`：所有 `Add/Modify` 且 `prop.num>0` 的行都会进入奖励列表，不检查扣除的负 `delta`。该提取物 SHA-256 为 `12c62cdedc2d117e444b63c37e7e538f907d52b9976d7acb66c658c2c59d1dec`。2026-09-30 22:23 崩溃堆栈经过 `RewardSceneViewTen.lua:513/674`，向十件展示场景传入了十件奖励及两个剩余消耗栈。现在剩余砖和密钥仅通过收藏通知同步，扫描响应只提供实际奖励；回归用例通过真实加密包和重连处理入口检查该约束。
+
+上述十连展示 Lua 来自基础包 `pak-0-0-pakchunk1-WindowsClient.pak` 条目 5556，SHA-256 为 `bf1e6845d4e398234ce5469c19734dc5fcb167800c8e00453316b72acc7cb258`。函数 `0.19` 对奖励列表逐项调用 `SetCurveLinearColorByItemQuality`，与崩溃堆栈一致；函数 `0.22` 进入抽奖子场景后执行该调用。
+
+扫描规则分为客户端配置与本地执行策略：分组启用、权重、核心标志及 `TimeAssured=75` 来自分组条目字段 562/577/567/582；奖励 ID、数量和启用标志来自奖励条目字段 3982/3977/3967。本地使用配置分组权重，在组内均匀抽样，并按配置次数与本地连续未出核心的计数执行保证规则。组内动态概率、官方计数语义及增量调整规则未恢复，因此这套执行策略和显示的 `real_prob` 仅表示本地服务行为，不能宣称为官方概率。原始 `ProbShowed` 保留并单独下发。砖的 20000 曼德尔币报价也是本地诊断策略。奖池、名称、ID 和模型关联均采用已恢复的客户端配置。
