@@ -24,7 +24,7 @@ from .gcp_control import AuthResponse, CommonAuthResponse, ReadyResponse, parse_
 from .business_probe import summarize_message_shape, summarize_prefixed_envelope
 from .business_envelope import BusinessEnvelope, parse_business_envelope
 from .candidate_business import CandidateBusinessCodec
-from .client_errors import inventory_error
+from .client_errors import error_code, inventory_error
 from .container_layouts import capacity as container_capacity
 from .core import (POCKET_LAYOUT, POCKET_POSITION,
                    BACKPACK_LAYOUT, BACKPACK_POSITION, CHEST_RIG_LAYOUT,
@@ -37,7 +37,7 @@ from .local_commerce import (SUPPORTED_REQUESTS as LOCAL_COMMERCE_REQUESTS,
                              response_fields as local_commerce_response_fields,
                              installed_items, item_condition_fields, inventory_location)
 from .melee_weapons import WEAPONS, MELEE_POSITION
-from . import premium_shop
+from . import hero_customization, premium_shop, profile_cosmetics
 
 COLLECTION_REQUESTS = frozenset(name[:-3] + 'Req' for name in premium_shop.COLLECTION_RESPONSES)
 
@@ -103,7 +103,7 @@ def _log_request_progress(entry, phase):
               'request_not_answered', 'failure_code', 'local_bullet_commands',
               'local_body_container_snapshots', 'local_serial_buy_items',
               'local_lottery_purchase_items', 'local_inventory_change_notification_sent',
-              'local_premium_shop_request',
+              'local_premium_shop_request', 'local_customization_request',
               'local_collection_change_notification_sent')
     event = {'event': 'business_request', 'phase': phase, 'observed_at_utc': _time()}
     event.update({name: entry[name] for name in fields if name in entry})
@@ -454,26 +454,17 @@ def _candidate_local_hero_response(message, backend, local_session, key, *, head
     codec = _candidate_codec()
     request = codec.decode(message[4:])
     ids = _candidate_known_operator_ids()
-    fashions = _candidate_operator_base_fashions()
     if request.name == 'CSHeroGetHeroIDListReq':
         fields = {'result': 0, 'hero_ids': list(ids)}
     elif request.name == 'CSHeroLoadHeroListReq':
-        selected = backend.native_lobby_profile(local_session)['selected_hero_id'] or 88000000025
-        if selected not in ids:
-            selected = 88000000025
-        fields = {
-            'result': 0,
-            'hero_ids': list(ids),
-            'mp_hero_selected': selected,
-            'sol_hero_selected': selected,
-            'heros': premium_shop.hero_records(backend, local_session, ids),
-        }
+        fields = hero_customization.load_fields(backend, local_session,
+            hero_ids=ids, request_fields=request.fields)
     else:
         raise ValueError('Not a supported hero catalogue request')
     response = codec.response(request, fields)
     return encode_data_frame((response,), key, direction='server_to_client',
                              opaque_flag=64, header_word4=header_word4,
-                             header_word9=header_word9)
+                             header_word9=header_word9, max_output=1024 * 1024)
 
 
 def _candidate_local_hero_select_response(message, backend, local_session, key,
@@ -702,6 +693,14 @@ def _candidate_local_premium_shop_summary(message):
         'hero_id', 'new_fashions', 'buy_prop', 'is_cash_buy') if key in fields}
 
 
+def _candidate_local_customization_summary(message):
+    fields = _candidate_codec().decode(message[4:]).fields
+    return {key: fields[key] for key in (
+        'hero_id', 'new_fashions', 'accessory_item', 'is_unequip', 'mode',
+        'prop_id', 'prop_ids', 'avatar_id', 'military_tag', 'title', 'honor_mark',
+        'is_fashion_prior', 'prior_settings', 'badge', 'badges') if key in fields}
+
+
 def _candidate_local_inventory_change_notification(response_frame, key, *,
                                                    header_word4, header_word9):
     """Push a committed commerce change through the client's inventory listener."""
@@ -772,15 +771,15 @@ def _candidate_local_collection_response_frames(response_frame, key, backend=Non
         direction='server_to_client', compression_method=1).messages[0])
     change = response.fields.get('change') or response.fields.get('data_change') or {}
     if backend is not None and int(response.fields.get('result', 1)) == 0:
-        heroes = {premium_shop.FASHIONS[int(row['prop']['id'])] for row in change.get('prop_changes', [])
-                  if int(row.get('prop', {}).get('id', 0)) in premium_shop.FASHIONS
-                  and int(row.get('delta', row['prop'].get('num', 0))) > 0}
+        heroes = {hero_id for row in change.get('prop_changes', [])
+                  if int(row.get('delta', row.get('prop', {}).get('num', 0))) > 0
+                  for hero_id in hero_customization.affected_heroes(int(row.get('prop', {}).get('id', 0)))}
         if heroes:
             body = codec.encode('CSHeroUnlockNtf',
                 {'heros': premium_shop.hero_records(backend, local_session, heroes)}, sequence=0)
             notifications.append(encode_data_frame((body,), key, direction='server_to_client',
                 opaque_flag=64, header_word4=response_frame.header_word4,
-                header_word9=response_frame.header_word9 + len(notifications)))
+                header_word9=response_frame.header_word9 + len(notifications), max_output=1024 * 1024))
     if not notifications:
         return (response_frame,)
     if response.name in ('CSLotteryBlindBoxDrawRes', 'CSShopOpenLotteryItemRes'):
@@ -881,11 +880,17 @@ def _candidate_local_account_state_response(message, backend, local_session,
         fields = {'result': 0, 'level': level, 'account_level': level,
                   'blast_level': level, 'exp': 0, 'account_exp': 0,
                   'nick_name': expected_identity.get('game_nick') or expected_identity['username']}
+        fields.update(profile_cosmetics.profile_fields(backend, local_session))
     elif request.name == 'CSPlayerGetBasicInfoReq':
-        fields = {'result': 0, 'info': {
-            'player_id': expected_identity['native_id'],
-            'nick_name': expected_identity.get('game_nick') or expected_identity['username'],
-            'sol_level': level, 'mp_level': level}}
+        target = int(request.fields.get('player_id') or 0)
+        if target and target != expected_identity['native_id']:
+            fields = {'result': error_code('PlayerInfoGetProfileFailed')}
+        else:
+            fields = {'result': 0, 'info': {
+                'player_id': expected_identity['native_id'],
+                'nick_name': expected_identity.get('game_nick') or expected_identity['username'],
+                'sol_level': level, 'mp_level': level,
+                **profile_cosmetics.basic_info_fields(backend, local_session)}}
     elif request.name == 'CSGetCurrencyReq':
         fields = {'result': 0, 'currencys': [
             {'id': row['currency_id'], 'num': row['amount']}
@@ -1503,6 +1508,8 @@ def _continue_character_creation(connection, decoder, queue, current, ack,
                 elif name in LOCAL_COMMERCE_REQUESTS:
                     if name in premium_shop.SUPPORTED_REQUESTS:
                         entry['local_premium_shop_request'] = _candidate_local_premium_shop_summary(message)
+                    if name.startswith('CSHero') or name in profile_cosmetics.SUPPORTED_REQUESTS:
+                        entry['local_customization_request'] = _candidate_local_customization_summary(message)
                     if name in ('CSAuctionGetSaleListBatchReq', 'CSAuctionGetSaleListReq',
                                 'CSMarketGetSaleListReq', 'CSAuctionBuyTReq',
                                 'CSMarketBuyTReq', 'CSMallBuyReq'):
@@ -2107,6 +2114,8 @@ def inspect_exchange(connection, modulus=None, *, timeout=12, diagnostic_exponen
                                                                     elif name in LOCAL_COMMERCE_REQUESTS:
                                                                         if name in premium_shop.SUPPORTED_REQUESTS:
                                                                             entry['local_premium_shop_request'] = _candidate_local_premium_shop_summary(message)
+                                                                        if name.startswith('CSHero') or name in profile_cosmetics.SUPPORTED_REQUESTS:
+                                                                            entry['local_customization_request'] = _candidate_local_customization_summary(message)
                                                                         if name in ('CSMarketGetTypeListReq',
                                                                                     'CSAuctionGetTypeListReq'):
                                                                             entry['local_commerce_type_filters'] = (

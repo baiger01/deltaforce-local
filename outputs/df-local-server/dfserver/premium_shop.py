@@ -7,7 +7,7 @@ from pathlib import Path
 import secrets
 import time
 
-from . import gun_skins, mandel
+from . import gun_skins, hero_customization, mandel
 from .core import DomainError, fail
 from .client_errors import inventory_error
 
@@ -15,7 +15,9 @@ from .client_errors import inventory_error
 PROTOCOL = Path(__file__).resolve().parent.parent / 'protocol'
 CATALOG = json.loads((PROTOCOL / 'premium_shop_catalog.json').read_text(encoding='utf-8'))
 ITEMS = json.loads((PROTOCOL / 'game_item_catalog.json').read_text(encoding='utf-8'))['rows']
+RECOVERED_RECOMMENDATIONS = {r['tab_id']: r for r in CATALOG['recommendations']}
 RECOMMENDATIONS = {r['tab_id']: r for r in CATALOG['recommendations'] if r['bundle_item_list']
+    and (r['preview_asset'] or r['IamgeSourceSmall_CDN'])
     and all(not str(p['id']).startswith(('280', '281')) or p['id'] in gun_skins.SKINS
             for item in r['bundle_item_list'] for p in (item.get('item_list') or [item]))}
 GIFTS = {r['goods_id']: r for r in CATALOG['gifts'] if (r['is_cash'] or r['currency_type']) and all(
@@ -59,6 +61,8 @@ def shop_config():
         'bundle_item_list': bundle_items(r['bundle_item_list']),
         'online_time': now - 86400, 'offline_time': now + 365 * 86400,
         'jump_to': r['jump_to'],
+        **{k: r[k] for k in ('IamgeSourceSmall_CDN', 'IamgeSourceBig_CDN',
+                             'ImageSourceLogo_CDN_CN', 'ImageSourceLogo_CDN_EN')},
     } for r in (*RECOMMENDATIONS.values(), *PROMOTIONS.values())]
     result['mall_gift_descs'] = [{
         **{k: r[k] for k in ('goods_id', 'goods_type', 'Sortindex', 'currency_type',
@@ -79,7 +83,13 @@ def shop_config():
 def owned_wins(connection, player_id, lottery_id):
     draws = connection.execute('SELECT won_ids_json FROM native_lobby_staff_draws '
         'WHERE player_id=? AND lottery_id=? ORDER BY id', (player_id, lottery_id)).fetchall()
-    return [item for draw in draws for item in json.loads(draw[0])], len(draws)
+    legacy = {r['source_row_id']: r['num_id'] for r in REWARDS[lottery_id]}
+    valid = {r['num_id'] for r in REWARDS[lottery_id]}
+    wins = [item if item in valid else legacy.get(item)
+            for draw in draws for item in json.loads(draw[0])]
+    if any(item is None for item in wins):
+        fail('INVALID_ARGUMENT', 'Stored reward number is outside its client pool')
+    return wins, len(draws)
 
 
 def pool(connection, player_id, lottery_id):
@@ -111,8 +121,9 @@ def records(backend, token):
                 merged = recommendations.setdefault(offer_id,
                     {'tab_id': offer_id, 'banner_type': record['banner_type'], 'item_ids': []})
                 merged['item_ids'].extend(record['item_ids'])
-                merged['is_sold_out'] = set(merged['item_ids']) == {
-                    r['id'] for r in RECOMMENDATIONS[offer_id]['bundle_item_list']}
+                offer = RECOVERED_RECOMMENDATIONS.get(offer_id)
+                merged['is_sold_out'] = bool(offer) and set(merged['item_ids']) == {
+                    r['id'] for r in offer['bundle_item_list']}
             elif kind == 'gift':
                 offer = GIFTS.get(offer_id)
                 if offer and offer['limit_type'] == 2 and record['buy_time'] < week_start():
@@ -325,47 +336,17 @@ def draw(backend, token, fields):
 
 
 def hero_record(connection, player_id, hero_id, base_id):
-    owned = {row[0] for row in connection.execute('SELECT template_id FROM '
-        'native_lobby_collection_props WHERE player_id=?', (player_id,))}
-    unlocked = [fid for fid, hid in FASHIONS.items() if hid == hero_id and fid in owned and fid != base_id]
-    equipped = connection.execute('SELECT fashion_id FROM native_lobby_hero_fashions '
-        'WHERE player_id=? AND hero_id=?', (player_id, hero_id)).fetchone()
-    selected = equipped[0] if equipped and equipped[0] in unlocked else base_id
-    return {'hero_id': hero_id, 'is_unlock': True, 'can_use': True, 'is_blast_unlock': True,
-        'fashion_list': [{'fashion': {'slot': 0, 'id': fid}, 'is_unlock': True,
-            'is_def': fid == base_id, 'is_read': True} for fid in [base_id] + unlocked],
-        'fashion_equipped': [{'slot': 0, 'id': selected}]}
+    return hero_customization.hero_record(connection, player_id, hero_id, {hero_id: base_id})
 
 
 def hero_records(backend, token, hero_ids=None):
-    from .handshake_diagnostic import _candidate_operator_base_fashions
-    bases = _candidate_operator_base_fashions()
-    with backend.connection() as connection:
-        player_id = backend._authorize(connection, token)
-        return [hero_record(connection, player_id, hid, fid) for hid, fid in bases.items()
-                if hero_ids is None or hid in hero_ids]
+    return hero_customization.hero_records(backend, token, hero_ids)
 
 
 def equip(backend, token, fields):
     from .handshake_diagnostic import _candidate_operator_base_fashions
-    bases = _candidate_operator_base_fashions()
-    hero_id = int(fields.get('hero_id') or 0)
-    fashions = fields.get('new_fashions') or []
-    if hero_id not in bases or len(fashions) != 1 or int(fashions[0].get('slot', -1)) != 0:
-        fail('INVALID_EQUIPMENT', 'Unsupported client fashion slot')
-    fashion_id = int(fashions[0].get('id') or 0)
-    with backend.connection() as connection:
-        connection.execute('BEGIN IMMEDIATE')
-        player_id = backend._authorize(connection, token)
-        record = hero_record(connection, player_id, hero_id, bases[hero_id])
-        if fashion_id not in {r['fashion']['id'] for r in record['fashion_list']}:
-            fail('INVALID_EQUIPMENT', 'Fashion is not owned for this hero')
-        connection.execute('INSERT INTO native_lobby_hero_fashions VALUES (?,?,?) '
-            'ON CONFLICT(player_id,hero_id) DO UPDATE SET fashion_id=excluded.fashion_id',
-            (player_id, hero_id, fashion_id))
-        record = hero_record(connection, player_id, hero_id, bases[hero_id])
-        connection.commit()
-    return {'result': 0, 'target_hero': record}
+    return hero_customization.equip_hero(backend, token, int(fields.get('hero_id') or 0),
+        fields.get('new_fashions') or [], _candidate_operator_base_fashions())
 
 
 def response_fields(request, backend, token):

@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 import tempfile
+import time
 import unittest
 from unittest.mock import patch
 
@@ -46,6 +47,16 @@ class PremiumShopTests(unittest.TestCase):
         self.assertEqual(self.request('CSShopGetThemeBundleTimeConfigReq')['bundle_list'], [])
         self.assertEqual(self.request('CSShopGetBuyRecordReq')['mall_gift_records'], [])
 
+    def test_mandel_descriptions_pass_the_native_tab_time_filter(self):
+        now = int(time.time())
+        rows = self.request('CSShopNewGetConfigReq')['lottery_item_descs']
+        mandel = [r for r in rows if r.get('mandel_item_id')]
+        self.assertEqual(len(mandel), 11)
+        for row in mandel:
+            with self.subTest(lottery_id=row['lottery_id']):
+                self.assertLess(row.get('begin_time', 0), now)
+                self.assertGreater(row.get('end_time', 0), now)
+
     def test_original_promotional_tiles_keep_their_lottery_jump_targets(self):
         result = self.request('CSShopNewGetConfigReq')
         banners = {r['tab_id']: r for r in result['hot_recommendation_descs']}
@@ -58,6 +69,15 @@ class PremiumShopTests(unittest.TestCase):
             self.assertNotEqual(self.request('CSShopBuyHotRecommendationReq',
                 {'tab_id': tab_id, 'banner_type': 2})['result'], 0)
             self.assertEqual(self.backend.native_lobby_profile(self.token), before)
+
+    def test_recommendations_preserve_native_cdn_fallbacks_and_omit_empty_banners(self):
+        banners = {r['tab_id']: r for r in self.request('CSShopNewGetConfigReq')['hot_recommendation_descs']}
+        self.assertNotIn(10102077, banners)
+        featured = banners[10101057]
+        self.assertEqual(featured['IamgeSourceSmall_CDN'],
+            'Resource/Store/C=69DB3063DD2DBB10E969574E5C10A48FBD6F6505042181F048324565478A248DC8788BE674874CB14D6ECBED39E12C53.jpg')
+        self.assertTrue(featured['IamgeSourceBig_CDN'].startswith('Resource/Store/C='))
+        self.assertTrue(featured['ImageSourceLogo_CDN_CN'].endswith('.png'))
 
     def test_bundle_purchase_grants_its_actual_contents_and_persists_record(self):
         catalog = json.loads((ROOT / 'protocol/premium_shop_catalog.json').read_text())
@@ -77,6 +97,21 @@ class PremiumShopTests(unittest.TestCase):
         before = self.backend.native_lobby_profile(self.token)
         self.assertNotEqual(self.request('CSShopBuyHotRecommendationReq', fields)['result'], 0)
         self.assertEqual(self.backend.native_lobby_profile(self.token), before)
+
+    def test_hidden_empty_banner_keeps_its_existing_purchase_record(self):
+        from dfserver.premium_shop import CATALOG
+        offer = next(r for r in CATALOG['recommendations'] if r['tab_id'] == 10102077)
+        record = {'tab_id': offer['tab_id'], 'banner_type': offer['banner_type'],
+                  'item_ids': [r['id'] for r in offer['bundle_item_list']]}
+        with self.backend.connection() as connection:
+            player_id = self.backend._authorize(connection, self.token)
+            connection.execute('INSERT INTO native_lobby_shop_records '
+                '(player_id,kind,offer_id,record_json) VALUES (?,?,?,?)',
+                (player_id, 'recommendation', offer['tab_id'], json.dumps(record)))
+            connection.commit()
+        result = self.request('CSShopGetBuyRecordReq')['hot_recommendation_records']
+        self.assertEqual(result[0]['tab_id'], 10102077)
+        self.assertTrue(result[0]['is_sold_out'])
 
     def test_foreign_bundle_items_and_wrong_prices_do_not_charge(self):
         before = self.backend.native_lobby_profile(self.token)
@@ -104,6 +139,27 @@ class PremiumShopTests(unittest.TestCase):
         ids = {p['id'] for r in pool['lottery_rewards'] for p in r['props']}
         self.assertIn(30000060010, ids)
         self.assertEqual(len(pool['lottery_rewards']), 8)
+
+    def test_staff_reward_numbers_match_the_client_pool_sort_indices(self):
+        pools = self.request('CSShopGetLotteryInfoReq')['lottery_pool_info']
+        for pool in pools:
+            with self.subTest(lottery_id=pool['lottery_id']):
+                self.assertEqual([r['num_id'] for r in pool['lottery_rewards']], list(range(1, 9)))
+                self.assertEqual(pool['prop_num_ids'], [])
+
+    def test_legacy_global_reward_numbers_are_translated_without_granting_again(self):
+        with self.backend.connection() as connection:
+            player_id = self.backend._authorize(connection, self.token)
+            connection.execute('INSERT INTO native_lobby_staff_draws '
+                '(player_id,lottery_id,won_ids_json,record_json) VALUES (?,?,?,?)',
+                (player_id, 20300008, '[64]', json.dumps({'lottery_id': 20300008, 'num': 1})))
+            connection.commit()
+        before = self.backend.native_lobby_profile(self.token)
+        info = self.request('CSShopGetLotteryInfoReq', {'lottery_id': 20300008})['lottery_pool_info'][0]
+        self.assertEqual(info['prop_num_ids'], [8])
+        self.assertEqual(info['cost_num'], 3)
+        self.assertEqual(next(r for r in info['lottery_rewards'] if r['num_id'] == 8)['prob'], 0)
+        self.assertEqual(self.backend.native_lobby_profile(self.token), before)
 
     def test_staff_draw_grants_the_whole_remaining_pool_on_great_reward(self):
         self.assertEqual(self.request('CSShopBuyLotteryItemReq', {'buy_props': [{
@@ -190,7 +246,7 @@ class PremiumShopTests(unittest.TestCase):
             direction='server_to_client', opaque_flag=64, header_word4=12, header_word9=20)
         frames = _candidate_local_collection_response_frames(response, key, self.backend, self.token)
         messages = [self.codec.decode(decode_data_frame(f, key,
-            direction='server_to_client', compression_method=1).messages[0]) for f in frames]
+            direction='server_to_client', compression_method=1, max_output=1024 * 1024).messages[0]) for f in frames]
         self.assertEqual([m.name for m in messages], [
             'CSCollectionPropChangeNtf', 'CSHeroUnlockNtf', 'CSShopBuyHotRecommendationRes'])
         self.assertEqual([f.header_word9 for f in frames], [20, 21, 22])
@@ -202,6 +258,32 @@ class PremiumShopTests(unittest.TestCase):
             direction='server_to_client', compression_method=1).messages[0]).fields['deposit_change']
         self.assertFalse(changes.get('prop_changes'))
         self.assertEqual(int(changes['currency_changes'][0]['delta']), -2210)
+
+    def test_bundle_accessory_claim_refreshes_hero_without_a_new_fashion(self):
+        from dfserver import gun_skins
+        gun_skins.collection(self.backend, self.token)
+        self.request('CSShopBuyHotRecommendationReq', {'tab_id': 10104007,
+            'banner_type': 1, 'item_ids': [30000050013],
+            'currency_type': 17888808889, 'price': 2210})
+        request = CandidateMessage('CSShopBuyHotRecommendationReq',
+            self.codec.services['CSShopBuyHotRecommendationReq'], 22, {
+                'tab_id': 10104007, 'banner_type': 1, 'currency_type': 17888808889})
+        result = response_fields(request, self.backend, self.token)
+        self.assertEqual(result['result'], 0)
+        self.assertNotIn(30000050013, {r['prop']['id'] for r in result['change']['prop_changes']})
+        key = b'0123456789abcdef'
+        response = encode_data_frame((self.codec.response(request, result),), key,
+            direction='server_to_client', opaque_flag=64, header_word4=12, header_word9=20)
+        frames = _candidate_local_collection_response_frames(response, key, self.backend, self.token)
+        messages = [self.codec.decode(decode_data_frame(f, key,
+            direction='server_to_client', compression_method=1, max_output=1024 * 1024).messages[0]) for f in frames]
+        self.assertEqual([m.name for m in messages], [
+            'CSCollectionPropChangeNtf', 'CSHeroUnlockNtf', 'CSShopBuyHotRecommendationRes'])
+        target = next(r for r in messages[1].fields['heros'] if int(r['hero_id']) == 88000000025)
+        voices = [r for r in target['accessories'] if int(r['item']['prop_id']) in
+                  {38050050066, 38050050067, 38050050068, 38050050069}]
+        self.assertEqual(len(voices), 4)
+        self.assertTrue(all(r['is_unlock'] for r in voices))
 
     def test_unmapped_weapon_skin_offer_does_not_charge_or_create_collection_prop(self):
         before = self.backend.native_lobby_profile(self.token)

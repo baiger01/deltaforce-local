@@ -46,6 +46,13 @@
 | 商城配置提取 | 恢复 158 条推荐、61 条特供、8 个干员研究奖池的 64 条奖励、54 条外观归属及原生主页签；保留原始行、偏移与来源哈希 | `premium_shop_catalog.json`、`work/extract_premium_shop_catalog.py`、[数据来源](DATA_PROVENANCE.md) |
 | 原生商城接口 | 接入推荐、特供、购买记录、研究奖池及干员外观装备；按配方、原价和已拥有内容核价，扣费、发货与记录整笔提交；周限购累计，旧轮次拒绝重复执行；收藏及干员归属通知先于购买回调 | `dfserver/premium_shop.py`、`dfserver/handshake_diagnostic.py`、`tests/test_premium_shop.py` |
 | 推荐页宣传跳转 | 接回 16 条原生奖池宣传项及客户端跳转目标，包含安魂 `10210005 -> 20300008`；空配方宣传项不能作为商品购买 | `premium_shop_catalog.json`、`dfserver/premium_shop.py`、`tests/test_premium_shop.py` |
+| 曼德尔页签与数量同步 | 按客户端时间筛选规则提供奖池开放窗口；重复购买通知返回当前总量与本次增量，密钥重买后保持客户端与存档数量一致 | `dfserver/mandel.py`、`tests/test_native_cosmetics.py` |
+| 研究奖池序号 | 八个池使用原表池内序号 1～8，修正稀疏全局编号导致奖池为空、误显示全部已获得的问题；旧记录读取时迁移序号 | `dfserver/premium_shop.py`、`tests/test_premium_shop.py` |
+| 推荐图片引用 | 下发原版四个 CDN 字段；隐藏没有任何图片引用的一条推荐并兼容其历史购买记录 | `premium_shop_catalog.json`、`tests/test_premium_shop.py`；尚未确认全部宣传图实机渲染 |
+| 干员自定义目录与穿戴 | 恢复 54 条服装与 2049 条附件，覆盖名片、喷漆、展示动作、手势、语音、处决、手表、徽章及称号；目录含锁定项，解锁按客户端默认标记和实际收藏；装备、卸下、已读与播放状态持久化 | `hero_customization_catalog.json`、`dfserver/hero_customization.py`、`tests/test_hero_customization.py` |
+| 奖励到穿戴流程 | 研究抽奖或礼包发货后，在回调前更新收藏与对应干员；加密接口回归验证研究外观、手表获得、装备和重连恢复；完整目录响应允许 1 MiB 出站容量 | `dfserver/handshake_diagnostic.py`、`tests/test_native_customization_flow.py` |
+| 账户社交外观 | 恢复 2098 条头像、军牌、称号与徽记配置；按账号收藏查询归属，校验类别后装备，登录与重连恢复；拒绝查询其它玩家时泄露本地账号资料 | `profile_cosmetics_catalog.json`、`dfserver/profile_cosmetics.py`、`tests/test_profile_cosmetics.py` |
+| 成长预览查询答复 | 接入原生 `CSHeroGrowLineRewardViewReq`，校验账号和干员 ID 后返回本地未配置的空预览，结束未响应状态；不更改进度、不发奖 | `dfserver/hero_customization.py`、`tests/test_hero_growline_query.py`；非空成长奖励来源尚未恢复 |
 
 表内 `dfserver/`、`tests/`、`protocol/` 均位于 `outputs/df-local-server/`。
 
@@ -60,6 +67,10 @@
 - 2026-10-01：原客户端连续八次十连成功，每次保存十件奖励；包含核心奖励展示流程，八次均记录动画结束回调，本轮未出现 Fatal error。用户确认十连与购买正常；360 秒试验完整结束，原 SDK 恢复。
 - 2026-10-01：再次启动的 360 秒试验记录三次成功的枪械皮肤装备请求，结束后原 SDK 恢复。日志监听输出改用 UTF-8，GBK 环境下特殊字符不中断捕获的独立回归测试通过；本轮完整日志补读完成，未出现 Fatal error。
 - 2026-10-01：商城修复后全部 284 项自动测试通过（27.974 秒），包括 18 项商城用例和底层协议校验的内存回归。原客户端研究奖池空请求、指定奖池查询及三个整包赠品领取请求成功；特供礼包购买响应成功。第三轮 360 秒试验完整结束，配置、购买记录及奖池请求均收到响应，日志未出现 Fatal error 或崩溃堆栈；原 SDK 与游戏源文件哈希一致。
+- 2026-10-01：商城页签、研究序号、干员与社交自定义修正后，全部 316 项自动测试通过（35.126 秒）。新增回归覆盖真实业务加密包、重复购买数量、锁定归属、礼包语音、处决与服装限制、错误卸装无副作用、获得奖励后穿戴及数据库重开。
+- 2026-10-01 04:42：360 秒原客户端试验完整结束，商城配置、研究奖池、社交归属、徽章及三次完整干员目录查询均收到响应；捕获日志无 Fatal error 或 Lua 崩溃堆栈，原 SDK 恢复并与源文件哈希一致。本轮只记录到初始化查询，四页签画面、推荐图及实际穿戴仍待用户操作确认。
+- 2026-10-01：补齐预览查询并增加隔离进程的连续通知回归后，全部 322 项自动测试通过（59.710 秒）。64 次实际礼包对应的收藏、干员解锁和购买回调均完成编码、加密、解码及顺序核对；单次包含完整 17 个干员目录。
+- 2026-10-01 05:12：修正后的 360 秒原客户端试验完整结束，17 个干员成长预览查询均成功响应，未响应数为 0；捕获日志无 Fatal error 或 Lua 崩溃堆栈，原 SDK 恢复并与源文件哈希一致。
 - GitHub 仓库已按用户指示改为公开，源码、测试、静态目录和来源信息已上传；上传文件审计通过。
 
 ## 协作依据

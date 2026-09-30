@@ -254,7 +254,24 @@ class NativeCosmeticsTests(unittest.TestCase):
         self.assertEqual(messages[1].sequence, 23)
         additions = {int(row['prop']['id']): int(row['prop']['num'])
                      for row in messages[0].fields['data_change']}
-        self.assertEqual(additions, {32210000004: 10, 32320000001: 10})
+        # The fixture's legacy balance already owns ten keys before this purchase.
+        self.assertEqual(additions, {32210000004: 10, 32320000001: 20})
+        self.assertTrue(all(int(r['delta_num']) == 10 for r in messages[0].fields['data_change']))
+
+    def test_repeated_key_purchase_pushes_total_owned_count_with_purchase_delta(self):
+        self.backend.set_native_lobby_profile(self.token, level=60,
+            currencies={17888808888: 10000}, props=[])
+        fields = {'buy_props': [{'item_id': 32320000001, 'num': 10,
+                  'currency_type': 17888808888, 'price': 600}]}
+        self.reconnect_frames('CSShopBuyLotteryItemReq', fields)
+        messages = self.reconnect_frames('CSShopBuyLotteryItemReq', fields)
+        additions = {int(r['prop']['id']): (int(r['prop']['num']),
+            int(r['delta_num']), int(r['after_num'])) for r in messages[0].fields['data_change']}
+        self.assertEqual(additions, {32210000004: (20, 10, 20), 32320000001: (20, 10, 20)})
+        self.backend = Backend(self.backend.database, ROOT / 'definitions.json')
+        owned = {r['template_id']: r['quantity']
+                 for r in self.backend.native_lobby_profile(self.token)['collection_props']}
+        self.assertEqual(owned, {32210000004: 20, 32320000001: 20})
 
     def test_ten_draw_animation_receives_ten_rewards_and_no_consumed_stacks(self):
         self.backend.set_native_lobby_profile(self.token, level=60,

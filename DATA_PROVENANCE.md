@@ -22,6 +22,8 @@ GitHub 协作仓库仅包含源码、静态 JSON 目录、重建描述符和来�
 | `gun_skin_catalog.json` | 当前安装基础包 `pak-0-0-pakchunk2-WindowsClient.pak` 明文导出条目 7292 | `work/extract_cosmetic_catalogs.py` 从 1781 行恢复可与 GameItem 核对的 1776 条外观；序列化字段 1820/1792/1794/1812 分别关联外观、武器、预设和收藏开放标志。源 SHA-256 为 `03929c8c36ef4bd21de0e6262809095a863f3e65d6e44e8eefcf6ac57a59cce7`。本地提供 1514 条开放普通皮肤，曼德尔实例单独保存。 |
 | `mandel_box_catalog.json` | 同一基础包条目 6764/6766/6768/7152/7134，以及已有 GameItem 导出 | `work/extract_cosmetic_catalogs.py` 保留 464 行箱体、558 行分组、3962 行奖励、11 项商城关联、5 项经验卡赠送配置及 34 种砖的 ConnectedPool。每行保留原始索引与偏移，各源 SHA-256 在目录头内；名称沿用客户端 GameItem 名称键。 |
 | `premium_shop_catalog.json` | 当前安装基础包 `pak-0-0-pakchunk2-WindowsClient.pak` 条目 7142/7156/7152/6774/6394/7154 | `work/extract_premium_shop_catalog.py` 恢复推荐配方、礼包价格、干员奖池、奖励与外观归属、主页签。所有记录保留行号、序列化偏移；完整来源和限制见下节。 |
+| `profile_cosmetics_catalog.json` | 当前安装基础包 `pak-0-0-pakchunk2-WindowsClient.pak` 条目 7110，`SocialAvatarDataTable` | `work/extract_profile_cosmetics_catalog.py` 恢复 2098 条社交外观 ID 与类别，字段索引 5213/5215；SHA-256 为 `50fe5c89e0ae53540ebf1a3df8cfca572b2c7558513516601f321fb12a7e8cbe`。原始行、偏移和解析数量完整校验；资源与开放时间仍由原客户端读取。 |
+| `hero_customization_catalog.json` | 同一基础包条目 6614/6620/6624/6630/6632/6634/6636/6648/6660/6662；HeroData 条目 6628及礼包、研究配置 | `work/extract_hero_customization_catalog.py` 恢复 54 条服装、2049 条附件及默认标记。目录记录各表 SHA-256、行偏移、原始字段索引、独立奖励锚点和名称索引恢复方式；名称表仍加密，关联证据的不同强度见下节。 |
 
 `work/evidence/` 在迁移包中仅保留上述小范围表提取物，以便不重新扫描整套游戏就能复核目录。大型原始 PAK、原始 Lua 缓存、历史抓包及日志不在包内。同版本游戏在新电脑上按相对目录可重新读取；重新提取前请先核对游戏版本与目录头内的源文件哈希。`work/evidence/character_avatar_tables/` 中 GameItem 的 `.uexp` 约 35 MiB，已压缩进迁移包，毋须额外复制游戏素材。
 
@@ -49,6 +51,8 @@ GitHub 协作仓库仅包含源码、静态 JSON 目录、重建描述符和来�
 
 `StoreServer.lua` 函数 `0.119.0` 成功回调直接执行后续扫描；`MandelDrawOnly.lua` 函数 `0.36` 会再次检查收藏数量。因此本地购买先发送 `CSCollectionPropChangeNtf`，随后发送购买响应，保留请求业务序号并递增外层包序号。
 
+`CollectionServer.lua` 的 Add 分支按物品 ID/gid 替换当前栈，不把 `prop.num` 当增量累加。重复购买必须下发交易后的总量，`delta` 单独表示本次购买数；重连加密接口用例验证两次各买 10 个密钥后，通知与数据库均为 20。
+
 十连奖励展示的约束来自 `RewardServer.lua` 函数 `0.17.0`：所有 `Add/Modify` 且 `prop.num>0` 的行都会进入奖励列表，不检查扣除的负 `delta`。该提取物 SHA-256 为 `12c62cdedc2d117e444b63c37e7e538f907d52b9976d7acb66c658c2c59d1dec`。2026-09-30 22:23 崩溃堆栈经过 `RewardSceneViewTen.lua:513/674`，向十件展示场景传入了十件奖励及两个剩余消耗栈。现在剩余砖和密钥仅通过收藏通知同步，扫描响应只提供实际奖励；回归用例通过真实加密包和重连处理入口检查该约束。
 
 上述十连展示 Lua 来自基础包 `pak-0-0-pakchunk1-WindowsClient.pak` 条目 5556，SHA-256 为 `bf1e6845d4e398234ce5469c19734dc5fcb167800c8e00453316b72acc7cb258`。函数 `0.19` 对奖励列表逐项调用 `SetCurveLinearColorByItemQuality`，与崩溃堆栈一致；函数 `0.22` 进入抽奖子场景后执行该调用。
@@ -68,7 +72,11 @@ GitHub 协作仓库仅包含源码、静态 JSON 目录、重建描述符和来�
 | 6394，外观关联导出 | 54 条外观 ID 与干员 ID 对应，字段索引 112/113；加密名称表未恢复 | `efacdce4b68c07df77ed86589b4a79159e22a643bfdb188c8e0dae3d98eb2d74` |
 | 7154，`StoreMainTab` | 原生四页签 `HotRecommendation/StaffLottery/MandelLottery/WeaponSkinSales`，以及两个有条件的活动页签 | `bc952ca89fb4548e9ae7976e0c14c486303ac5978e91a6278a842fa8e5fab467` |
 
-安魂对应 `20300008`，其奖励 `num_id=57` 的外观物品为 `30000060010`；条目 6394 将该外观关联至 `88000000029`。不能把安魂外观换成另一个奖池的 `30000060008`。飞虎礼包 `10104007` 中外观 `30000050013` 对应 `88000000025`，四个语音物品分别为 `38050050066/67/68/69`，不能把连字符配方当成一个新物品 ID。
+安魂对应 `20300008`，原表全局行 ID（字段 73）为 `57` 的奖励包含外观物品 `30000060010`；条目 6394 将该外观关联至 `88000000029`。协议 `num_id` 使用字段 81 的池内 `SortIndex=1`，不是全局行 ID。`StoreServer.lua` 函数 `0.83` 按 `LotteryId/SortIndex` 查表，`StaffLotteryMainUI.lua` 函数 `0.13` 按奖励表长度判断已领完；返回稀疏的全局 ID 会使 Lua 长度为 0，误显示已获得全部奖励。八个池均返回原表池内序号 1～8；旧存档全局 ID 在读取时映射，不再次发奖或扣费。不能把安魂外观换成另一个奖池的 `30000060008`。飞虎礼包 `10104007` 中外观 `30000050013` 对应 `88000000025`，四个语音物品分别为 `38050050066/67/68/69`，不能把连字符配方当成一个新物品 ID。
+
+推荐图的本地路径不可用时，原客户端会使用 `HotRecommendationPropDesc` 的四个 CDN 字段（协议编号 20～23）：`IamgeSourceSmall_CDN`、`IamgeSourceBig_CDN`、`ImageSourceLogo_CDN_CN`、`ImageSourceLogo_CDN_EN`。对应源表序列化索引为 274/272/276/277，保留原始 `Resource/Store/` 地址和扩展名，不编造图片路径。`StoreRecommendBanner.lua` 函数 `0.10` 与 `RecommendHomepage.lua` 函数 `0.30` 调用 `LuaSubsystem:CheckPathValid` 检查本地图后再选择 CDN。条目 `10102077` 没有任何本地或 CDN 地址，故不作为可见推荐，但保留原始目录和历史购买记录。其余条目有资源引用并不证明本机素材已成功加载，仍须原客户端验证。
+
+曼德尔页签的奖池也必须带开放时间：`StoreLotteryItem.lua` 函数 `0.2` 保存 `begin_time/end_time`，`StoreServer.lua` 函数 `0.101` 筛掉未开放的池，主页面在列表为空时隐藏页签。11 个曼德尔池使用与干员研究相同的本地诊断开放窗口；这是本地开放策略，不代表官方活动轮换。
 
 协议消费者来自基础包 Lua。`StoreServer.lua`（SHA-256 `71987b0e506b13d19e57e813f64e09552482df76a17fe94302d91149f7d44d0e`）函数 `0.4/0.126` 等待配置、购买记录、主题时间和活动配置，并按真实 tab/goods ID 查客户端表；`0.145` 允许整包购买省略 `item_ids`。2026-10-01 02:19 的原客户端请求确认：全部付费皮肤已拥有时，整包请求可省略价格，以零价领取未拥有赠品；单买外观 `30000050029` 报价为原价 2210。服务按归属和原始配方核价，不接受客户端任意零价。
 
@@ -79,3 +87,17 @@ GitHub 协作仓库仅包含源码、静态 JSON 目录、重建描述符和来�
 特供按已恢复的配置日期和限购执行。购买记录按 goods ID 合并，周限购只返回当周数量。尚未恢复武器外观装备映射、空间物品发货或支付方式的条目保留在提取目录供研究，不向客户端提供可购买报价。原版现金礼包在本地测试中校验原始商品标识后直接发放配置内容，响应禁止继续调用外部支付 SDK；不提交真实订单，不代表官方支付流程已恢复。
 
 推荐页的 16 条奖池宣传项配方为空，但不是空商品。条目 7142 的字段 282 保存实际跳转目标字符串，例如安魂 `10210005 -> 20300008`。基础包 `pak-0-0-pakchunk1-WindowsClient.pak` 条目 1856 的数据类 `StoreRecommendItem.lua`（SHA-256 `3560dec1dce0c13e81bea6e4c036840f88bdc0341bfcf7c33312dad949793cc7`）函数 `0.2` 从服务响应读取 `jump_to`；`RecommendHomepage.lua` 函数 `0.27` 的 `banner_type=2` 分支转交该目标到商城页签事件。服务提供已恢复奖池的原始宣传项和目标，购买接口仍只接受实际商品配方。未恢复活动跳转的 `banner_type=3` 条目保持关闭。
+
+账户社交外观使用 `CSCollectionUnlockAvatarsReq` 查询实际收藏归属，`CSAccountUpdateAvatarReq`、`CSPlayerUpdateMilitaryTagReq`、`CSPlayerUpdateTitleReq`、`CSPlayerUpdateHonorMarkReq` 更新装备。登录与重连通过 `pic_url/military_tag/title/honor_mark` 恢复，头像按原 `AccountServer` 用法返回 ID 的字符串。`RoleInfoServer.lua` 函数 `0.19` 在收藏通知含社交物品时重新查询归属，`0.20.0` 遍历原表构建已获得和锁定列表；不用把全目录赠送给账号。`SocialChangeTitle.lua` 函数 `0.19` 明确以 ID 0 卸下称号或徽记，SHA-256 为 `a49b991f716d0fc5c61d2b3860901aee4490b985fbf19bfa6c3f385fe4eee760`。未知 ID、错误类别或其它账号拥有的物品不能装备。
+
+## 干员自定义
+
+`HeroServer.lua` 函数 `0.18.0` 从 `CSHero.fashion_list/accessories` 建立列表；客户端不会补齐服务省略的服装或附件。`HeroWatchMainPanel.lua` 函数 `0.2` 将本地手表配置与服务器附件列表求交集，原先没有 `accessories` 就会显示空页。现在提供适用于每个干员的完整锁定和已拥有列表，仅实际收藏或原生默认标记解锁；获取服装、手表、名片、语音等后先通知对应干员，再执行购买回调。
+
+套装位置 `FashionSuit=0` 来自基础包 pakchunk1 条目 6801 的 `ds_common_pb.lua`，SHA-256 为 `6f1bec3a236dbd47c28d932a2702bc8cc386ecb6119312d71d57a62d6e8b8f6b`。`DFMGlobalConst.lua` 条目 1882 提供实际附件类型，SHA-256 为 `4887a7f2b5265a5277c5c2553f4ff56ec08f1219a632220e3b2efa367baddcc4`。`HeroHelperTool.lua` 函数 `0.89/0.90` 判断默认附件与通用归属；`HeroServer.lua` 函数 `0.68` 的喷漆、展示动作、手势和语音共享槽位规则用于保存装备。处决与服装的限制来自原表字段 50及八个研究池中的皮肤/处决对应，由 `HeroHelperTool.lua` 函数 `0.139` 交叉核对。
+
+加密 Hero 名称表没有解密。目录逐关联标记 `independent_bundle_anchor` 或 `numeric_fname_order_reconstruction`：前者有原礼包或研究奖励及干员对应的独立见证；后者由本安装 44 份明文名称表一致的数字名称字典序、HeroData 的 23 个实际干员 ID 锚点及连续索引范围恢复。两类证据不能混称完整原始名称表。每个见证均记录条目、行、偏移与实际 ID；主物品 ID 必须与已有 GameItem 名称键相符且在所有有效匹配中唯一。
+
+默认服装用 17 套已核对 UI 模型家族的对应，避免同名换色行被错当默认解锁。未恢复命名来源的击杀语音类型 10、战局技能装备类型 11及 `CSHero.sol_expert_data` 技能关联没有编造。完整干员目录约 358 KiB，原服务 64 KiB 默认策略会阻止出站编码；仅目录与解锁通知提高到 1 MiB，接收限制保持原值。端到端用例验证真实加密响应、研究奖励到外观与手表装备，以及数据库重开后的恢复。
+
+`CSHeroGrowLineRewardViewReq` 被原通用查询处理器的动词过滤拒绝，导致每次加载干员后发出的预览查询没有响应。`HeroServer.lua` 函数 `0.22/0.22.0` 将响应的 `hero_id/rewards` 保存为成长界面的预览缓存，不更新收藏或装备。当前本地未配置成长奖励，因此仅为 17 个已支持干员返回明确的空预览，未知干员使用原错误码；查询不改进度、不发奖。基础包条目 6644 的 153 行 HeroLevel 数据中，两组数组全部为空，字段 171 的目标 ID 不是 GameItem 奖励 ID。非空成长奖励来源仍未恢复，不能宣称成长奖励系统已实现。

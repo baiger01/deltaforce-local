@@ -123,6 +123,25 @@ CREATE TABLE IF NOT EXISTS native_lobby_staff_draws (
 CREATE TABLE IF NOT EXISTS native_lobby_hero_fashions (
  player_id TEXT NOT NULL REFERENCES players(id), hero_id INTEGER NOT NULL,
  fashion_id INTEGER NOT NULL, PRIMARY KEY(player_id,hero_id));
+CREATE TABLE IF NOT EXISTS native_lobby_hero_accessory_equipment (
+ player_id TEXT NOT NULL REFERENCES players(id), hero_id INTEGER NOT NULL,
+ subtype INTEGER NOT NULL, slot INTEGER NOT NULL CHECK(slot>=0), prop_id INTEGER NOT NULL,
+ PRIMARY KEY(player_id,hero_id,subtype,slot));
+CREATE TABLE IF NOT EXISTS native_lobby_hero_cosmetic_state (
+ player_id TEXT NOT NULL REFERENCES players(id), prop_id INTEGER NOT NULL,
+ is_read INTEGER NOT NULL DEFAULT 0, is_play INTEGER NOT NULL DEFAULT 0,
+ PRIMARY KEY(player_id,prop_id));
+CREATE TABLE IF NOT EXISTS native_lobby_hero_fashion_prior (
+ player_id TEXT NOT NULL REFERENCES players(id), mode INTEGER NOT NULL,
+ category INTEGER NOT NULL, is_fashion_prior INTEGER NOT NULL,
+ PRIMARY KEY(player_id,mode,category));
+CREATE TABLE IF NOT EXISTS native_lobby_hero_badge_show (
+ player_id TEXT NOT NULL REFERENCES players(id), slot INTEGER NOT NULL CHECK(slot>=0),
+ prop_id INTEGER NOT NULL, PRIMARY KEY(player_id,slot));
+CREATE TABLE IF NOT EXISTS native_lobby_profile_cosmetics (
+ player_id TEXT PRIMARY KEY REFERENCES players(id),
+ avatar_id INTEGER NOT NULL DEFAULT 0, military_tag INTEGER NOT NULL DEFAULT 0,
+ title INTEGER NOT NULL DEFAULT 0, honor_mark INTEGER NOT NULL DEFAULT 0);
 CREATE TABLE IF NOT EXISTS native_lobby_melee_props (
  player_id TEXT PRIMARY KEY REFERENCES players(id), template_id INTEGER NOT NULL,
  gid INTEGER NOT NULL UNIQUE CHECK(gid>0));

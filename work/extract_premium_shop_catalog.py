@@ -52,6 +52,10 @@ def main():
             'bundle_currency_type': f[261], 'bundle_price': f[267],
             'disbundle_price': f[263], 'bundle_item_list': items(f[262], True),
             'jump_to': string(f[282]),
+            'IamgeSourceSmall_CDN': string(f[274]),
+            'IamgeSourceBig_CDN': string(f[272]),
+            'ImageSourceLogo_CDN_CN': string(f[276]),
+            'ImageSourceLogo_CDN_EN': string(f[277]),
             'preview_asset': string(f[273]), 'row': row['row'], 'offset': row['offset']})
     gifts = []
     for row in tables['gifts']:
@@ -69,7 +73,8 @@ def main():
     rewards = []
     for row in tables['lottery_rewards']:
         f = row['fields']
-        rewards.append({'num_id': f[73], 'lottery_id': f[78], 'sort_index': f[81],
+        rewards.append({'num_id': f[81], 'source_row_id': f[73],
+            'lottery_id': f[78], 'sort_index': f[81],
             'raw_cost': f[69], 'raw_weight': f[72],
             'props': [{'id': int(value), 'gid': 0, 'num': 1}
                       for value in string(f[86]).split(',')],

@@ -108,7 +108,7 @@ class HandshakeDiagnosticTests(unittest.TestCase):
                 request = b'ABCD' + codec.encode(name, fields, sequence=sequence)
                 frame = handler(request, key, header_word4=12, header_word9=sequence)
                 decoded = decode_data_frame(frame, key, direction='server_to_client',
-                                            compression_method=1)
+                                            compression_method=1, max_output=1024 * 1024)
                 reply = codec.decode(decoded.messages[0])
                 self.assertEqual((reply.name, reply.sequence, reply.fields['result']),
                                  (name[:-3] + 'Res', sequence, 0))
@@ -165,7 +165,7 @@ class HandshakeDiagnosticTests(unittest.TestCase):
                     frame = handler(b'ABCD' + request, key,
                                     header_word4=12, header_word9=sequence)
                 decoded = decode_data_frame(frame, key, direction='server_to_client',
-                                            compression_method=1)
+                                            compression_method=1, max_output=1024 * 1024)
                 reply = codec.decode(decoded.messages[0])
                 self.assertEqual(reply.name, name[:-3] + 'Res')
                 self.assertEqual(reply.sequence, sequence)
@@ -256,7 +256,8 @@ class HandshakeDiagnosticTests(unittest.TestCase):
             load_frame = _candidate_local_hero_response(
                 load_request, backend, token, key, header_word4=12, header_word9=54)
             loaded = codec.decode(decode_data_frame(
-                load_frame, key, direction='server_to_client', compression_method=1).messages[0])
+                load_frame, key, direction='server_to_client', compression_method=1,
+                max_output=1024 * 1024).messages[0])
             self.assertEqual(loaded.fields['sol_hero_selected'], '88000000027')
 
     def test_persisted_local_level_currency_and_warehouse_reach_native_replies(self):

@@ -11,7 +11,7 @@ from .client_errors import error_code, inventory_error
 from .weapon_components import default_components
 from .weapon_ammo import magazine_capacity
 from .melee_weapons import WEAPONS
-from . import gun_skins, mandel, premium_shop
+from . import gun_skins, hero_customization, mandel, premium_shop, profile_cosmetics
 
 
 CURRENCY_ID = 17020000010
@@ -51,7 +51,7 @@ SUPPORTED_REQUESTS = frozenset({
     'CSCollectionLoadMysticalSkinPropsReq',
     'CSShopNewGetConfigReq', 'CSGetBoxInfoReq',
     'CSLotteryBlindBoxDrawReq',
-}) | premium_shop.SUPPORTED_REQUESTS
+}) | premium_shop.SUPPORTED_REQUESTS | profile_cosmetics.SUPPORTED_REQUESTS | hero_customization.SUPPORTED_REQUESTS
 
 
 @lru_cache(maxsize=1)
@@ -322,6 +322,12 @@ def response_fields(request, backend, local_session):
     """Return declared commerce response fields, or None for unrelated requests."""
     name = request.name
     fields = request.fields
+    profile = profile_cosmetics.response_fields(request, backend, local_session)
+    if profile is not None:
+        return profile
+    hero = hero_customization.response_fields(request, backend, local_session)
+    if hero is not None:
+        return hero
     premium = premium_shop.response_fields(request, backend, local_session)
     if premium is not None:
         return premium

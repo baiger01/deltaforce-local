@@ -38,10 +38,12 @@ def float_bits(value):
 
 
 def shop_config():
+    now = int(time.time())
     return {'result': 0,
             'lottery_item_descs': [
                 {'lottery_id': row['lottery_id'], 'lottery_type': row['lottery_type'],
-                 'mandel_item_id': str(row['item_id']), 'lottery_key_id': row['key_id']}
+                 'mandel_item_id': str(row['item_id']), 'lottery_key_id': row['key_id'],
+                 'begin_time': now - 86400, 'end_time': now + 365 * 86400}
                 for row in CATALOG['store_lotteries']],
             'special_item_list': [
                 {key: row[key] for key in ('present_item_id', 'currency_type', 'price',
@@ -265,7 +267,8 @@ def purchase(backend, token, fields):
             connection.execute('INSERT INTO native_lobby_collection_props VALUES (?,?,?) '
                 'ON CONFLICT(player_id,template_id) DO UPDATE SET quantity=excluded.quantity',
                 (player_id, item_id, current))
-            prop_changes.append({'change_type': 1, 'prop': {'id': item_id, 'gid': 0, 'num': quantity}})
+            prop_changes.append({'change_type': 1, 'delta': quantity,
+                                 'prop': {'id': item_id, 'gid': 0, 'num': current}})
         connection.commit()
     return {'result': 0, 'is_open_directly': False,
             'change': {'currency_changes': currency_changes, 'prop_changes': prop_changes}}
