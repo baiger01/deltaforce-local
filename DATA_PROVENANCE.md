@@ -22,3 +22,15 @@ GitHub 协作仓库仅包含源码、静态 JSON 目录、重建描述符和来�
 交易购买、货币扣减、装备落位和弹药展示不仅依赖资源表，还依赖客户端请求及服务端状态链。物品表中的价格、模型和长宽不是完整商城售卖规则；地图资源存在也不是解锁条件。缺失规则应从客户端同版本配置和交互协议继续恢复，不能把目录行当成可购买或可用的证明。
 
 口袋位置由已提取 `common_pb.lua` 根函数指令 426-428 确认：`Pocket=199997`；指令 399-401 的 `CarryOutPropsPos=1999` 是另一个位置。该 Lua 提取物 SHA-256 为 `81e071e35f33f0e5704d5098ac2a182c794bbe5b1e5a7e24f415a0473b40350b`。`QuickOperationLogic.lua` 根函数指令 51-61 将 Pocket 纳入身体容器快照，实际请求中有五个 1x1 口袋分区；购买与重开页面均按这个真实位置持久化。
+
+心跳 `tick_count` 是客户端时钟的 Unix 秒，不是进程运行毫秒。2026-09-30 从当前安装 `DeltaForce/Content/Paks/pak-0-0-pakchunk1-WindowsClient.pak` 只读提取：
+
+| 条目 | 客户端函数与依据 | 提取物 SHA-256 |
+| --- | --- | --- |
+| 7032，`ClockManager.lua` | `0.9` 直接记录服务时间；`0.11` 加上本地秒差，供商品时间判断使用 | `780f5d721f03c8965496a36fec011647d4bd9d45184dd9a2cc839a8f11b83a1e` |
+| 7333，`TimeUtil.lua` | `0.1` 的 `GetCurrentTime` 调用 `os.time()` | `953acb6204def71e92ca497c9d74df65f60abd95fcaa17f34b3be18ae5a83260` |
+| 7131，`ProtoManager.lua` | `0.82` 的 `UECall_UpdateServerTime` 将响应 `tick_count` 直接传给 `ClockManager.UpdateServerTime` | `83773304fcbaaceb2b335d4ba92fd14b95de31c490ae08e66df55ec67ef91c82` |
+
+已提取 `AuctionServer.lua` 函数 `0.45` 将 `auction_vaild_time_begin/end` 与 `ClockManager.GetLocalTimestamp()` 比较（SHA-256：`ad10c29ff0fa53ca89ebebf9f0ba447cae2e47195b8921b24731cd01e4a82a6c`）。错误的心跳时间会在商品详情拉取后将其判成未开放；首次目录尚无此时间窗口，因而首次有选项、再次进入丢失。使用 `work/scan_weapon_tables.py --baseline --pak-name pak-0-0-pakchunk1-WindowsClient.pak --lua-pattern 'ClockManager|TimeUtil|ProtoManager' --asset-pattern 'a^'` 可重新取得时钟来源，用 `work/summarize_weapon_lua.py` 静态查看函数，不执行客户端 Lua。
+
+单条防具报价的档位同样来自客户端逻辑：`AuctionServer.lua` 函数 `0.17`（指令 40-57）仅在头盔或护甲恰有三个报价档位时读取 1/2/3，否则读取档位 0。`GoodsItemStruct.lua` 函数 `0.13`（指令 8-15）把 `GetSaleInfo()` 是否有报价作为交易购买解锁条件；当前安装基础包 `pak-0-0-pakchunk1-WindowsClient.pak` 条目 1778 的该提取物 SHA-256 为 `34ae5cbc845b364949e34633630642150aced86398d1b6263b8b453a616f7ffa`。本地仅提供一个满耐久报价，类型目录及商品详情必须一致使用档位 0；此档位是报价索引，不能当成物品实际耐久。2026-09-30 原客户端请求并成功购买护甲 `11050006001` 到位置 105、头盔 `11010005011` 到位置 101，SQLite 重读确认两者持久化，用户确认四类装备均可购买。

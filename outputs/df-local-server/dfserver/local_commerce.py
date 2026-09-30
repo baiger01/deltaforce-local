@@ -173,7 +173,8 @@ def _armor_durability_catalog():
 
 def _listing_durability(item_id):
     if str(item_id).startswith(('1101', '1105')):
-        return 1, 100
+        # AuctionServer.GetPropSaleInfo uses bucket 0 for a single full offer.
+        return 0, 100
     return 0, 0
 
 

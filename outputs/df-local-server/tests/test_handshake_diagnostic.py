@@ -443,15 +443,16 @@ class HandshakeDiagnosticTests(unittest.TestCase):
                                        root / 'protocol/generated_class_metadata.json')
         request = codec.encode('CSOnlineHeartbeatReq', {'padding': 17}, sequence=9)
         key = b'0123456789abcdef'
-        frame = _candidate_local_heartbeat_response(
-            b'\0\0\0\5' + request, key, header_word4=12, header_word9=6)
+        with patch('dfserver.handshake_diagnostic.time.time', return_value=1790756500.75):
+            frame = _candidate_local_heartbeat_response(
+                b'\0\0\0\5' + request, key, header_word4=12, header_word9=6)
         decoded = decode_data_frame(frame, key, direction='server_to_client', compression_method=1)
         self.assertEqual(decoded.header.opaque_flag, 64)
         reply = codec.decode(decoded.messages[0])
         self.assertEqual((reply.name, reply.service, reply.sequence),
                          ('CSOnlineHeartbeatRes', 'online', 9))
         self.assertEqual(reply.fields['padding'], 17)
-        self.assertGreater(int(reply.fields['tick_count']), 0)
+        self.assertEqual(int(reply.fields['tick_count']), 1790756500)
 
     def test_read_only_bootstrap_probe_does_not_answer_mutations(self):
         root = Path(__file__).resolve().parent.parent

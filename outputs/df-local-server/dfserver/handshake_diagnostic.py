@@ -263,7 +263,8 @@ def _candidate_local_heartbeat_response(message, key, *, header_word4, header_wo
     padding = request.fields.get('padding', 0)
     response = codec.response(request, {
         'padding': padding,
-        'tick_count': int(time.monotonic() * 1000),
+        # ClockManager uses this value directly with os.time() in seconds.
+        'tick_count': int(time.time()),
     })
     return encode_data_frame((response,), key, direction='server_to_client',
                              opaque_flag=64, header_word4=header_word4,

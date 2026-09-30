@@ -5,6 +5,7 @@ from pathlib import Path
 import time
 from types import SimpleNamespace
 import unittest
+from unittest.mock import patch
 
 import dfserver.handshake_diagnostic as diagnostic
 from dfserver.candidate_business import CandidateMessage
@@ -71,7 +72,7 @@ class LocalCommerceTests(unittest.TestCase):
         self.assertEqual(int(batch_fields['sale_lists'][0]['sale_lists'][0]['order_id']),
                          order_id(item_id))
 
-    def test_auction_type_rows_supply_client_durability_index(self):
+    def test_single_armor_offer_uses_client_fallback_durability_index(self):
         request = self.request('CSAuctionGetTypeListReq',
                                {'prop_ids': [15080010001]})
         fields = response_fields(request, self.backend, self.token)
@@ -85,7 +86,8 @@ class LocalCommerceTests(unittest.TestCase):
                                      {'prop_ids': [armor_id]})
         armor_fields = response_fields(armor_request, self.backend, self.token)
         armor_row = armor_fields['type_lists'][0]
-        self.assertEqual(armor_row['durability_lvl'], 1)
+        # AuctionServer.GetPropSaleInfo reads index 0 unless all three tiers exist.
+        self.assertEqual(armor_row['durability_lvl'], 0)
         self.assertEqual(armor_row['durability_ratio'], 100)
         self.codec.response(armor_request, armor_fields)
 
@@ -93,9 +95,37 @@ class LocalCommerceTests(unittest.TestCase):
                                       {'infos': [{'prop_id': str(armor_id)}]})
         detail_fields = response_fields(detail_request, self.backend, self.token)
         detail = detail_fields['sale_lists'][0]
-        self.assertEqual(detail['durability_lvl'], 1)
+        self.assertEqual(detail['durability_lvl'], 0)
         self.assertEqual(detail['durability_ratio'], 100)
         self.codec.response(detail_request, detail_fields)
+
+    def test_auction_offer_window_contains_heartbeat_time_after_purchase(self):
+        item_id = 37190400001
+        price = stock_catalog()[item_id]['initial_guide_price']
+        detail_request = self.request('CSAuctionGetSaleListBatchReq', {
+            'infos': [{'prop_id': item_id}]})
+        heartbeat = b'ABCD' + self.codec.encode(
+            'CSOnlineHeartbeatReq', {'padding': 17}, sequence=9)
+        key = b'0123456789abcdef'
+        with patch('dfserver.handshake_diagnostic.time.time', return_value=1790756500.75):
+            initial = response_fields(detail_request, self.backend, self.token)
+            purchase = response_fields(self.request('CSSerialCheapBuyReq', {
+                'scene': 503, 'buy_list': [{'channel': 2, 'single_auction_prop': {
+                    'prop_id': item_id, 'buy_num': 30, 'currency': CURRENCY_ID,
+                    'price': price, 'to_pos': 199997}}]}), self.backend, self.token)
+            reopened = response_fields(detail_request, self.backend, self.token)
+            frame = diagnostic._candidate_local_heartbeat_response(
+                heartbeat, key, header_word4=12, header_word9=9)
+        self.assertEqual(purchase['result'], 0)
+        server_time = int(self.codec.decode(decode_data_frame(
+            frame, key, direction='server_to_client',
+            compression_method=1).messages[0]).fields['tick_count'])
+        for response in (initial, reopened):
+            decoded = self.codec.decode(self.codec.response(detail_request, response))
+            detail = decoded.fields['sale_lists'][0]
+            self.assertLessEqual(int(detail['auction_vaild_time_begin']), server_time)
+            self.assertGreaterEqual(int(detail['auction_vaild_time_end']), server_time)
+            self.assertGreater(int(detail['sale_lists'][0]['selling_num']), 0)
 
     def test_type_list_deduplicates_identical_rows_but_keeps_distinct_variants(self):
         fields = response_fields(self.request('CSMarketGetTypeListReq', {}),
