@@ -19,6 +19,7 @@ ALERT = re.compile(
     r"_RefreshDurability|"
     r"MeleeWeapon|CSMelee|MeleeSkin|近战|DisplayCtrl_Knife|Displayctrl_Knife|"
     r"Mandel|Lottery|MysticalSkin|WeaponSkin|SkinInfo|ApplySkin|未知物品|曼德尔|"
+    r"StoreServer|StoreMainUI|StoreMallGift|HeroServer|StaffLottery|商城|干员研究|"
     r"OnMergeComplete|OnAllSkeletalMeshReady|AddWeaponDesc|OnAddWeapon|"
     r"Gunsmith.*(?:OperateBullet|InventoryError)|"
     r"LoadedClass is NULL|GuideHDWeakClickUI|IsForcedGuideActive_Special|"

@@ -37,6 +37,9 @@ from .local_commerce import (SUPPORTED_REQUESTS as LOCAL_COMMERCE_REQUESTS,
                              response_fields as local_commerce_response_fields,
                              installed_items, item_condition_fields, inventory_location)
 from .melee_weapons import WEAPONS, MELEE_POSITION
+from . import premium_shop
+
+COLLECTION_REQUESTS = frozenset(name[:-3] + 'Req' for name in premium_shop.COLLECTION_RESPONSES)
 
 
 LOCAL_FINISHED_GUIDE_STAGES = (6, 7, 1, 2, 3, 5, 34)
@@ -100,6 +103,7 @@ def _log_request_progress(entry, phase):
               'request_not_answered', 'failure_code', 'local_bullet_commands',
               'local_body_container_snapshots', 'local_serial_buy_items',
               'local_lottery_purchase_items', 'local_inventory_change_notification_sent',
+              'local_premium_shop_request',
               'local_collection_change_notification_sent')
     event = {'event': 'business_request', 'phase': phase, 'observed_at_utc': _time()}
     event.update({name: entry[name] for name in fields if name in entry})
@@ -462,15 +466,7 @@ def _candidate_local_hero_response(message, backend, local_session, key, *, head
             'hero_ids': list(ids),
             'mp_hero_selected': selected,
             'sol_hero_selected': selected,
-            'heros': [{
-                'hero_id': hero_id,
-                'is_unlock': True,
-                'can_use': True,
-                'is_blast_unlock': True,
-                'fashion_list': [{'fashion': {'slot': 0, 'id': fashions[hero_id]},
-                                  'is_unlock': True, 'is_def': True, 'is_read': True}],
-                'fashion_equipped': [{'slot': 0, 'id': fashions[hero_id]}],
-            } for hero_id in ids],
+            'heros': premium_shop.hero_records(backend, local_session, ids),
         }
     else:
         raise ValueError('Not a supported hero catalogue request')
@@ -698,6 +694,14 @@ def _candidate_local_commerce_result(response_frame, key):
     return None if result is None else int(result)
 
 
+def _candidate_local_premium_shop_summary(message):
+    fields = _candidate_codec().decode(message[4:]).fields
+    return {key: fields[key] for key in (
+        'tab_id', 'banner_type', 'item_ids', 'goods_id', 'num', 'lottery_id', 'round',
+        'currency_type', 'price', 'currency_type_substitute', 'price_substitute',
+        'hero_id', 'new_fashions', 'buy_prop', 'is_cash_buy') if key in fields}
+
+
 def _candidate_local_inventory_change_notification(response_frame, key, *,
                                                    header_word4, header_word9):
     """Push a committed commerce change through the client's inventory listener."""
@@ -717,7 +721,7 @@ def _candidate_local_inventory_change_notification(response_frame, key, *,
               or response.fields.get('auction_changes'))
     if not change:
         return None
-    if response.name in ('CSShopBuyLotteryItemRes', 'CSLotteryBlindBoxDrawRes'):
+    if response.name in premium_shop.COLLECTION_RESPONSES:
         # Its prop changes are consumed by CollectionServer, never DepositServer.
         change = {'currency_changes': change.get('currency_changes', [])}
         if not change['currency_changes']:
@@ -738,7 +742,7 @@ def _candidate_local_collection_change_notification(response_frame, key, *,
     if len(decoded.messages) != 1:
         raise ValueError('Expected one local purchase response')
     response = codec.decode(decoded.messages[0])
-    if (response.name not in ('CSShopBuyLotteryItemRes', 'CSLotteryBlindBoxDrawRes')
+    if (response.name not in premium_shop.COLLECTION_RESPONSES
             or int(response.fields.get('result', 1)) != 0):
         return None
     changes = []
@@ -757,31 +761,48 @@ def _candidate_local_collection_change_notification(response_frame, key, *,
                              header_word9=header_word9)
 
 
-def _candidate_local_collection_response_frames(response_frame, key):
+def _candidate_local_collection_response_frames(response_frame, key, backend=None, local_session=None):
     """Update collection state before a purchase callback or scan animation starts."""
     notification = _candidate_local_collection_change_notification(
         response_frame, key, header_word4=response_frame.header_word4,
         header_word9=response_frame.header_word9)
-    if notification is None:
-        return (response_frame,)
+    notifications = [notification] if notification is not None else []
     codec = _candidate_codec()
     response = codec.decode(decode_data_frame(response_frame, key,
         direction='server_to_client', compression_method=1).messages[0])
-    if response.name == 'CSLotteryBlindBoxDrawRes':
+    change = response.fields.get('change') or response.fields.get('data_change') or {}
+    if backend is not None and int(response.fields.get('result', 1)) == 0:
+        heroes = {premium_shop.FASHIONS[int(row['prop']['id'])] for row in change.get('prop_changes', [])
+                  if int(row.get('prop', {}).get('id', 0)) in premium_shop.FASHIONS
+                  and int(row.get('delta', row['prop'].get('num', 0))) > 0}
+        if heroes:
+            body = codec.encode('CSHeroUnlockNtf',
+                {'heros': premium_shop.hero_records(backend, local_session, heroes)}, sequence=0)
+            notifications.append(encode_data_frame((body,), key, direction='server_to_client',
+                opaque_flag=64, header_word4=response_frame.header_word4,
+                header_word9=response_frame.header_word9 + len(notifications)))
+    if not notifications:
+        return (response_frame,)
+    if response.name in ('CSLotteryBlindBoxDrawRes', 'CSShopOpenLotteryItemRes'):
         # RewardServer.lua 0.17.0 displays positive Modify stacks regardless of delta.
         # Consumed stacks belong in the notification, not its ten-slot animation.
         fields = dict(response.fields)
-        fields['data_change'] = {'prop_changes': [
-            row for row in fields['data_change']['prop_changes']
+        field_name = 'data_change' if response.name == 'CSLotteryBlindBoxDrawRes' else 'change'
+        prizes = None if field_name == 'data_change' else {
+            p['id'] for r in fields['lottery_pool_info']['lottery_rewards'] for p in r['props']}
+        fields[field_name] = {**fields[field_name], 'prop_changes': [
+            {**row, 'prop': {**row['prop'], 'num': int(row.get('delta', row['prop'].get('num', 0)))}}
+            for row in fields[field_name]['prop_changes']
             if int(row['change_type']) in (1, 3)
-            and int(row.get('delta', row['prop'].get('num', 0))) > 0]}
+            and int(row.get('delta', row['prop'].get('num', 0))) > 0
+            and (prizes is None or row['prop']['id'] in prizes)]}
         body = codec.encode(response.name, fields, sequence=response.sequence)
         response_frame = encode_data_frame((body,), key, direction='server_to_client',
             opaque_flag=64, header_word4=response_frame.header_word4,
-            header_word9=response_frame.header_word9 + 1)
+            header_word9=response_frame.header_word9 + len(notifications))
     else:
-        response_frame = replace(response_frame, header_word9=response_frame.header_word9 + 1)
-    return notification, response_frame
+        response_frame = replace(response_frame, header_word9=response_frame.header_word9 + len(notifications))
+    return (*notifications, response_frame)
 
 
 def _candidate_local_hero_unlock_response(message, key, *, header_word4, header_word9):
@@ -1480,6 +1501,8 @@ def _continue_character_creation(connection, decoder, queue, current, ack,
                         header_word4=current.header_word4, header_word9=outbound_sequence)
                     entry['local_prepare_board_response'] = True
                 elif name in LOCAL_COMMERCE_REQUESTS:
+                    if name in premium_shop.SUPPORTED_REQUESTS:
+                        entry['local_premium_shop_request'] = _candidate_local_premium_shop_summary(message)
                     if name in ('CSAuctionGetSaleListBatchReq', 'CSAuctionGetSaleListReq',
                                 'CSMarketGetSaleListReq', 'CSAuctionBuyTReq',
                                 'CSMarketBuyTReq', 'CSMallBuyReq'):
@@ -1510,8 +1533,8 @@ def _continue_character_creation(connection, decoder, queue, current, ack,
                                          else type(error).__name__)
                 response = None
             if response is not None:
-                if name in ('CSShopBuyLotteryItemReq', 'CSLotteryBlindBoxDrawReq'):
-                    frames = _candidate_local_collection_response_frames(response, ack.session_key)
+                if name in COLLECTION_REQUESTS:
+                    frames = _candidate_local_collection_response_frames(response, ack.session_key, backend, local_session)
                     for notification in frames[:-1]:
                         connection.sendall(notification.encode())
                         entry['local_collection_change_notification_sent'] = True
@@ -1522,6 +1545,7 @@ def _continue_character_creation(connection, decoder, queue, current, ack,
                 entry['response_elapsed_ms'] = round((time.monotonic() - began) * 1000)
                 if name in ('CSDepositOperateBulletReq', 'CSDepositAssemblySyncBodyContainerReq',
                             'CSShopBuyLotteryItemReq', 'CSLotteryBlindBoxDrawReq',
+                            'CSShopBuyHotRecommendationReq', 'CSShopBuyMallGiftReq', 'CSShopOpenLotteryItemReq',
                             'CSMarketBuyTReq', 'CSAuctionBuyTReq',
                             'CSMallBuyReq', 'CSSerialCheapBuyReq', 'CSMallSellReq'):
                     outbound_sequence += 1
@@ -2081,6 +2105,8 @@ def inspect_exchange(connection, modulus=None, *, timeout=12, diagnostic_exponen
                                                                             header_word9=outbound_sequence)
                                                                         entry['local_prepare_board_response'] = True
                                                                     elif name in LOCAL_COMMERCE_REQUESTS:
+                                                                        if name in premium_shop.SUPPORTED_REQUESTS:
+                                                                            entry['local_premium_shop_request'] = _candidate_local_premium_shop_summary(message)
                                                                         if name in ('CSMarketGetTypeListReq',
                                                                                     'CSAuctionGetTypeListReq'):
                                                                             entry['local_commerce_type_filters'] = (
@@ -2128,9 +2154,9 @@ def inspect_exchange(connection, modulus=None, *, timeout=12, diagnostic_exponen
                                                                         result['bounded_business_stop'] = 'client_closed_after_unanswered_request'
                                                                         break
                                                                     continue
-                                                                if name in ('CSShopBuyLotteryItemReq', 'CSLotteryBlindBoxDrawReq'):
+                                                                if name in COLLECTION_REQUESTS:
                                                                     frames = _candidate_local_collection_response_frames(
-                                                                        next_response, ack.session_key)
+                                                                        next_response, ack.session_key, backend, local_session)
                                                                     for collection_change in frames[:-1]:
                                                                         connection.sendall(collection_change.encode())
                                                                         entry['local_collection_change_notification_sent'] = True
@@ -2143,6 +2169,9 @@ def inspect_exchange(connection, modulus=None, *, timeout=12, diagnostic_exponen
                                                                 entry['response_header_word9'] = next_response.header_word9
                                                                 if (name in ('CSShopBuyLotteryItemReq',
                                                                              'CSLotteryBlindBoxDrawReq',
+                                                                             'CSShopBuyHotRecommendationReq',
+                                                                             'CSShopBuyMallGiftReq',
+                                                                             'CSShopOpenLotteryItemReq',
                                                                              'CSMarketBuyTReq',
                                                                              'CSAuctionBuyTReq',
                                                                              'CSMallBuyReq',

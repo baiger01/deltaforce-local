@@ -114,6 +114,15 @@ CREATE TABLE IF NOT EXISTS native_lobby_lottery_state (
 CREATE TABLE IF NOT EXISTS native_lobby_lottery_history (
  id INTEGER PRIMARY KEY, player_id TEXT NOT NULL REFERENCES players(id),
  box_id INTEGER NOT NULL, record_json TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS native_lobby_shop_records (
+ id INTEGER PRIMARY KEY, player_id TEXT NOT NULL REFERENCES players(id),
+ kind TEXT NOT NULL, offer_id INTEGER NOT NULL, record_json TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS native_lobby_staff_draws (
+ id INTEGER PRIMARY KEY, player_id TEXT NOT NULL REFERENCES players(id),
+ lottery_id INTEGER NOT NULL, won_ids_json TEXT NOT NULL, record_json TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS native_lobby_hero_fashions (
+ player_id TEXT NOT NULL REFERENCES players(id), hero_id INTEGER NOT NULL,
+ fashion_id INTEGER NOT NULL, PRIMARY KEY(player_id,hero_id));
 CREATE TABLE IF NOT EXISTS native_lobby_melee_props (
  player_id TEXT PRIMARY KEY REFERENCES players(id), template_id INTEGER NOT NULL,
  gid INTEGER NOT NULL UNIQUE CHECK(gid>0));

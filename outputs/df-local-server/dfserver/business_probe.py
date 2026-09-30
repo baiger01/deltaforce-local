@@ -28,11 +28,12 @@ def _varint(data, offset):
     raise ValueError('Oversized varint')
 
 
-def _walk(data, *, max_fields=48):
+def _walk(data, *, max_fields=48, collect=True):
     offset = 0
     fields = []
+    count = 0
     while offset < len(data):
-        if len(fields) >= max_fields:
+        if count >= max_fields:
             raise ValueError('Too many fields')
         tag, offset, _ = _varint(data, offset)
         number, wire = tag >> 3, tag & 7
@@ -51,8 +52,10 @@ def _walk(data, *, max_fields=48):
             offset += length
         if offset > len(data):
             raise ValueError('Truncated protobuf field')
-        fields.append(field)
-    if not fields:
+        count += 1
+        if collect:
+            fields.append(field)
+    if not count:
         raise ValueError('Empty protobuf candidate')
     return fields
 
