@@ -3,6 +3,7 @@
 import argparse
 from pathlib import Path
 import re
+import sys
 import time
 
 
@@ -30,6 +31,7 @@ SECRET = re.compile(r"(?i)(token|ticket|authorization)(\s*[:=]\s*)\S+")
 
 
 def main():
+    sys.stdout.reconfigure(encoding='utf-8', errors='backslashreplace')
     parser = argparse.ArgumentParser()
     parser.add_argument("--source", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
