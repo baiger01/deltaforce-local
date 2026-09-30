@@ -1,0 +1,382 @@
+{
+  "source": "@ProtoDefaultConfig.lua",
+  "payload_sha256": "b029ef2becabd33d01bfe4526f43cad490fba1c18ded71c5b1ea2177f8ff9ef4",
+  "scope": "Static literal configuration only; actual runtime order, request payloads and callback requirements unverified",
+  "original_client_connected": false,
+  "game_gateway_ready": false,
+  "login_configured_stages": [
+    {
+      "configured_order": 1,
+      "expected_responses": [
+        {
+          "name": "CSStateGetInfoRes",
+          "service": "online",
+          "candidate_descriptor_available": true,
+          "original_client_handler_verified": false
+        }
+      ],
+      "call_symbol": "Server.AccountServer.GetStateInfo",
+      "caller_symbol": "Server.AccountServer",
+      "nonempty_parameters_present": false
+    }
+  ],
+  "reconnect_configured_stages": [
+    {
+      "configured_order": 1,
+      "expected_responses": [
+        {
+          "name": "CSStateGetInfoRes",
+          "service": "online",
+          "candidate_descriptor_available": true,
+          "original_client_handler_verified": false
+        }
+      ],
+      "call_symbol": "Server.AccountServer.GetStateInfo",
+      "caller_symbol": "Server.AccountServer",
+      "nonempty_parameters_present": false
+    },
+    {
+      "configured_order": 2,
+      "expected_responses": [
+        {
+          "name": "CSDepositGetPropsRes",
+          "service": "deposit",
+          "candidate_descriptor_available": true,
+          "original_client_handler_verified": false
+        }
+      ],
+      "call_symbol": "Server.InventoryServer.FetchAllItems",
+      "caller_symbol": "Server.InventoryServer",
+      "nonempty_parameters_present": false
+    },
+    {
+      "configured_order": 3,
+      "expected_responses": [
+        {
+          "name": "CSMailGetBaseInfoRes",
+          "service": "mail",
+          "candidate_descriptor_available": true,
+          "original_client_handler_verified": false
+        }
+      ],
+      "call_symbol": "Server.MailServer.FetchMailTips",
+      "caller_symbol": "Server.MailServer",
+      "nonempty_parameters_present": false
+    },
+    {
+      "configured_order": 4,
+      "expected_responses": [
+        {
+          "name": "CSArmedForceGetRentalRes",
+          "service": "armedforce",
+          "candidate_descriptor_available": true,
+          "original_client_handler_verified": false
+        }
+      ],
+      "call_symbol": "Server.ArmedForceServer.ReqArmedForceGetRental",
+      "caller_symbol": "Server.ArmedForceServer",
+      "nonempty_parameters_present": true
+    }
+  ],
+  "in_game_reconnect_configured_stages": [
+    {
+      "configured_order": 1,
+      "expected_responses": [
+        {
+          "name": "CSStateGetInfoRes",
+          "service": "online",
+          "candidate_descriptor_available": true,
+          "original_client_handler_verified": false
+        }
+      ],
+      "call_symbol": "Server.AccountServer.GetStateInfo",
+      "caller_symbol": "Server.AccountServer",
+      "nonempty_parameters_present": false
+    }
+  ],
+  "main_hall_critical_requests": [
+    {
+      "name": "CSAccountGetPlayerProfileReq",
+      "service": "account",
+      "candidate_descriptor_available": true,
+      "original_client_handler_verified": false,
+      "conventional_response": {
+        "name": "CSAccountGetPlayerProfileRes",
+        "service": "account",
+        "candidate_descriptor_available": true,
+        "original_client_handler_verified": false
+      }
+    },
+    {
+      "name": "CSActivityGetReq",
+      "service": "activity",
+      "candidate_descriptor_available": true,
+      "original_client_handler_verified": false,
+      "conventional_response": {
+        "name": "CSActivityGetRes",
+        "service": "activity",
+        "candidate_descriptor_available": false,
+        "original_client_handler_verified": false
+      }
+    },
+    {
+      "name": "CSArmedforceLoadOutfitReq",
+      "service": "armedforce",
+      "candidate_descriptor_available": true,
+      "original_client_handler_verified": false,
+      "conventional_response": {
+        "name": "CSArmedforceLoadOutfitRes",
+        "service": "armedforce",
+        "candidate_descriptor_available": true,
+        "original_client_handler_verified": false
+      }
+    },
+    {
+      "name": "CSAuctionAutoLoadGuidePriceReq",
+      "service": "auctionauto",
+      "candidate_descriptor_available": true,
+      "original_client_handler_verified": false,
+      "conventional_response": {
+        "name": "CSAuctionAutoLoadGuidePriceRes",
+        "service": "auctionauto",
+        "candidate_descriptor_available": true,
+        "original_client_handler_verified": false
+      }
+    },
+    {
+      "name": "CSAuctionGetGameItemSellPriceReq",
+      "service": "auction",
+      "candidate_descriptor_available": true,
+      "original_client_handler_verified": false,
+      "conventional_response": {
+        "name": "CSAuctionGetGameItemSellPriceRes",
+        "service": "auction",
+        "candidate_descriptor_available": true,
+        "original_client_handler_verified": false
+      }
+    },
+    {
+      "name": "CSAuctionGetPlayerInfoReq",
+      "service": "auction",
+      "candidate_descriptor_available": true,
+      "original_client_handler_verified": false,
+      "conventional_response": {
+        "name": "CSAuctionGetPlayerInfoRes",
+        "service": "auction",
+        "candidate_descriptor_available": true,
+        "original_client_handler_verified": false
+      }
+    },
+    {
+      "name": "CSAuctionGetTypeListReq",
+      "service": "auction",
+      "candidate_descriptor_available": true,
+      "original_client_handler_verified": false,
+      "conventional_response": {
+        "name": "CSAuctionGetTypeListRes",
+        "service": "auction",
+        "candidate_descriptor_available": true,
+        "original_client_handler_verified": false
+      }
+    },
+    {
+      "name": "CSAuctionWithdrawReq",
+      "service": "auction",
+      "candidate_descriptor_available": true,
+      "original_client_handler_verified": false,
+      "conventional_response": {
+        "name": "CSAuctionWithdrawRes",
+        "service": "auction",
+        "candidate_descriptor_available": true,
+        "original_client_handler_verified": false
+      }
+    },
+    {
+      "name": "CSGuideGetDataReq",
+      "service": "guide",
+      "candidate_descriptor_available": true,
+      "original_client_handler_verified": false,
+      "conventional_response": {
+        "name": "CSGuideGetDataRes",
+        "service": "guide",
+        "candidate_descriptor_available": true,
+        "original_client_handler_verified": false
+      }
+    },
+    {
+      "name": "CSGuideGetPlayerGuideReq",
+      "service": "guide",
+      "candidate_descriptor_available": true,
+      "original_client_handler_verified": false,
+      "conventional_response": {
+        "name": "CSGuideGetPlayerGuideRes",
+        "service": "guide",
+        "candidate_descriptor_available": true,
+        "original_client_handler_verified": false
+      }
+    },
+    {
+      "name": "CSMallGetBuyGoodsReq",
+      "service": "mall",
+      "candidate_descriptor_available": true,
+      "original_client_handler_verified": false,
+      "conventional_response": {
+        "name": "CSMallGetBuyGoodsRes",
+        "service": "mall",
+        "candidate_descriptor_available": true,
+        "original_client_handler_verified": false
+      }
+    },
+    {
+      "name": "CSMallGetMerchantsReq",
+      "service": "mall",
+      "candidate_descriptor_available": true,
+      "original_client_handler_verified": false,
+      "conventional_response": {
+        "name": "CSMallGetMerchantsRes",
+        "service": "mall",
+        "candidate_descriptor_available": true,
+        "original_client_handler_verified": false
+      }
+    },
+    {
+      "name": "CSMallGetRecycleGoodsReq",
+      "service": "mall",
+      "candidate_descriptor_available": true,
+      "original_client_handler_verified": false,
+      "conventional_response": {
+        "name": "CSMallGetRecycleGoodsRes",
+        "service": "mall",
+        "candidate_descriptor_available": true,
+        "original_client_handler_verified": false
+      }
+    },
+    {
+      "name": "CSMarketGetAndUpdatePreBuyOrderReq",
+      "service": "market",
+      "candidate_descriptor_available": true,
+      "original_client_handler_verified": false,
+      "conventional_response": {
+        "name": "CSMarketGetAndUpdatePreBuyOrderRes",
+        "service": "market",
+        "candidate_descriptor_available": true,
+        "original_client_handler_verified": false
+      }
+    },
+    {
+      "name": "CSMarketGetPlayerInfoReq",
+      "service": "market",
+      "candidate_descriptor_available": true,
+      "original_client_handler_verified": false,
+      "conventional_response": {
+        "name": "CSMarketGetPlayerInfoRes",
+        "service": "market",
+        "candidate_descriptor_available": true,
+        "original_client_handler_verified": false
+      }
+    },
+    {
+      "name": "CSMarketGetTypeListReq",
+      "service": "market",
+      "candidate_descriptor_available": true,
+      "original_client_handler_verified": false,
+      "conventional_response": {
+        "name": "CSMarketGetTypeListRes",
+        "service": "market",
+        "candidate_descriptor_available": true,
+        "original_client_handler_verified": false
+      }
+    },
+    {
+      "name": "CSMarketWithdrawReq",
+      "service": "market",
+      "candidate_descriptor_available": true,
+      "original_client_handler_verified": false,
+      "conventional_response": {
+        "name": "CSMarketWithdrawRes",
+        "service": "market",
+        "candidate_descriptor_available": true,
+        "original_client_handler_verified": false
+      }
+    },
+    {
+      "name": "CSPlayerPromptGetReq",
+      "service": "playerinfo",
+      "candidate_descriptor_available": true,
+      "original_client_handler_verified": false,
+      "conventional_response": {
+        "name": "CSPlayerPromptGetRes",
+        "service": "playerinfo",
+        "candidate_descriptor_available": true,
+        "original_client_handler_verified": false
+      }
+    },
+    {
+      "name": "CSStateGetInfoReq",
+      "service": "online",
+      "candidate_descriptor_available": true,
+      "original_client_handler_verified": false,
+      "conventional_response": {
+        "name": "CSStateGetInfoRes",
+        "service": "online",
+        "candidate_descriptor_available": true,
+        "original_client_handler_verified": false
+      }
+    },
+    {
+      "name": "CSSwitchLoadModuleStatusReq",
+      "service": "switch",
+      "candidate_descriptor_available": true,
+      "original_client_handler_verified": false,
+      "conventional_response": {
+        "name": "CSSwitchLoadModuleStatusRes",
+        "service": "switch",
+        "candidate_descriptor_available": true,
+        "original_client_handler_verified": false
+      }
+    }
+  ],
+  "pre_login_allowed_message_names": [
+    {
+      "name": "CSAccountLoginReq",
+      "service": "account",
+      "candidate_descriptor_available": true,
+      "original_client_handler_verified": false
+    },
+    {
+      "name": "CSAccountRegisterReq",
+      "service": "account",
+      "candidate_descriptor_available": true,
+      "original_client_handler_verified": false
+    },
+    {
+      "name": "CSAccountRandNickReq",
+      "service": "account",
+      "candidate_descriptor_available": true,
+      "original_client_handler_verified": false
+    },
+    {
+      "name": "CSStateGetInfoReq",
+      "service": "online",
+      "candidate_descriptor_available": true,
+      "original_client_handler_verified": false
+    },
+    {
+      "name": "CSHopeVerifyCertificationReq",
+      "service": "hope",
+      "candidate_descriptor_available": true,
+      "original_client_handler_verified": false
+    },
+    {
+      "name": "CSTeamInfoTReq",
+      "service": "team",
+      "candidate_descriptor_available": true,
+      "original_client_handler_verified": false
+    }
+  ],
+  "limitations": [
+    "Critical mapping membership does not prove every request runs in every login.",
+    "A conventional Req/Res name pair does not prove response routing or result semantics.",
+    "Compiled candidate descriptors do not supply required gameplay data or initialization handlers."
+  ]
+}

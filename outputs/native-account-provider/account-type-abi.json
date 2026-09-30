@@ -1,0 +1,39 @@
+{
+  "sdk_metadata_sha256": "9d39a0f5af96d56f465060a582e21faf5c11d5cfdd4e221891d81c58cd7f1723",
+  "native_interface": "IRailPlayer.GetPlayerAccountType",
+  "vtable_slot": 16,
+  "vtable_rva": 13587560,
+  "native_method_rva": 7563728,
+  "return_abi": "32-bit value in EAX; object in RCX",
+  "local_account_type_value": 1,
+  "local_value_reason": "User-selected QQ compatibility label for our authenticated local identity. Runtime client code maps account type 1 to its QQ initialization label. Local server still issues identity, token and expiry; no official QQ session is supplied.",
+  "client_account_type_log_labels_recovered": {"1":"QQ","2":"WeChat","other":"Unknown Channel"},
+  "client_login_channel_string_rule": {"QQ":2,"WeChat":1,"Steam":21,"unmatched":0},
+  "client_login_channel_is_not_this_account_type_enum": true,
+  "vendor_enum_symbol_names_recovered": false,
+  "local_value_client_compatibility_verified": false,
+  "evidence_chain": [
+    {
+      "rva": 7563728,
+      "role": "Player method; null pimpl returns zero, otherwise branches to implementation"
+    },
+    {
+      "rva": 1755152,
+      "role": "Player implementation invokes account manager vtable slot 5"
+    },
+    {
+      "rva": 9080064,
+      "role": "Account manager constructor assigns vtable 0xd4abe8"
+    },
+    {
+      "rva": 9079872,
+      "role": "Manager method; null account state returns zero"
+    },
+    {
+      "rva": 2866416,
+      "role": "Configured state implementation returns uint32 field at object offset 0x10"
+    }
+  ],
+  "sdk_initialized": false,
+  "game_files_modified": false
+}

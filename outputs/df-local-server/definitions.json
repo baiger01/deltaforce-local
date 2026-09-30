@@ -1,0 +1,22 @@
+{
+  "origin": "Owner-controlled development fixtures, not recovered Delta Force game data",
+  "containers": {"warehouse": [10, 6], "backpack": [6, 4], "equipment": [1, 1]},
+  "items": {
+    "local_medkit": {"name": "开发用医疗包", "width": 1, "height": 1, "max_stack": 5, "slots": []},
+    "local_rifle": {"name": "开发用步枪", "width": 2, "height": 1, "max_stack": 1, "slots": ["primary"]},
+    "local_ammo": {"name": "开发用弹药", "width": 1, "height": 1, "max_stack": 60, "slots": []}
+  },
+  "starter_items": [{"template_id": "local_medkit", "quantity": 3}, {"template_id": "local_rifle", "quantity": 1}],
+  "quests": {
+    "local_supply": {
+      "name": "开发验证：提交补给", "prerequisites": [],
+      "objectives": [{"kind": "submit", "target": "local_medkit", "count": 2}],
+      "reward": {"money": 1000, "xp": 100, "items": [{"template_id": "local_ammo", "quantity": 30}]}
+    },
+    "local_training": {
+      "name": "开发验证：战斗事件", "prerequisites": ["local_supply"],
+      "objectives": [{"kind": "kill", "target": "local_bot", "count": 3}],
+      "reward": {"money": 2000, "xp": 200, "items": []}
+    }
+  }
+}
