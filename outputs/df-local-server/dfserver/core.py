@@ -14,6 +14,7 @@ import uuid
 from .container_layouts import BACKPACK_LAYOUT, CHEST_RIG_LAYOUT
 from .weapon_components import default_components
 from .weapon_ammo import LOAD, UNLOAD, magazine_capacity, matches_ammo
+from .melee_weapons import DEFAULT_WEAPON, LOCAL_WEAPONS, MELEE_POSITION, WEAPONS, melee_prop
 
 
 class DomainError(Exception):
@@ -99,6 +100,9 @@ CREATE TABLE IF NOT EXISTS native_lobby_collection_props (
 CREATE TABLE IF NOT EXISTS native_lobby_melee_props (
  player_id TEXT PRIMARY KEY REFERENCES players(id), template_id INTEGER NOT NULL,
  gid INTEGER NOT NULL UNIQUE CHECK(gid>0));
+CREATE TABLE IF NOT EXISTS native_lobby_melee_items (
+ player_id TEXT NOT NULL REFERENCES players(id), template_id INTEGER NOT NULL,
+ gid INTEGER NOT NULL UNIQUE CHECK(gid>0), PRIMARY KEY(player_id,template_id));
 CREATE TABLE IF NOT EXISTS native_lobby_sort_configs (
  player_id TEXT PRIMARY KEY REFERENCES players(id), config_json TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS native_lobby_devices (
@@ -427,8 +431,11 @@ class Backend:
                 "SELECT template_id,quantity FROM native_lobby_collection_props "
                 "WHERE player_id=? ORDER BY template_id", (player_id,)).fetchall()
             melee_props = connection.execute(
-                "SELECT template_id,gid FROM native_lobby_melee_props WHERE player_id=?",
+                "SELECT template_id,gid FROM native_lobby_melee_items WHERE player_id=? ORDER BY template_id",
                 (player_id,)).fetchall()
+            selected_melee = connection.execute(
+                "SELECT template_id,gid FROM native_lobby_melee_props WHERE player_id=?",
+                (player_id,)).fetchone()
             sort_config = connection.execute(
                 "SELECT config_json FROM native_lobby_sort_configs WHERE player_id=?", (player_id,)).fetchone()
             devices = connection.execute(
@@ -441,6 +448,7 @@ class Backend:
                     "props": [self._container_prop(connection, player_id, row) for row in props],
                     "collection_props": [dict(row) for row in collection_props],
                     "melee_props": [dict(row) for row in melee_props],
+                    "selected_melee_id": selected_melee['template_id'] if selected_melee else None,
                     "devices": [dict(row) for row in devices],
                     "selected_hero_id": selected_hero[0] if selected_hero else None,
                     "sort_config": json.loads(sort_config[0]) if sort_config else
@@ -520,6 +528,49 @@ class Backend:
                 (player_id,)).fetchone()
             connection.commit()
             return dict(row)
+
+    def ensure_native_lobby_melee_collection(self, token):
+        """Provision client-defined knives for the owner-controlled local trial."""
+        with self.connection() as connection:
+            connection.execute("BEGIN IMMEDIATE")
+            player_id = self._authorize(connection, token)
+            selected = connection.execute(
+                "SELECT template_id,gid FROM native_lobby_melee_props WHERE player_id=?",
+                (player_id,)).fetchone()
+            if selected and selected['template_id'] in (10080000001, 18100000001):
+                connection.execute(
+                    "UPDATE native_lobby_melee_props SET template_id=? WHERE player_id=?",
+                    (DEFAULT_WEAPON, player_id))
+                selected = {**dict(selected), 'template_id': DEFAULT_WEAPON}
+            if selected and selected['template_id'] not in LOCAL_WEAPONS:
+                fail("INVALID_EQUIPMENT", "Selected melee has no verified collection ownership")
+            for weapon_id in WEAPONS.keys() - LOCAL_WEAPONS:
+                connection.execute(
+                    "DELETE FROM native_lobby_melee_items WHERE player_id=? AND template_id=?",
+                    (player_id, weapon_id))
+            maximum = connection.execute(
+                "SELECT MAX(gid) FROM (SELECT gid FROM native_lobby_melee_items "
+                "UNION ALL SELECT gid FROM native_lobby_melee_props)").fetchone()[0]
+            next_gid = max(6200000000000000000, maximum or 0) + 1
+            for weapon_id in sorted(LOCAL_WEAPONS):
+                if connection.execute(
+                        "SELECT 1 FROM native_lobby_melee_items WHERE player_id=? AND template_id=?",
+                        (player_id, weapon_id)).fetchone():
+                    continue
+                if selected and selected['template_id'] == weapon_id:
+                    gid = selected['gid']
+                else:
+                    gid = next_gid
+                    next_gid += 1
+                connection.execute("INSERT INTO native_lobby_melee_items VALUES (?,?,?)",
+                                   (player_id, weapon_id, gid))
+            if selected is None:
+                default = connection.execute(
+                    "SELECT gid FROM native_lobby_melee_items WHERE player_id=? AND template_id=?",
+                    (player_id, DEFAULT_WEAPON)).fetchone()
+                connection.execute("INSERT INTO native_lobby_melee_props VALUES (?,?,?)",
+                                   (player_id, DEFAULT_WEAPON, default['gid']))
+            connection.commit()
 
     def native_lobby_purchase(self, token, *, template_id, quantity, unit_price,
                               currency_id, length, width, max_stack_count=1,
@@ -1247,6 +1298,26 @@ class Backend:
                      "No target container space fits the moved prop")
 
             for command in commands:
+                if command.get("prop_id") in WEAPONS:
+                    target = integer(command.get("target_pos"), "target_pos", MELEE_POSITION, MELEE_POSITION)
+                    chosen = connection.execute(
+                        "SELECT template_id,gid FROM native_lobby_melee_items "
+                        "WHERE player_id=? AND template_id=?", (player_id, command['prop_id'])).fetchone()
+                    if chosen is None or (command.get("prop_gid") and command['prop_gid'] != chosen['gid']):
+                        fail("PROP_NOT_FOUND", "The melee instance is not in this account")
+                    current = connection.execute(
+                        "SELECT template_id,gid FROM native_lobby_melee_props WHERE player_id=?",
+                        (player_id,)).fetchone()
+                    if current and current['gid'] != chosen['gid']:
+                        changes.append({'before': melee_prop(dict(current), target),
+                                        'after': melee_prop(dict(current), 0)})
+                    changes.append({'before': melee_prop(dict(chosen), target if current and current['gid'] == chosen['gid'] else 0),
+                                    'after': melee_prop(dict(chosen), target)})
+                    connection.execute(
+                        "INSERT INTO native_lobby_melee_props VALUES (?,?,?) ON CONFLICT(player_id) "
+                        "DO UPDATE SET template_id=excluded.template_id,gid=excluded.gid",
+                        (player_id, chosen['template_id'], chosen['gid']))
+                    continue
                 gid = integer(command.get("prop_gid"), "prop_gid", 1, 2**63 - 1)
                 target = integer(command.get("target_pos"), "target_pos", 2, POCKET_POSITION)
                 if target != 2 and not (101 <= target <= 138 or

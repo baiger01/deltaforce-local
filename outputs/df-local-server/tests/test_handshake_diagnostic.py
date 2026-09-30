@@ -319,14 +319,14 @@ class HandshakeDiagnosticTests(unittest.TestCase):
                     self.assertEqual({item['id'] for item in props},
                                      {'15080050142', '15080050006'})
                     self.assertEqual({item['gid'] for item in props}, {'7001', '7002'})
-                    self.assertEqual([int(item['id']) for item in reply.fields['melee_weapons']],
-                                     [18100000001])
+                    self.assertEqual(len(reply.fields['melee_weapons']), 15)
+                    self.assertEqual(int(reply.fields['melee_weapons'][0]['id']), 18100000002)
                     self.assertEqual(reopened.native_lobby_profile(token)['melee_props'][0]['gid'],
                                      int(reply.fields['melee_weapons'][0]['gid']))
                     self.assertEqual(int(reply.fields['melee_weapons'][0]['gid']),
                                      legacy_melee['gid'])
-                    self.assertEqual(int(equipment[113]['src_prop_id']), 18100000001)
-                    self.assertEqual(int(equipment[113]['load_props'][0]['id']), 18100000001)
+                    self.assertEqual(int(equipment[113]['src_prop_id']), 18100000002)
+                    self.assertEqual(int(equipment[113]['load_props'][0]['id']), 18100000002)
                     self.assertEqual(int(equipment[113]['load_props'][0]['gid']),
                                      legacy_melee['gid'])
                     self.assertEqual({(item['loc']['start_x'], item['loc']['start_y'],

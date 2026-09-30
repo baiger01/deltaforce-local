@@ -35,6 +35,7 @@ from .gcp_handshake import DhAckBody, DhAckHeader, ServerDhAcknowledgement, crea
 from .local_commerce import (SUPPORTED_REQUESTS as LOCAL_COMMERCE_REQUESTS,
                              response_fields as local_commerce_response_fields,
                              installed_items, item_condition_fields, inventory_location)
+from .melee_weapons import WEAPONS, MELEE_POSITION
 
 
 LOCAL_FINISHED_GUIDE_STAGES = (6, 7, 1, 2, 3, 5, 34)
@@ -852,9 +853,12 @@ def _candidate_local_collection_response(message, backend, local_session, key, *
     request = codec.decode(message[4:])
     if request.name != 'CSCollectionLoadPropsReq':
         raise ValueError('Not a collection load request')
+    backend.ensure_native_lobby_melee_collection(local_session)
     state = backend.native_lobby_profile(local_session)
     response = codec.response(request, {
         'result': 0,
+        'weapon_skin_props': [{'id': WEAPONS[row['template_id']], 'gid': 0, 'num': 1}
+                              for row in state['melee_props']],
         'common_props': [
             {'id': row['template_id'], 'gid': 0, 'num': row['quantity']}
             for row in state['collection_props']],
@@ -872,9 +876,7 @@ def _candidate_local_deposit_response(message, backend, local_session, key, *, h
     request = codec.decode(message[4:])
     if request.name != 'CSDepositGetPropsReq':
         raise ValueError('Not the main warehouse fetch')
-    # GameItem row 18100000001 is a melee receiver; InventoryServer_Network
-    # function 0.12 rejects preset IDs in melee_weapons.
-    backend.ensure_native_lobby_default_melee(local_session, 18100000001)
+    backend.ensure_native_lobby_melee_collection(local_session)
     state = backend.native_lobby_profile(local_session)
     grid = _candidate_main_deposit_grid()
     grid['props'] = []
@@ -961,12 +963,14 @@ def _candidate_local_deposit_response(message, backend, local_session, key, *, h
             'loc': inventory_location(prop),
         })
     if state['melee_props'] and not equipment[113]['load_props']:
-        melee = state['melee_props'][0]
+        melee = next(row for row in state['melee_props']
+                     if row['template_id'] == state['selected_melee_id'])
         metadata = installed_items()[str(melee['template_id'])]
         equipment[113]['src_prop_id'] = melee['template_id']
         equipment[113]['load_props'] = [{
             'id': melee['template_id'], 'gid': melee['gid'], 'num': 1, 'position': 113,
             'length': metadata['length'], 'width': metadata['width'],
+            **item_condition_fields(melee['template_id']),
             'loc': {'pos': 113, 'start_x': 0, 'start_y': 0, 'x': 1, 'y': 1,
                     'space_id': 0, 'rotate': False},
         }]
@@ -975,7 +979,8 @@ def _candidate_local_deposit_response(message, backend, local_session, key, *, h
         'grid_pages': [grid],
         'equiped_props': list(equipment.values()),
         'melee_weapons': [{'id': row['template_id'], 'gid': row['gid'], 'num': 1,
-                           'position': 113} for row in state['melee_props']],
+                           'position': MELEE_POSITION if row['template_id'] == state['selected_melee_id'] else 0,
+                           **item_condition_fields(row['template_id'])} for row in state['melee_props']],
         'currency': [{'id': row['currency_id'], 'num': row['amount']}
                      for row in state['currencies']],
         'sort_config': state['sort_config'],
@@ -1046,6 +1051,14 @@ def _candidate_local_equip_response(message, backend, local_session, key, *,
         changes = []
         for move in moves:
             before, after = move['before'], move['after']
+            if after['template_id'] in WEAPONS:
+                # The melee owning list is outside ordinary slots. Lua Move
+                # requires both slots; swap equipped instances with Del/Add.
+                changes.extend(_native_inventory_changes([{
+                    'before': before if before['grid_page_id'] else None,
+                    'after': after if after['grid_page_id'] else None,
+                }])['prop_changes'])
+                continue
 
             changes.append({'change_type': 5,
                             'prop': {'id': after['template_id'], 'gid': after['gid'],

@@ -16,6 +16,7 @@ ALERT = re.compile(
     r"InventoryServer:|QuickOperation.*(?:Error|Fail)|Weapon.*(?:Error|Fail|Invalid)|"
     r"GoodsItemStruct|SourcingAuctionProvider|ComparePriceLogic\.SimpleComparePrice|"
     r"_RefreshDurability|"
+    r"MeleeWeapon|CSMelee|MeleeSkin|近战|DisplayCtrl_Knife|Displayctrl_Knife|"
     r"OnMergeComplete|OnAllSkeletalMeshReady|AddWeaponDesc|OnAddWeapon|"
     r"Gunsmith.*(?:OperateBullet|InventoryError)|"
     r"LoadedClass is NULL|GuideHDWeakClickUI|IsForcedGuideActive_Special|"

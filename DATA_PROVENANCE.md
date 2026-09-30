@@ -1,5 +1,7 @@
 # 数据从哪里来
 
+近战目录的 18 组真实对应中，本地只提供原客户端收藏日志确认解锁的 15 组；`28101250021/22/23` 是尚未恢复拥有规则的系列中间档。旧记录 `18100000001` 已由用户截图确认显示为喷枪，迁移到实际基础刀具 `18100000002` 与外观 `28101200002`。收藏使用 `weapon_skin_props`，装备物品使用 `weapon.skin_id`，选择持久化到本地账号。`InventoryServer_Network.lua` 的 Move 分支会访问两端实际格子，刀具切换按其 Add/Del 分支下发，不把内部未装备位置 0 当成客户端格子。2026-09-30 原客户端实际装备 receiver `18100000014` 成功，用户确认名称、模型及切换正常。提取脚本与目录记录相关 Lua 哈希和静态函数依据；这属于本地测试账号的提供策略，不代表官方账号归属。
+
 GitHub 协作仓库仅包含源码、静态 JSON 目录、重建描述符和来源元数据；不包含下文提到的原始表提取物、编译 DLL、测试账号或日志。迁移包与 GitHub 仓库的内容范围不同，克隆后无需先找回旧缓存即可使用已有目录继续开发。
 
 以下路径均相对于 `game/` 游戏根目录；项目路径相对于 `deltaforce-local/`。运行时脚本通过 `work/local_game_paths.py` 定位 `../game`，也支持 `DF_LOCAL_SOURCE_GAME` 覆盖。版本目录 `1.101.37117.36` 和 PAK 文件名是**当前已验证游戏版本的资源标识**，并非这台电脑的安装路径；不同版本不能沿用这些表和偏移。
@@ -16,6 +18,7 @@ GitHub 协作仓库仅包含源码、静态 JSON 目录、重建描述符和来�
 | `weapon_preset_catalog.json`、`weapon_component_catalog.json` | 同版本明文武器配置与基础包 `pakchunk2-WindowsClient.pak` 的组件节点条目 4567 | `work/extract_weapon_preset_catalog.py`、`extract_weapon_components_catalog.py` 恢复预设、receiver 和组件树，目录保留实际来源与偏移。 |
 | `weapon_ammo_catalog.json` | 基础包 `pakchunk2-WindowsClient.pak` 条目 4489/4555；热更新 PartsData/PartsFunction；基础包 Lua `cs_deposit_pb.lua` | `work/extract_weapon_ammo_catalog.py` 恢复弹药类别、已有弹匣容量与装卸弹枚举，交叉核对客户端 Lua 规则；未恢复的弹匣或武器关系保持未知。目录记录源哈希、行偏移与函数。 |
 | `client_error_catalog.json` | 基础包 `pakchunk1-WindowsClient.pak` 的 `errcode_pb.lua` 条目 6809 | `work/extract_client_error_catalog.py` 只读恢复实际错误名与值；不以统一猜测结果码代替库存业务错误。 |
+| `melee_weapon_catalog.json` | 当前安装 `DeltaForce/Content/Paks/pak-0-0-pakchunk2-WindowsClient.pak` 明文导出条目 7276 | `work/extract_melee_catalog.py` 读取 18 行中序列化字段索引 40/41 的外观 ID 与武器 ID。源文件 SHA-256 为 `e6ab2c414dc8b972b0f20b647a8deedcb39c82912d968209f057db469defb845`。15 组对应由原客户端 `MeleeWeaponSkinDataTable` 日志交叉确认；加密名称表未恢复，不能冒称已解出原属性名。每行保留偏移、GameItem 名称键与尺寸。 |
 
 `work/evidence/` 在迁移包中仅保留上述小范围表提取物，以便不重新扫描整套游戏就能复核目录。大型原始 PAK、原始 Lua 缓存、历史抓包及日志不在包内。同版本游戏在新电脑上按相对目录可重新读取；重新提取前请先核对游戏版本与目录头内的源文件哈希。`work/evidence/character_avatar_tables/` 中 GameItem 的 `.uexp` 约 35 MiB，已压缩进迁移包，毋须额外复制游戏素材。
 

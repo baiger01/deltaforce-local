@@ -10,6 +10,7 @@ from .core import (POCKET_POSITION, BACKPACK_POSITION, CHEST_RIG_POSITION,
 from .client_errors import error_code, inventory_error
 from .weapon_components import default_components
 from .weapon_ammo import magazine_capacity
+from .melee_weapons import WEAPONS
 
 
 CURRENCY_ID = 17020000010
@@ -147,6 +148,9 @@ def _prop(item_id, row, count=1):
 def item_condition_fields(item_id, *, components=None, weapon=None):
     """Return item state used by the original client's inventory logic."""
     item_id = str(item_id)
+    if int(item_id) in WEAPONS:
+        return {'weapon': dict(weapon) if weapon is not None else
+                          {'skin_id': WEAPONS[int(item_id)], 'skin_gid': 0}}
     if (item_id.startswith(('1001', '1002', '1003', '1004',
                             '1005', '1006', '1007', '1008'))
             or int(item_id) in default_weapon_presets().values()):

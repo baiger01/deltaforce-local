@@ -30,7 +30,8 @@
 | 新资源对应 | receiver `18050000033` 未在本轮基础武器表找到完整弹药类别，需找实际新表 | `weapon_component_catalog.json`、`scan_weapon_tables.py` |
 | 耐久显示 | 甲的最大耐久有来源表。头盔及未知配置仍有历史默认 100，必须继续恢复并替换这些假定值 | `local_commerce.py`、`armor_durability_catalog.json` |
 | 商城与交易行 | 商品目录不等于售卖规则；部分 merchant/exchange 关联仍需客户端证明 | `local_commerce.py`、`handshake_diagnostic.py` |
-| 近战武器 | 已使用实际 ID `18100000001` 并纳入拥有/装备响应；2026-09-30 用户反馈近战仍失败，需核对配置、拥有与装备响应，尚未实机确认修复 | `core.py`、`handshake_diagnostic.py` |
+| 近战系列规则 | 18 组真实刀具/外观已恢复，15 组可见刀具的名称、模型及切换已得到用户确认。`28101250021/22/23` 的系列中间档仍缺实际拥有规则，原客户端拒绝普通收藏下发；当前不提供这三档，保留原始目录证据 | `melee_weapons.py`、`melee_weapon_catalog.json`、`test_melee_inventory.py` |
+| 曼德尔砖与枪械皮肤 | 当前只有砖购买，尚无抽奖消耗与奖励发放；用户反馈砖名称为未知物品、买后不能抽奖，枪械皮肤均未解锁。需恢复同版本砖、钥匙、奖池和普通/特品皮肤关联后接入 | `local_commerce.py`、`core.py`、`handshake_diagnostic.py` |
 | 容器与购买 | 当前同步覆盖已观察胸挂、背包和口袋；安全箱及其他请求需恢复实际行为。`common_pb.lua` 根函数指令 426-428 确认 Pocket=199997，指令 399-401 确认 CarryOutPropsPos=1999，不能混为临时区 | `core.py`、`handshake_diagnostic.py` |
 | 临时区清理 | `CSDepositClearCarryOutTempPropsReq` 仍需按客户端调用链恢复，不能无依据删除已付款物品 | `handshake_diagnostic.py`、只读 Lua 解析工具 |
 | 历史候选配置 | 地图的 `map_id` 与部分安全屋设施 ID/等级仍是历史候选或外部资料推断，需要客户端核实后替换 | `local_map_board_candidates.json`、`safehouse_max_level_candidates.json` |
