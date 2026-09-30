@@ -2,6 +2,8 @@
 
 These rules apply to all work in this project.
 
+- Follow the responsibility split and completed progress in README.md. This chat owns weapons, ammunition, miscellaneous items, commerce, inventory, and equipment; the other collaborator owns maps and match sessions. Coordinate changes to shared modules and review incoming commits against this progress record.
+
 - Research the installed client and the migration bundle before changing item or protocol mappings. Prefer extracted PAK tables, parsed Lua, protocol definitions, and actual client requests/logs.
 - Do not invent client template IDs, receiver IDs, preset IDs, merchant/exchange IDs, enum values, asset paths, container layouts, durability, or weapon/ammunition relationships.
 - Every permanent mapping must identify its source table/file and a row, function, serialized offset, or captured observation. Retain source hashes when extracting catalogs.

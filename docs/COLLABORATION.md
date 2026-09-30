@@ -2,6 +2,8 @@
 
 更新日期：2026-09-30。此记录供从 GitHub 接手的开发者和代码代理使用。
 
+已完成进度以根目录 [README](../README.md) 为准。本会话负责枪械、弹药及杂货相关的购买、出售、仓库和装备；另一位协作者负责地图与战局。提交和审查必须对照 README 的进度及分工。
+
 ## 本次源码快照检查
 
 2026-09-30 将待上传的 Git 索引单独检出，在全新 Python 3.12 虚拟环境按 `requirements-optional.txt` 安装依赖后，执行 `python -m unittest discover -s outputs/df-local-server/tests -t outputs/df-local-server -v`，241 项测试通过（20.459 秒）。源码上传审计通过。此检查未启动原游戏，也不证明尚待复核的客户端交互已修复。

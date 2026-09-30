@@ -1,83 +1,46 @@
 # deltaforce-local
 
-Delta Force 本地服务与原客户端诊断接入项目。当前开发目标是修复原客户端大厅、仓库、装备购买、出售、弹药和模型状态的对应关系。
+更新日期：2026-09-30。本页记录已完成内容，作为协作和代码审查的进度基准。
 
-本仓库包含源码、测试、只读提取工具、运行所需的 JSON 目录和重建的 Protobuf 描述符。游戏本体、原始资源、账号数据库、会话、日志和编译后的 DLL 均留在本地。克隆仓库后需要自己准备同版本游戏和本地测试账号。
+## 分工
 
-**不得伪造客户端物品 ID、枚举、配置或关联信息。** 永久映射必须有客户端来源、行/函数/偏移和可用的源哈希，具体规范见 [AGENTS.md](AGENTS.md) 与 [DATA_PROVENANCE.md](DATA_PROVENANCE.md)。
-
-## 目录
-
-| 路径 | 内容 |
+| 负责方 | 负责范围 |
 | --- | --- |
-| `outputs/df-local-server/dfserver/` | Python 服务、持久化库存、协议适配、网页入口 |
-| `outputs/df-local-server/protocol/` | 静态目录、Lua 字段元数据、候选消息定义 |
-| `outputs/df-local-server/tests/` | 账号、事务、库存与协议检查 |
-| `outputs/native-account-provider/` | 本项目身份提供者 C 源码、构建工具、ABI 元数据 |
-| `work/*.py` | 只读提取、shadow 创建、限时启动、恢复与日志工具 |
-| `docs/COLLABORATION.md` | 当前交接记录、待修问题、分工与验证要求 |
+| 本会话 Codex | 枪械、配件、弹药、近战武器，以及药品、防具、背包、胸挂等杂货；对应的商店购买、出售、仓库、装备和持久化逻辑 |
+| 另一位协作者 | 地图、战局及相关协议和状态流程 |
 
-## 服务与测试
+## 实机已确认
 
-建议使用独立的 Python 3.12 环境；涉及 `hashlib.file_digest` 的工具至少需要 Python 3.11。以下命令在项目根目录的 PowerShell 执行：
+| 内容 | 已完成结果 | 验证 |
+| --- | --- | --- |
+| 本地大厅接入 | 通过本地账号及自建身份提供者直接启动独立 shadow，连接本机服务并进入原客户端大厅 | 原客户端运行记录、用户操作 |
+| 护甲购买 | 本地客户端已成功购买护甲 | 用户实测确认 |
+| 出售接口 | 两次原客户端测试出售请求成功，服务执行物品删除与货币更新 | 原客户端请求及服务记录 |
+| 测试工具 | 360 秒限时启动、客户端日志监听及原 SDK 哈希校验与恢复工具已运行使用 | 本机测试记录 |
 
-```powershell
-python -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -r outputs/df-local-server/requirements-optional.txt
-$env:PYTHONPATH = (Resolve-Path outputs/df-local-server).Path
-.\.venv\Scripts\python.exe -m dfserver.entrance --no-browser
-```
+## 代码与数据已完成
 
-网页入口为 `http://127.0.0.1:8877/`，默认网页数据库是 `outputs/df-local-server/data/local.sqlite3`。网页入口与原游戏客户端的诊断启动是两个流程。
+下表记录已实现且有目录或自动测试依据的内容。
 
-在另一终端从项目根目录执行测试：
+| 内容 | 已完成范围 | 对照文件 |
+| --- | --- | --- |
+| 本地账号 | 注册、密码登录、会话撤销、SQLite 存档与账号隔离 | `dfserver/core.py`、`tests/test_accounts.py` |
+| 客户端物品目录 | 物品、仓库格子、干员外观、护甲耐久和错误码的提取结果及来源信息已入库 | `protocol/*_catalog.json`、[数据来源](DATA_PROVENANCE.md) |
+| 枪械配置 | 恢复 40 套默认枪械组件树、预设到真实 receiver 的映射，组件以稳定本地 gid 保存 | `weapon_component_catalog.json`、`weapon_preset_catalog.json`、`dfserver/weapon_components.py` |
+| 弹药关联 | 恢复 261 条武器配置、176 条弹药配置，核实 31 套默认枪械的弹匣容量 | `weapon_ammo_catalog.json`、`dfserver/weapon_ammo.py` |
+| 装弹与卸弹 | 接入真实装卸弹枚举、口径匹配、容量检查、枪内弹药保存、库存变更响应与通知 | `dfserver/core.py`、`dfserver/handshake_diagnostic.py`、`tests/test_native_inventory.py` |
+| 背包与胸挂 | 恢复 44 项具体容器布局，按客户端配置提供分区格子 | `container_layout_catalog.json`、`dfserver/container_layouts.py` |
+| 容器同步 | 接入已观察的胸挂、背包和临时区同步；实现落位检查、堆叠拆分、数量守恒及失败整批回滚 | `dfserver/core.py`、`tests/test_local_commerce.py`、`tests/test_native_inventory.py` |
+| 购买与出售事务 | 实现扣款、物品持久化、指定位置、堆叠上限、出售删除与货币变更 | `dfserver/local_commerce.py`、`dfserver/core.py`、`tests/test_local_commerce.py` |
+| 近战数据 | 使用客户端实际模板 `18100000001`，纳入本地拥有及装备响应 | `dfserver/core.py`、`dfserver/handshake_diagnostic.py` |
 
-```powershell
-.\.venv\Scripts\python.exe -m unittest discover -s outputs/df-local-server/tests -t outputs/df-local-server -v
-```
+表内 `dfserver/`、`tests/`、`protocol/` 均位于 `outputs/df-local-server/`。
 
-`definitions.json` 中 `local_*` 数据用于独立服务测试。不得把这些开发数据当成原客户端的真实配置或物品 ID。
+## 已完成验证
 
-## 原客户端准备
+- 2026-09-30：单独检出上传源码，在全新 Python 3.12 环境安装依赖，全部 241 项自动测试通过。
+- GitHub 私有仓库已建立，源码、测试、静态目录和来源信息已上传；上传文件审计通过。
 
-下文的 `python` 需使用上述安装依赖的解释器，例如 `.\.venv\Scripts\python.exe`。指定自有安装位置时，可先设置：
+## 协作依据
 
-```powershell
-$env:DF_LOCAL_SOURCE_GAME = "F:/WeGameApps/rail_apps/DeltaForce(2001918)"
-$env:DF_LOCAL_SHADOW_GAME = "F:/deltaforce-local-shadow"
-```
-
-1. 准备同版本游戏，默认位于 `../game`。安装在别处时设置 `DF_LOCAL_SOURCE_GAME`；用 `DF_LOCAL_SHADOW_GAME` 指定独立测试目录。源游戏与 shadow 必须不同，硬链接创建要求同一磁盘卷。
-2. 运行 `python work/create_local_client_shadow.py`。脚本只读源安装，对 shadow 中的 SDK 和可变文件使用独立副本。
-3. 构建本项目提供者，需要自行准备 Zig 编译器和同版本原版 SDK：
-
-```powershell
-python outputs/native-account-provider/build_provider.py --sdk "$env:DF_LOCAL_SOURCE_GAME/DeltaForce/Binaries/ThirdParty/WeGame/Win64/rail_api64.dll" --compiler "C:/path/to/zig.exe" --stage work/sdk-local-provider-stage
-python outputs/native-account-provider/verify_provider.py --sdk "$env:DF_LOCAL_SOURCE_GAME/DeltaForce/Binaries/ThirdParty/WeGame/Win64/rail_api64.dll" --stage work/sdk-local-provider-stage
-```
-
-这一步生成本机 `build-record.json` 和 `validation.json`，不复用其他电脑的验证结果。源 SDK SHA-256 必须为 `9d39a0f5af96d56f465060a582e21faf5c11d5cfdd4e221891d81c58cd7f1723`。
-
-4. 创建自己的原客户端测试账号：从项目根目录设置上述 `PYTHONPATH`，用 `python -m dfserver --port 8878 --database work/native-test-account/save.sqlite3` 启动临时服务。然后在另一终端同样设置 `PYTHONPATH`，执行 `python -m dfserver.accounts register YOUR_LOCAL_USERNAME --port 8878`。密码通过隐藏输入提供。完成后停止这个临时服务。原客户端测试与网页入口使用各自的端口和数据库。
-
-## 6 分钟诊断启动
-
-关闭游戏和 WeGame 后，在项目根目录运行下列命令；Windows UAC 由用户确认：
-
-```powershell
-python work/run_native_elevated_trial.py --entry shipping --game-root "$env:DF_LOCAL_SHADOW_GAME" --wire-identity-probe --wire-auth-response-probe --wire-auth-identity-probe --wire-ready-probe --wire-ready-identity-probe --wire-business-login-probe --wire-business-bootstrap-probe --observation-seconds 360 --precreate-game-nick
-```
-
-若使用默认目录，`--game-root ../shadow` 即可。多账号库需额外传入 `--native-username`。诊断服务只监听 `127.0.0.1:65010`；测试结束必须核对 `original_sdk_restored` 为 `true`。Shipping 程序版本哈希为 `4254fbe66585f260f1f9dbfc5e302887842552e7baed8939e023160a5e250be0`。
-
-启动前在另一终端挂日志，输出路径和源游戏路径按实际目录填写：
-
-```powershell
-python work/watch_client_log.py --source "$env:DF_LOCAL_SHADOW_GAME/DeltaForce/Saved/Logs/DeltaForce.log" --output work/evidence/native-trial-live.log --duration-seconds 420
-```
-
-诊断握手和有限的业务实现仍处于开发阶段，只用于本机测试。自动测试通过不代表所有原客户端界面与业务已经可用。
-
-## 协作
-
-从 `main` 创建独立分支，通过 Pull Request 汇总修改。每项客户端映射同时提交来源说明、针对性测试和脱敏的实机结论；原始日志与存档保留本地。提交前运行 `python work/audit_git_upload.py` 检查 Git 索引，详见 [协作记录](docs/COLLABORATION.md)。历史服务 README 保留早期调查内容，最新交接以本页和协作记录为准。
+提交与审查对照本页：新增成果说明改了哪些文件、来源是什么、通过了哪些测试，以及哪些操作得到实机确认。涉及共享文件时先协调责任范围。客户端 ID、枚举、配置和关联信息必须先查客户端并记录依据，规范见 [AGENTS.md](AGENTS.md)。运行命令见 [运行说明](docs/RUNNING.md)。
