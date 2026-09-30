@@ -14,7 +14,7 @@
 - 客户端目录驱动的商店展示、枪械预设到真实 receiver 的映射、持久化枪械组件树、购买与出售事务。
 - 按已恢复客户端配置提供胸挂和背包的具体格子；保留请求指定的目的位置。
 - `CSDepositOperateBulletReq` 的真实装弹/卸弹枚举、弹药兼容关系、已核实弹匣容量、枪内弹药持久化和库存变更通知。
-- `CSDepositUpdateBodyContainerReq` 的当前已观察容器同步，包含数量守恒、落位检查、原位置清空和事务回滚。
+- `CSDepositAssemblySyncBodyContainerReq` 的当前已观察容器同步，包含数量守恒、落位检查、原位置清空和事务回滚。
 
 这些是代码实现范围。模型显示、鼠标卡住、登录状态异常等用户反馈仍需在实机操作中逐项复核；不能据自动测试宣称全部已修好。
 
@@ -23,11 +23,12 @@
 | 工作 | 当前证据与缺口 | 主要代码 |
 | --- | --- | --- |
 | 枪械与弹药 | 40 棵默认组件树中 31 棵已有核实容量。9 棵对应的旧弹匣函数尚未恢复，未知值不得补猜 | `weapon_ammo.py`、`weapon_ammo_catalog.json`、`extract_weapon_ammo_catalog.py` |
+| 子弹购买后重开 | 旧实机购买 137 发成功，随后 4 次装弹请求未应答；存档仍有口袋 120 发、仓库 17 发，枪内无装弹记录。装弹与同步实现已接入，本轮另补重连购买通知及口袋移入，243 项自动测试通过；仍须带日志复核原客户端重开页面 | `core.py`、`handshake_diagnostic.py`、`tests/test_local_commerce.py` |
 | 新资源对应 | receiver `18050000033` 未在本轮基础武器表找到完整弹药类别，需找实际新表 | `weapon_component_catalog.json`、`scan_weapon_tables.py` |
 | 耐久显示 | 甲的最大耐久有来源表。头盔及未知配置仍有历史默认 100，必须继续恢复并替换这些假定值 | `local_commerce.py`、`armor_durability_catalog.json` |
 | 商城与交易行 | 商品目录不等于售卖规则；部分 merchant/exchange 关联仍需客户端证明 | `local_commerce.py`、`handshake_diagnostic.py` |
 | 近战武器 | 已使用实际 ID `18100000001` 并纳入拥有/装备响应；单独持久化的近战数据仍需核对完整装备与移动流程 | `core.py`、`handshake_diagnostic.py` |
-| 容器与购买 | 当前同步只覆盖已观察胸挂、背包和临时区；口袋、安全箱及其他请求需恢复实际行为 | `core.py`、`handshake_diagnostic.py` |
+| 容器与购买 | 当前同步覆盖已观察胸挂、背包和口袋；安全箱及其他请求需恢复实际行为。`common_pb.lua` 根函数指令 426-428 确认 Pocket=199997，指令 399-401 确认 CarryOutPropsPos=1999，不能混为临时区 | `core.py`、`handshake_diagnostic.py` |
 | 临时区清理 | `CSDepositClearCarryOutTempPropsReq` 仍需按客户端调用链恢复，不能无依据删除已付款物品 | `handshake_diagnostic.py`、只读 Lua 解析工具 |
 | 历史候选配置 | 地图的 `map_id` 与部分安全屋设施 ID/等级仍是历史候选或外部资料推断，需要客户端核实后替换 | `local_map_board_candidates.json`、`safehouse_max_level_candidates.json` |
 | 实机复核 | 登录状态异常、出售、购买后药品落位、模型及退出页面时卡住需要同一轮带日志测试 | `watch_client_log.py`、原客户端受控测试 |

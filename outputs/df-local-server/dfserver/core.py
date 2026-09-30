@@ -45,9 +45,10 @@ def canonical(value):
 
 CHEST_RIG_POSITION = 107001
 BACKPACK_POSITION = 108001
-ASSEMBLY_TEMP_POSITION = 199997
-# The installed client syncs five CarryOutPropsPos spaces in assembly mode.
-ASSEMBLY_TEMP_LAYOUT = ((1, 1),) * 5
+# common_pb.lua 0, instructions 426-428: Pocket=199997; CarryOutPropsPos=1999.
+POCKET_POSITION = 199997
+# QuickOperationLogic and captured snapshots use five 1x1 pocket spaces.
+POCKET_LAYOUT = ((1, 1),) * 5
 
 
 SCHEMA = """
@@ -733,7 +734,7 @@ class Backend:
                                   ("width", 40), ("max_stack_count", 1000)):
                 integer(item[name], name, 1, maximum)
             if item.get("target_position") not in (
-                    2, CHEST_RIG_POSITION, BACKPACK_POSITION, ASSEMBLY_TEMP_POSITION):
+                    2, CHEST_RIG_POSITION, BACKPACK_POSITION, POCKET_POSITION):
                 fail("INVALID_ARGUMENT", "Unsupported purchase container")
             total += item["quantity"] * item["unit_price"]
         if total >= 2**63:
@@ -751,8 +752,8 @@ class Backend:
             for position in {item["target_position"] for item in items}:
                 if position == 2:
                     layout = ((9, 40),)
-                elif position == ASSEMBLY_TEMP_POSITION:
-                    layout = ASSEMBLY_TEMP_LAYOUT
+                elif position == POCKET_POSITION:
+                    layout = POCKET_LAYOUT
                 else:
                     equipment_pos = 107 if position == CHEST_RIG_POSITION else 108
                     equipped = connection.execute(
@@ -789,8 +790,8 @@ class Backend:
             for item in items:
                 length, width = item["length"], item["width"]
                 position = item["target_position"]
-                if position == ASSEMBLY_TEMP_POSITION and (length, width) != (1, 1):
-                    fail("INVALID_ARGUMENT", "The observed temporary slots hold one-cell items")
+                if position == POCKET_POSITION and (length, width) != (1, 1):
+                    fail("INVALID_ARGUMENT", "The pocket spaces hold one-cell items")
                 remaining = item["quantity"]
                 while remaining:
                     found = None
@@ -816,7 +817,7 @@ class Backend:
                     if found is None:
                         fail({2: "WAREHOUSE_FULL", CHEST_RIG_POSITION: "CHEST_RIG_FULL",
                               BACKPACK_POSITION: "BACKPACK_FULL",
-                              ASSEMBLY_TEMP_POSITION: "ASSEMBLY_TEMP_FULL"}[position],
+                              POCKET_POSITION: "POCKET_FULL"}[position],
                              "No verified space fits the purchased items")
                     space_id, start_x, start_y, span_x, span_y, rotated, cells = found
                     occupied[position][space_id].update(cells)
@@ -1035,7 +1036,7 @@ class Backend:
                 'LEFT JOIN native_lobby_prop_rotations r ON r.gid=p.gid WHERE player_id=?',
                 (player_id,)).fetchall()
             before = {row['gid']: self._container_prop(connection, player_id, row) for row in rows}
-            layouts = {ASSEMBLY_TEMP_POSITION: ASSEMBLY_TEMP_LAYOUT}
+            layouts = {POCKET_POSITION: POCKET_LAYOUT}
             for position, slot, catalog in ((CHEST_RIG_POSITION, 107, CHEST_RIG_LAYOUT),
                                              (BACKPACK_POSITION, 108, BACKPACK_LAYOUT)):
                 equipped = next((row for row in rows if row['grid_page_id'] == slot), None)
@@ -1188,14 +1189,15 @@ class Backend:
                 return location
 
             def container_position(length, width, target, ignored, spec_loc):
-                equipment_pos = 107 if target == CHEST_RIG_POSITION else 108
-                equipped = connection.execute(
-                    "SELECT template_id FROM native_lobby_props WHERE player_id=? AND grid_page_id=?",
-                    (player_id, equipment_pos)).fetchone()
-                if target == CHEST_RIG_POSITION:
-                    layout = CHEST_RIG_LAYOUT.get(equipped[0] if equipped else None)
+                if target == POCKET_POSITION:
+                    layout = POCKET_LAYOUT
                 else:
-                    layout = BACKPACK_LAYOUT.get(equipped[0] if equipped else None)
+                    equipment_pos = 107 if target == CHEST_RIG_POSITION else 108
+                    equipped = connection.execute(
+                        "SELECT template_id FROM native_lobby_props WHERE player_id=? AND grid_page_id=?",
+                        (player_id, equipment_pos)).fetchone()
+                    catalog = CHEST_RIG_LAYOUT if target == CHEST_RIG_POSITION else BACKPACK_LAYOUT
+                    layout = catalog.get(equipped[0] if equipped else None)
                 if layout is None:
                     fail("INVALID_EQUIPMENT", "The target container has no verified layout")
                 requested_space = int(spec_loc.get("space_id") or 0)
@@ -1240,14 +1242,15 @@ class Backend:
                             if not cells & occupied[space_id]:
                                 return (space_id, start_y * space_width + start_x,
                                         span_y, span_x, rotated)
-                fail("CHEST_RIG_FULL" if target == CHEST_RIG_POSITION else "BACKPACK_FULL",
+                fail({CHEST_RIG_POSITION: "CHEST_RIG_FULL", BACKPACK_POSITION: "BACKPACK_FULL",
+                      POCKET_POSITION: "POCKET_FULL"}[target],
                      "No target container space fits the moved prop")
 
             for command in commands:
                 gid = integer(command.get("prop_gid"), "prop_gid", 1, 2**63 - 1)
-                target = integer(command.get("target_pos"), "target_pos", 2, BACKPACK_POSITION)
+                target = integer(command.get("target_pos"), "target_pos", 2, POCKET_POSITION)
                 if target != 2 and not (101 <= target <= 138 or
-                                        target in (CHEST_RIG_POSITION, BACKPACK_POSITION)):
+                                        target in (CHEST_RIG_POSITION, BACKPACK_POSITION, POCKET_POSITION)):
                     fail("INVALID_ARGUMENT", "Unsupported equipment position")
                 row = connection.execute(
                     "SELECT p.*,COALESCE(r.rotated,0) AS rotated "
@@ -1263,15 +1266,15 @@ class Backend:
                     fail("INVALID_ARGUMENT", "Moved prop source position does not match")
                 if int(command.get("num") or row["quantity"]) != row["quantity"]:
                     fail("INVALID_ARGUMENT", "Partial stack movement is not supported")
-                if source == target and target not in (2, CHEST_RIG_POSITION, BACKPACK_POSITION):
+                if source == target and target not in (2, CHEST_RIG_POSITION, BACKPACK_POSITION, POCKET_POSITION):
                     fail("INVALID_ARGUMENT", "The prop is already in that equipment slot")
                 if source != 2 and not (101 <= source <= 138 or
                                         source in (CHEST_RIG_POSITION, BACKPACK_POSITION,
-                                                   ASSEMBLY_TEMP_POSITION)):
+                                                   POCKET_POSITION)):
                     fail("INVALID_ARGUMENT", "Unsupported source position")
                 old = self._container_prop(connection, player_id, row)
                 incumbent = None
-                if target != 2 and target not in (CHEST_RIG_POSITION, BACKPACK_POSITION):
+                if target != 2 and target not in (CHEST_RIG_POSITION, BACKPACK_POSITION, POCKET_POSITION):
                     incumbent = connection.execute(
                         "SELECT * FROM native_lobby_props WHERE player_id=? "
                         "AND grid_page_id=? AND gid<>?", (player_id, target, gid)).fetchone()
@@ -1281,7 +1284,7 @@ class Backend:
                             fail("POSITION_OCCUPIED", "The equipment slot changed during the move")
                 preferred = None
                 source_is_container = source in (CHEST_RIG_POSITION, BACKPACK_POSITION,
-                                                 ASSEMBLY_TEMP_POSITION)
+                                                 POCKET_POSITION)
                 item_length = row["width"] if source_is_container else row["length"]
                 item_width = row["length"] if source_is_container else row["width"]
                 if target == 2:
@@ -1290,7 +1293,7 @@ class Backend:
                         preferred = (int(loc["start_x"]), int(loc["start_y"]))
                     x, y = warehouse_position(item_length, item_width, {gid}, preferred)
                     new_length, new_width, rotated = item_length, item_width, False
-                elif target in (CHEST_RIG_POSITION, BACKPACK_POSITION):
+                elif target in (CHEST_RIG_POSITION, BACKPACK_POSITION, POCKET_POSITION):
                     x, y, new_length, new_width, rotated = container_position(
                         item_length, item_width, target, {gid},
                         command.get("spec_loc") or {})

@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 import time
 
-from .core import (ASSEMBLY_TEMP_POSITION, BACKPACK_POSITION, CHEST_RIG_POSITION,
+from .core import (POCKET_POSITION, BACKPACK_POSITION, CHEST_RIG_POSITION,
                    DomainError)
 from .client_errors import error_code, inventory_error
 from .weapon_components import default_components
@@ -107,7 +107,7 @@ def _purchase_position(position):
     position = int(position or 0)
     if position in (0, 2):
         return 2
-    if position in (CHEST_RIG_POSITION, BACKPACK_POSITION, ASSEMBLY_TEMP_POSITION):
+    if position in (CHEST_RIG_POSITION, BACKPACK_POSITION, POCKET_POSITION):
         return position
     if position not in equipment_slots():
         raise ValueError('Purchase targets an unavailable equipment slot')
@@ -221,7 +221,7 @@ def _auction_sale_detail(item_id, row, now):
 
 def inventory_location(row):
     position = row['grid_page_id']
-    if position == ASSEMBLY_TEMP_POSITION:
+    if position == POCKET_POSITION:
         return {'pos': position, 'start_x': 0, 'start_y': 0,
                 'x': row['width'], 'y': row['length'],
                 'space_id': row['x'], 'rotate': False}
@@ -500,7 +500,7 @@ def response_fields(request, backend, local_session):
         if 1 <= len(entries) <= 32 and all(
                 int(entry.get('channel') or 0) == 2
                 and int((entry.get('single_auction_prop') or {}).get('to_pos') or 0)
-                in (2, ASSEMBLY_TEMP_POSITION, CHEST_RIG_POSITION, BACKPACK_POSITION)
+                in (2, POCKET_POSITION, CHEST_RIG_POSITION, BACKPACK_POSITION)
                 for entry in entries):
             items = []
             for entry in entries:

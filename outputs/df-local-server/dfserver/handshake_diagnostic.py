@@ -25,7 +25,7 @@ from .business_envelope import BusinessEnvelope, parse_business_envelope
 from .candidate_business import CandidateBusinessCodec
 from .client_errors import inventory_error
 from .container_layouts import capacity as container_capacity
-from .core import (ASSEMBLY_TEMP_LAYOUT, ASSEMBLY_TEMP_POSITION,
+from .core import (POCKET_LAYOUT, POCKET_POSITION,
                    BACKPACK_LAYOUT, BACKPACK_POSITION, CHEST_RIG_LAYOUT,
                    CHEST_RIG_POSITION, DomainError)
 from .gcp_crypto import decode_received_body, encrypt_body
@@ -95,7 +95,9 @@ class State:
 def _log_request_progress(entry, phase):
     fields = ('request_name', 'service', 'prefix_sequence', 'elapsed_ms',
               'response_sent', 'response_elapsed_ms', 'local_commerce_result',
-              'request_not_answered', 'failure_code')
+              'request_not_answered', 'failure_code', 'local_bullet_commands',
+              'local_body_container_snapshots', 'local_serial_buy_items',
+              'local_inventory_change_notification_sent')
     event = {'event': 'business_request', 'phase': phase, 'observed_at_utc': _time()}
     event.update({name: entry[name] for name in fields if name in entry})
     print(json.dumps(event), flush=True)
@@ -879,11 +881,11 @@ def _candidate_local_deposit_response(message, backend, local_session, key, *, h
                                   'grid_space': [dict(space) for space in row['grid_space']],
                                   'load_props': []}
                  for row in _candidate_body_equipment_positions()}
-    equipment[ASSEMBLY_TEMP_POSITION] = {
-        'position': ASSEMBLY_TEMP_POSITION, 'capacity': len(ASSEMBLY_TEMP_LAYOUT),
+    equipment[POCKET_POSITION] = {
+        'position': POCKET_POSITION, 'capacity': len(POCKET_LAYOUT),
         'src_prop_id': 0,
         'grid_space': [{'id': space_id, 'length': width, 'width': height}
-                       for space_id, (width, height) in enumerate(ASSEMBLY_TEMP_LAYOUT, 1)],
+                       for space_id, (width, height) in enumerate(POCKET_LAYOUT, 1)],
         'load_props': [],
     }
     rig = next((prop for prop in state['props'] if prop['grid_page_id'] == 107), None)
@@ -912,7 +914,7 @@ def _candidate_local_deposit_response(message, backend, local_session, key, *, h
             'load_props': [],
         }
     occupied = set()
-    temporary_slots = set()
+    pocket_slots = set()
     for prop in state['props']:
         position = prop['grid_page_id']
         if position == grid['grid_page_id']:
@@ -932,12 +934,12 @@ def _candidate_local_deposit_response(message, backend, local_session, key, *, h
             if not backpack or (backpack_layout and prop['x'] not in {space['id'] for space in backpack_spaces}):
                 raise ValueError('Unsupported backpack placement')
             destination = equipment[position]['load_props']
-        elif position == ASSEMBLY_TEMP_POSITION:
-            if not 1 <= prop['x'] <= len(ASSEMBLY_TEMP_LAYOUT) or prop['x'] in temporary_slots:
-                raise ValueError('Invalid assembly temporary slot')
+        elif position == POCKET_POSITION:
+            if not 1 <= prop['x'] <= len(POCKET_LAYOUT) or prop['x'] in pocket_slots:
+                raise ValueError('Invalid pocket slot')
             if (prop['y'], prop['length'], prop['width']) != (0, 1, 1):
-                raise ValueError('Invalid assembly temporary item placement')
-            temporary_slots.add(prop['x'])
+                raise ValueError('Invalid pocket item placement')
+            pocket_slots.add(prop['x'])
             destination = equipment[position]['load_props']
         elif position in equipment:
             destination = equipment[position]['load_props']
@@ -1365,6 +1367,7 @@ def _continue_character_creation(connection, decoder, queue, current, ack,
                         message, backend, local_session, ack.session_key,
                         header_word4=current.header_word4, header_word9=outbound_sequence)
                     entry['local_body_container_response'] = True
+                    entry['local_commerce_result'] = _candidate_local_commerce_result(response, ack.session_key)
                 elif name == 'CSDepositOperateBulletReq':
                     entry['local_bullet_commands'] = _candidate_local_bullet_summary(message)
                     response = _candidate_local_bullet_response(
@@ -1459,7 +1462,9 @@ def _continue_character_creation(connection, decoder, queue, current, ack,
                 connection.sendall(response.encode())
                 entry['response_sent'] = True
                 entry['response_elapsed_ms'] = round((time.monotonic() - began) * 1000)
-                if name in ('CSDepositOperateBulletReq', 'CSDepositAssemblySyncBodyContainerReq'):
+                if name in ('CSDepositOperateBulletReq', 'CSDepositAssemblySyncBodyContainerReq',
+                            'CSShopBuyLotteryItemReq', 'CSMarketBuyTReq', 'CSAuctionBuyTReq',
+                            'CSMallBuyReq', 'CSSerialCheapBuyReq', 'CSMallSellReq'):
                     outbound_sequence += 1
                     notification = _candidate_local_inventory_change_notification(
                         response, ack.session_key, header_word4=current.header_word4,
@@ -1935,6 +1940,8 @@ def inspect_exchange(connection, modulus=None, *, timeout=12, diagnostic_exponen
                                                                             header_word4=current.header_word4,
                                                                             header_word9=outbound_sequence)
                                                                         entry['local_body_container_response'] = True
+                                                                        entry['local_commerce_result'] = _candidate_local_commerce_result(
+                                                                            next_response, ack.session_key)
                                                                     elif name == 'CSDepositOperateBulletReq':
                                                                         entry['local_bullet_commands'] = _candidate_local_bullet_summary(message)
                                                                         next_response = _candidate_local_bullet_response(
@@ -2067,7 +2074,6 @@ def inspect_exchange(connection, modulus=None, *, timeout=12, diagnostic_exponen
                                                                 entry['response_elapsed_ms'] = round(
                                                                     (time.monotonic() - continuation_began) * 1000)
                                                                 entry['response_header_word9'] = next_response.header_word9
-                                                                _log_request_progress(entry, 'processed')
                                                                 if (name in ('CSShopBuyLotteryItemReq',
                                                                              'CSMarketBuyTReq',
                                                                              'CSAuctionBuyTReq',
@@ -2096,6 +2102,7 @@ def inspect_exchange(connection, modulus=None, *, timeout=12, diagnostic_exponen
                                                                         if collection_change is not None:
                                                                             connection.sendall(collection_change.encode())
                                                                             entry['local_collection_change_notification_sent'] = True
+                                                                _log_request_progress(entry, 'processed')
                                                                 try:
                                                                     current = _receive_one(connection, decoder, queue)
                                                                 except (TimeoutError, socket.timeout):

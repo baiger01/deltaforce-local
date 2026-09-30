@@ -30,7 +30,8 @@
 | 弹药关联 | 恢复 261 条武器配置、176 条弹药配置，核实 31 套默认枪械的弹匣容量 | `weapon_ammo_catalog.json`、`dfserver/weapon_ammo.py` |
 | 装弹与卸弹 | 接入真实装卸弹枚举、口径匹配、容量检查、枪内弹药保存、库存变更响应与通知 | `dfserver/core.py`、`dfserver/handshake_diagnostic.py`、`tests/test_native_inventory.py` |
 | 背包与胸挂 | 恢复 44 项具体容器布局，按客户端配置提供分区格子 | `container_layout_catalog.json`、`dfserver/container_layouts.py` |
-| 容器同步 | 接入已观察的胸挂、背包和临时区同步；实现落位检查、堆叠拆分、数量守恒及失败整批回滚 | `dfserver/core.py`、`tests/test_local_commerce.py`、`tests/test_native_inventory.py` |
+| 容器同步 | 接入已观察的胸挂、背包和口袋同步；实现落位检查、堆叠拆分、数量守恒及失败整批回滚 | `dfserver/core.py`、`tests/test_local_commerce.py`、`tests/test_native_inventory.py` |
+| 口袋与重连购买 | 按真实口袋位置支持物品移入；重连购买补发库存变更通知，购买 137 发、装入 17 发、同步口袋及重读存档的回归用例已通过 | `dfserver/core.py`、`dfserver/handshake_diagnostic.py`、`tests/test_local_commerce.py` |
 | 购买与出售事务 | 实现扣款、物品持久化、指定位置、堆叠上限、出售删除与货币变更 | `dfserver/local_commerce.py`、`dfserver/core.py`、`tests/test_local_commerce.py` |
 | 近战数据 | 使用客户端实际模板 `18100000001`，纳入本地拥有及装备响应 | `dfserver/core.py`、`dfserver/handshake_diagnostic.py` |
 
@@ -39,6 +40,7 @@
 ## 已完成验证
 
 - 2026-09-30：单独检出上传源码，在全新 Python 3.12 环境安装依赖，全部 241 项自动测试通过。
+- 2026-09-30：口袋与重连购买修正后，本机源码全部 243 项自动测试通过。
 - GitHub 私有仓库已建立，源码、测试、静态目录和来源信息已上传；上传文件审计通过。
 
 ## 协作依据
