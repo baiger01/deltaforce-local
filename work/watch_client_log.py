@@ -14,6 +14,7 @@ ALERT = re.compile(
     r"ComparePriceLogic.*(?:Error|Fail)|登录组件异常|"
     r"QuickOperationLogic|WeaponBulletQuickOperationData|ProcessPbDataChange|"
     r"CSDeposit(?:OperateBullet|AssemblySyncBodyContainer|ChangeNtf)|"
+    r"CSDeposit(?:Sort|SetCommonConfig)|SafeBox|SafeAndCardPack|WarehouseArrange|"
     r"InventoryServer:|QuickOperation.*(?:Error|Fail)|Weapon.*(?:Error|Fail|Invalid)|"
     r"GoodsItemStruct|SourcingAuctionProvider|ComparePriceLogic\.SimpleComparePrice|"
     r"_RefreshDurability|"

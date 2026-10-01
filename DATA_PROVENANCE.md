@@ -15,6 +15,7 @@ GitHub 协作仓库仅包含源码、静态 JSON 目录、重建描述符和来�
 | `outputs/df-local-server/protocol/business_contracts.json`、`generated_codec_fields.json`、`generated_class_metadata.json`、`candidate_business.pb` | 客户端 `DeltaForce/Saved/LuaSource/` 缓存与当前版本明文 PAK 内 Lua 容器；原生程序也提供部分类型名 | `work/lua53_reader.py` 只读解析 Lua 5.3 容器；恢复的字段、类声明和候选 Protobuf 定义保存在项目内。它们是重建业务消息的候选证据，不能单凭静态字段表宣称原客户端接口全部可用。 |
 | `work/sdk-local-provider-stage/rail_api64.dll` | **本项目自建** DLL，接口形状来自同版本原版 `DeltaForce/Binaries/ThirdParty/WeGame/Win64/rail_api64.dll` | `outputs/native-account-provider/provider.c` 与 `build_provider.py` 生成；`build-record.json` 记录原版 SDK、源码和成品的 SHA-256。包内无原版游戏 DLL。运行测试前会校验原版哈希并在结束后恢复。 |
 | `container_layout_catalog.json` | 基础包 `pakchunk2-WindowsClient.pak` 中背包与胸挂表明文条目 | `work/extract_container_layout_catalog.py` 恢复每个配置的实际分区，目录记录条目与哈希；不能用容量反推格子排列。 |
+| `safe_box_layout_catalog.json` | 当前安装基础包 `pak-0-0-pakchunk2-WindowsClient.pak` 条目 7056，PAK 偏移 50318377，以及已有命名 `PropSlotConfig` 导出 | `work/extract_safe_box_layout_catalog.py` 校验源哈希、38 行与尾标记，直接读取 UInt64 模板 ID、原始两尺寸和容量，逐 ID 与 GameItem 核对；保存原始字段索引和行偏移，非方形横纵方向未恢复。 |
 | `weapon_preset_catalog.json`、`weapon_component_catalog.json` | 同版本明文武器配置与基础包 `pakchunk2-WindowsClient.pak` 的组件节点条目 4567 | `work/extract_weapon_preset_catalog.py`、`extract_weapon_components_catalog.py` 恢复预设、receiver 和组件树，目录保留实际来源与偏移。 |
 | `weapon_ammo_catalog.json` | 基础包 `pakchunk2-WindowsClient.pak` 条目 4489/4555；热更新 PartsData/PartsFunction；基础包 Lua `cs_deposit_pb.lua` | `work/extract_weapon_ammo_catalog.py` 恢复弹药类别、已有弹匣容量与装卸弹枚举，交叉核对客户端 Lua 规则；未恢复的弹匣或武器关系保持未知。目录记录源哈希、行偏移与函数。 |
 | `client_error_catalog.json` | 基础包 `pakchunk1-WindowsClient.pak` 的 `errcode_pb.lua` 条目 6809 | `work/extract_client_error_catalog.py` 只读恢复实际错误名与值；不以统一猜测结果码代替库存业务错误。 |
@@ -34,6 +35,18 @@ GitHub 协作仓库仅包含源码、静态 JSON 目录、重建描述符和来�
 原客户端 `DFMGlobalConst.lua` 条目 1882 的主类指令 1124～1126 定义 `Medicine=14`，子类指令 1206～1222 定义治疗、手术、止血、持续治疗、维修和注射剂类别；SHA-256 `4887a7f2b5265a5277c5c2553f4ff56ec08f1219a632220e3b2efa367baddcc4`。本地开放现有物品表中子类 2～6 的 22 件治疗、维修用品，注射剂仅开放已核对中文名称的 `14070000001/03/04/05/06/08/09`，共 29 件。ID 主类、子类取法来自 `ItemHelperTool.lua` 函数 `0.38/0.39`，不是 `ItemHealth.MedicineType` 的页面四分类；函数、偏移和哈希均保存在策略文件中。
 
 八种注射剂的中文名由基础包 `pak-0-0-pakchunk2-WindowsClient.pak` 条目 7068 双重核对：492 行导出中的原字段索引 497 是中文 FString，515 是物品 UInt64，516 的输出字符串含相同 `ID:1;`；每种还有一行重复产物记录。源 SHA-256 为 `b26f25dd754180c442e141e64fc19c2cdaa487347686c0bdb8779f7fffbcfa33`，所有行号与偏移保存到策略文件。`14070000006` 是保留的“体能激活针”，`14070000007` 是用户要求下架的“体能强化剂”；不得混淆。`work/verify_medicine_sale_policy.py --payload <条目7068导出文件>` 实际验证了 16 行中文、ID、产物字符串及源哈希。购买目录、报价和成交共用受限名单，回收计价仍按原物品目录及实际归属验证；不删除已有物品。
+
+## 安全箱与仓库整理
+
+条目 7056 的 SHA-256 为 `67e8779e53eba3eaaad941d177ad9baf4e49e06a83d3384438132d5ad9154480`，UInt64 字段索引 51 直接给出模板 ID，Int 字段 48/49 是两尺寸，62 为容量；38 行容量均等于两尺寸乘积。表名 `SafeBoxFunc` 由 1109 物品集合及客户端布局消费者支持，但加密名称表未恢复，不将数字字段冒称原属性名。`11090000002` 行偏移 269 为 2×2，`11090000004` 行偏移 665 为 3×3。本地测试账号提供这两个已验证真实模板的永久权限，`expire_timestamp=0`；这是本地账号策略，不是官方免费归属。其余非方形尺寸保留为原始 A/B，不猜测坐标方向。
+
+命名 `PropSlotConfig` 导出 SHA-256 为 `1e1cfe1bd65be0b8a3bfb1eb5511e748e3adf8e17feffbb645b63bb6c499c830`：装备槽 109 行偏移 4052，内容槽 109001 行偏移 30431，后者 `bIsContainerByItem=true`、静态 0×0。内容限制采用此行的真实 `IgnorePropTypes` 前缀/具体 ID，并保留 GameItem 的安全箱标志检查；未恢复的 `UncarryableItem` 白名单、价值等规则不能宣称已完整实现。多个安全箱权限共用装备位 109 和内容位 109001，不是多个仓库页。
+
+`ItemOperaTool.lua` SHA-256 `40de2bf2c60e09661ab4ac24e1bb0768719fbdc09bf71b12dc1645f0395a4892`，`DoPlacePermissionItem` 函数 `0.29`、偏移 26759，只发送 `prop_id/target_pos`。权限通过已认证账号查找，不能按缺失 gid 拒绝，也不能把权限箱当普通商品移出。`InventoryServer_Network.lua` SHA-256 `d7f83db2ae2cf4902b440131c15648c7b7d4b8b8f5e459231b9eb6ec17dcb0dc`，函数 `0.13`、偏移 15938 读取权限，`0.40`、偏移 35142 先处理位置变更，`0.50`、偏移 53269 优先按 `src_prop_id` 生成客户端布局。切换响应下发内容位 109001 的 Modify=3、真实模板及旧装备删除/新装备加入，随后刷新内容位置。`EquipmentFeature.lua` SHA-256 `f9be61db7cfc5a4bb3cc00e88bf3f51ea2c01dbfbbf6753d27d1e76dc0cb0600`，函数 `0.38/0.39/0.40`、偏移 16081/16335/16495，证明零到期值可永久使用，负值才标记免费，正值必须未过期。
+
+原版整理设置请求是 `CSDepositSetCommonConfigReq`。`InventoryServer_SortLogic.lua` SHA-256 `b179130620dd63e41128c69218ad334535aa40e40990d6855933beeb6370bcd9`，`0.1`、偏移 1199 发送 `CSDepositSortMultiplePosReq`，回调 `0.1.0`、偏移 1619 消费 `changes` 后提示成功；`0.2`、偏移 3255 发送设置和 `extension_pos_order`。旧实现返回成功但空变更；现主仓库页 2 按命名模板的 9×40 格执行确定性落位并持久化，保存实例与旋转，失败整笔回滚。`sort_style=0/1` 与八个分类枚举来自 `common_pb.lua` 根函数，SHA-256 `81e071e35f33f0e5704d5098ac2a182c794bbe5b1e5a7e24f415a0473b40350b`；分类顺序已保存，但原 `DepositSortClass.ItemTypeID` 的字段关联尚未验证，当前分类模式仅按同模板分组，不声称复现官方分类及服务端整理算法。
+
+`WarehouseWithTab_HD.lua` SHA-256 `6442714ffa908c79db4807438021da7be437559d71940b228e56517b0a212cac`：`_OnExtArrangeBtnClick` 函数 `0.61`、偏移 46636，单仓库且无钓鱼仓库时直接整理，多仓库进入选择；`_StartExtArrange` 函数 `0.62`、偏移 48113 绑定确认/取消/全选；`_OnConfirmExtArrangeBtnClicked` 函数 `0.67`、偏移 57653 将选择映射为真实仓库页 ID 再提交。仓库扩容 ID 算法来自 `InventoryServer_DepositLogic.lua`（SHA-256 `594f6ef7896cae11051fd67d365160af4afb699b51c0febb794e7c9dc588bb84`）函数 `0.17/0.18/0.20/0.21`、偏移 10182/10329/10632/11243；模板槽 1001 不能当成已拥有扩容页。扩容配置和分类表候选尚缺命名字段的独立对应，不生成假扩容页，不宣称多仓库分类整理已恢复。
 
 2026-10-01 11:29 的原客户端试验捕获了 34 次 `CSDepositEquipPropReq`。请求序号 1821 的 `spec_loc` 指定胸挂分区 5、`start_x=1`，省略默认的 `start_y=0`；1843 反向省略 `start_x=0`。序号 1903 同时指定 `target_prop_gid`，属于交换，不能只移动源物品。旧实现遇到省略的坐标改为自动落位，并忽略容器内交换目标，随后四次 `CSDepositAssemblySyncBodyContainerReq` 在胸挂分区 5 出现两件物品同占 `(0,0)`，数据库副本重放确认拒绝原因为 `POSITION_OCCUPIED`。现在保留明确位置的零坐标及旋转，交换两件实际拥有的实例，无法容纳时整笔回滚；不接受重叠快照，不删除物品来绕过错误。
 

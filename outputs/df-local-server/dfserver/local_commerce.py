@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 import time
 
-from .core import (POCKET_POSITION, BACKPACK_POSITION, CHEST_RIG_POSITION,
+from .core import (POCKET_POSITION, BACKPACK_POSITION, CHEST_RIG_POSITION, SAFE_BOX_POSITION,
                    DomainError)
 from .client_errors import error_code, inventory_error
 from .weapon_components import default_components
@@ -133,7 +133,7 @@ def _purchase_position(position):
     position = int(position or 0)
     if position in (0, 2):
         return 2
-    if position in (CHEST_RIG_POSITION, BACKPACK_POSITION, POCKET_POSITION):
+    if position in (CHEST_RIG_POSITION, BACKPACK_POSITION, SAFE_BOX_POSITION, POCKET_POSITION):
         return position
     if position not in equipment_slots():
         raise ValueError('Purchase targets an unavailable equipment slot')
@@ -255,7 +255,7 @@ def inventory_location(row):
         return {'pos': position, 'start_x': 0, 'start_y': 0,
                 'x': row['width'], 'y': row['length'],
                 'space_id': row['x'], 'rotate': False}
-    if position in (CHEST_RIG_POSITION, BACKPACK_POSITION):
+    if position in (CHEST_RIG_POSITION, BACKPACK_POSITION, SAFE_BOX_POSITION):
         space_width = row.get('space_width')
         if not space_width and row['y']:
             raise ValueError('Container coordinates require the equipped item layout')
@@ -509,7 +509,7 @@ def response_fields(request, backend, local_session):
         if 1 <= len(entries) <= 32 and all(
                 int(entry.get('channel') or 0) == 2
                 and int((entry.get('single_auction_prop') or {}).get('to_pos') or 0)
-                in (2, POCKET_POSITION, CHEST_RIG_POSITION, BACKPACK_POSITION)
+                in (2, POCKET_POSITION, CHEST_RIG_POSITION, BACKPACK_POSITION, SAFE_BOX_POSITION)
                 for entry in entries):
             items = []
             for entry in entries:
@@ -577,12 +577,18 @@ def response_fields(request, backend, local_session):
                                   else 'auction_fail_list'): entries}
         delivered_id, delivered_row = _delivered_stock(catalog, item_id)
         try:
-            purchase = backend.native_lobby_purchase(
-                local_session, template_id=delivered_id, quantity=count,
-                unit_price=unit_price, currency_id=CURRENCY_ID,
-                length=delivered_row['length'], width=delivered_row['width'],
-                max_stack_count=delivered_row['max_stack_count'],
-                target_position=target_position)
+            item = {'template_id': delivered_id, 'quantity': count,
+                    'unit_price': unit_price, 'length': delivered_row['length'],
+                    'width': delivered_row['width'],
+                    'max_stack_count': delivered_row['max_stack_count'],
+                    'target_position': target_position}
+            if target_position in (POCKET_POSITION, CHEST_RIG_POSITION,
+                                   BACKPACK_POSITION, SAFE_BOX_POSITION):
+                purchase = backend.native_lobby_purchase_container_batch(
+                    local_session, items=[item], currency_id=CURRENCY_ID)
+            else:
+                purchase = backend.native_lobby_purchase(
+                    local_session, **item, currency_id=CURRENCY_ID)
         except DomainError as error:
             return {'result': inventory_error(error), ('mall_fail_list' if channel == 'mall'
                                   else 'auction_fail_list'): entries}

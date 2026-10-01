@@ -34,6 +34,8 @@
 | 弹药关联 | 恢复 261 条武器配置、176 条弹药配置，核实 31 套默认枪械的弹匣容量 | `weapon_ammo_catalog.json`、`dfserver/weapon_ammo.py` |
 | 装弹与卸弹 | 接入真实装卸弹枚举、口径匹配、容量检查、枪内弹药保存、库存变更响应与通知 | `dfserver/core.py`、`dfserver/handshake_diagnostic.py`、`tests/test_native_inventory.py` |
 | 背包与胸挂 | 恢复 44 项具体容器布局，按客户端配置提供分区格子 | `container_layout_catalog.json`、`dfserver/container_layouts.py` |
+| 安全箱来源与存取 | 恢复 38 条真实安全箱 ID、容量和原始尺寸；本地账号提供方向明确的 4 格和 9 格安全箱权限，支持原生无 gid 装备请求、容量更新、物品移动、快照与单件/批量购买；切换保留内容坐标，容量不足整笔回滚，权限物品不能作为普通货物移出 | `safe_box_layout_catalog.json`、`dfserver/safe_boxes.py`、`tests/test_native_safe_box.py`；非方形方向及官方归属未恢复，实机操作待确认 |
+| 主仓库实际整理 | 主仓库页 2 整理返回实际位置和旋转变更，事务保存并保留数量、枪械组件、枪内弹药；接入原生 `CSDepositSetCommonConfigReq` 并保存设置；无效页和无法完整落位的请求返回错误并回滚 | `dfserver/deposit_sort.py`、`tests/test_native_deposit_sort.py`；采用本地确定性落位策略，多扩容页及官方分类对应尚未恢复 |
 | 容器同步 | 接入已观察的胸挂、背包和口袋同步；实现落位检查、堆叠拆分、数量守恒及失败整批回滚 | `dfserver/core.py`、`tests/test_local_commerce.py`、`tests/test_native_inventory.py` |
 | 容器精确移动与交换 | 修正原生请求省略零坐标后的错误自动落位；按指定格子和旋转落位，处理目标 gid 的原子交换，失败整批回滚；仓库旋转在移动响应及库存重取中保持一致；日志保留移动参数、结果码及具体拒绝原因 | `dfserver/core.py`、`dfserver/local_commerce.py`、`dfserver/handshake_diagnostic.py`、`tests/test_native_inventory.py`、`tests/test_local_commerce.py`；实机回测待确认 |
 | 口袋与重连购买 | 按真实口袋位置支持物品移入；重连购买补发库存变更通知，购买 137 发、装入 17 发、同步口袋及重读存档的回归用例已通过 | `dfserver/core.py`、`dfserver/handshake_diagnostic.py`、`tests/test_local_commerce.py` |
@@ -80,6 +82,7 @@
 - 2026-10-01：11:29 的 720 秒试验结束，原 SDK 恢复并与源文件哈希一致。日志定位两次匹配分配未响应的超时及四次身体容器重叠错误；库存移动修正的 15 项用例、购买原有 48 项用例、新增加密交换用例及日志监听用例通过，实机界面效果尚待本轮用户确认。
 - 2026-10-01：独立审查复现仓库旋转标记未写入协议位置的问题，修正后移动响应、库存重取、数据库重开和移入胸挂的加密回归通过；购买与库存协议的 50 项用例、身体容器的 15 项用例通过。11:59 的 720 秒试验结束，原 SDK 恢复并与源文件哈希一致。
 - 2026-10-01：药品可售范围修正后 53 项购买与库存协议用例通过，覆盖保留标准药品、下架条目无报价、旧单买和混合批量购买不扣款，以及已拥有下架物品的读取、移动和仓库出售。原始客户端导出中的 16 行强化针中文、ID、产物字符串与源哈希核验通过。
+- 2026-10-01：安全箱与主仓库整理的 120 项相关回归通过（73.591 秒），覆盖购买、移动、权限装备、容量切换、原生设置请求、实际整理变更、存档重开及失败回滚；独立审查复现并修正权限槽移出导致重复 gid、商城单件购买漏走安全箱容器分支的问题。此记录不代表多仓库扩容页或全部分类规则已恢复。
 - GitHub 仓库已按用户指示改为公开，源码、测试、静态目录和来源信息已上传；上传文件审计通过。
 
 ## 协作依据

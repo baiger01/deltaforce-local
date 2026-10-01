@@ -28,7 +28,8 @@ from .client_errors import error_code, inventory_error
 from .container_layouts import capacity as container_capacity
 from .core import (POCKET_LAYOUT, POCKET_POSITION,
                    BACKPACK_LAYOUT, BACKPACK_POSITION, CHEST_RIG_LAYOUT,
-                   CHEST_RIG_POSITION, DomainError)
+                   CHEST_RIG_POSITION, SAFE_BOX_POSITION, DomainError)
+from . import safe_boxes
 from .gcp_crypto import decode_received_body, encrypt_body
 from .gcp_data import decode_data_frame, encode_data_frame
 from .gcp_framing import Frame, StreamDecoder
@@ -105,7 +106,8 @@ def _log_request_progress(entry, phase):
               'local_body_container_snapshots', 'local_serial_buy_items',
               'local_lottery_purchase_items', 'local_inventory_change_notification_sent',
               'local_premium_shop_request', 'local_customization_request',
-              'local_collection_change_notification_sent')
+              'local_collection_change_notification_sent', 'local_warehouse_sort_request',
+              'local_warehouse_sort_result', 'local_warehouse_sort_change_count')
     event = {'event': 'business_request', 'phase': phase, 'observed_at_utc': _time()}
     event.update({name: entry[name] for name in fields if name in entry})
     print(json.dumps(event), flush=True)
@@ -941,6 +943,7 @@ def _candidate_local_deposit_response(message, backend, local_session, key, *, h
     if request.name != 'CSDepositGetPropsReq':
         raise ValueError('Not the main warehouse fetch')
     backend.ensure_native_lobby_melee_collection(local_session)
+    backend.ensure_native_lobby_safe_boxes(local_session)
     state = backend.native_lobby_profile(local_session)
     grid = _candidate_main_deposit_grid()
     grid['props'] = []
@@ -980,6 +983,16 @@ def _candidate_local_deposit_response(message, backend, local_session, key, *, h
             'grid_space': backpack_spaces,
             'load_props': [],
         }
+    safe_box = next((prop for prop in state['props'] if prop['grid_page_id'] == 109), None)
+    safe_layout = safe_boxes.layout(safe_box['template_id'] if safe_box else None)
+    if safe_box and safe_layout:
+        equipment[SAFE_BOX_POSITION] = {
+            'position': SAFE_BOX_POSITION, 'src_prop_id': safe_box['template_id'],
+            'capacity': sum(x * y for x, y in safe_layout),
+            'grid_space': [{'id': index, 'length': x, 'width': y}
+                           for index, (x, y) in enumerate(safe_layout, 1)],
+            'load_props': [],
+        }
     occupied = set()
     pocket_slots = set()
     for prop in state['props']:
@@ -1000,6 +1013,14 @@ def _candidate_local_deposit_response(message, backend, local_session, key, *, h
         elif position == BACKPACK_POSITION:
             if not backpack or (backpack_layout and prop['x'] not in {space['id'] for space in backpack_spaces}):
                 raise ValueError('Unsupported backpack placement')
+            destination = equipment[position]['load_props']
+        elif position == SAFE_BOX_POSITION:
+            if not safe_layout or not 1 <= prop['x'] <= len(safe_layout):
+                raise ValueError('Unsupported safety-box placement')
+            loc = inventory_location(prop)
+            width, height = safe_layout[prop['x'] - 1]
+            if loc['start_x'] + loc['x'] > width or loc['start_y'] + loc['y'] > height:
+                raise ValueError('Safety-box item exceeds its verified layout')
             destination = equipment[position]['load_props']
         elif position == POCKET_POSITION:
             if not 1 <= prop['x'] <= len(POCKET_LAYOUT) or prop['x'] in pocket_slots:
@@ -1049,6 +1070,9 @@ def _candidate_local_deposit_response(message, backend, local_session, key, *, h
         'currency': [{'id': row['currency_id'], 'num': row['amount']}
                      for row in state['currencies']],
         'sort_config': state['sort_config'],
+        'extension_pos_order': state['extension_pos_order'],
+        'safe_boxes': state['safe_box_permissions'],
+        'safe_and_card_pack_permission': state['safe_box_permissions'],
         'cur_extension_num': 0,
         'max_extension_num': 0,
         'upperlimit_extension_num': 0,
@@ -1118,6 +1142,10 @@ def _candidate_local_equip_response(message, backend, local_session, key, *,
         changes = []
         for move in moves:
             before, after = move['before'], move['after']
+            row = after or before
+            if row['grid_page_id'] in (109, SAFE_BOX_POSITION):
+                changes.extend(_native_inventory_changes([move])['prop_changes'])
+                continue
             if after['template_id'] in WEAPONS:
                 # The melee owning list is outside ordinary slots. Lua Move
                 # requires both slots; swap equipped instances with Del/Add.
@@ -1139,6 +1167,10 @@ def _candidate_local_equip_response(message, backend, local_session, key, *,
                             'delta': after['quantity']})
         fields = {'result': 0, 'deposit_change': {'prop_changes': changes},
                   'cmds': request.fields.get('cmds', [])}
+        if any(command.get('target_pos') == 109 for command in commands):
+            box = next(row for row in backend.native_lobby_profile(local_session)['props']
+                       if row['grid_page_id'] == 109)
+            fields['deposit_change']['pos_changes'] = [safe_boxes.position_change(box['template_id'])]
     response = codec.response(request, fields)
     return encode_data_frame((response,), key, direction='server_to_client',
                              opaque_flag=64, header_word4=header_word4,
@@ -1252,28 +1284,42 @@ def _candidate_local_guide_stage_response(message, key, *, header_word4, header_
 
 
 def _candidate_local_deposit_sort_response(message, backend, local_session, key,
-                                           *, header_word4, header_word9):
-    """Acknowledge sorting an already packed local grid and retain UI options."""
+                                           *, header_word4, header_word9, diagnostic_entry=None):
+    """Return committed inventory changes and the native client's saved settings."""
     if len(message) < 5:
         raise ValueError('Truncated warehouse sorting package')
     codec = _candidate_codec()
     request = codec.decode(message[4:])
-    if request.name == 'CSDepositSortPositionReq':
-        position = int(request.fields.get('pos_id', 0))
-        if position != 2:
-            raise ValueError('Unsupported warehouse sorting position')
-        fields = {'result': 0, 'pos_id': position, 'changes': {}}
-    elif request.name == 'CSDepositSortMultiplePosReq':
-        positions = [int(value) for value in request.fields.get('pos_id', [])]
-        if any(value != 2 for value in positions):
-            raise ValueError('Unsupported warehouse sorting position')
-        fields = {'result': 0, 'changes': {}}
-    elif request.name == 'CSDepositSetSortConfigReq':
-        config = backend.set_native_lobby_sort_config(
-            local_session, request.fields.get('sort_config', {}))
-        fields = {'result': 0, 'cur_sort_config': config}
-    else:
+    if request.name not in ('CSDepositSortPositionReq', 'CSDepositSortMultiplePosReq',
+                            'CSDepositSetSortConfigReq', 'CSDepositSetCommonConfigReq'):
         raise ValueError('Not a warehouse sorting request')
+    if diagnostic_entry is not None:
+        diagnostic_entry['local_warehouse_sort_request'] = request.fields
+    try:
+        if request.name in ('CSDepositSortPositionReq', 'CSDepositSortMultiplePosReq'):
+            positions = ([int(request.fields.get('pos_id', 0))]
+                         if request.name == 'CSDepositSortPositionReq' else request.fields.get('pos_id', []))
+            moves = backend.native_lobby_sort_positions(
+                local_session, positions, request.fields.get('spec_extension_first_class'))
+            fields = {'result': 0, 'changes': _native_inventory_changes(moves)}
+            if request.name == 'CSDepositSortPositionReq':
+                fields['pos_id'] = positions[0]
+            if diagnostic_entry is not None:
+                diagnostic_entry['local_warehouse_sort_change_count'] = len(moves)
+        else:
+            extension_order = (request.fields.get('extension_pos_order', [])
+                               if request.name == 'CSDepositSetCommonConfigReq' else None)
+            config = backend.set_native_lobby_sort_config(
+                local_session, request.fields.get('sort_config', {}), extension_order)
+            fields = {'result': 0, 'cur_sort_config': config}
+            if extension_order is not None:
+                fields['extension_pos_order'] = extension_order
+    except DomainError as error:
+        fields = {'result': inventory_error(error)}
+        if diagnostic_entry is not None:
+            diagnostic_entry['local_inventory_failure'] = {'code': error.code, 'message': error.message}
+    if diagnostic_entry is not None:
+        diagnostic_entry['local_warehouse_sort_result'] = fields['result']
     response = codec.response(request, fields)
     return encode_data_frame((response,), key, direction='server_to_client',
                              opaque_flag=64, header_word4=header_word4,
@@ -1479,10 +1525,10 @@ def _continue_character_creation(connection, decoder, queue, current, ack,
                         header_word4=current.header_word4, header_word9=outbound_sequence)
                     entry['local_collection_response'] = True
                 elif name in ('CSDepositSortPositionReq', 'CSDepositSortMultiplePosReq',
-                              'CSDepositSetSortConfigReq'):
+                              'CSDepositSetSortConfigReq', 'CSDepositSetCommonConfigReq'):
                     response = _candidate_local_deposit_sort_response(
                         message, backend, local_session, ack.session_key,
-                        header_word4=current.header_word4, header_word9=outbound_sequence)
+                        header_word4=current.header_word4, header_word9=outbound_sequence, diagnostic_entry=entry)
                     entry['local_warehouse_sort_response'] = True
                 elif name in ('CSSafehouseGetInfoReq', 'CSSafehouseGetPlayerDeviceReq'):
                     response = _candidate_local_safehouse_response(
@@ -2077,12 +2123,12 @@ def inspect_exchange(connection, modulus=None, *, timeout=12, diagnostic_exponen
                                                                         entry['local_collection_response'] = True
                                                                     elif name in ('CSDepositSortPositionReq',
                                                                                   'CSDepositSortMultiplePosReq',
-                                                                                  'CSDepositSetSortConfigReq'):
+                                                                                  'CSDepositSetSortConfigReq', 'CSDepositSetCommonConfigReq'):
                                                                         next_response = _candidate_local_deposit_sort_response(
                                                                             message, backend, local_session,
                                                                             ack.session_key,
                                                                             header_word4=current.header_word4,
-                                                                            header_word9=outbound_sequence)
+                                                                            header_word9=outbound_sequence, diagnostic_entry=entry)
                                                                         entry['local_warehouse_sort_response'] = True
                                                                     elif name in ('CSSafehouseGetInfoReq',
                                                                                   'CSSafehouseGetPlayerDeviceReq'):

@@ -47,6 +47,7 @@ def canonical(value):
 
 CHEST_RIG_POSITION = 107001
 BACKPACK_POSITION = 108001
+SAFE_BOX_POSITION = 109001
 # common_pb.lua 0, instructions 426-428: Pocket=199997; CarryOutPropsPos=1999.
 POCKET_POSITION = 199997
 # QuickOperationLogic and captured snapshots use five 1x1 pocket spaces.
@@ -150,6 +151,12 @@ CREATE TABLE IF NOT EXISTS native_lobby_melee_items (
  gid INTEGER NOT NULL UNIQUE CHECK(gid>0), PRIMARY KEY(player_id,template_id));
 CREATE TABLE IF NOT EXISTS native_lobby_sort_configs (
  player_id TEXT PRIMARY KEY REFERENCES players(id), config_json TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS native_lobby_extension_orders (
+ player_id TEXT PRIMARY KEY REFERENCES players(id), order_json TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS native_lobby_safe_box_permissions (
+ player_id TEXT NOT NULL REFERENCES players(id), template_id INTEGER NOT NULL,
+ gid INTEGER NOT NULL UNIQUE CHECK(gid>0), expire_timestamp INTEGER NOT NULL,
+ PRIMARY KEY(player_id,template_id));
 CREATE TABLE IF NOT EXISTS native_lobby_devices (
  player_id TEXT NOT NULL REFERENCES players(id), device_id INTEGER NOT NULL,
  level INTEGER NOT NULL CHECK(level>0), PRIMARY KEY(player_id,device_id));
@@ -487,6 +494,8 @@ class Backend:
                 (player_id,)).fetchone()
             sort_config = connection.execute(
                 "SELECT config_json FROM native_lobby_sort_configs WHERE player_id=?", (player_id,)).fetchone()
+            extension_order = connection.execute(
+                "SELECT order_json FROM native_lobby_extension_orders WHERE player_id=?", (player_id,)).fetchone()
             devices = connection.execute(
                 "SELECT device_id,level FROM native_lobby_devices WHERE player_id=? ORDER BY device_id", (player_id,)).fetchall()
             selected_hero = connection.execute(
@@ -501,13 +510,14 @@ class Backend:
                     "selected_melee_id": selected_melee['template_id'] if selected_melee else None,
                     "devices": [dict(row) for row in devices],
                     "selected_hero_id": selected_hero[0] if selected_hero else None,
+                    "safe_box_permissions": self._native_safe_box_permissions(connection, player_id),
+                    "extension_pos_order": json.loads(extension_order[0]) if extension_order else [],
                     "sort_config": json.loads(sort_config[0]) if sort_config else
-                                   {"sort_style": 0, "sort_every_enter": False, "has_sorted": True}}
+                                   {"sort_style": 0, "sort_every_enter": False, "has_sorted": False}}
 
     @staticmethod
     def _ensure_weapon_parts(connection, player_id):
-        next_gid = max(6400000000000000000,
-                       connection.execute('SELECT MAX(gid) FROM native_lobby_weapon_parts').fetchone()[0] or 0) + 1
+        next_gid = max(6400000000000000001, Backend._next_native_prop_gid(connection))
         for weapon in connection.execute(
                 'SELECT gid,template_id FROM native_lobby_props WHERE player_id=?', (player_id,)):
             if connection.execute('SELECT 1 FROM native_lobby_weapon_parts WHERE weapon_gid=?',
@@ -550,16 +560,98 @@ class Backend:
         skin = gun_skins.weapon_state(connection, player_id, prop)
         if skin:
             prop.setdefault('weapon', {'load_bullets': []}).update(skin)
-        if position in (CHEST_RIG_POSITION, BACKPACK_POSITION):
-            slot = 107 if position == CHEST_RIG_POSITION else 108
-            equipped = connection.execute(
-                'SELECT template_id FROM native_lobby_props WHERE player_id=? AND grid_page_id=?',
-                (player_id, slot)).fetchone()
-            layouts = CHEST_RIG_LAYOUT if slot == 107 else BACKPACK_LAYOUT
-            layout = layouts.get(equipped[0] if equipped else None)
+        if position in (CHEST_RIG_POSITION, BACKPACK_POSITION, SAFE_BOX_POSITION):
+            layout = Backend._native_body_layout(connection, player_id, position)
             if layout and 1 <= prop['x'] <= len(layout):
                 prop['space_width'] = layout[prop['x'] - 1][0]
         return prop
+
+    @staticmethod
+    def _native_safe_box_permissions(connection, player_id):
+        from .safe_boxes import permissions
+        return permissions(connection, player_id)
+
+    @staticmethod
+    def _native_body_layout(connection, player_id, position):
+        if position == POCKET_POSITION:
+            return POCKET_LAYOUT
+        slot = {CHEST_RIG_POSITION: 107, BACKPACK_POSITION: 108, SAFE_BOX_POSITION: 109}.get(position)
+        if slot is None:
+            return None
+        equipped = connection.execute('SELECT template_id FROM native_lobby_props '
+            'WHERE player_id=? AND grid_page_id=?', (player_id, slot)).fetchone()
+        item_id = equipped[0] if equipped else None
+        if slot == 109:
+            from .safe_boxes import layout
+            return layout(item_id)
+        return (CHEST_RIG_LAYOUT if slot == 107 else BACKPACK_LAYOUT).get(item_id)
+
+    def ensure_native_lobby_safe_boxes(self, token):
+        """Initialize verified square-box permissions for this local test account."""
+        from .safe_boxes import LOCAL_BOX_IDS, layout
+        with self.connection() as connection:
+            connection.execute('BEGIN IMMEDIATE')
+            player_id = self._authorize(connection, token)
+            for item_id in LOCAL_BOX_IDS:
+                if layout(item_id) is None:
+                    fail('INVALID_EQUIPMENT', 'Local safety-box grant has no verified layout')
+                if not connection.execute('SELECT 1 FROM native_lobby_safe_box_permissions '
+                    'WHERE player_id=? AND template_id=?', (player_id, item_id)).fetchone():
+                    connection.execute('INSERT INTO native_lobby_safe_box_permissions VALUES (?,?,?,0)',
+                        (player_id, item_id, self._next_native_prop_gid(connection)))
+            if not connection.execute('SELECT 1 FROM native_lobby_props '
+                'WHERE player_id=? AND grid_page_id=109', (player_id,)).fetchone():
+                permission = connection.execute('SELECT * FROM native_lobby_safe_box_permissions '
+                    'WHERE player_id=? AND template_id=?', (player_id, LOCAL_BOX_IDS[0])).fetchone()
+                connection.execute('INSERT INTO native_lobby_props VALUES (?,?,?,?,?,?,?,?,?)',
+                    (permission['gid'], player_id, permission['template_id'], 1, 109, 0, 0, 2, 2))
+            connection.commit()
+
+    def _native_equip_safe_box(self, connection, player_id, command):
+        from .safe_boxes import layout
+        from .local_commerce import inventory_location
+        item_id = integer(command.get('prop_id'), 'prop_id', 1, 2**63 - 1)
+        permission = connection.execute('SELECT * FROM native_lobby_safe_box_permissions '
+            'WHERE player_id=? AND template_id=?', (player_id, item_id)).fetchone()
+        if permission is None or (permission['expire_timestamp'] > 0 and permission['expire_timestamp'] <= time.time()):
+            fail('PROP_NOT_FOUND', 'This safety-box permission is not owned or has expired')
+        if command.get('prop_gid') and command['prop_gid'] != permission['gid']:
+            fail('PROP_NOT_FOUND', 'The safety-box instance does not match its permission')
+        spaces = layout(item_id)
+        if spaces is None:
+            fail('INVALID_EQUIPMENT', 'Safety-box dimensions are not yet verified')
+        old = connection.execute('SELECT * FROM native_lobby_props WHERE player_id=? AND grid_page_id=109',
+                                 (player_id,)).fetchone()
+        contents = [self._container_prop(connection, player_id, row) for row in connection.execute(
+            'SELECT p.*,COALESCE(r.rotated,0) AS rotated FROM native_lobby_props p '
+            'LEFT JOIN native_lobby_prop_rotations r ON r.gid=p.gid '
+            'WHERE p.player_id=? AND p.grid_page_id=?', (player_id, SAFE_BOX_POSITION))]
+        changed_contents = []
+        for row in contents:
+            loc = inventory_location(row)
+            if not 1 <= row['x'] <= len(spaces):
+                fail('SAFE_BOX_FULL', 'Safety-box contents do not fit the selected box')
+            width, height = spaces[row['x'] - 1]
+            if loc['start_x'] + row['width'] > width or loc['start_y'] + row['length'] > height:
+                fail('SAFE_BOX_FULL', 'Move contents out before selecting this smaller safety box')
+            changed_contents.append({'before': row, 'after': {**row,
+                'y': loc['start_y'] * width + loc['start_x'], 'space_width': width}})
+        for move in changed_contents:
+            gid = move['after']['gid']
+            connection.execute('UPDATE native_lobby_props SET grid_page_id=999999,x=?,y=0 WHERE gid=?', (gid, gid))
+        for move in changed_contents:
+            row = move['after']
+            connection.execute('UPDATE native_lobby_props SET grid_page_id=?,x=?,y=? WHERE gid=?',
+                               (SAFE_BOX_POSITION, row['x'], row['y'], row['gid']))
+        chosen = {'gid': permission['gid'], 'template_id': item_id, 'quantity': 1,
+                  'grid_page_id': 109, 'x': 0, 'y': 0, 'length': 2, 'width': 2, 'rotated': False}
+        if old and old['gid'] == permission['gid']:
+            return [{'before': dict(old), 'after': chosen}]
+        changes = ([{'before': dict(old), 'after': None}] if old else [])
+        connection.execute('DELETE FROM native_lobby_props WHERE player_id=? AND grid_page_id=109', (player_id,))
+        connection.execute('INSERT INTO native_lobby_props VALUES (?,?,?,?,?,?,?,?,?)',
+            (chosen['gid'], player_id, item_id, 1, 109, 0, 0, 2, 2))
+        return changes + [{'before': None, 'after': chosen}] + changed_contents
 
     def ensure_native_lobby_default_melee(self, token, template_id):
         """Give a local account one stable default melee item on first fetch."""
@@ -710,9 +802,7 @@ class Backend:
                         **dict(occupied_slot), "grid_page_id": 2,
                         "x": old_x, "y": old_y}})
                 placements.append((0, 0, 1))
-            next_gid = connection.execute(
-                "SELECT MAX(gid) FROM native_lobby_props").fetchone()[0]
-            next_gid = max(6300000000000000000, next_gid or 0) + 1
+            next_gid = self._next_native_prop_gid(connection)
             if next_gid + len(placements) >= 2**63:
                 fail("WAREHOUSE_FULL", "Local prop identifier range is exhausted")
             created = []
@@ -804,8 +894,7 @@ class Backend:
                     stack = min(remaining, item["max_stack_count"])
                     placements.append((item, x, y, stack))
                     remaining -= stack
-            next_gid = max(6300000000000000000,
-                           connection.execute("SELECT MAX(gid) FROM native_lobby_props").fetchone()[0] or 0) + 1
+            next_gid = self._next_native_prop_gid(connection)
             if next_gid + len(placements) >= 2**63:
                 fail("WAREHOUSE_FULL", "Local prop identifier range is exhausted")
             created = []
@@ -838,7 +927,7 @@ class Backend:
                                   ("width", 40), ("max_stack_count", 1000)):
                 integer(item[name], name, 1, maximum)
             if item.get("target_position") not in (
-                    2, CHEST_RIG_POSITION, BACKPACK_POSITION, POCKET_POSITION):
+                    2, CHEST_RIG_POSITION, BACKPACK_POSITION, SAFE_BOX_POSITION, POCKET_POSITION):
                 fail("INVALID_ARGUMENT", "Unsupported purchase container")
             total += item["quantity"] * item["unit_price"]
         if total >= 2**63:
@@ -859,14 +948,7 @@ class Backend:
                 elif position == POCKET_POSITION:
                     layout = POCKET_LAYOUT
                 else:
-                    equipment_pos = 107 if position == CHEST_RIG_POSITION else 108
-                    equipped = connection.execute(
-                        "SELECT template_id FROM native_lobby_props WHERE player_id=? AND grid_page_id=?",
-                        (player_id, equipment_pos)).fetchone()
-                    if position == CHEST_RIG_POSITION:
-                        layout = CHEST_RIG_LAYOUT.get(equipped[0] if equipped else None)
-                    else:
-                        layout = BACKPACK_LAYOUT.get(equipped[0] if equipped else None)
+                    layout = self._native_body_layout(connection, player_id, position)
                 if layout is None:
                     fail("INVALID_EQUIPMENT", "The equipped container has no verified layout")
                 layouts[position] = layout
@@ -894,6 +976,10 @@ class Backend:
             for item in items:
                 length, width = item["length"], item["width"]
                 position = item["target_position"]
+                if position == SAFE_BOX_POSITION:
+                    from .safe_boxes import can_store
+                    if not can_store(item['template_id']):
+                        fail('INVALID_ARGUMENT', 'The installed safety-box rules reject this item')
                 if position == POCKET_POSITION and (length, width) != (1, 1):
                     fail("INVALID_ARGUMENT", "The pocket spaces hold one-cell items")
                 remaining = item["quantity"]
@@ -921,7 +1007,7 @@ class Backend:
                     if found is None:
                         fail({2: "WAREHOUSE_FULL", CHEST_RIG_POSITION: "CHEST_RIG_FULL",
                               BACKPACK_POSITION: "BACKPACK_FULL",
-                              POCKET_POSITION: "POCKET_FULL"}[position],
+                              POCKET_POSITION: "POCKET_FULL", SAFE_BOX_POSITION: "SAFE_BOX_FULL"}[position],
                              "No verified space fits the purchased items")
                     space_id, start_x, start_y, span_x, span_y, rotated, cells = found
                     occupied[position][space_id].update(cells)
@@ -929,8 +1015,7 @@ class Backend:
                     placements.append((item, stack, space_id, start_x, start_y,
                                        span_x, span_y, rotated))
                     remaining -= stack
-            next_gid = max(6300000000000000000,
-                           connection.execute("SELECT MAX(gid) FROM native_lobby_props").fetchone()[0] or 0) + 1
+            next_gid = self._next_native_prop_gid(connection)
             if next_gid + len(placements) >= 2**63:
                 fail("CHEST_RIG_FULL", "Local prop identifier range is exhausted")
             created = []
@@ -1022,7 +1107,8 @@ class Backend:
     def _next_native_prop_gid(connection):
         maximum = max(connection.execute(f'SELECT MAX(gid) FROM {table}').fetchone()[0] or 0
                       for table in ('native_lobby_props', 'native_lobby_weapon_parts', 'native_lobby_weapon_bullets',
-                                    'native_lobby_melee_props', 'native_lobby_gun_skins'))
+                                    'native_lobby_melee_props', 'native_lobby_gun_skins',
+                                    'native_lobby_safe_box_permissions'))
         return max(6311504805269387000, maximum) + 1
 
     def native_lobby_operate_bullets(self, token, commands):
@@ -1145,6 +1231,7 @@ class Backend:
                                              (BACKPACK_POSITION, 108, BACKPACK_LAYOUT)):
                 equipped = next((row for row in rows if row['grid_page_id'] == slot), None)
                 layouts[position] = catalog.get(equipped['template_id'] if equipped else None)
+            layouts[SAFE_BOX_POSITION] = self._native_body_layout(connection, player_id, SAFE_BOX_POSITION)
             spaces, placements, requested = set(), [], {}
             for snapshot in snapshots:
                 position = integer(int(snapshot.get('pos') or 0), 'position', 1)
@@ -1161,8 +1248,14 @@ class Backend:
                     owned = before.get(gid)
                     if owned is None:
                         fail('PROP_NOT_FOUND', 'Snapshot prop is not owned by this account')
+                    if owned['grid_page_id'] == 109:
+                        fail('INVALID_ARGUMENT', 'Safety-box permissions cannot be placed as physical items')
                     if int(prop.get('id') or 0) != owned['template_id']:
                         fail('INVALID_ARGUMENT', 'Snapshot template does not match the owned prop')
+                    if position == SAFE_BOX_POSITION:
+                        from .safe_boxes import can_store
+                        if not can_store(owned['template_id']):
+                            fail('INVALID_ARGUMENT', 'The installed safety-box rules reject this item')
                     count = integer(int(prop.get('num') or 0), 'quantity', 1)
                     requested[gid] = requested.get(gid, 0) + count
                     if requested[gid] > owned['quantity']:
@@ -1296,15 +1389,7 @@ class Backend:
                 return location
 
             def container_position(length, width, target, ignored, spec_loc):
-                if target == POCKET_POSITION:
-                    layout = POCKET_LAYOUT
-                else:
-                    equipment_pos = 107 if target == CHEST_RIG_POSITION else 108
-                    equipped = connection.execute(
-                        "SELECT template_id FROM native_lobby_props WHERE player_id=? AND grid_page_id=?",
-                        (player_id, equipment_pos)).fetchone()
-                    catalog = CHEST_RIG_LAYOUT if target == CHEST_RIG_POSITION else BACKPACK_LAYOUT
-                    layout = catalog.get(equipped[0] if equipped else None)
+                layout = self._native_body_layout(connection, player_id, target)
                 if layout is None:
                     fail("INVALID_EQUIPMENT", "The target container has no verified layout")
                 requested_space = int(spec_loc.get("space_id") or 0)
@@ -1355,10 +1440,13 @@ class Backend:
                 if exact:
                     fail("POSITION_OCCUPIED", "The requested container cells are unavailable")
                 fail({CHEST_RIG_POSITION: "CHEST_RIG_FULL", BACKPACK_POSITION: "BACKPACK_FULL",
-                      POCKET_POSITION: "POCKET_FULL"}[target],
+                      POCKET_POSITION: "POCKET_FULL", SAFE_BOX_POSITION: "SAFE_BOX_FULL"}[target],
                      "No target container space fits the moved prop")
 
             for command in commands:
+                if command.get('target_pos') == 109:
+                    changes.extend(self._native_equip_safe_box(connection, player_id, command))
+                    continue
                 if command.get("prop_id") in WEAPONS:
                     target = integer(command.get("target_pos"), "target_pos", MELEE_POSITION, MELEE_POSITION)
                     chosen = connection.execute(
@@ -1382,7 +1470,7 @@ class Backend:
                 gid = integer(command.get("prop_gid"), "prop_gid", 1, 2**63 - 1)
                 target = integer(command.get("target_pos"), "target_pos", 2, POCKET_POSITION)
                 if target != 2 and not (101 <= target <= 138 or
-                                        target in (CHEST_RIG_POSITION, BACKPACK_POSITION, POCKET_POSITION)):
+                                        target in (CHEST_RIG_POSITION, BACKPACK_POSITION, SAFE_BOX_POSITION, POCKET_POSITION)):
                     fail("INVALID_ARGUMENT", "Unsupported equipment position")
                 row = connection.execute(
                     "SELECT p.*,COALESCE(r.rotated,0) AS rotated "
@@ -1392,22 +1480,28 @@ class Backend:
                 if row is None:
                     fail("PROP_NOT_FOUND", "The moved prop is not in this account")
                 source = row["grid_page_id"]
+                if source == 109:
+                    fail('INVALID_ARGUMENT', 'Safety-box permissions must use the permission equipment command')
                 if int(command.get("prop_id") or row["template_id"]) != row["template_id"]:
                     fail("INVALID_ARGUMENT", "Moved prop template does not match")
                 if int(command.get("src_pos") or source) != source:
                     fail("INVALID_ARGUMENT", "Moved prop source position does not match")
                 if int(command.get("num") or row["quantity"]) != row["quantity"]:
                     fail("INVALID_ARGUMENT", "Partial stack movement is not supported")
-                if source == target and target not in (2, CHEST_RIG_POSITION, BACKPACK_POSITION, POCKET_POSITION):
+                if source == target and target not in (2, CHEST_RIG_POSITION, BACKPACK_POSITION, SAFE_BOX_POSITION, POCKET_POSITION):
                     fail("INVALID_ARGUMENT", "The prop is already in that equipment slot")
                 if source != 2 and not (101 <= source <= 138 or
-                                        source in (CHEST_RIG_POSITION, BACKPACK_POSITION,
+                                        source in (CHEST_RIG_POSITION, BACKPACK_POSITION, SAFE_BOX_POSITION,
                                                    POCKET_POSITION)):
                     fail("INVALID_ARGUMENT", "Unsupported source position")
                 old = self._container_prop(connection, player_id, row)
+                if target == SAFE_BOX_POSITION:
+                    from .safe_boxes import can_store
+                    if not can_store(row['template_id']):
+                        fail('INVALID_ARGUMENT', 'The installed safety-box rules reject this item')
                 incumbent = None
                 target_gid = int(command.get('target_prop_gid') or 0)
-                spatial_target = target in (2, CHEST_RIG_POSITION, BACKPACK_POSITION, POCKET_POSITION)
+                spatial_target = target in (2, CHEST_RIG_POSITION, BACKPACK_POSITION, SAFE_BOX_POSITION, POCKET_POSITION)
                 if spatial_target and target_gid:
                     incumbent = connection.execute(
                         "SELECT p.*,COALESCE(r.rotated,0) AS rotated FROM native_lobby_props p "
@@ -1429,7 +1523,7 @@ class Backend:
                             fail("POSITION_OCCUPIED", "The equipment slot changed during the move")
                 preferred = None
                 source_is_container = source in (CHEST_RIG_POSITION, BACKPACK_POSITION,
-                                                 POCKET_POSITION)
+                                                 SAFE_BOX_POSITION, POCKET_POSITION)
                 item_length = row["width"] if source_is_container else row["length"]
                 item_width = row["length"] if source_is_container else row["width"]
                 if row['rotated']:
@@ -1445,7 +1539,7 @@ class Backend:
                             fail("INVALID_ARGUMENT", "Destination location does not match its container")
                         preferred = (int(loc.get("start_x") or 0), int(loc.get("start_y") or 0))
                     x, y = warehouse_position(new_length, new_width, ignored, preferred, exact=bool(loc))
-                elif target in (CHEST_RIG_POSITION, BACKPACK_POSITION, POCKET_POSITION):
+                elif target in (CHEST_RIG_POSITION, BACKPACK_POSITION, SAFE_BOX_POSITION, POCKET_POSITION):
                     loc = command.get("spec_loc") or {}
                     if int(loc.get('pos') or target) != target:
                         fail("INVALID_ARGUMENT", "Destination location does not match its container")
@@ -1458,6 +1552,10 @@ class Backend:
                 displaced = None
                 if incumbent is not None and spatial_target:
                     displaced = self._container_prop(connection, player_id, incumbent)
+                    if source == SAFE_BOX_POSITION:
+                        from .safe_boxes import can_store
+                        if not can_store(displaced['template_id']):
+                            fail('INVALID_ARGUMENT', 'The installed safety-box rules reject the swap item')
                     displaced_in_container = target != 2
                     dl = displaced['width'] if displaced_in_container else displaced['length']
                     dw = displaced['length'] if displaced_in_container else displaced['width']
@@ -1480,14 +1578,7 @@ class Backend:
                             displaced_cells = {(cx, cy) for cx in range(dx, dx + dl)
                                                for cy in range(dy, dy + dw)}
                         else:
-                            layout = POCKET_LAYOUT if target == POCKET_POSITION else (
-                                CHEST_RIG_LAYOUT if target == CHEST_RIG_POSITION else BACKPACK_LAYOUT)
-                            if target != POCKET_POSITION:
-                                slot = 107 if target == CHEST_RIG_POSITION else 108
-                                equipped = connection.execute(
-                                    'SELECT template_id FROM native_lobby_props WHERE player_id=? AND grid_page_id=?',
-                                    (player_id, slot)).fetchone()
-                                layout = layout[equipped['template_id']]
+                            layout = self._native_body_layout(connection, player_id, target)
                             sw = layout[x - 1][0]
                             destination_cells = {(x, cx, cy) for cx in range(y % sw, y % sw + new_width)
                                                  for cy in range(y // sw, y // sw + new_length)}
@@ -1642,20 +1733,95 @@ class Backend:
                                    (player_id, device_id, level))
             connection.commit()
 
-    def set_native_lobby_sort_config(self, token, config):
+    @staticmethod
+    def _validate_native_sort_config(config):
         if not isinstance(config, dict):
             fail("INVALID_ARGUMENT", "Sort configuration must be an object")
         allowed = {"sort_style", "sort_class_order", "extension_first_class",
                    "sort_every_enter", "has_sorted"}
         if set(config) - allowed:
             fail("INVALID_ARGUMENT", "Sort configuration has unknown fields")
+        # common_pb.lua root 0: eDepositSortStyle and eDepositSortClass.
+        if 'sort_style' in config:
+            integer(config['sort_style'], 'sort_style', 0, 1)
+        for name in ('sort_class_order', 'extension_first_class'):
+            if name not in config:
+                continue
+            values = config[name]
+            if not isinstance(values, list) or len(values) > 8:
+                fail('INVALID_ARGUMENT', 'Invalid sort class list')
+            for value in values:
+                integer(value, name, 1, 8)
+            if len(values) != len(set(values)):
+                fail('INVALID_ARGUMENT', 'Repeated sort class')
+        for name in ('sort_every_enter', 'has_sorted'):
+            if name in config and type(config[name]) is not bool:
+                fail('INVALID_ARGUMENT', f'{name} must be a boolean')
+
+    def set_native_lobby_sort_config(self, token, config, extension_pos_order=None):
+        self._validate_native_sort_config(config)
+        if extension_pos_order is not None:
+            if not isinstance(extension_pos_order, list) or extension_pos_order:
+                fail('INVALID_ARGUMENT', 'This account has no warehouse extension pages')
         with self.connection() as connection:
             connection.execute("BEGIN IMMEDIATE")
             player_id = self._authorize(connection, token)
+            saved = connection.execute('SELECT config_json FROM native_lobby_sort_configs WHERE player_id=?',
+                                       (player_id,)).fetchone()
+            config = {**(json.loads(saved[0]) if saved else
+                         {'sort_style': 0, 'sort_every_enter': False, 'has_sorted': False}), **config}
             connection.execute("INSERT INTO native_lobby_sort_configs VALUES (?,?) ON CONFLICT(player_id) DO UPDATE SET config_json=excluded.config_json",
                                (player_id, canonical(config)))
+            if extension_pos_order is not None:
+                connection.execute('INSERT INTO native_lobby_extension_orders VALUES (?,?) '
+                    'ON CONFLICT(player_id) DO UPDATE SET order_json=excluded.order_json',
+                    (player_id, canonical(extension_pos_order)))
             connection.commit()
         return config
+
+    def native_lobby_sort_positions(self, token, positions, extension_first_class=None):
+        """Pack selected local grids atomically; retain every owned instance."""
+        from .deposit_sort import pack_items
+        if not isinstance(positions, list) or not 1 <= len(positions) <= 32:
+            fail('INVALID_ARGUMENT', 'Select at least one warehouse page')
+        for position in positions:
+            integer(position, 'position', 1)
+        if len(set(positions)) != len(positions) or any(position != 2 for position in positions):
+            fail('INVALID_ARGUMENT', 'Unavailable or repeated warehouse page')
+        if extension_first_class is not None:
+            self._validate_native_sort_config({'extension_first_class': extension_first_class})
+        with self.connection() as connection:
+            connection.execute('BEGIN IMMEDIATE')
+            player_id = self._authorize(connection, token)
+            self._ensure_weapon_parts(connection, player_id)
+            saved = connection.execute('SELECT config_json FROM native_lobby_sort_configs WHERE player_id=?',
+                                       (player_id,)).fetchone()
+            config = json.loads(saved[0]) if saved else {'sort_style': 0, 'sort_every_enter': False}
+            rows = connection.execute('SELECT p.*,COALESCE(r.rotated,0) AS rotated '
+                'FROM native_lobby_props p LEFT JOIN native_lobby_prop_rotations r ON r.gid=p.gid '
+                'WHERE p.player_id=? AND p.grid_page_id=2', (player_id,)).fetchall()
+            before = {row['gid']: self._container_prop(connection, player_id, row) for row in rows}
+            after = pack_items(list(before.values()), config)
+            changes = [{'before': before[row['gid']], 'after': row} for row in after
+                       if any(row[name] != before[row['gid']][name]
+                              for name in ('x', 'y', 'length', 'width', 'rotated'))]
+            for move in changes:
+                gid = move['after']['gid']
+                connection.execute('UPDATE native_lobby_props SET grid_page_id=999999,x=?,y=0 '
+                                   'WHERE player_id=? AND gid=?', (gid, player_id, gid))
+            for move in changes:
+                row = move['after']
+                connection.execute('UPDATE native_lobby_props SET grid_page_id=?,x=?,y=?,length=?,width=? '
+                    'WHERE player_id=? AND gid=?',
+                    (row['grid_page_id'], row['x'], row['y'], row['length'], row['width'], player_id, row['gid']))
+                connection.execute('INSERT INTO native_lobby_prop_rotations VALUES (?,?) '
+                    'ON CONFLICT(gid) DO UPDATE SET rotated=excluded.rotated', (row['gid'], int(row['rotated'])))
+            config['has_sorted'] = True
+            connection.execute('INSERT INTO native_lobby_sort_configs VALUES (?,?) '
+                'ON CONFLICT(player_id) DO UPDATE SET config_json=excluded.config_json',
+                (player_id, canonical(config)))
+            connection.commit()
+            return changes
 
     @staticmethod
     def _game_nick(value):

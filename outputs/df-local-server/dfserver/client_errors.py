@@ -21,6 +21,7 @@ def inventory_error(error):
         'CHEST_RIG_FULL': 'DepositSpaceNotEnough',
         'BACKPACK_FULL': 'DepositSpaceNotEnough',
         'POCKET_FULL': 'DepositSpaceNotEnough',
+        'SAFE_BOX_FULL': 'DepositSpaceNotEnough',
         'INSUFFICIENT_FUNDS': 'DepositCurrencyNotEnough',
         'INVALID_EQUIPMENT': 'DepositPropDescNotFound',
         'PROP_NOT_FOUND': 'DepositPropNotFound',

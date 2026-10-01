@@ -157,7 +157,7 @@ class LocalCommerceTests(unittest.TestCase):
             'target_pos': 199997, 'num': 1,
             'spec_loc': {'pos': 199997, 'space_id': 2}}]})
         self.assertEqual(moved.fields['result'], 0)
-        prop = self.backend.native_lobby_profile(self.token)['props'][0]
+        prop = next(row for row in self.backend.native_lobby_profile(self.token)['props'] if row['gid'] == 2001)
         self.assertEqual((prop['template_id'], prop['quantity'], prop['grid_page_id']),
                          (14070000007, 1, 199997))
         _, prices = self._reconnected_request('CSAuctionGetGameItemSellPriceReq', {
@@ -172,7 +172,8 @@ class LocalCommerceTests(unittest.TestCase):
             'prices': [{'money_type': CURRENCY_ID, 'price': 24375}]})
         self.assertEqual(sold.fields['result'], 0)
         profile = self.backend.native_lobby_profile(self.token)
-        self.assertEqual(profile['props'], [])
+        self.assertFalse(any(row['gid'] == 2001 for row in profile['props']))
+        self.assertEqual([row['template_id'] for row in profile['props']], [11090000002])
         self.assertEqual(next(p['amount'] for p in profile['currencies']
                               if p['currency_id'] == CURRENCY_ID), 24375)
 
@@ -1180,7 +1181,8 @@ class LocalCommerceTests(unittest.TestCase):
         self.assertEqual(len(gids), len(set(gids)))
         self.assertTrue(all(gid > 0 and gid != int(prop['gid']) for gid in gids))
         reopened = Backend(self.backend.database, ROOT / 'definitions.json')
-        saved = reopened.native_lobby_profile(self.token)['props'][0]['components']
+        saved = next(row for row in reopened.native_lobby_profile(self.token)['props']
+                     if row['gid'] == int(prop['gid']))['components']
         self.assertEqual([part['prop_data']['gid'] for part in saved], gids)
 
     def test_chest_rig_batch_rejects_overflow_without_charge_or_partial_items(self):
