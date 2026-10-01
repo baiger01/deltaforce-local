@@ -26,7 +26,7 @@ parser.add_argument("--wire-ready-probe", action="store_true")
 parser.add_argument("--wire-ready-identity-probe", action="store_true")
 parser.add_argument("--wire-business-login-probe", action="store_true")
 parser.add_argument("--wire-business-bootstrap-probe", action="store_true")
-parser.add_argument("--observation-seconds", type=int, default=360)
+parser.add_argument("--observation-seconds", type=int, default=720)
 parser.add_argument("--precreate-game-nick", action="store_true")
 parser.add_argument("--native-username")
 parser.add_argument("--source-game", type=Path)
@@ -38,8 +38,8 @@ args = parser.parse_args()
 args.source_game, args.shadow_game = game_paths(args.source_game, args.shadow_game)
 if args.game_root is not None:
     args.game_root = project_path(args.game_root, args.source_game)
-if not 30 <= args.observation_seconds <= 600:
-    parser.error("--observation-seconds must be between 30 and 600")
+if not 30 <= args.observation_seconds <= 720:
+    parser.error("--observation-seconds must be between 30 and 720")
 if args.wire_auth_response_probe and not args.wire_identity_probe:
     parser.error("--wire-auth-response-probe requires --wire-identity-probe")
 if args.wire_auth_identity_probe and not args.wire_auth_response_probe:

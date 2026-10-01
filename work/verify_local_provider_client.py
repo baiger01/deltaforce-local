@@ -38,15 +38,15 @@ parser.add_argument("--wire-ready-probe", action="store_true")
 parser.add_argument("--wire-ready-identity-probe", action="store_true")
 parser.add_argument("--wire-business-login-probe", action="store_true")
 parser.add_argument("--wire-business-bootstrap-probe", action="store_true")
-parser.add_argument("--observation-seconds", type=int, default=360)
+parser.add_argument("--observation-seconds", type=int, default=720)
 parser.add_argument("--precreate-game-nick", action="store_true")
 parser.add_argument("--native-username", help="Local username when the test database contains multiple accounts")
 args = parser.parse_args()
 GAME = args.game_root.resolve()
 if GAME not in (SOURCE_GAME, SHADOW_GAME):
     parser.error('--game-root must be the installed client or its checked workspace shadow')
-if not 30 <= args.observation_seconds <= 600:
-    parser.error("--observation-seconds must be between 30 and 600")
+if not 30 <= args.observation_seconds <= 720:
+    parser.error("--observation-seconds must be between 30 and 720")
 if args.wire_auth_response_probe and not args.wire_identity_probe:
     parser.error("--wire-auth-response-probe requires --wire-identity-probe")
 if args.wire_auth_identity_probe and not args.wire_auth_response_probe:
