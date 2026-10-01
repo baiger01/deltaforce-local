@@ -94,6 +94,10 @@ GitHub 协作仓库仅包含源码、静态 JSON 目录、重建描述符和来�
 
 `HeroServer.lua` 函数 `0.18.0` 从 `CSHero.fashion_list/accessories` 建立列表；客户端不会补齐服务省略的服装或附件。`HeroWatchMainPanel.lua` 函数 `0.2` 将本地手表配置与服务器附件列表求交集，原先没有 `accessories` 就会显示空页。现在提供适用于每个干员的完整锁定和已拥有列表，仅实际收藏或原生默认标记解锁；获取服装、手表、名片、语音等后先通知对应干员，再执行购买回调。
 
+详情筛选不等于名单筛选。`HeroServer.lua`（SHA-256 `6e56ce2b082124aceae30488055b866a29954869e8c4c8626efb24a49fc660be`）函数 `0.19` 分批发送 `hero_id_list/filter_by_id`；回调 `0.19.0`（偏移 27911）仍以响应 `hero_ids` 替换完整名单，再由 `0.17`（偏移 21702）删除名单外的干员、服装与附件缓存。`0.100`（偏移 85369）在服装缓存被删除时返回套装 ID 0。服务现仅筛选 `heros` 详情，所有加载响应保留完整 17 个 `hero_ids` 和账号选择字段；加密响应回归覆盖全量加载后的单人及空详情刷新，按原消费者规则验证名单、所选干员与服装缓存仍保留。
+
+2026-10-01 11:12:55 原客户端 `CSHeroEquipFashionReq` 序号 823 为干员 `88000000029` 装备 `30000060010`，`new_fashions` 只带 `id`，省略默认值为 0 的 `slot`；旧校验将省略字段视为 -1，返回原错误码 `117302`。`HeroFashion` 来自 `ds_common_editor_pb.lua`（SHA-256 `5fe89634d480907ba0f4657ef699151e147594750ddba37247a50d718ac8b753`），字段 1 是 `slot:uint32`。现按已核实的 `FashionSuit=0` 处理省略值；真实请求编码回归验证抽奖外观可装备并重读保存，非零槽位及未拥有服装仍被拒绝。
+
 套装位置 `FashionSuit=0` 来自基础包 pakchunk1 条目 6801 的 `ds_common_pb.lua`，SHA-256 为 `6f1bec3a236dbd47c28d932a2702bc8cc386ecb6119312d71d57a62d6e8b8f6b`。`DFMGlobalConst.lua` 条目 1882 提供实际附件类型，SHA-256 为 `4887a7f2b5265a5277c5c2553f4ff56ec08f1219a632220e3b2efa367baddcc4`。`HeroHelperTool.lua` 函数 `0.89/0.90` 判断默认附件与通用归属；`HeroServer.lua` 函数 `0.68` 的喷漆、展示动作、手势和语音共享槽位规则用于保存装备。处决与服装的限制来自原表字段 50及八个研究池中的皮肤/处决对应，由 `HeroHelperTool.lua` 函数 `0.139` 交叉核对。
 
 加密 Hero 名称表没有解密。目录逐关联标记 `independent_bundle_anchor` 或 `numeric_fname_order_reconstruction`：前者有原礼包或研究奖励及干员对应的独立见证；后者由本安装 44 份明文名称表一致的数字名称字典序、HeroData 的 23 个实际干员 ID 锚点及连续索引范围恢复。两类证据不能混称完整原始名称表。每个见证均记录条目、行、偏移与实际 ID；主物品 ID 必须与已有 GameItem 名称键相符且在所有有效匹配中唯一。

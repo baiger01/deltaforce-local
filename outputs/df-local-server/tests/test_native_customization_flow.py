@@ -33,8 +33,8 @@ class NativeCustomizationFlowTests(unittest.TestCase):
         self.codec.response(request, result)
         return request, result
 
-    def load(self):
-        request = b'ABCD' + self.codec.encode('CSHeroLoadHeroListReq', {}, sequence=29)
+    def load(self, fields=None):
+        request = b'ABCD' + self.codec.encode('CSHeroLoadHeroListReq', fields or {}, sequence=29)
         frame = _candidate_local_hero_response(request, self.backend, self.token, self.key,
             header_word4=12, header_word9=29)
         return self.codec.decode(decode_data_frame(frame, self.key,
@@ -51,6 +51,27 @@ class NativeCustomizationFlowTests(unittest.TestCase):
             self.assertTrue(record['accessories'])
         self.assertTrue(any(not a['is_unlock'] for r in loaded['heros'] for a in r['accessories']))
         self.assertEqual(self.backend.native_lobby_profile(self.token)['collection_props'], [])
+
+    def test_filtered_detail_refresh_preserves_roster_and_selected_fashion_cache(self):
+        loaded = self.load()
+        roster = {int(i) for i in loaded['hero_ids']}
+        fashions = {int(r['hero_id']): r['fashion_equipped'] for r in loaded['heros']}
+        selected = int(loaded['sol_hero_selected'])
+        selected_fashion = fashions[selected]
+        other_hero = next(i for i in sorted(roster) if i != selected)
+        for requested in ([other_hero], [selected], []):
+            with self.subTest(requested=requested):
+                refreshed = self.load({'filter_by_id': True, 'hero_id_list': requested})
+                self.assertEqual([int(r['hero_id']) for r in refreshed.get('heros', [])], requested)
+                # HeroServer.lua 0.19.0 replaces the roster and 0.17 prunes
+                # cached fashions against hero_ids, even on detail refreshes.
+                roster = {int(i) for i in refreshed.get('hero_ids', [])}
+                fashions.update({int(r['hero_id']): r['fashion_equipped']
+                                 for r in refreshed.get('heros', [])})
+                fashions = {i: value for i, value in fashions.items() if i in roster}
+                self.assertEqual(roster, set(_candidate_operator_base_fashions()))
+                self.assertEqual(int(refreshed['sol_hero_selected']), selected)
+                self.assertEqual(fashions[selected], selected_fashion)
 
     def test_research_reward_refreshes_hero_and_can_be_worn_after_restart(self):
         with patch('dfserver.premium_shop.secrets.randbelow', return_value=0):
@@ -83,6 +104,23 @@ class NativeCustomizationFlowTests(unittest.TestCase):
         self.assertEqual(int(record['fashion_equipped'][0]['id']), fashion_id)
         self.assertTrue(next(r for r in record['accessories']
             if int(r['item']['prop_id']) == watch_id)['is_selected'])
+
+    def test_native_omitted_zero_suit_slot_equips_owned_fashion(self):
+        with patch('dfserver.premium_shop.secrets.randbelow', return_value=0):
+            self.assertEqual(self.request('CSShopOpenLotteryItemReq', {
+                'lottery_id': 20300008, 'round': 1, 'buy_prop': {
+                    'item_id': 32370000001, 'num': 1,
+                    'currency_type': 17888808889, 'price': 100}})[1]['result'], 0)
+        # Captured native request at 2026-10-01 11:12:55 omits slot=0.
+        fields = {'hero_id': 88000000029, 'new_fashions': [{'id': 30000060010}]}
+        self.assertEqual(self.request('CSHeroEquipFashionReq', fields)[1]['result'], 0)
+        self.backend = Backend(self.backend.database, ROOT / 'definitions.json')
+        record = next(r for r in self.load()['heros'] if int(r['hero_id']) == 88000000029)
+        self.assertEqual(int(record['fashion_equipped'][0]['id']), 30000060010)
+        fields['new_fashions'][0]['slot'] = 1
+        self.assertNotEqual(self.request('CSHeroEquipFashionReq', fields)[1]['result'], 0)
+        self.assertNotEqual(self.request('CSHeroEquipFashionReq', {
+            'hero_id': 88000000025, 'new_fashions': [{'id': 30000050013}]})[1]['result'], 0)
 
 
 if __name__ == '__main__':

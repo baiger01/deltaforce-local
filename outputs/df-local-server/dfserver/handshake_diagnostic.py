@@ -698,7 +698,8 @@ def _candidate_local_customization_summary(message):
     return {key: fields[key] for key in (
         'hero_id', 'new_fashions', 'accessory_item', 'is_unequip', 'mode',
         'prop_id', 'prop_ids', 'avatar_id', 'military_tag', 'title', 'honor_mark',
-        'is_fashion_prior', 'prior_settings', 'badge', 'badges') if key in fields}
+        'is_fashion_prior', 'prior_settings', 'badge', 'badges',
+        'filter_by_id', 'hero_id_list') if key in fields}
 
 
 def _candidate_local_inventory_change_notification(response_frame, key, *,
@@ -1407,6 +1408,7 @@ def _continue_character_creation(connection, decoder, queue, current, ack,
                         message, ack.session_key,
                         header_word4=current.header_word4, header_word9=outbound_sequence)
                 elif name in ('CSHeroGetHeroIDListReq', 'CSHeroLoadHeroListReq'):
+                    entry['local_customization_request'] = _candidate_local_customization_summary(message)
                     response = _candidate_local_hero_response(
                         message, backend, local_session, ack.session_key,
                         header_word4=current.header_word4, header_word9=outbound_sequence)
@@ -1982,6 +1984,7 @@ def inspect_exchange(connection, modulus=None, *, timeout=12, diagnostic_exponen
                                                                             header_word9=outbound_sequence)
                                                                     elif name in ('CSHeroGetHeroIDListReq',
                                                                                   'CSHeroLoadHeroListReq'):
+                                                                        entry['local_customization_request'] = _candidate_local_customization_summary(message)
                                                                         next_response = _candidate_local_hero_response(
                                                                             message, backend, local_session,
                                                                             ack.session_key,

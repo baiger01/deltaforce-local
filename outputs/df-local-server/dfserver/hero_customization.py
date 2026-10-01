@@ -98,7 +98,8 @@ def equip_hero(backend, token, hero_id, new_fashions, bases=None):
     hero_id = int(hero_id)
     if hero_id not in bases:
         return {'result': error_code('HeroUnknownHeroId')}
-    if len(new_fashions) != 1 or int(new_fashions[0].get('slot', -1)) != 0:
+    # Native HeroFashion requests omit the default FashionSuit slot (0).
+    if len(new_fashions) != 1 or int(new_fashions[0].get('slot', 0)) != 0:
         return {'result': error_code('HeroSkinPositionInvaild')}
     fashion_id = int(new_fashions[0].get('id', 0))
     row = FASHIONS.get(fashion_id)
@@ -238,10 +239,11 @@ def _prior(backend, token, fields):
 
 def load_fields(backend, token, hero_ids=None, *, request_fields=None):
     fields = request_fields or {}
-    ids = sorted(BASES) if hero_ids is None else list(hero_ids)
+    roster_ids = sorted(BASES) if hero_ids is None else list(hero_ids)
+    detail_ids = roster_ids
     if fields.get('filter_by_id'):
         requested = {int(i) for i in fields.get('hero_id_list', [])}
-        ids = [i for i in ids if i in requested]
+        detail_ids = [i for i in roster_ids if i in requested]
     selected = backend.native_lobby_profile(token)['selected_hero_id'] or 88000000025
     if selected not in BASES:
         selected = 88000000025
@@ -251,7 +253,9 @@ def load_fields(backend, token, hero_ids=None, *, request_fields=None):
             'FROM native_lobby_hero_fashion_prior WHERE player_id=? ORDER BY mode,category', (player_id,)))
     # The native lobby displays the saved suit directly; these explicit show
     # flags are the local account preference rather than an ownership signal.
-    return {'result': 0, 'hero_ids': list(ids), 'heros': hero_records(backend, token, ids),
+    # HeroServer.lua 0.19.0 replaces its entire roster with hero_ids and prunes
+    # cached fashions; filtering applies only to the requested hero details.
+    return {'result': 0, 'hero_ids': roster_ids, 'heros': hero_records(backend, token, detail_ids),
         'mp_hero_selected': selected, 'sol_hero_selected': selected, 'blast_hero_selected': selected,
         'is_fashion_show_sol': True, 'is_fashion_show_mp': True,
         'prior_settings': [{'category': r['category'], 'is_fashion_prior': bool(r['is_fashion_prior'])}

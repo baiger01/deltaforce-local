@@ -155,7 +155,7 @@ class HeroCustomizationTests(unittest.TestCase):
     def test_load_filter_and_native_selected_hero_self_id(self):
         result = self.request('CSHeroLoadHeroListReq', {'hero_id_list': [HERO], 'filter_by_id': True})
         self.assertEqual([r['hero_id'] for r in result['heros']], [HERO])
-        self.assertEqual(result['hero_ids'], [HERO])
+        self.assertEqual(result['hero_ids'], sorted(hero.BASES))
         native_id = self.backend.native_identity(self.token)['native_id']
         self.assertEqual(self.request('CSHeroGetSelectedHeroReq', {'player_id': native_id, 'mode': 5})['hero_selected']['hero_id'], HERO)
 

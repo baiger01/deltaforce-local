@@ -51,6 +51,8 @@
 | 推荐图片引用 | 下发原版四个 CDN 字段；隐藏没有任何图片引用的一条推荐并兼容其历史购买记录 | `premium_shop_catalog.json`、`tests/test_premium_shop.py`；尚未确认全部宣传图实机渲染 |
 | 干员自定义目录与穿戴 | 恢复 54 条服装与 2049 条附件，覆盖名片、喷漆、展示动作、手势、语音、处决、手表、徽章及称号；目录含锁定项，解锁按客户端默认标记和实际收藏；装备、卸下、已读与播放状态持久化 | `hero_customization_catalog.json`、`dfserver/hero_customization.py`、`tests/test_hero_customization.py` |
 | 奖励到穿戴流程 | 研究抽奖或礼包发货后，在回调前更新收藏与对应干员；加密接口回归验证研究外观、手表获得、装备和重连恢复；完整目录响应允许 1 MiB 出站容量 | `dfserver/handshake_diagnostic.py`、`tests/test_native_customization_flow.py` |
+| 干员详情刷新 | 按原客户端缓存规则区分完整名单与筛选详情；单人刷新保留全部 17 个干员及已选外观缓存，修正名单缩水响应；测试日志记录筛选参数 | `dfserver/hero_customization.py`、`tests/test_native_customization_flow.py`、[消费规则来源](DATA_PROVENANCE.md) |
+| 原生套装请求 | 处理客户端省略默认槽位 0 的穿戴请求，修正错误码 117302；实际收藏校验、非法槽位拒绝和重读恢复用例通过 | `dfserver/hero_customization.py`、`tests/test_native_customization_flow.py`、[抓取依据](DATA_PROVENANCE.md) |
 | 账户社交外观 | 恢复 2098 条头像、军牌、称号与徽记配置；按账号收藏查询归属，校验类别后装备，登录与重连恢复；拒绝查询其它玩家时泄露本地账号资料 | `profile_cosmetics_catalog.json`、`dfserver/profile_cosmetics.py`、`tests/test_profile_cosmetics.py` |
 | 成长预览查询答复 | 接入原生 `CSHeroGrowLineRewardViewReq`，校验账号和干员 ID 后返回本地未配置的空预览，结束未响应状态；不更改进度、不发奖 | `dfserver/hero_customization.py`、`tests/test_hero_growline_query.py`；非空成长奖励来源尚未恢复 |
 
@@ -71,6 +73,8 @@
 - 2026-10-01 04:42：360 秒原客户端试验完整结束，商城配置、研究奖池、社交归属、徽章及三次完整干员目录查询均收到响应；捕获日志无 Fatal error 或 Lua 崩溃堆栈，原 SDK 恢复并与源文件哈希一致。本轮只记录到初始化查询，四页签画面、推荐图及实际穿戴仍待用户操作确认。
 - 2026-10-01：补齐预览查询并增加隔离进程的连续通知回归后，全部 322 项自动测试通过（59.710 秒）。64 次实际礼包对应的收藏、干员解锁和购买回调均完成编码、加密、解码及顺序核对；单次包含完整 17 个干员目录。
 - 2026-10-01 05:12：修正后的 360 秒原客户端试验完整结束，17 个干员成长预览查询均成功响应，未响应数为 0；捕获日志无 Fatal error 或 Lua 崩溃堆栈，原 SDK 恢复并与源文件哈希一致。
+- 2026-10-01：干员名单刷新修正的 15 项直接相关用例通过，新增加密回归先复现名单缩水再验证修正。完整回归执行 323 项，其中 322 项通过，连续 64 次礼包通知压测超出 120 秒，单独复跑仍超时；该压测本轮未通过。
+- 2026-10-01：按原客户端省略槽位的穿戴请求复现并修正错误码 117302，名单与穿戴的 16 项直接相关用例通过；拒绝未拥有服装及非法槽位，保存后重读一致。
 - GitHub 仓库已按用户指示改为公开，源码、测试、静态目录和来源信息已上传；上传文件审计通过。
 
 ## 协作依据
