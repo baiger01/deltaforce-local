@@ -11,7 +11,7 @@ from .client_errors import error_code, inventory_error
 from .weapon_components import default_components
 from .weapon_ammo import magazine_capacity
 from .melee_weapons import WEAPONS
-from . import gun_skins, hero_customization, mandel, premium_shop, profile_cosmetics
+from . import gun_skins, hero_customization, mandel, premium_shop, profile_cosmetics, weapon_pendants, battle_pass, native_settings, local_chat
 
 
 CURRENCY_ID = 17020000010
@@ -48,10 +48,11 @@ SUPPORTED_REQUESTS = frozenset({
     'CSSerialCheapBuyReq',
     'CSMallSellReq',
     'CSWAssemblySkinInfoGetReq', 'CSWAssemblyApplySkinReq',
+    'CSWAssemblyDepositPropUpdateReq',
     'CSCollectionLoadMysticalSkinPropsReq',
     'CSShopNewGetConfigReq', 'CSGetBoxInfoReq',
     'CSLotteryBlindBoxDrawReq',
-}) | premium_shop.SUPPORTED_REQUESTS | profile_cosmetics.SUPPORTED_REQUESTS | hero_customization.SUPPORTED_REQUESTS
+}) | premium_shop.SUPPORTED_REQUESTS | profile_cosmetics.SUPPORTED_REQUESTS | hero_customization.SUPPORTED_REQUESTS | weapon_pendants.SUPPORTED_REQUESTS | battle_pass.SUPPORTED_REQUESTS | native_settings.SUPPORTED_REQUESTS | local_chat.SUPPORTED_REQUESTS
 
 
 @lru_cache(maxsize=1)
@@ -170,9 +171,13 @@ def _prop(item_id, row, count=1):
             **item_condition_fields(item_id)}
 
 
-def item_condition_fields(item_id, *, components=None, weapon=None):
+def item_condition_fields(item_id, *, components=None, weapon=None, health=None):
     """Return item state used by the original client's inventory logic."""
     item_id = str(item_id)
+    from .native_keycards import keycard_fields
+    key_fields = keycard_fields(item_id, health)
+    if key_fields:
+        return key_fields
     if int(item_id) in WEAPONS:
         return {'weapon': dict(weapon) if weapon is not None else
                           {'skin_id': WEAPONS[int(item_id)], 'skin_gid': 0}}
@@ -281,7 +286,7 @@ def _change(purchase, backend, local_session):
                                'num': after['quantity'],
                                'position': after['grid_page_id'],
                                'length': after['length'], 'width': after['width'],
-                               **item_condition_fields(after['template_id'], components=after.get('components'), weapon=after.get('weapon')),
+                               **item_condition_fields(after['template_id'], components=after.get('components'), weapon=after.get('weapon'), health=after.get('health')),
                                'loc': inventory_location(after)}})
     for row in purchase['props']:
         row = owned[row['gid']]
@@ -290,7 +295,7 @@ def _change(purchase, backend, local_session):
         prop = {'id': row['template_id'], 'gid': row['gid'],
                 'num': row['quantity'], 'position': position,
                 'length': row['length'], 'width': row['width'], 'loc': loc,
-                **item_condition_fields(row['template_id'], components=row.get('components'), weapon=row.get('weapon'))}
+                **item_condition_fields(row['template_id'], components=row.get('components'), weapon=row.get('weapon'), health=row.get('health'))}
         props.append({'prop': prop, 'change_type': 1,
                       'dest': loc, 'delta': row['quantity']})
     currencies = [{
@@ -299,7 +304,14 @@ def _change(purchase, backend, local_session):
         'current_num': purchase['currency_current']}]
     if purchase.get('bonus_currency_change'):
         currencies.append(purchase['bonus_currency_change'])
-    return {'prop_changes': props, 'currency_changes': currencies}
+    from .container_layouts import position_changes
+    moves = purchase.get('displaced_props', []) + [
+        {'before': None, 'after': row} for row in purchase['props']]
+    changes = {'prop_changes': props, 'currency_changes': currencies}
+    layouts = position_changes(owned.values(), moves)
+    if layouts:
+        changes['pos_changes'] = layouts
+    return changes
 
 
 def _sell_change(sale):
@@ -312,7 +324,7 @@ def _sell_change(sale):
                 'num': remaining if remaining else before['quantity'],
                 'position': before['grid_page_id'],
                 'length': before['length'], 'width': before['width'],
-                'loc': loc, **item_condition_fields(before['template_id'], components=before.get('components'), weapon=before.get('weapon'))}
+                'loc': loc, **item_condition_fields(before['template_id'], components=before.get('components'), weapon=before.get('weapon'), health=before.get('health'))}
         changes.append({'change_type': 3 if remaining else 2,
                         'prop': prop, 'src': loc,
                         'dest': loc if remaining else {'pos': 0},
@@ -340,6 +352,18 @@ def _collection_purchase_change(purchase):
 
 def response_fields(request, backend, local_session):
     """Return declared commerce response fields, or None for unrelated requests."""
+    if request.name in native_settings.SUPPORTED_REQUESTS:
+        return native_settings.response_fields(request, backend, local_session)
+    if request.name in local_chat.SUPPORTED_REQUESTS:
+        return local_chat.response_fields(request, backend, local_session)
+    if request.name == 'CSWAssemblyDepositPropUpdateReq':
+        from .weapon_assembly import response_fields as assembly_response
+        return assembly_response(request, backend, local_session)
+    if request.name in battle_pass.SUPPORTED_REQUESTS:
+        return battle_pass.response_fields(request, backend, local_session)
+    pendant = weapon_pendants.response_fields(request, backend, local_session)
+    if pendant is not None:
+        return pendant
     name = request.name
     fields = request.fields
     profile = profile_cosmetics.response_fields(request, backend, local_session)
@@ -506,22 +530,28 @@ def response_fields(request, backend, local_session):
                 'prop_changes': _sell_change(sale), 'version_info': VERSION}
     if name == 'CSSerialCheapBuyReq':
         entries = fields.get('buy_list', [])
+        if any((entry.get('auction_prop') or {}).get('assemble_info')
+               or (entry.get('single_auction_prop') or {}).get('assemble_info')
+               or (entry.get('mall_prop') or {}).get('assemble_info') for entry in entries):
+            from .weapon_assembly import purchase_response
+            return purchase_response(request, backend, local_session)
         if 1 <= len(entries) <= 32 and all(
                 int(entry.get('channel') or 0) == 2
+                and bool(entry.get('single_auction_prop') or entry.get('auction_prop'))
                 and int((entry.get('single_auction_prop') or {}).get('to_pos') or 0)
-                in (2, POCKET_POSITION, CHEST_RIG_POSITION, BACKPACK_POSITION, SAFE_BOX_POSITION)
+                in (0, 2, POCKET_POSITION, CHEST_RIG_POSITION, BACKPACK_POSITION, SAFE_BOX_POSITION)
                 for entry in entries):
             items = []
             for entry in entries:
-                single = entry['single_auction_prop']
-                item_id = int(single.get('prop_id') or 0)
-                count = int(single.get('buy_num') or 0)
+                offer = entry.get('single_auction_prop') or entry['auction_prop']
+                item_id = int(offer.get('prop_id') or 0)
+                count = int(offer.get('buy_num') or offer.get('total_num') or 0)
                 row = catalog.get(item_id)
                 if row is None or not 1 <= count <= 1000:
                     return {'result': 1, 'auction_fail_list': entries}
                 unit_price = _price(row)
-                if (int(single.get('currency') or 0) != CURRENCY_ID
-                        or int(single.get('price') or 0)
+                if (int(offer.get('currency') or 0) != CURRENCY_ID
+                        or int(offer.get('price') or 0)
                         not in (unit_price, unit_price * count)):
                     return {'result': 1, 'auction_fail_list': entries}
                 delivered_id, delivered_row = _delivered_stock(catalog, item_id)
@@ -530,7 +560,7 @@ def response_fields(request, backend, local_session):
                               'length': delivered_row['length'],
                               'width': delivered_row['width'],
                               'max_stack_count': delivered_row['max_stack_count'],
-                              'target_position': _purchase_position(single['to_pos'])})
+                              'target_position': _purchase_position(offer.get('to_pos'))})
             try:
                 positions = {item['target_position'] for item in items}
                 if positions == {2}:

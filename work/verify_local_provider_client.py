@@ -252,6 +252,7 @@ try:
     seen = set()
     load_seen = set()
     authorization_seen = set()
+    socket_evidence_captured = False
     for iteration in range((report["observation_limit_seconds"] + 15) // 1 + 1):
         report["resource_samples"].append(capture_resources(time.monotonic()-start, "iteration_start", owned))
         for auth in psutil.process_iter(["pid", "name", "create_time"]):
@@ -296,6 +297,24 @@ try:
         if EVENTS.exists():
             report["sdk_events"] = [json.loads(line) for line in EVENTS.read_text(encoding="utf-8").splitlines() if line.strip()]
         report["elapsed_seconds"] = round(time.monotonic()-start,2)
+        if (os.environ.get('DF_LOCAL_SOCKET_EVIDENCE') == '1'
+                and not socket_evidence_captured and report['elapsed_seconds'] >= 30
+                and child.poll() is None):
+            socket_evidence_captured = True
+            with (TEST_ROOT / 'socket-helper-readonly.txt').open('w', encoding='utf-8') as output:
+                evidence = subprocess.run([sys.executable, str(ROOT / 'work/probe_gunsmith_native.py'),
+                    str(ENTRY), '--pid', str(child.pid), '--rva',
+                    '0x60b2d40', '0x60b5430', '0x60b2ce0', '0x60b5330',
+                    '0xd3a9930', '0xe2c560', '0xd3c66e0'],
+                    stdout=output, stderr=subprocess.STDOUT, timeout=10)
+            report['socket_helper_readonly_evidence'] = {'returncode': evidence.returncode,
+                'path': str(TEST_ROOT / 'socket-helper-readonly.txt')}
+            with (TEST_ROOT / 'keybox-registration-readonly.txt').open('w', encoding='utf-8') as output:
+                evidence = subprocess.run([sys.executable, str(ROOT / 'work/probe_live_keybox_registration.py'),
+                    '--pid', str(child.pid), '--output', str(TEST_ROOT / 'keybox-registration-readonly.json')],
+                    stdout=output, stderr=subprocess.STDOUT, timeout=15)
+            report['keybox_registration_readonly_evidence'] = {'returncode': evidence.returncode,
+                'path': str(TEST_ROOT / 'keybox-registration-readonly.json')}
         report["root_exit_code"] = child.poll()
         report["resource_samples"].append(capture_resources(time.monotonic()-start, "iteration_end", owned))
         save()

@@ -27,6 +27,7 @@ from dfserver.local_commerce import (CURRENCY_ID, MANDEL_BRICK_PURCHASE_CURRENCY
                                      default_weapon_presets, item_condition_fields,
                                      order_id, response_fields,
                                      stock_catalog)
+from dfserver.weapon_pendants import PENDANTS
 
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -374,7 +375,9 @@ class LocalCommerceTests(unittest.TestCase):
         loaded = self.codec.decode(decode_data_frame(
             collection_frame, b'0123456789abcdef', direction='server_to_client',
             compression_method=1).messages[0])
-        self.assertEqual(int(loaded.fields['common_props'][0]['num']), 10)
+        self.assertEqual([(int(prop['id']), int(prop['gid']), int(prop['num']))
+                          for prop in loaded.fields['common_props']],
+                         [(item_id, 0, 10), (32210000004, 0, 10), (MANDEL_KEY_ID, 0, 10)])
 
         key = b'0123456789abcdef'
         response_frame = _candidate_local_commerce_response(
@@ -403,10 +406,20 @@ class LocalCommerceTests(unittest.TestCase):
         self.assertEqual(collection_push.name, 'CSCollectionPropChangeNtf')
         self.assertEqual(int(collection_push.fields['data_change'][0]['prop']['id']),
                          item_id)
-        self.assertEqual(self.backend.native_lobby_profile(self.token)['collection_props'],
+        collection = self.backend.native_lobby_profile(self.token)['collection_props']
+        self.assertEqual([row for row in collection if row['template_id'] not in PENDANTS],
                          [{'template_id': item_id, 'quantity': 11},
                           {'template_id': 32210000004, 'quantity': 11},
                           {'template_id': MANDEL_KEY_ID, 'quantity': 11}])
+        final_collection_frame = _candidate_local_collection_response(
+            b'ABCD' + self.codec.encode('CSCollectionLoadPropsReq', {}, sequence=22),
+            self.backend, self.token, key, header_word4=12, header_word9=22)
+        final_collection = self.codec.decode(decode_data_frame(
+            final_collection_frame, key, direction='server_to_client',
+            compression_method=1).messages[0])
+        self.assertEqual([(int(prop['id']), int(prop['gid']), int(prop['num']))
+                          for prop in final_collection.fields['common_props']],
+                         [(item_id, 0, 11), (32210000004, 0, 11), (MANDEL_KEY_ID, 0, 11)])
 
     def test_direct_mandel_draw_does_not_charge_without_reward_handler(self):
         item_id = 16110000026

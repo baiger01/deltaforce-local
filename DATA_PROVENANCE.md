@@ -25,6 +25,20 @@ GitHub 协作仓库仅包含源码、静态 JSON 目录、重建描述符和来�
 | `premium_shop_catalog.json` | 当前安装基础包 `pak-0-0-pakchunk2-WindowsClient.pak` 条目 7142/7156/7152/6774/6394/7154 | `work/extract_premium_shop_catalog.py` 恢复推荐配方、礼包价格、干员奖池、奖励与外观归属、主页签。所有记录保留行号、序列化偏移；完整来源和限制见下节。 |
 | `profile_cosmetics_catalog.json` | 当前安装基础包 `pak-0-0-pakchunk2-WindowsClient.pak` 条目 7110，`SocialAvatarDataTable` | `work/extract_profile_cosmetics_catalog.py` 恢复 2098 条社交外观 ID 与类别，字段索引 5213/5215；SHA-256 为 `50fe5c89e0ae53540ebf1a3df8cfca572b2c7558513516601f321fb12a7e8cbe`。原始行、偏移和解析数量完整校验；资源与开放时间仍由原客户端读取。 |
 | `hero_customization_catalog.json` | 同一基础包条目 6614/6620/6624/6630/6632/6634/6636/6648/6660/6662；HeroData 条目 6628及礼包、研究配置 | `work/extract_hero_customization_catalog.py` 恢复 54 条服装、2049 条附件及默认标记。目录记录各表 SHA-256、行偏移、原始字段索引、独立奖励锚点和名称索引恢复方式；名称表仍加密，关联证据的不同强度见下节。 |
+| `battle_pass_catalog.json` | 当前安装基础包条目 6358/6360/6362/6364/6368/6370/6372；原版 Shipping EXE 的结构注册、属性指针和成员偏移 | `work/verify_battle_pass_reflection_bindings.py` 先校验原 EXE SHA-256，再逐个 PE 节进行 raw/VA 映射；独立恢复 C++ 原属性名，并与原始 PAK 全部派生字段的序列、类型、长度和 FName 索引双向对应。502 行、131 个派生字段均通过后，`work/extract_battle_pass_catalog.py` 从原字段名生成价格、礼包和奖励；旧的顺序推断仅保留为已替代的来源记录。 |
+| `weapon_pendant_catalog.json` | 同一基础包条目 6886 的挂饰表与已提取的 PartsData、GameItem 表 | `work/extract_weapon_pendant_catalog.py` 恢复 283 条真实 ID；本地普通挂饰提供策略要求两个可见布尔字段同时为真，80 条符合。原名称表仍加密，单个布尔字段名称未单独宣称恢复；神秘实例不凭空生成。 |
+
+## 门卡基础表
+
+`native_keycard_catalog.json` 的门卡来自当前基础包条目 6730 `KeyInfo`，334 条原行的地图与耐久字段通过原 EXE 的 `DFMKeyInfoRow` C++ 反射核验。`KeyFeature.lua` 使用表中 `Durability` 及物品 `health/health_max` 显示剩余次数；本地保存的零耐久不会被默认满耐久覆盖。条目 6726 `KeyBox` 的 109 行分区与条目 6728 `KeyBoxUnlock` 的 9 行解锁配置保留原字段和来源，物品位置 116、内容位置 116001 及分类限制由客户端配置确认。
+
+`KeyBox.ItemID` 是名称表索引，不能当作数字物品 ID。其名称表所在 `.uasset` 加密，21 个名称索引与 26 个实际钥匙包物品的对应仍未核实；当前未按排序假造绑定或开启钥匙包分区。基础包及 shadow 热更新包的搜索范围与明确跳过范围保留在只读研究报告中。门卡基础字段恢复不等于完整门卡系统已完成。
+
+## 配件装配与通行证核验
+
+`work/probe_gunsmith_native.py` 只读校验磁盘 PE，并用查询和读取权限查看 shadow 进程中已加载的原始函数；不写入游戏代码。插槽类型、深度、ID 和父节点函数分别来自 RVA `0x507efd0`、`0x507f160`、`0x507f1e0`、`0x507f060`，完整读取段哈希记录在 `dfserver/socket_guid.py`。实际购买 GUID `281474976710710` 对应根槽 54，`72339069014645763` 对应路径 `(3,28)`；不能将后者误当成 `(3,0)`。实现保留原生 32 位移位与 63 位父节点掩码语义，自动装配仅使用已核实的 0～3 层路径。原 Lua 单件购买分支只发购买请求，没有后续装配请求，因此服务端必须原子完成购买和装配。拍卖变更原因采用原枚举 `AuctionBuy=18`。
+
+通行证当前目录选用安装内最新季 `202604`，不能据此声称其为线上当前活动。原 EXE SHA-256 为 `4254fbe66585f260f1f9dbfc5e302887842552e7baed8939e023160a5e250be0`；11 个节均同名 `.std`，须逐节按地址范围映射，不能按节名合并或把后部节误判为 overlay。礼包 11 的原字段为等级 20、价格 640，Lua `MakeGiftRewardList` 根据当前会员类型计算新增等级奖励，购买请求不含 `buy_type`，因此不会顺带开启会员。扣费、奖励和领取记录在同一事务，提交后才通知客户端；60 级奖励 `13460040086` 经挂饰目录核对后进入收藏。日期使用持久化的本地诊断窗口，经验卡与当前季线索的未恢复关联仍拒绝写入。
 
 `work/evidence/` 在迁移包中仅保留上述小范围表提取物，以便不重新扫描整套游戏就能复核目录。大型原始 PAK、原始 Lua 缓存、历史抓包及日志不在包内。同版本游戏在新电脑上按相对目录可重新读取；重新提取前请先核对游戏版本与目录头内的源文件哈希。`work/evidence/character_avatar_tables/` 中 GameItem 的 `.uexp` 约 35 MiB，已压缩进迁移包，毋须额外复制游戏素材。
 

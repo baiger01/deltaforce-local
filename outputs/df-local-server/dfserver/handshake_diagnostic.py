@@ -101,13 +101,14 @@ class State:
 def _log_request_progress(entry, phase):
     fields = ('request_name', 'service', 'prefix_sequence', 'elapsed_ms',
               'response_sent', 'response_elapsed_ms', 'local_commerce_result',
-              'request_not_answered', 'failure_code', 'local_bullet_commands',
+              'request_not_answered', 'failure_code', 'failure_detail', 'local_bullet_commands',
               'local_equip_commands', 'local_inventory_failure',
               'local_body_container_snapshots', 'local_serial_buy_items',
               'local_lottery_purchase_items', 'local_inventory_change_notification_sent',
               'local_premium_shop_request', 'local_customization_request',
               'local_collection_change_notification_sent', 'local_warehouse_sort_request',
-              'local_warehouse_sort_result', 'local_warehouse_sort_change_count')
+              'local_warehouse_sort_result', 'local_warehouse_sort_change_count',
+              'local_weapon_assembly_request', 'local_battle_pass_request')
     event = {'event': 'business_request', 'phase': phase, 'observed_at_utc': _time()}
     event.update({name: entry[name] for name in fields if name in entry})
     print(json.dumps(event), flush=True)
@@ -554,12 +555,20 @@ def _candidate_local_prepare_map_response(message, backend, local_session, key,
 
 
 def _candidate_local_commerce_response(message, backend, local_session, key,
-                                       *, header_word4, header_word9):
+                                       *, header_word4, header_word9, diagnostic_entry=None):
     if len(message) < 5:
         raise ValueError('Truncated commerce package')
     codec = _candidate_codec()
     request = codec.decode(message[4:])
-    fields = local_commerce_response_fields(request, backend, local_session)
+    from . import battle_pass
+    if request.name in battle_pass.SUPPORTED_REQUESTS:
+        committed = {}
+        fields = battle_pass.response_fields(request, backend, local_session, changes=committed)
+        if diagnostic_entry is not None:
+            diagnostic_entry['local_battle_pass_request'] = request.fields
+            diagnostic_entry['_battle_pass_changes'] = committed
+    else:
+        fields = local_commerce_response_fields(request, backend, local_session)
     if fields is None:
         raise ValueError('Not a supported local commerce request')
     response = codec.response(request, fields)
@@ -686,6 +695,25 @@ def _candidate_local_commerce_result(response_frame, key):
                                 compression_method=1, max_output=1024 * 1024)
     result = _candidate_codec().decode(decoded.messages[0]).fields.get('result')
     return None if result is None else int(result)
+
+
+def _candidate_local_battle_pass_notifications(entry, key, *, header_word4, header_word9):
+    committed = entry.pop('_battle_pass_changes', {})
+    messages = []
+    deposit = {'currency_changes': committed.get('currency_changes', []),
+               'prop_changes': committed.get('deposit_changes', [])}
+    if any(deposit.values()):
+        messages.append(('CSDepositChangeNtf', {'deposit_change': deposit}))
+    collection = committed.get('collection_changes', [])
+    if collection:
+        messages.append(('CSCollectionPropChangeNtf', {'data_change': [
+            {'change_type': row['change_type'], 'prop': row['prop'],
+             'delta_num': row['delta'], 'after_num': row['prop']['num']}
+            for row in collection]}))
+    return [encode_data_frame((_candidate_codec().encode(name, fields, sequence=0),), key,
+                direction='server_to_client', opaque_flag=64, header_word4=header_word4,
+                header_word9=header_word9 + index + 1)
+            for index, (name, fields) in enumerate(messages)]
 
 
 def _candidate_local_premium_shop_summary(message):
@@ -919,15 +947,17 @@ def _candidate_local_collection_response(message, backend, local_session, key, *
     backend.ensure_native_lobby_melee_collection(local_session)
     state = backend.native_lobby_profile(local_session)
     from .gun_skins import collection as gun_skin_collection
+    from .weapon_pendants import PENDANTS, collection as pendant_collection
     skins = gun_skin_collection(backend, local_session)
     response = codec.response(request, {
         'result': 0,
         'weapon_skin_props': [{'id': WEAPONS[row['template_id']], 'gid': 0, 'num': 1}
                               for row in state['melee_props']] + [row for row in skins if not row['gid']],
         'mystical_skin_props': [row for row in skins if row['gid']],
+        'weapon_pendant_props': pendant_collection(backend, local_session),
         'common_props': [
             {'id': row['template_id'], 'gid': 0, 'num': row['quantity']}
-            for row in state['collection_props']],
+            for row in state['collection_props'] if row['template_id'] not in PENDANTS],
     })
     return encode_data_frame((response,), key, direction='server_to_client',
                              opaque_flag=64, header_word4=header_word4,
@@ -958,6 +988,9 @@ def _candidate_local_deposit_response(message, backend, local_session, key, *, h
                        for space_id, (width, height) in enumerate(POCKET_LAYOUT, 1)],
         'load_props': [],
     }
+    for position in (CHEST_RIG_POSITION, BACKPACK_POSITION):
+        equipment[position] = {'position': position, 'capacity': 0,
+                               'src_prop_id': 0, 'grid_space': [], 'load_props': []}
     rig = next((prop for prop in state['props'] if prop['grid_page_id'] == 107), None)
     rig_layout = CHEST_RIG_LAYOUT.get(rig['template_id'] if rig else None)
     if rig:
@@ -1044,7 +1077,7 @@ def _candidate_local_deposit_response(message, backend, local_session, key, *, h
         destination.append({
             'id': prop['template_id'], 'gid': prop['gid'], 'num': prop['quantity'],
             'position': position, 'length': prop['length'], 'width': prop['width'],
-            **item_condition_fields(prop['template_id'], components=prop.get('components'), weapon=prop.get('weapon')),
+            **item_condition_fields(prop['template_id'], components=prop.get('components'), weapon=prop.get('weapon'), health=prop.get('health')),
             'loc': inventory_location(prop),
         })
     if state['melee_props'] and not equipment[113]['load_props']:
@@ -1160,17 +1193,22 @@ def _candidate_local_equip_response(message, backend, local_session, key, *,
                                      'num': after['quantity'],
                                      'position': after['grid_page_id'],
                                      'length': after['length'], 'width': after['width'],
-                                     **item_condition_fields(after['template_id'], components=after.get('components'), weapon=after.get('weapon')),
+                                     **item_condition_fields(after['template_id'], components=after.get('components'), weapon=after.get('weapon'), health=after.get('health')),
                                      'loc': inventory_location(after)},
                             'src': inventory_location(before),
                             'dest': inventory_location(after),
                             'delta': after['quantity']})
         fields = {'result': 0, 'deposit_change': {'prop_changes': changes},
                   'cmds': request.fields.get('cmds', [])}
+        from .container_layouts import position_changes
+        layouts = position_changes(backend.native_lobby_profile(local_session)['props'], moves)
+        if layouts:
+            fields['deposit_change']['pos_changes'] = layouts
         if any(command.get('target_pos') == 109 for command in commands):
             box = next(row for row in backend.native_lobby_profile(local_session)['props']
                        if row['grid_page_id'] == 109)
-            fields['deposit_change']['pos_changes'] = [safe_boxes.position_change(box['template_id'])]
+            fields['deposit_change'].setdefault('pos_changes', []).append(
+                safe_boxes.position_change(box['template_id']))
     response = codec.response(request, fields)
     return encode_data_frame((response,), key, direction='server_to_client',
                              opaque_flag=64, header_word4=header_word4,
@@ -1192,7 +1230,7 @@ def _native_inventory_changes(moves):
             'delta': (after['quantity'] if after else 0) - (before['quantity'] if before else 0),
             'prop': {'id': row['template_id'], 'gid': row['gid'], 'num': row['quantity'],
                 'position': row['grid_page_id'], 'length': row['length'], 'width': row['width'],
-                **item_condition_fields(row['template_id'], components=row.get('components'), weapon=row.get('weapon')),
+                **item_condition_fields(row['template_id'], components=row.get('components'), weapon=row.get('weapon'), health=row.get('health')),
                 'loc': inventory_location(row)}})
     return {'prop_changes': changes}
 
@@ -1205,7 +1243,7 @@ def _candidate_local_bullet_summary(message):
             for command in fields.get('cmds', [])[:32]]
 
 
-def _candidate_local_bullet_response(message, backend, local_session, key, *, header_word4, header_word9):
+def _candidate_local_bullet_response(message, backend, local_session, key, *, header_word4, header_word9, diagnostic_entry=None):
     codec = _candidate_codec()
     request = codec.decode(message[4:])
     if request.name != 'CSDepositOperateBulletReq':
@@ -1217,6 +1255,8 @@ def _candidate_local_bullet_response(message, backend, local_session, key, *, he
     try:
         moves = backend.native_lobby_operate_bullets(local_session, commands)
     except DomainError as error:
+        if diagnostic_entry is not None:
+            diagnostic_entry['local_inventory_failure'] = {'code': error.code, 'detail': error.message}
         fields = {'result': inventory_error(error)}
     else:
         fields = {'result': 0, 'changes': _native_inventory_changes(moves)}
@@ -1506,7 +1546,8 @@ def _continue_character_creation(connection, decoder, queue, current, ack,
                     entry['local_bullet_commands'] = _candidate_local_bullet_summary(message)
                     response = _candidate_local_bullet_response(
                         message, backend, local_session, ack.session_key,
-                        header_word4=current.header_word4, header_word9=outbound_sequence)
+                        header_word4=current.header_word4, header_word9=outbound_sequence,
+                        diagnostic_entry=entry)
                     entry['local_bullet_response'] = True
                     entry['local_commerce_result'] = _candidate_local_commerce_result(response, ack.session_key)
                 elif name == 'CSGuideSetDataReq':
@@ -1575,11 +1616,18 @@ def _continue_character_creation(connection, decoder, queue, current, ack,
                         entry['local_lottery_purchase_items'] = _candidate_local_lottery_purchase_summary(message)
                     if name == 'CSSerialCheapBuyReq':
                         entry['local_serial_buy_items'] = _candidate_local_serial_buy_summary(message)
+                    if name == 'CSWAssemblyDepositPropUpdateReq':
+                        raw_assembly = _candidate_codec().decode(message[4:]).fields
+                        entry['local_weapon_assembly_request'] = {
+                            field: raw_assembly[field] for field in
+                            ('prop', 'local_prop', 'unequip_pos', 'old_prop_id', 'bag_id',
+                             'data_type', 'source', 'swapped_peer_gun') if field in raw_assembly}
                     if name == 'CSMallSellReq':
                         entry['local_sell_items'] = _candidate_local_sell_summary(message)
                     response = _candidate_local_commerce_response(
                         message, backend, local_session, ack.session_key,
-                        header_word4=current.header_word4, header_word9=outbound_sequence)
+                        header_word4=current.header_word4, header_word9=outbound_sequence,
+                        diagnostic_entry=entry)
                     entry['local_commerce_response'] = True
                     entry['local_commerce_result'] = _candidate_local_commerce_result(
                         response, ack.session_key)
@@ -1607,6 +1655,11 @@ def _continue_character_creation(connection, decoder, queue, current, ack,
                 connection.sendall(response.encode())
                 entry['response_sent'] = True
                 entry['response_elapsed_ms'] = round((time.monotonic() - began) * 1000)
+                for notification in _candidate_local_battle_pass_notifications(
+                        entry, ack.session_key, header_word4=current.header_word4,
+                        header_word9=outbound_sequence):
+                    connection.sendall(notification.encode())
+                    outbound_sequence = notification.header_word9
                 if name in ('CSDepositOperateBulletReq', 'CSDepositAssemblySyncBodyContainerReq',
                             'CSShopBuyLotteryItemReq', 'CSLotteryBlindBoxDrawReq',
                             'CSShopBuyHotRecommendationReq', 'CSShopBuyMallGiftReq', 'CSShopOpenLotteryItemReq',
@@ -2099,7 +2152,8 @@ def inspect_exchange(connection, modulus=None, *, timeout=12, diagnostic_exponen
                                                                         next_response = _candidate_local_bullet_response(
                                                                             message, backend, local_session, ack.session_key,
                                                                             header_word4=current.header_word4,
-                                                                            header_word9=outbound_sequence)
+                                                                            header_word9=outbound_sequence,
+                                                                            diagnostic_entry=entry)
                                                                         entry['local_bullet_response'] = True
                                                                         entry['local_commerce_result'] = _candidate_local_commerce_result(
                                                                             next_response, ack.session_key)
@@ -2190,13 +2244,20 @@ def inspect_exchange(connection, modulus=None, *, timeout=12, diagnostic_exponen
                                                                             entry['local_lottery_purchase_items'] = _candidate_local_lottery_purchase_summary(message)
                                                                         if name == 'CSSerialCheapBuyReq':
                                                                             entry['local_serial_buy_items'] = _candidate_local_serial_buy_summary(message)
+                                                                        if name == 'CSWAssemblyDepositPropUpdateReq':
+                                                                            raw_assembly = _candidate_codec().decode(message[4:]).fields
+                                                                            entry['local_weapon_assembly_request'] = {
+                                                                                field: raw_assembly[field] for field in
+                                                                                ('prop', 'local_prop', 'unequip_pos', 'old_prop_id', 'bag_id',
+                                                                                 'data_type', 'source', 'swapped_peer_gun') if field in raw_assembly}
                                                                         if name == 'CSMallSellReq':
                                                                             entry['local_sell_items'] = _candidate_local_sell_summary(message)
                                                                         next_response = _candidate_local_commerce_response(
                                                                             message, backend, local_session,
                                                                             ack.session_key,
                                                                             header_word4=current.header_word4,
-                                                                            header_word9=outbound_sequence)
+                                                                            header_word9=outbound_sequence,
+                                                                            diagnostic_entry=entry)
                                                                         entry['local_commerce_response'] = True
                                                                         entry['local_commerce_result'] = _candidate_local_commerce_result(
                                                                             next_response, ack.session_key)
@@ -2238,6 +2299,11 @@ def inspect_exchange(connection, modulus=None, *, timeout=12, diagnostic_exponen
                                                                 entry['response_elapsed_ms'] = round(
                                                                     (time.monotonic() - continuation_began) * 1000)
                                                                 entry['response_header_word9'] = next_response.header_word9
+                                                                for notification in _candidate_local_battle_pass_notifications(
+                                                                        entry, ack.session_key, header_word4=current.header_word4,
+                                                                        header_word9=outbound_sequence):
+                                                                    connection.sendall(notification.encode())
+                                                                    outbound_sequence = notification.header_word9
                                                                 if (name in ('CSShopBuyLotteryItemReq',
                                                                              'CSLotteryBlindBoxDrawReq',
                                                                              'CSShopBuyHotRecommendationReq',

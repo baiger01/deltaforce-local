@@ -80,6 +80,7 @@ class CandidateBusinessCodec:
         message = self.codec._class('pb.' + name)()
         try:
             message.ParseFromString(envelope.body)
+            self.codec.validate_empty_only(message)
             known = type(message)()
             known.CopyFrom(message)
             known.DiscardUnknownFields()

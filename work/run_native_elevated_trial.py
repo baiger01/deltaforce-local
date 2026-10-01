@@ -79,6 +79,8 @@ if args.worker:
     log = args.request.with_suffix(".log")
     os.environ["DF_LOCAL_SOURCE_GAME"] = request["source_game"]
     os.environ["DF_LOCAL_SHADOW_GAME"] = request["shadow_game"]
+    if request.get('socket_helper_readonly_evidence'):
+        os.environ['DF_LOCAL_SOCKET_EVIDENCE'] = '1'
     sys.argv = [str(RUNNER), "--entry", args.entry,
                 "--game-root", request["game_root"],
                 "--observation-seconds", str(args.observation_seconds)]
@@ -123,7 +125,8 @@ request = {"requested_at_utc":datetime.now(timezone.utc).isoformat(), "entry":ar
            "shadow_game":str(args.shadow_game.resolve()),
            "game_root":str((args.game_root or args.source_game).resolve()),
            "runner_sha256":digest(RUNNER), "wrapper_sha256":digest(Path(__file__)),
-           "normal_windows_uac":True, "authorization_window_operated_by_tool":False}
+           "normal_windows_uac":True, "authorization_window_operated_by_tool":False,
+           "socket_helper_readonly_evidence":os.environ.get('DF_LOCAL_SOCKET_EVIDENCE') == '1'}
 request_path.write_text(json.dumps(request, indent=2) + "\n", encoding="utf-8")
 
 class ShellInfo(C.Structure):

@@ -7,6 +7,7 @@ defaults use proto2 defaults. Neither assumption establishes game compatibility.
 import re
 
 from .protobuf_codec import ProtobufCodec
+from .core import DomainError
 
 IDENTIFIER = re.compile(r'[A-Za-z_][A-Za-z_0-9]*\Z')
 SCALAR_TYPES = {'double': 1, 'float': 2, 'i64': 3, 'u64': 4, 'i32': 5,
@@ -15,6 +16,34 @@ STORAGE_TYPES = {'i32': {'Int8', 'Int16', 'Int32'}, 'u32': {'Int8', 'Int16', 'In
                  'i64': {'Integer'}, 'u64': {'Integer'}, 'float': {'Float'},
                  'double': {'Number'}, 'bool': {'Boolean'}, 'str': {'String'},
                  'buffer': {'String'}}
+EMPTY_ONLY_TYPE = 'BattlePassPackInfo_BoughtPacksEntry'
+EMPTY_ONLY_TYPES = frozenset({EMPTY_ONLY_TYPE, 'RollingNotice'})
+
+
+def _empty_rolling_notice(message):
+    """Allow only this installed asymmetric codec's empty parent references."""
+    if message.get('name') != 'RollingNotice':
+        return False
+    fields = message.get('fields')
+    if not isinstance(fields, list):
+        return False
+    signature = [(field.get('name'), field.get('number'), field.get('codec_category'),
+                  field.get('repeated'), field.get('nested_type')) for field in fields]
+    unpaired = message.get('unpaired_encode_calls')
+    return (message.get('name') == 'RollingNotice' and message.get('source') == '@cs_chat_editor_pb.lua'
+        and message.get('source_sha256') == '6cd943f0f562dce18d037198ba9c1ecdd3f61a032e5c85ae5b9f75e2e56296d3'
+        and message.get('encode_function_id') == '0.81' and message.get('decode_function_id') == '0.80'
+        and message.get('encode_field_calls') == 5 and message.get('decode_field_calls') == 4
+        and message.get('unresolved_fields') == []
+        and signature == [('begin_timestamp', 1, 'u64', False, None),
+                          ('end_timestamp', 2, 'u64', False, None),
+                          ('content', 3, 'str', False, None), ('is_multiline', 4, 'bool', False, None)]
+        and all(field.get('encode_helper') == 'add' + field['codec_category']
+                and field.get('decode_helper') == 'get' + field['codec_category']
+                for field in message['fields'])
+        and isinstance(unpaired, list) and len(unpaired) == 1
+        and unpaired[0].get('name') == 'game_mode' and unpaired[0].get('number') == 5
+        and unpaired[0].get('helper') == 'addu32' and unpaired[0].get('nested_candidates') == [])
 
 
 def validate_class_metadata(recovery, class_metadata):
@@ -53,7 +82,7 @@ def validate_class_metadata(recovery, class_metadata):
 
 
 def compile_candidate_descriptors(recovery, *, class_metadata=None):
-    """Return descriptor bytes and exclusions; never invent missing submessages."""
+    """Compile observed fields, preserving precisely restricted empty-only types."""
     from google.protobuf import descriptor_pb2, descriptor_pool
     if not isinstance(recovery, dict) or not isinstance(recovery.get('messages'), list):
         raise ValueError('Expected generated codec field metadata')
@@ -64,7 +93,7 @@ def compile_candidate_descriptors(recovery, *, class_metadata=None):
         name = message.get('name')
         if not isinstance(name, str) or not IDENTIFIER.fullmatch(name) or name in messages or name in excluded:
             raise ValueError('Invalid or duplicate candidate message name')
-        if message.get('all_observed_field_calls_matched') is not True:
+        if message.get('all_observed_field_calls_matched') is not True and not _empty_rolling_notice(message):
             excluded[name] = 'Generated encode/decode field calls did not all match'
             continue
         fields = message.get('fields')
@@ -93,6 +122,20 @@ def compile_candidate_descriptors(recovery, *, class_metadata=None):
             field_numbers.add(number)
         if name not in excluded:
             messages[name], dependencies[name] = message, required
+
+    # The installed cs_battlepass_editor_pb.lua 0.10/0.11 observes this
+    # repeated field-7 submessage but does not define its entry's fields.
+    # Preserve the reference without inventing key/value types. The candidate
+    # codec below rejects every populated occurrence of this opaque entry.
+    opaque = []
+    pack = messages.get('BattlePassPackInfo', {})
+    if EMPTY_ONLY_TYPE not in messages and EMPTY_ONLY_TYPE not in excluded and any(
+            f['name'] == 'bought_packs' and f['number'] == 7
+            and f['codec_category'] == 'submsg' and f['repeated']
+            and f['nested_type'] == EMPTY_ONLY_TYPE for f in pack.get('fields', [])):
+        messages[EMPTY_ONLY_TYPE] = {'fields': []}
+        dependencies[EMPTY_ONLY_TYPE] = set()
+        opaque.append(EMPTY_ONLY_TYPE)
 
     # Iterate to a fixed point. This also removes parents of partially recovered
     # dependencies, while retaining cycles whose members are all fully known.
@@ -129,6 +172,11 @@ def compile_candidate_descriptors(recovery, *, class_metadata=None):
               'messages_compiled': len(messages),
               'fields_compiled': sum(len(m['fields']) for m in messages.values()),
               'excluded_messages': excluded,
+              'opaque_empty_only_types': opaque,
+              'empty_only_types': sorted(EMPTY_ONLY_TYPES.intersection(messages)),
+              'asymmetric_empty_only_sources': {'RollingNotice':
+                  'cs_chat_editor_pb.lua 0.80/0.81; game_mode field 5 is encode-only'},
+              'opaque_reference_source': 'cs_battlepass_editor_pb.lua 0.10/0.11; field 7 bought_packs',
               'descriptor_pool_validation': 'passed',
               'assumptions': ['Observed i32/u32/i64/u64/float/double helpers use standard protobuf scalar encodings.',
                               'Fields use optional or repeated labels and standard proto2 defaults.',
@@ -140,6 +188,47 @@ def compile_candidate_descriptors(recovery, *, class_metadata=None):
 
 class CandidateProtobufCodec(ProtobufCodec):
     """Explicit opt-in codec; separate from the default recovered descriptor set."""
+    @staticmethod
+    def validate_empty_only(message):
+        pending = [message]
+        while pending:
+            current = pending.pop()
+            if current.DESCRIPTOR.name in EMPTY_ONLY_TYPES:
+                if current.ByteSize():
+                    raise ValueError('Unrecovered empty-only message content')
+                continue
+            for field, value in current.ListFields():
+                if field.type != field.TYPE_MESSAGE:
+                    continue
+                children = value if field.label == field.LABEL_REPEATED else [value]
+                if field.message_type.name in EMPTY_ONLY_TYPES and children:
+                    raise ValueError('Unrecovered empty-only nested message occurrence')
+                pending.extend(children)
+
+    def encode(self, name, fields):
+        from google.protobuf import json_format
+        message = self._class(name)()
+        try:
+            json_format.ParseDict(fields, message, ignore_unknown_fields=False)
+            self.validate_empty_only(message)
+            return message.SerializeToString()
+        except Exception as exc:
+            raise DomainError('INVALID_PROTOBUF_FIELDS',
+                'Response fields do not match the recovered candidate descriptor') from exc
+
+    def decode(self, name, payload):
+        from google.protobuf import json_format
+        message = self._class(name)()
+        try:
+            message.ParseFromString(payload)
+            if not message.IsInitialized():
+                raise ValueError('Required fields are missing')
+            self.validate_empty_only(message)
+        except Exception as exc:
+            raise DomainError('INVALID_PROTOBUF',
+                'Payload cannot be decoded with the recovered candidate schema') from exc
+        return json_format.MessageToDict(message, preserving_proto_field_name=True)
+
     def status(self):
         result = super().status()
         result.update({'schema_kind': 'candidate_from_generated_codec_metadata',

@@ -34,6 +34,12 @@
 | 弹药关联 | 恢复 261 条武器配置、176 条弹药配置，核实 31 套默认枪械的弹匣容量 | `weapon_ammo_catalog.json`、`dfserver/weapon_ammo.py` |
 | 装弹与卸弹 | 接入真实装卸弹枚举、口径匹配、容量检查、枪内弹药保存、库存变更响应与通知 | `dfserver/core.py`、`dfserver/handshake_diagnostic.py`、`tests/test_native_inventory.py` |
 | 背包与胸挂 | 恢复 44 项具体容器布局，按客户端配置提供分区格子 | `container_layout_catalog.json`、`dfserver/container_layouts.py` |
+| 卸下容器与内容迁移 | 卸下或替换胸挂、背包时，将其内容按真实旧坐标移回仓库并清除旧容量；原生响应同时更新物品与分区，仓满整批回滚；旧存档孤立内容通过带原模板核对、预览和备份的显式工具恢复 | `dfserver/core.py`、`tests/test_native_carrying_containers.py`、`tests/test_native_carrying_wire.py`、`work/repair_native_orphaned_containers.py`；新响应的界面回测待确认 |
+| 配件购买与装配 | 按原生 GUID 指令恢复插槽路径；已拥有枪械的拍卖配件购买与装配同一事务提交，旧配件保留原 gid 回仓，批量统一扣款；普通装配保留皮肤、挂饰和枪内弹药，容量不足回滚；换位和购买替换响应保留完整枪械状态 | `dfserver/socket_guid.py`、`dfserver/weapon_assembly.py`、`tests/test_weapon_assembly.py`、`tests/test_native_weapon_displacement.py`；商城自动装配、新购整枪绑定和换枪装配尚未接入 |
+| 枪械挂饰收藏与装备 | 恢复 283 条真实挂饰目录及 PartsData 对应，本地账号提供其中 80 条开放普通挂饰；收藏与枪械／枪种默认装备独立保存，保留枪械皮肤，神秘挂饰仅接受已有真实实例 | `weapon_pendant_catalog.json`、`dfserver/weapon_pendants.py`、`tests/test_weapon_pendants.py` |
+| 通行证购买与奖励 | 当前安装 7 张原表共 502 行、131 个字段通过 C++ 反射与序列化逐列核验；接入会员、升级、等级及礼包购买，扣费、奖励与领取记录原子提交；补发余额和收藏通知，60 级挂饰进入挂饰收藏；重买及失败不重复发货 | `battle_pass_catalog.json`、`dfserver/battle_pass.py`、`tests/test_battle_pass*.py`；开放窗口为本地诊断窗口，未恢复经验卡、线索及档案奖励的物品关联 |
+| 门卡基础数据与耐久 | 从原表逐列核验 334 条门卡的地图与最大耐久；读取已保存的当前耐久，保留耗尽状态，购买新卡不会恢复旧卡耐久；账户与实际 gid 校验、移动、删除和存档重开有回归覆盖 | `native_keycard_catalog.json`、`dfserver/native_keycards.py`、`tests/test_native_keycards.py`；钥匙包名称到物品 ID 的关联尚未核实，分区系统未完成 |
+| 设置保存与本地聊天查询 | 按原 Lua 字段保存设置，按账号和类型读取；本地世界频道、聊天摘要返回真实协议形状的空记录，结束未响应状态 | `dfserver/native_settings.py`、`dfserver/local_chat.py`、`tests/test_native_settings.py`、`tests/test_local_chat.py` |
 | 安全箱来源与存取 | 恢复 38 条真实安全箱 ID、容量和原始尺寸；本地账号提供方向明确的 4 格和 9 格安全箱权限，支持原生无 gid 装备请求、容量更新、物品移动、快照与单件/批量购买；切换保留内容坐标，容量不足整笔回滚，权限物品不能作为普通货物移出 | `safe_box_layout_catalog.json`、`dfserver/safe_boxes.py`、`tests/test_native_safe_box.py`；非方形方向及官方归属未恢复，实机操作待确认 |
 | 主仓库实际整理 | 主仓库页 2 整理返回实际位置和旋转变更，事务保存并保留数量、枪械组件、枪内弹药；接入原生 `CSDepositSetCommonConfigReq` 并保存设置；无效页和无法完整落位的请求返回错误并回滚 | `dfserver/deposit_sort.py`、`tests/test_native_deposit_sort.py`；采用本地确定性落位策略，多扩容页及官方分类对应尚未恢复 |
 | 容器同步 | 接入已观察的胸挂、背包和口袋同步；实现落位检查、堆叠拆分、数量守恒及失败整批回滚 | `dfserver/core.py`、`tests/test_local_commerce.py`、`tests/test_native_inventory.py` |
@@ -42,6 +48,7 @@
 | 商品时间判断 | 按客户端时钟用法将心跳时间改为 Unix 秒；购买前后商品详情的开放时间与心跳时间兼容的回归用例已通过 | `dfserver/handshake_diagnostic.py`、`tests/test_local_commerce.py`、[数据来源](DATA_PROVENANCE.md) |
 | 单条防具报价 | 类型目录与商品详情使用客户端 `GetPropSaleInfo` 的档位 0 回退规则，保留满耐久比例 | `dfserver/local_commerce.py`、`tests/test_local_commerce.py`、[数据来源](DATA_PROVENANCE.md) |
 | 购买与出售事务 | 实现扣款、物品持久化、指定位置、堆叠上限、出售删除与货币变更 | `dfserver/local_commerce.py`、`dfserver/core.py`、`tests/test_local_commerce.py` |
+| 批量材料补齐购买 | 按原客户端 `scene=301` 的三条实际材料请求接入拍卖整批购买；统一核价、一次扣费、仓库保存，错误报价或余额不足整批回滚 | `dfserver/local_commerce.py`、`tests/test_native_material_batch.py`；新响应界面回测待确认 |
 | 药品可售范围 | 按客户端主类和子类保留 22 件治疗、维修用品，按中文配方锚点保留 7 件标准强化针；特殊药剂和饮品不再因有指导价而开放购买；已拥有物品仍可读取、移动和出售，旧报价购买拒绝且不扣款 | `medicine_sale_policy.json`、`dfserver/local_commerce.py`、`tests/test_local_commerce.py`、[范围与来源](DATA_PROVENANCE.md)；原生界面回测待确认 |
 | 近战数据与装备 | 从客户端条目 7276 恢复 18 组刀具 receiver/外观对应，本地提供原客户端确认解锁的 15 组；迁移误用的喷枪记录，下发匹配的收藏与装备数据，保存所选刀具，切换使用装备删除/加入响应 | `melee_weapon_catalog.json`、`dfserver/melee_weapons.py`、`tests/test_melee_inventory.py` |
 | 枪械皮肤数据 | 恢复 1776 条真实外观与武器、预设关系，本地提供 1514 条开放的普通外观；按归属和枪种校验装备，保存单枪及同枪种默认设置，保留组件和枪内弹药 | `gun_skin_catalog.json`、`dfserver/gun_skins.py`、`tests/test_native_cosmetics.py` |
@@ -83,6 +90,10 @@
 - 2026-10-01：独立审查复现仓库旋转标记未写入协议位置的问题，修正后移动响应、库存重取、数据库重开和移入胸挂的加密回归通过；购买与库存协议的 50 项用例、身体容器的 15 项用例通过。11:59 的 720 秒试验结束，原 SDK 恢复并与源文件哈希一致。
 - 2026-10-01：药品可售范围修正后 53 项购买与库存协议用例通过，覆盖保留标准药品、下架条目无报价、旧单买和混合批量购买不扣款，以及已拥有下架物品的读取、移动和仓库出售。原始客户端导出中的 16 行强化针中文、ID、产物字符串与源哈希核验通过。
 - 2026-10-01：安全箱与主仓库整理的 120 项相关回归通过（73.591 秒），覆盖购买、移动、权限装备、容量切换、原生设置请求、实际整理变更、存档重开及失败回滚；独立审查复现并修正权限槽移出导致重复 gid、商城单件购买漏走安全箱容器分支的问题。此记录不代表多仓库扩容页或全部分类规则已恢复。
+- 2026-10-01：装配、挂饰、容器卸下、设置与通行证的 171 项联合回归通过（115.549 秒）；原生 GUID 两条实际 AKM 购买向量、完整状态换位、失败回滚和加密响应均有覆盖。追加 60 级挂饰归属检查后，16 项通行证回归全部通过。15:18 的 720 秒旧版本试验完整结束，原 SDK 哈希恢复核验通过；这些新修正的原生操作回测尚未确认。
+- 2026-10-01：追加门卡耐久、通行证奖励通知及武器替换状态后，201 项直接相关联合回归通过（127.202 秒）。16:42 原客户端试验记录会员购买及购买 179 级均成功，SQLite 核验会员类型 4、等级 180；五次配件购买和一次普通装配成功，已核对 MP5 实际组件树保存新配件。此记录只确认接口与存档，界面回测尚待用户确认。
+- 2026-10-01：16:42 的 720 秒试验完整结束，原 SDK 恢复并通过实际文件哈希核验，日志未出现 Fatal 或 Lua 异常堆栈。追加库存快照与门卡出售同时发生的确定性回归，13 项门卡用例通过；快照全部字段在事务提交前读取，保留同一时刻的库存与耐久。
+- 2026-10-01：原生批量材料请求先复现失败再通过修正；购买、门卡及定址读取探针的 73 项相关回归通过（32.663 秒），包括错误报价与余额不足时全批回滚。
 - GitHub 仓库已按用户指示改为公开，源码、测试、静态目录和来源信息已上传；上传文件审计通过。
 
 ## 协作依据
