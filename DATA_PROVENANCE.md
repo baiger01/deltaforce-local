@@ -98,6 +98,8 @@ GitHub 协作仓库仅包含源码、静态 JSON 目录、重建描述符和来�
 
 2026-10-01 11:12:55 原客户端 `CSHeroEquipFashionReq` 序号 823 为干员 `88000000029` 装备 `30000060010`，`new_fashions` 只带 `id`，省略默认值为 0 的 `slot`；旧校验将省略字段视为 -1，返回原错误码 `117302`。`HeroFashion` 来自 `ds_common_editor_pb.lua`（SHA-256 `5fe89634d480907ba0f4657ef699151e147594750ddba37247a50d718ac8b753`），字段 1 是 `slot:uint32`。现按已核实的 `FashionSuit=0` 处理省略值；真实请求编码回归验证抽奖外观可装备并重读保存，非零槽位及未拥有服装仍被拒绝。
 
+原版使用按钮的“正在使用”表示已装备：`HeroConfig.lua`（SHA-256 `3fb52f24168638c364fffb8d2840e60ef441c814b2310841324f73d53c5a3be1`）常量 196～198 将 `Using/Lua_Hero_Text_Using` 对应到此文字。`HeroAppearancePanel.lua`（SHA-256 `51f629c7c3ba80c5ac1aee6814c4b7231d7b5f69f21e131514f14fa63e47f450`）函数 `0.27`、偏移 26458 依据 `item:SetOperated()` 选择“正在使用”并禁用按钮，未装备时显示“使用”；成功回调 `0.27.0.0`、偏移 27867 刷新按钮和当前外观。2026-10-01 11:30～11:31 原客户端三次分别装备 `30000020004/30000040007/30000060010` 并同步处决，响应均成功；用户截图基础套装已装备的绿色圆点与禁用按钮一致。原版已装备状态与当前服务响应一致。
+
 套装位置 `FashionSuit=0` 来自基础包 pakchunk1 条目 6801 的 `ds_common_pb.lua`，SHA-256 为 `6f1bec3a236dbd47c28d932a2702bc8cc386ecb6119312d71d57a62d6e8b8f6b`。`DFMGlobalConst.lua` 条目 1882 提供实际附件类型，SHA-256 为 `4887a7f2b5265a5277c5c2553f4ff56ec08f1219a632220e3b2efa367baddcc4`。`HeroHelperTool.lua` 函数 `0.89/0.90` 判断默认附件与通用归属；`HeroServer.lua` 函数 `0.68` 的喷漆、展示动作、手势和语音共享槽位规则用于保存装备。处决与服装的限制来自原表字段 50及八个研究池中的皮肤/处决对应，由 `HeroHelperTool.lua` 函数 `0.139` 交叉核对。
 
 加密 Hero 名称表没有解密。目录逐关联标记 `independent_bundle_anchor` 或 `numeric_fname_order_reconstruction`：前者有原礼包或研究奖励及干员对应的独立见证；后者由本安装 44 份明文名称表一致的数字名称字典序、HeroData 的 23 个实际干员 ID 锚点及连续索引范围恢复。两类证据不能混称完整原始名称表。每个见证均记录条目、行、偏移与实际 ID；主物品 ID 必须与已有 GameItem 名称键相符且在所有有效匹配中唯一。
