@@ -29,6 +29,12 @@ GitHub 协作仓库仅包含源码、静态 JSON 目录、重建描述符和来�
 
 交易购买、货币扣减、装备落位和弹药展示不仅依赖资源表，还依赖客户端请求及服务端状态链。物品表中的价格、模型和长宽不是完整商城售卖规则；地图资源存在也不是解锁条件。缺失规则应从客户端同版本配置和交互协议继续恢复，不能把目录行当成可购买或可用的证明。
 
+2026-10-01 11:29 的原客户端试验捕获了 34 次 `CSDepositEquipPropReq`。请求序号 1821 的 `spec_loc` 指定胸挂分区 5、`start_x=1`，省略默认的 `start_y=0`；1843 反向省略 `start_x=0`。序号 1903 同时指定 `target_prop_gid`，属于交换，不能只移动源物品。旧实现遇到省略的坐标改为自动落位，并忽略容器内交换目标，随后四次 `CSDepositAssemblySyncBodyContainerReq` 在胸挂分区 5 出现两件物品同占 `(0,0)`，数据库副本重放确认拒绝原因为 `POSITION_OCCUPIED`。现在保留明确位置的零坐标及旋转，交换两件实际拥有的实例，无法容纳时整笔回滚；不接受重叠快照，不删除物品来绕过错误。
+
+上述字段来源为 `EquipPropCommand` 的 `target_prop_gid` 字段 6、`spec_loc` 字段 10，以及 `PropLocation` 的 `start_x/start_y` 字段 2/3、`rotate` 字段 7。来源 Lua 的 SHA-256 分别为 `9e0e59f87781ec6184a52b3cf09e661084945b1330ecc0bc8c4e671c1a364d01`（`cs_deposit_editor_pb.lua`）与 `5fe89634d480907ba0f4657ef699151e147594750ddba37247a50d718ac8b753`（`ds_common_editor_pb.lua`）。`InventoryServer_Network.lua` 函数 `0.43/0.44`（序列化偏移 44387/45587）分别按响应移除源位置、设置目标位置；SHA-256 为 `d7f83db2ae2cf4902b440131c15648c7b7d4b8b8f5e459231b9eb6ec17dcb0dc`。位置冲突改用已提取错误目录中的 `DepositSpaceHasOccupied`，不再笼统归为 `DepositInternalError`。
+
+`ItemLocationDefine.lua` 函数 `0.5` 的指令 10～11 将协议 `loc.rotate` 直接赋给 `bRotated`；`ItemBase.lua` 函数 `0.76` 的 `IsRotated` 读取此位置状态。仓库中非方形物品旋转后，除存档尺寸外，移动与库存重取响应也必须返回保存的旋转标记。独立审查在临时数据库复现旧响应固定为 `False` 的问题；修正后加密接口用例验证 3×1 医疗物品旋转、重新拉取和后续移入胸挂的方向一致。
+
 口袋位置由已提取 `common_pb.lua` 根函数指令 426-428 确认：`Pocket=199997`；指令 399-401 的 `CarryOutPropsPos=1999` 是另一个位置。该 Lua 提取物 SHA-256 为 `81e071e35f33f0e5704d5098ac2a182c794bbe5b1e5a7e24f415a0473b40350b`。`QuickOperationLogic.lua` 根函数指令 51-61 将 Pocket 纳入身体容器快照，实际请求中有五个 1x1 口袋分区；购买与重开页面均按这个真实位置持久化。
 
 心跳 `tick_count` 是客户端时钟的 Unix 秒，不是进程运行毫秒。2026-09-30 从当前安装 `DeltaForce/Content/Paks/pak-0-0-pakchunk1-WindowsClient.pak` 只读提取：

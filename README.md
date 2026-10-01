@@ -35,6 +35,7 @@
 | 装弹与卸弹 | 接入真实装卸弹枚举、口径匹配、容量检查、枪内弹药保存、库存变更响应与通知 | `dfserver/core.py`、`dfserver/handshake_diagnostic.py`、`tests/test_native_inventory.py` |
 | 背包与胸挂 | 恢复 44 项具体容器布局，按客户端配置提供分区格子 | `container_layout_catalog.json`、`dfserver/container_layouts.py` |
 | 容器同步 | 接入已观察的胸挂、背包和口袋同步；实现落位检查、堆叠拆分、数量守恒及失败整批回滚 | `dfserver/core.py`、`tests/test_local_commerce.py`、`tests/test_native_inventory.py` |
+| 容器精确移动与交换 | 修正原生请求省略零坐标后的错误自动落位；按指定格子和旋转落位，处理目标 gid 的原子交换，失败整批回滚；仓库旋转在移动响应及库存重取中保持一致；日志保留移动参数、结果码及具体拒绝原因 | `dfserver/core.py`、`dfserver/local_commerce.py`、`dfserver/handshake_diagnostic.py`、`tests/test_native_inventory.py`、`tests/test_local_commerce.py`；实机回测待确认 |
 | 口袋与重连购买 | 按真实口袋位置支持物品移入；重连购买补发库存变更通知，购买 137 发、装入 17 发、同步口袋及重读存档的回归用例已通过 | `dfserver/core.py`、`dfserver/handshake_diagnostic.py`、`tests/test_local_commerce.py` |
 | 商品时间判断 | 按客户端时钟用法将心跳时间改为 Unix 秒；购买前后商品详情的开放时间与心跳时间兼容的回归用例已通过 | `dfserver/handshake_diagnostic.py`、`tests/test_local_commerce.py`、[数据来源](DATA_PROVENANCE.md) |
 | 单条防具报价 | 类型目录与商品详情使用客户端 `GetPropSaleInfo` 的档位 0 回退规则，保留满耐久比例 | `dfserver/local_commerce.py`、`tests/test_local_commerce.py`、[数据来源](DATA_PROVENANCE.md) |
@@ -75,6 +76,8 @@
 - 2026-10-01 05:12：修正后的 360 秒原客户端试验完整结束，17 个干员成长预览查询均成功响应，未响应数为 0；捕获日志无 Fatal error 或 Lua 崩溃堆栈，原 SDK 恢复并与源文件哈希一致。
 - 2026-10-01：干员名单刷新修正的 15 项直接相关用例通过，新增加密回归先复现名单缩水再验证修正。完整回归执行 323 项，其中 322 项通过，连续 64 次礼包通知压测超出 120 秒，单独复跑仍超时；该压测本轮未通过。
 - 2026-10-01：按原客户端省略槽位的穿戴请求复现并修正错误码 117302，名单与穿戴的 16 项直接相关用例通过；拒绝未拥有服装及非法槽位，保存后重读一致。
+- 2026-10-01：11:29 的 720 秒试验结束，原 SDK 恢复并与源文件哈希一致。日志定位两次匹配分配未响应的超时及四次身体容器重叠错误；库存移动修正的 15 项用例、购买原有 48 项用例、新增加密交换用例及日志监听用例通过，实机界面效果尚待本轮用户确认。
+- 2026-10-01：独立审查复现仓库旋转标记未写入协议位置的问题，修正后移动响应、库存重取、数据库重开和移入胸挂的加密回归通过；购买与库存协议的 50 项用例、身体容器的 15 项用例通过。11:59 的 720 秒试验结束，原 SDK 恢复并与源文件哈希一致。
 - GitHub 仓库已按用户指示改为公开，源码、测试、静态目录和来源信息已上传；上传文件审计通过。
 
 ## 协作依据

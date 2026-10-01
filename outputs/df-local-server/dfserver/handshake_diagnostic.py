@@ -101,6 +101,7 @@ def _log_request_progress(entry, phase):
     fields = ('request_name', 'service', 'prefix_sequence', 'elapsed_ms',
               'response_sent', 'response_elapsed_ms', 'local_commerce_result',
               'request_not_answered', 'failure_code', 'local_bullet_commands',
+              'local_equip_commands', 'local_inventory_failure',
               'local_body_container_snapshots', 'local_serial_buy_items',
               'local_lottery_purchase_items', 'local_inventory_change_notification_sent',
               'local_premium_shop_request', 'local_customization_request',
@@ -1091,7 +1092,7 @@ def _candidate_local_body_container_summary(message):
 
 
 def _candidate_local_equip_response(message, backend, local_session, key, *,
-                                    header_word4, header_word9):
+                                    header_word4, header_word9, diagnostic_entry=None):
     """Confirm an equipment move and return its authoritative item changes."""
     if len(message) < 5:
         raise ValueError('Truncated equipment move package')
@@ -1110,6 +1111,8 @@ def _candidate_local_equip_response(message, backend, local_session, key, *,
     try:
         moves = backend.native_lobby_move_props(local_session, commands)
     except DomainError as error:
+        if diagnostic_entry is not None:
+            diagnostic_entry['local_inventory_failure'] = {'code': error.code, 'detail': error.message}
         fields = {'result': inventory_error(error), 'cmds': request.fields.get('cmds', [])}
     else:
         changes = []
@@ -1190,7 +1193,8 @@ def _candidate_local_bullet_response(message, backend, local_session, key, *, he
                              opaque_flag=64, header_word4=header_word4, header_word9=header_word9)
 
 
-def _candidate_local_body_container_response(message, backend, local_session, key, *, header_word4, header_word9):
+def _candidate_local_body_container_response(message, backend, local_session, key, *,
+                                             header_word4, header_word9, diagnostic_entry=None):
     """Commit the client's container snapshot and return authoritative changes."""
     if len(message) < 5:
         raise ValueError('Truncated body-container sync package')
@@ -1202,6 +1206,8 @@ def _candidate_local_body_container_response(message, backend, local_session, ke
         moves = backend.native_lobby_sync_body_containers(
             local_session, request.fields.get('snapshots', []))
     except DomainError as error:
+        if diagnostic_entry is not None:
+            diagnostic_entry['local_inventory_failure'] = {'code': error.code, 'detail': error.message}
         fields = {'result': inventory_error(error)}
     else:
         fields = {'result': 0, 'deposit_change': _native_inventory_changes(moves)}
@@ -1438,13 +1444,16 @@ def _continue_character_creation(connection, decoder, queue, current, ack,
                     entry['local_equip_commands'] = _candidate_local_equip_summary(message)
                     response = _candidate_local_equip_response(
                         message, backend, local_session, ack.session_key,
-                        header_word4=current.header_word4, header_word9=outbound_sequence)
+                        header_word4=current.header_word4, header_word9=outbound_sequence,
+                        diagnostic_entry=entry)
                     entry['local_equip_response'] = True
+                    entry['local_commerce_result'] = _candidate_local_commerce_result(response, ack.session_key)
                 elif name == 'CSDepositAssemblySyncBodyContainerReq':
                     entry['local_body_container_snapshots'] = _candidate_local_body_container_summary(message)
                     response = _candidate_local_body_container_response(
                         message, backend, local_session, ack.session_key,
-                        header_word4=current.header_word4, header_word9=outbound_sequence)
+                        header_word4=current.header_word4, header_word9=outbound_sequence,
+                        diagnostic_entry=entry)
                     entry['local_body_container_response'] = True
                     entry['local_commerce_result'] = _candidate_local_commerce_result(response, ack.session_key)
                 elif name == 'CSDepositOperateBulletReq':
@@ -2024,14 +2033,18 @@ def inspect_exchange(connection, modulus=None, *, timeout=12, diagnostic_exponen
                                                                         next_response = _candidate_local_equip_response(
                                                                             message, backend, local_session, ack.session_key,
                                                                             header_word4=current.header_word4,
-                                                                            header_word9=outbound_sequence)
+                                                                            header_word9=outbound_sequence,
+                                                                            diagnostic_entry=entry)
                                                                         entry['local_equip_response'] = True
+                                                                        entry['local_commerce_result'] = _candidate_local_commerce_result(
+                                                                            next_response, ack.session_key)
                                                                     elif name == 'CSDepositAssemblySyncBodyContainerReq':
                                                                         entry['local_body_container_snapshots'] = _candidate_local_body_container_summary(message)
                                                                         next_response = _candidate_local_body_container_response(
                                                                             message, backend, local_session, ack.session_key,
                                                                             header_word4=current.header_word4,
-                                                                            header_word9=outbound_sequence)
+                                                                            header_word9=outbound_sequence,
+                                                                            diagnostic_entry=entry)
                                                                         entry['local_body_container_response'] = True
                                                                         entry['local_commerce_result'] = _candidate_local_commerce_result(
                                                                             next_response, ack.session_key)

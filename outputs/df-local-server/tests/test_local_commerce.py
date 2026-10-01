@@ -616,6 +616,73 @@ class LocalCommerceTests(unittest.TestCase):
         self.assertEqual(sum(int(prop['num']) for prop in gun['load_props'][0]['weapon']['load_bullets']), 17)
         self.assertEqual(reopened['grid_pages'][0].get('props', []), [])
 
+    def test_native_container_swap_returns_both_locations_and_logs_collision(self):
+        self.backend.set_native_lobby_profile(self.token, level=60, currencies={}, props=[
+            {'gid': 2001, 'template_id': 11070005004, 'quantity': 1,
+             'grid_page_id': 107, 'x': 0, 'y': 0, 'length': 2, 'width': 2},
+            {'gid': 2002, 'template_id': 14020000003, 'quantity': 1,
+             'grid_page_id': 107001, 'x': 5, 'y': 0, 'length': 1, 'width': 1},
+            {'gid': 2003, 'template_id': 15080050006, 'quantity': 1,
+             'grid_page_id': 107001, 'x': 2, 'y': 0, 'length': 1, 'width': 1},
+        ])
+        key = b'0123456789abcdef'
+        command = {'prop_id': 15080050006, 'prop_gid': 2003, 'src_pos': 107001,
+                   'target_pos': 107001, 'num': 1,
+                   'spec_loc': {'pos': 107001, 'space_id': 5, 'x': 1, 'y': 1}}
+
+        def move(cmd, entry):
+            message = b'ABCD' + self.codec.encode('CSDepositEquipPropReq',
+                                                {'cmds': [cmd]}, sequence=38)
+            frame = _candidate_local_equip_response(message, self.backend, self.token,
+                key, header_word4=12, header_word9=38, diagnostic_entry=entry)
+            return self.codec.decode(decode_data_frame(frame, key,
+                direction='server_to_client', compression_method=1).messages[0]).fields
+
+        entry = {}
+        rejected = move(command, entry)
+        self.assertEqual(rejected['result'], diagnostic.inventory_error(
+            DomainError('POSITION_OCCUPIED', 'occupied')))
+        self.assertEqual(entry['local_inventory_failure']['code'], 'POSITION_OCCUPIED')
+        accepted = move({**command, 'target_prop_gid': 2002}, {})
+        self.assertEqual(accepted['result'], 0)
+        changes = {int(p['prop']['gid']): p for p in accepted['deposit_change']['prop_changes']}
+        self.assertEqual(set(changes), {2002, 2003})
+        self.assertTrue(all(p['change_type'] == 5 for p in changes.values()))
+        self.assertEqual(changes[2002]['dest']['space_id'], 2)
+        self.assertEqual(changes[2003]['dest']['space_id'], 5)
+        self.assertEqual(changes[2003]['dest'].get('start_x', 0), 0)
+        self.assertEqual(changes[2003]['dest'].get('start_y', 0), 0)
+
+    def test_warehouse_rotation_survives_wire_fetch_and_container_move(self):
+        self.backend.set_native_lobby_profile(self.token, level=60, currencies={}, props=[
+            {'gid': 2001, 'template_id': 11070005004, 'quantity': 1,
+             'grid_page_id': 107, 'x': 0, 'y': 0, 'length': 2, 'width': 2},
+            {'gid': 2002, 'template_id': 14020000005, 'quantity': 1,
+             'grid_page_id': 2, 'x': 0, 'y': 0, 'length': 3, 'width': 1},
+        ])
+        command = {'prop_id': 14020000005, 'prop_gid': 2002, 'src_pos': 2,
+                   'target_pos': 2, 'num': 1, 'spec_loc': {
+                       'pos': 2, 'start_x': 4, 'start_y': 2, 'rotate': True}}
+        _, moved = self._reconnected_request('CSDepositEquipPropReq', {'cmds': [command]})
+        self.assertEqual(moved.fields['result'], 0)
+        change = moved.fields['deposit_change']['prop_changes'][0]
+        self.assertTrue(change['dest'].get('rotate'))
+        self.assertTrue(change['prop']['loc'].get('rotate'))
+        self.assertEqual((change['dest']['x'], change['dest']['y']), (1, 3))
+        self.backend = Backend(Path(self.temporary.name) / 'save.sqlite3', ROOT / 'definitions.json')
+        _, fetched = self._reconnected_request('CSDepositGetPropsReq', {})
+        stored = next(p for p in fetched.fields['grid_pages'][0]['props']
+                      if int(p['gid']) == 2002)
+        self.assertTrue(stored['loc'].get('rotate'))
+        _, moved = self._reconnected_request('CSDepositEquipPropReq', {'cmds': [{
+            **command, 'target_pos': 107001, 'spec_loc': {
+                'pos': 107001, 'space_id': 1, 'rotate': True}}]})
+        self.assertEqual(moved.fields['result'], 0)
+        change = moved.fields['deposit_change']['prop_changes'][0]
+        self.assertTrue(change['src'].get('rotate'))
+        self.assertTrue(change['dest'].get('rotate'))
+        self.assertEqual((change['dest']['x'], change['dest']['y']), (1, 3))
+
     def test_owned_ammo_can_move_to_pocket_and_survives_fetch(self):
         item_id = 37190000001
         row = stock_catalog()[item_id]

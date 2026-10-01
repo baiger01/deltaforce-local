@@ -31,6 +31,7 @@ ALERT = re.compile(
     r"LoadedClass is NULL|GuideHDWeakClickUI|IsForcedGuideActive_Special|"
     r"DoCommonPopTipShow Tips content|InputHelper: OnInputModeChanged|"
     r"InputModeCounter:.*Guide|AssemblyHDQuickOperationMainView|"
+    r"请求超时|timed out|timeout|stack traceback|ScriptError|"
     r"Fatal error|Unhandled Exception",
     re.IGNORECASE,
 )

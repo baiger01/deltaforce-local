@@ -1262,6 +1262,7 @@ class Backend:
 
     def native_lobby_move_props(self, token, commands):
         """Apply authenticated warehouse/equipment moves as one transaction."""
+        from .local_commerce import inventory_location
         if not isinstance(commands, list) or not 1 <= len(commands) <= 32:
             fail("INVALID_ARGUMENT", "Expected one or more equipment moves")
         changes = []
@@ -1269,7 +1270,7 @@ class Backend:
             connection.execute("BEGIN IMMEDIATE")
             player_id = self._authorize(connection, token)
 
-            def warehouse_position(length, width, ignored, preferred=None):
+            def warehouse_position(length, width, ignored, preferred=None, *, exact=False):
                 occupied = set()
                 for row in connection.execute(
                         "SELECT gid,x,y,length,width FROM native_lobby_props "
@@ -1286,6 +1287,8 @@ class Backend:
 
                 if preferred is not None and fits(*preferred):
                     return preferred
+                if exact:
+                    fail("POSITION_OCCUPIED", "The requested warehouse cells are unavailable")
                 location = next(((x, y) for y in range(41 - width)
                                  for x in range(10 - length) if fits(x, y)), None)
                 if location is None:
@@ -1324,18 +1327,21 @@ class Backend:
                         (x, y) for x in range(start_x, start_x + saved["width"])
                         for y in range(start_y, start_y + saved["length"]))
                 spaces = [requested_space] if requested_space else range(1, len(layout) + 1)
+                exact = bool(spec_loc)
                 for space_id in spaces:
                     space_width, space_height = layout[space_id - 1]
-                    for span_x, span_y, rotated in ((length, width, False),
-                                                     (width, length, True)):
+                    orientations = ((width, length, True),) if spec_loc.get('rotate') else (
+                        ((length, width, False),) if exact else
+                        ((length, width, False), (width, length, True)))
+                    for span_x, span_y, rotated in orientations:
                         if span_x > space_width or span_y > space_height:
                             continue
                         candidates = [(x, y) for y in range(space_height - span_y + 1)
                                       for x in range(space_width - span_x + 1)]
-                        if "start_x" in spec_loc and "start_y" in spec_loc:
-                            preferred = (int(spec_loc["start_x"]), int(spec_loc["start_y"]))
-                            candidates = [preferred] + [point for point in candidates
-                                                        if point != preferred]
+                        if exact:
+                            # Proto3 omits zero-valued coordinates on the wire.
+                            candidates = [(int(spec_loc.get("start_x") or 0),
+                                           int(spec_loc.get("start_y") or 0))]
                         for start_x, start_y in candidates:
                             if (start_x < 0 or start_y < 0 or
                                     start_x + span_x > space_width or
@@ -1346,6 +1352,8 @@ class Backend:
                             if not cells & occupied[space_id]:
                                 return (space_id, start_y * space_width + start_x,
                                         span_y, span_x, rotated)
+                if exact:
+                    fail("POSITION_OCCUPIED", "The requested container cells are unavailable")
                 fail({CHEST_RIG_POSITION: "CHEST_RIG_FULL", BACKPACK_POSITION: "BACKPACK_FULL",
                       POCKET_POSITION: "POCKET_FULL"}[target],
                      "No target container space fits the moved prop")
@@ -1398,7 +1406,20 @@ class Backend:
                     fail("INVALID_ARGUMENT", "Unsupported source position")
                 old = self._container_prop(connection, player_id, row)
                 incumbent = None
-                if target != 2 and target not in (CHEST_RIG_POSITION, BACKPACK_POSITION, POCKET_POSITION):
+                target_gid = int(command.get('target_prop_gid') or 0)
+                spatial_target = target in (2, CHEST_RIG_POSITION, BACKPACK_POSITION, POCKET_POSITION)
+                if spatial_target and target_gid:
+                    incumbent = connection.execute(
+                        "SELECT p.*,COALESCE(r.rotated,0) AS rotated FROM native_lobby_props p "
+                        "LEFT JOIN native_lobby_prop_rotations r ON r.gid=p.gid "
+                        "WHERE p.player_id=? AND p.gid=? AND p.grid_page_id=?",
+                        (player_id, target_gid, target)).fetchone()
+                    if incumbent is None or target_gid == gid:
+                        fail("PROP_NOT_FOUND", "The swap target is not in the requested container")
+                    target_id = int(command.get('target_prop_id') or incumbent['template_id'])
+                    if target_id != incumbent['template_id']:
+                        fail("INVALID_ARGUMENT", "Swap target template does not match")
+                elif not spatial_target:
                     incumbent = connection.execute(
                         "SELECT * FROM native_lobby_props WHERE player_id=? "
                         "AND grid_page_id=? AND gid<>?", (player_id, target, gid)).fetchone()
@@ -1411,25 +1432,87 @@ class Backend:
                                                  POCKET_POSITION)
                 item_length = row["width"] if source_is_container else row["length"]
                 item_width = row["length"] if source_is_container else row["width"]
+                if row['rotated']:
+                    item_length, item_width = item_width, item_length
+                ignored = {gid, incumbent['gid']} if incumbent is not None else {gid}
                 if target == 2:
                     loc = command.get("spec_loc") or {}
-                    if int(loc.get("pos") or 2) == 2 and "start_x" in loc and "start_y" in loc:
-                        preferred = (int(loc["start_x"]), int(loc["start_y"]))
-                    x, y = warehouse_position(item_length, item_width, {gid}, preferred)
-                    new_length, new_width, rotated = item_length, item_width, False
+                    rotated = bool(loc.get('rotate'))
+                    new_length, new_width = ((item_width, item_length) if rotated else
+                                            (item_length, item_width))
+                    if loc:
+                        if int(loc.get('pos') or 2) != 2:
+                            fail("INVALID_ARGUMENT", "Destination location does not match its container")
+                        preferred = (int(loc.get("start_x") or 0), int(loc.get("start_y") or 0))
+                    x, y = warehouse_position(new_length, new_width, ignored, preferred, exact=bool(loc))
                 elif target in (CHEST_RIG_POSITION, BACKPACK_POSITION, POCKET_POSITION):
+                    loc = command.get("spec_loc") or {}
+                    if int(loc.get('pos') or target) != target:
+                        fail("INVALID_ARGUMENT", "Destination location does not match its container")
                     x, y, new_length, new_width, rotated = container_position(
-                        item_length, item_width, target, {gid},
-                        command.get("spec_loc") or {})
+                        item_length, item_width, target, ignored, loc)
                 else:
                     x = y = 0
                     new_length, new_width, rotated = item_length, item_width, False
 
-                # Vacate the source first to satisfy the unique slot-origin index.
+                displaced = None
+                if incumbent is not None and spatial_target:
+                    displaced = self._container_prop(connection, player_id, incumbent)
+                    displaced_in_container = target != 2
+                    dl = displaced['width'] if displaced_in_container else displaced['length']
+                    dw = displaced['length'] if displaced_in_container else displaced['width']
+                    if displaced.get('rotated'):
+                        dl, dw = dw, dl
+                    source_loc = inventory_location(old)
+                    dr = bool(source_loc.get('rotate'))
+                    if source == 2:
+                        dl, dw = (dw, dl) if dr else (dl, dw)
+                        dx, dy = warehouse_position(dl, dw, ignored,
+                            (source_loc['start_x'], source_loc['start_y']), exact=True)
+                    elif source_is_container:
+                        dx, dy, dl, dw, dr = container_position(dl, dw, source, ignored, source_loc)
+                    else:
+                        fail("INVALID_ARGUMENT", "A spatial swap needs a spatial source")
+                    if source == target:
+                        if target == 2:
+                            destination_cells = {(cx, cy) for cx in range(x, x + new_length)
+                                                 for cy in range(y, y + new_width)}
+                            displaced_cells = {(cx, cy) for cx in range(dx, dx + dl)
+                                               for cy in range(dy, dy + dw)}
+                        else:
+                            layout = POCKET_LAYOUT if target == POCKET_POSITION else (
+                                CHEST_RIG_LAYOUT if target == CHEST_RIG_POSITION else BACKPACK_LAYOUT)
+                            if target != POCKET_POSITION:
+                                slot = 107 if target == CHEST_RIG_POSITION else 108
+                                equipped = connection.execute(
+                                    'SELECT template_id FROM native_lobby_props WHERE player_id=? AND grid_page_id=?',
+                                    (player_id, slot)).fetchone()
+                                layout = layout[equipped['template_id']]
+                            sw = layout[x - 1][0]
+                            destination_cells = {(x, cx, cy) for cx in range(y % sw, y % sw + new_width)
+                                                 for cy in range(y // sw, y // sw + new_length)}
+                            sw = layout[dx - 1][0]
+                            displaced_cells = {(dx, cx, cy) for cx in range(dy % sw, dy % sw + dw)
+                                               for cy in range(dy // sw, dy // sw + dl)}
+                        if destination_cells & displaced_cells:
+                            fail("POSITION_OCCUPIED", "The swapped items overlap")
+
+                # Vacate both origins before applying the atomic swap.
                 connection.execute(
-                    "UPDATE native_lobby_props SET grid_page_id=?,x=0,y=0 "
-                    "WHERE gid=? AND player_id=?", (999999, gid, player_id))
-                if incumbent is not None:
+                    "UPDATE native_lobby_props SET grid_page_id=?,x=?,y=0 "
+                    "WHERE gid=? AND player_id=?", (999999, gid, gid, player_id))
+                if displaced is not None:
+                    connection.execute('UPDATE native_lobby_props SET grid_page_id=999999,x=?,y=0 WHERE gid=?',
+                                       (displaced['gid'], displaced['gid']))
+                    connection.execute(
+                        'UPDATE native_lobby_props SET grid_page_id=?,x=?,y=?,length=?,width=? WHERE gid=?',
+                        (source, dx, dy, dl, dw, displaced['gid']))
+                    connection.execute('INSERT INTO native_lobby_prop_rotations VALUES (?,?) '
+                        'ON CONFLICT(gid) DO UPDATE SET rotated=excluded.rotated', (displaced['gid'], int(dr)))
+                    changes.append({'before': displaced, 'after': self._container_prop(connection, player_id, {
+                        **displaced, 'grid_page_id': source, 'x': dx, 'y': dy,
+                        'length': dl, 'width': dw, 'rotated': dr})})
+                elif incumbent is not None:
                     displaced = dict(incumbent)
                     if source == 2 or source_is_container:
                         displaced_target = 2
@@ -1448,7 +1531,7 @@ class Backend:
                     "UPDATE native_lobby_props SET grid_page_id=?,x=?,y=?,length=?,width=? "
                     "WHERE gid=? AND player_id=?",
                     (target, x, y, new_length, new_width, gid, player_id))
-                if target in (CHEST_RIG_POSITION, BACKPACK_POSITION) and rotated:
+                if rotated:
                     connection.execute(
                         "INSERT INTO native_lobby_prop_rotations VALUES (?,1) "
                         "ON CONFLICT(gid) DO UPDATE SET rotated=1", (gid,))

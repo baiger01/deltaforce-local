@@ -246,7 +246,7 @@ def inventory_location(row):
     return {'pos': position, 'start_x': row['x'], 'start_y': row['y'],
             'x': row['length'] if position == 2 else 1,
             'y': row['width'] if position == 2 else 1,
-            'space_id': 0, 'rotate': False}
+            'space_id': 0, 'rotate': position == 2 and bool(row.get('rotated', False))}
 
 
 def _change(purchase, backend, local_session):

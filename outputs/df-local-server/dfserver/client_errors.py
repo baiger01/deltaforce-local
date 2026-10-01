@@ -26,5 +26,6 @@ def inventory_error(error):
         'PROP_NOT_FOUND': 'DepositPropNotFound',
         'INSUFFICIENT_PROPS': 'DepositPropNotEnough',
         'INVALID_ARGUMENT': 'DepositInvalidReq',
+        'POSITION_OCCUPIED': 'DepositSpaceHasOccupied',
     }
     return error_code(names.get(error.code, 'DepositInternalError'))

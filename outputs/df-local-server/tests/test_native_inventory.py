@@ -75,6 +75,114 @@ class NativeContainerSyncTests(unittest.TestCase):
         self.assertEqual(self.state(), before)
 
 
+class NativeContainerMoveTests(unittest.TestCase):
+    def setUp(self):
+        self.temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temporary.cleanup)
+        self.backend = Backend(Path(self.temporary.name) / 'save.sqlite3',
+                               ROOT / 'definitions.json')
+        self.token = self.backend.register('move-test', 'local-password-123')['session']
+        self.backend.set_native_lobby_profile(self.token, level=60, currencies={}, props=[
+            NativeContainerSyncTests.prop(1001, 11070005004, 107),
+            NativeContainerSyncTests.prop(1002, 14020000003, 107001, x=5),
+            NativeContainerSyncTests.prop(1003, 15080050006, 2),
+        ])
+
+    def state(self):
+        return {p['gid']: p for p in self.backend.native_lobby_profile(self.token)['props']}
+
+    def move(self, loc, *, target_gid=0):
+        return self.backend.native_lobby_move_props(self.token, [{
+            'prop_id': 15080050006, 'prop_gid': 1003, 'src_pos': 2,
+            'target_pos': 107001, 'target_prop_gid': target_gid,
+            'num': 1, 'spec_loc': {'pos': 107001, 'space_id': 5, **loc}}])
+
+    def test_decoded_zero_coordinate_keeps_requested_chest_cell(self):
+        # Native request 1821 carries start_x=1 and omits start_y=0.
+        self.move({'start_x': 1, 'x': 1, 'y': 1})
+        self.assertEqual((self.state()[1003]['x'], self.state()[1003]['y']), (5, 1))
+
+    def test_decoded_zero_x_keeps_requested_chest_row(self):
+        self.move({'start_y': 1, 'x': 1, 'y': 1})
+        self.assertEqual((self.state()[1003]['x'], self.state()[1003]['y']), (5, 2))
+
+    def test_explicit_occupied_cell_does_not_silently_choose_another_cell(self):
+        before = self.state()
+        with self.assertRaises(DomainError):
+            self.move({'x': 1, 'y': 1})
+        self.assertEqual(self.state(), before)
+
+    def test_target_instance_swaps_both_items_and_survives_snapshot(self):
+        # Native request 1903 identifies the occupied destination by gid.
+        changes = self.move({'x': 1, 'y': 1}, target_gid=1002)
+        state = self.state()
+        self.assertEqual((state[1003]['grid_page_id'], state[1003]['x'], state[1003]['y']),
+                         (107001, 5, 0))
+        self.assertEqual((state[1002]['grid_page_id'], state[1002]['x'], state[1002]['y']),
+                         (2, 0, 0))
+        self.assertEqual({change['after']['gid'] for change in changes}, {1002, 1003})
+        self.backend.native_lobby_sync_body_containers(self.token, [{
+            'pos': 107001, 'space': 5, 'props': [{
+                'id': 15080050006, 'gid': 1003, 'num': 1,
+                'loc': {'pos': 107001, 'space_id': 5, 'x': 1, 'y': 1}}]}])
+        self.assertEqual(self.state(), state)
+
+    def test_same_container_swap_moves_both_items(self):
+        self.backend.set_native_lobby_profile(self.token, level=60, currencies={}, props=[
+            NativeContainerSyncTests.prop(1001, 11070005004, 107),
+            NativeContainerSyncTests.prop(1002, 14020000003, 107001, x=5),
+            NativeContainerSyncTests.prop(1003, 15080050006, 107001, x=2),
+        ])
+        changes = self.backend.native_lobby_move_props(self.token, [{
+            'prop_id': 15080050006, 'prop_gid': 1003, 'src_pos': 107001,
+            'target_pos': 107001, 'target_prop_gid': 1002,
+            'num': 1, 'spec_loc': {'pos': 107001, 'space_id': 5, 'x': 1, 'y': 1}}])
+        state = self.state()
+        self.assertEqual((state[1002]['x'], state[1002]['y']), (2, 0))
+        self.assertEqual((state[1003]['x'], state[1003]['y']), (5, 0))
+        self.assertEqual(len(changes), 2)
+
+    def test_rotated_item_keeps_client_orientation_after_move_and_sync(self):
+        self.backend.set_native_lobby_profile(self.token, level=60, currencies={}, props=[
+            NativeContainerSyncTests.prop(1001, 11070005004, 107),
+            {**NativeContainerSyncTests.prop(1002, 14020000005, 107001, x=3),
+             'length': 3, 'width': 1},
+        ])
+        with self.backend.connection() as connection:
+            connection.execute('INSERT INTO native_lobby_prop_rotations VALUES (?,1)', (1002,))
+            connection.commit()
+        self.backend.native_lobby_move_props(self.token, [{
+            'prop_id': 14020000005, 'prop_gid': 1002, 'src_pos': 107001,
+            'target_pos': 107001, 'num': 1, 'spec_loc': {
+                'pos': 107001, 'space_id': 1, 'x': 1, 'y': 3, 'rotate': True}}])
+        state = self.state()
+        self.assertEqual((state[1002]['x'], state[1002]['length'], state[1002]['width']), (1, 3, 1))
+        self.assertTrue(state[1002]['rotated'])
+        self.backend.native_lobby_sync_body_containers(self.token, [{
+            'pos': 107001, 'space': 1, 'props': [{
+                'id': 14020000005, 'gid': 1002, 'num': 1, 'loc': {
+                    'pos': 107001, 'space_id': 1, 'x': 1, 'y': 3, 'rotate': True}}]}])
+        self.assertEqual(self.state(), state)
+
+    def test_swap_rejects_item_that_cannot_fit_the_source_without_side_effects(self):
+        self.backend.set_native_lobby_profile(self.token, level=60, currencies={}, props=[
+            NativeContainerSyncTests.prop(1001, 11070005004, 107),
+            {**NativeContainerSyncTests.prop(1002, 14020000005, 107001, x=1),
+             'length': 3, 'width': 1},
+            NativeContainerSyncTests.prop(1003, 15080050006, 199997, x=1),
+        ])
+        with self.backend.connection() as connection:
+            connection.execute('INSERT INTO native_lobby_prop_rotations VALUES (?,1)', (1002,))
+            connection.commit()
+        before = self.state()
+        with self.assertRaises(DomainError):
+            self.backend.native_lobby_move_props(self.token, [{
+                'prop_id': 15080050006, 'prop_gid': 1003, 'src_pos': 199997,
+                'target_pos': 107001, 'target_prop_gid': 1002, 'num': 1,
+                'spec_loc': {'pos': 107001, 'space_id': 1, 'x': 1, 'y': 1}}])
+        self.assertEqual(self.state(), before)
+
+
 class NativeBulletOperationTests(unittest.TestCase):
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory()
