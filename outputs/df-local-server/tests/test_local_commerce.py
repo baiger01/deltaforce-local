@@ -99,6 +99,83 @@ class LocalCommerceTests(unittest.TestCase):
         self.assertEqual(detail['durability_ratio'], 100)
         self.codec.response(detail_request, detail_fields)
 
+    def test_medicine_sale_filter_keeps_normal_items_and_removes_unlisted_offers(self):
+        # Client crafting row 239/240 proves these two names and product IDs.
+        normal, unlisted = 14070000005, 14070000007
+        self.assertIn(normal, stock_catalog())
+        self.assertFalse(unlisted in stock_catalog())
+        for name in ('CSMarketGetTypeListReq', 'CSAuctionGetTypeListReq'):
+            request = self.request(name, {'prop_ids': [normal, unlisted]})
+            fields = response_fields(request, self.backend, self.token)
+            self.assertEqual([row['prop_id'] for row in fields['type_lists']], [normal])
+            self.codec.response(request, fields)
+        request = self.request('CSAuctionGetSaleListBatchReq', {
+            'infos': [{'prop_id': normal}, {'prop_id': unlisted}]})
+        fields = response_fields(request, self.backend, self.token)
+        self.assertEqual([row['prop_id'] for row in fields['sale_lists']], [normal])
+        for name in ('CSMarketGetSaleListReq', 'CSAuctionGetSaleListReq'):
+            fields = response_fields(self.request(name, {'info': {'prop_id': unlisted}}),
+                                     self.backend, self.token)
+            self.assertFalse(fields.get('sale_list_info') or fields.get('sale_list_infos'))
+        for item_id in (14020000003, 11050006003, 11010005011,
+                        11070005004, 11080002001, 37190000001):
+            self.assertTrue(item_id in stock_catalog(), item_id)
+        self.assertEqual({item_id for item_id in stock_catalog()
+                          if str(item_id).startswith('1407')}, {
+                              14070000001, 14070000003, 14070000004,
+                              14070000005, 14070000006, 14070000008, 14070000009})
+        self.assertFalse(any(str(item_id).startswith(('1411', '1499'))
+                             for item_id in stock_catalog()))
+
+    def test_unlisted_medicine_stale_purchase_is_rejected_without_charge(self):
+        normal, unlisted = 14070000005, 14070000007
+        before = self.backend.native_lobby_profile(self.token)
+        items = [{'channel': 2, 'single_auction_prop': {
+            'prop_id': item_id, 'buy_num': 1, 'currency': CURRENCY_ID,
+            'price': price, 'to_pos': 2}}
+            for item_id, price in ((normal, 15000), (unlisted, 24375))]
+        _, response = self._reconnected_request('CSSerialCheapBuyReq', {'buy_list': items})
+        self.assertNotEqual(response.fields['result'], 0)
+        self.assertEqual(self.backend.native_lobby_profile(self.token), before)
+        for name in ('CSAuctionBuyTReq', 'CSMarketBuyTReq'):
+            _, response = self._reconnected_request(name, {
+                'prop_id': unlisted, 'buy_num': 1, 'currency': CURRENCY_ID,
+                'price': 24375, 'order_id': order_id(unlisted)})
+            self.assertIsNotNone(response)
+            self.assertNotEqual(response.fields['result'], 0)
+            self.assertEqual(self.backend.native_lobby_profile(self.token), before)
+
+    def test_unlisted_medicine_owned_inventory_remains_readable_movable_and_sellable(self):
+        self.backend.set_native_lobby_profile(self.token, level=60, currencies={}, props=[
+            {'gid': 2001, 'template_id': 14070000007, 'quantity': 1,
+             'grid_page_id': 2, 'x': 0, 'y': 0, 'length': 1, 'width': 1}])
+        self.assertFalse(14070000007 in stock_catalog())
+        _, response = self._reconnected_request('CSDepositGetPropsReq', {})
+        self.assertEqual(int(response.fields['grid_pages'][0]['props'][0]['id']), 14070000007)
+        _, moved = self._reconnected_request('CSDepositEquipPropReq', {'cmds': [{
+            'prop_id': 14070000007, 'prop_gid': 2001, 'src_pos': 2,
+            'target_pos': 199997, 'num': 1,
+            'spec_loc': {'pos': 199997, 'space_id': 2}}]})
+        self.assertEqual(moved.fields['result'], 0)
+        prop = self.backend.native_lobby_profile(self.token)['props'][0]
+        self.assertEqual((prop['template_id'], prop['quantity'], prop['grid_page_id']),
+                         (14070000007, 1, 199997))
+        _, prices = self._reconnected_request('CSAuctionGetGameItemSellPriceReq', {
+            'prop_ids': [14070000007]})
+        self.assertEqual(int(prices.fields['sell_props'][0]['sell_price']), 24375)
+        _, moved = self._reconnected_request('CSDepositEquipPropReq', {'cmds': [{
+            'prop_id': 14070000007, 'prop_gid': 2001, 'src_pos': 199997,
+            'target_pos': 2, 'num': 1}]})
+        self.assertEqual(moved.fields['result'], 0)
+        _, sold = self._reconnected_request('CSMallSellReq', {
+            'sell_props': [{'id': 14070000007, 'gid': 2001, 'num': 1}],
+            'prices': [{'money_type': CURRENCY_ID, 'price': 24375}]})
+        self.assertEqual(sold.fields['result'], 0)
+        profile = self.backend.native_lobby_profile(self.token)
+        self.assertEqual(profile['props'], [])
+        self.assertEqual(next(p['amount'] for p in profile['currencies']
+                              if p['currency_id'] == CURRENCY_ID), 24375)
+
     def test_auction_offer_window_contains_heartbeat_time_after_purchase(self):
         item_id = 37190400001
         price = stock_catalog()[item_id]['initial_guide_price']
@@ -131,15 +208,15 @@ class LocalCommerceTests(unittest.TestCase):
         fields = response_fields(self.request('CSMarketGetTypeListReq', {}),
                                  self.backend, self.token)
         ids = {int(row['prop_id']) for row in fields['type_lists']}
-        self.assertIn(14990000029, ids)
-        self.assertNotIn(14990000221, ids)
-        self.assertIn(14990000005, ids)
-        self.assertIn(14990000269, ids)
+        self.assertIn(15090010020, ids)
+        self.assertNotIn(15090010021, ids)
+        self.assertIn(15050100008, ids)
+        self.assertIn(15050100020, ids)
         requested = response_fields(self.request(
-            'CSMarketGetTypeListReq', {'prop_ids': [14990000221]}),
+            'CSMarketGetTypeListReq', {'prop_ids': [15090010021]}),
             self.backend, self.token)
         self.assertEqual([int(row['prop_id']) for row in requested['type_lists']],
-                         [14990000221])
+                         [15090010021])
 
     def test_browse_list_hides_receiver_alias_of_a_complete_gun(self):
         complete_gun = 10010000019
@@ -195,7 +272,7 @@ class LocalCommerceTests(unittest.TestCase):
         decoded = decode_data_frame(frame, key, direction='server_to_client',
                                     compression_method=1, max_output=1024 * 1024)
         message = self.codec.decode(decoded.messages[0])
-        self.assertGreater(len(message.fields['type_lists']), 4000)
+        self.assertGreater(len(message.fields['type_lists']), 3000)
         self.assertLess(len(message.fields['type_lists']), len(stock_catalog()))
         self.assertEqual(len({int(row['prop_id']) for row in message.fields['type_lists']}),
                          len(message.fields['type_lists']))

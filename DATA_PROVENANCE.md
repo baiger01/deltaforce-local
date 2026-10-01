@@ -29,6 +29,12 @@ GitHub 协作仓库仅包含源码、静态 JSON 目录、重建描述符和来�
 
 交易购买、货币扣减、装备落位和弹药展示不仅依赖资源表，还依赖客户端请求及服务端状态链。物品表中的价格、模型和长宽不是完整商城售卖规则；地图资源存在也不是解锁条件。缺失规则应从客户端同版本配置和交互协议继续恢复，不能把目录行当成可购买或可用的证明。
 
+2026-10-01 用户截图明确要求保留“感知强化剂”所在行及此前常规药品，移除其后特殊药剂与饮品。`QuickOperationLogic.lua` 函数 `0.1`（偏移 4916，SHA-256 `6c6f9c474a1d54b12e280bfc14b5b34cd463401340da8ba74cb3fe199b2db8fe`）按服务端售卖名单及开放状态把 `ItemHealth` 行加入购买页。因此仅有 `GameItem.InitialGuidePrice` 不能作为上架依据。新的 `medicine_sale_policy.json` 是按用户要求制定的本地可售范围，不是提取出的官方上架标志；`ItemHealth` 完整行及特殊药剂、饮品逐项中文映射尚未恢复，不将未知名称猜配到 ID。
+
+原客户端 `DFMGlobalConst.lua` 条目 1882 的主类指令 1124～1126 定义 `Medicine=14`，子类指令 1206～1222 定义治疗、手术、止血、持续治疗、维修和注射剂类别；SHA-256 `4887a7f2b5265a5277c5c2553f4ff56ec08f1219a632220e3b2efa367baddcc4`。本地开放现有物品表中子类 2～6 的 22 件治疗、维修用品，注射剂仅开放已核对中文名称的 `14070000001/03/04/05/06/08/09`，共 29 件。ID 主类、子类取法来自 `ItemHelperTool.lua` 函数 `0.38/0.39`，不是 `ItemHealth.MedicineType` 的页面四分类；函数、偏移和哈希均保存在策略文件中。
+
+八种注射剂的中文名由基础包 `pak-0-0-pakchunk2-WindowsClient.pak` 条目 7068 双重核对：492 行导出中的原字段索引 497 是中文 FString，515 是物品 UInt64，516 的输出字符串含相同 `ID:1;`；每种还有一行重复产物记录。源 SHA-256 为 `b26f25dd754180c442e141e64fc19c2cdaa487347686c0bdb8779f7fffbcfa33`，所有行号与偏移保存到策略文件。`14070000006` 是保留的“体能激活针”，`14070000007` 是用户要求下架的“体能强化剂”；不得混淆。`work/verify_medicine_sale_policy.py --payload <条目7068导出文件>` 实际验证了 16 行中文、ID、产物字符串及源哈希。购买目录、报价和成交共用受限名单，回收计价仍按原物品目录及实际归属验证；不删除已有物品。
+
 2026-10-01 11:29 的原客户端试验捕获了 34 次 `CSDepositEquipPropReq`。请求序号 1821 的 `spec_loc` 指定胸挂分区 5、`start_x=1`，省略默认的 `start_y=0`；1843 反向省略 `start_x=0`。序号 1903 同时指定 `target_prop_gid`，属于交换，不能只移动源物品。旧实现遇到省略的坐标改为自动落位，并忽略容器内交换目标，随后四次 `CSDepositAssemblySyncBodyContainerReq` 在胸挂分区 5 出现两件物品同占 `(0,0)`，数据库副本重放确认拒绝原因为 `POSITION_OCCUPIED`。现在保留明确位置的零坐标及旋转，交换两件实际拥有的实例，无法容纳时整笔回滚；不接受重叠快照，不删除物品来绕过错误。
 
 上述字段来源为 `EquipPropCommand` 的 `target_prop_gid` 字段 6、`spec_loc` 字段 10，以及 `PropLocation` 的 `start_x/start_y` 字段 2/3、`rotate` 字段 7。来源 Lua 的 SHA-256 分别为 `9e0e59f87781ec6184a52b3cf09e661084945b1330ecc0bc8c4e671c1a364d01`（`cs_deposit_editor_pb.lua`）与 `5fe89634d480907ba0f4657ef699151e147594750ddba37247a50d718ac8b753`（`ds_common_editor_pb.lua`）。`InventoryServer_Network.lua` 函数 `0.43/0.44`（序列化偏移 44387/45587）分别按响应移除源位置、设置目标位置；SHA-256 为 `d7f83db2ae2cf4902b440131c15648c7b7d4b8b8f5e459231b9eb6ec17dcb0dc`。位置冲突改用已提取错误目录中的 `DepositSpaceHasOccupied`，不再笼统归为 `DepositInternalError`。

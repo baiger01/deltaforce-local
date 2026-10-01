@@ -69,7 +69,20 @@ def installed_items():
 
 
 @lru_cache(maxsize=1)
-def stock_catalog():
+def medicine_sale_ids():
+    source = Path(__file__).resolve().parent.parent / 'protocol/medicine_sale_policy.json'
+    policy = json.loads(source.read_text(encoding='utf-8'))
+    injections = {int(item_id) for item_id in policy['injections']}
+    subtypes = set(policy['regular_subtypes'])
+    return frozenset(int(item_id) for item_id in installed_items()
+                     if int(item_id) // 1000000000 == policy['medicine_main_type']
+                     and ((int(item_id) // 10000000) % 100 in subtypes
+                          or int(item_id) in injections))
+
+
+@lru_cache(maxsize=1)
+def priced_inventory_catalog():
+    """Retain recycle pricing for owned items even when no longer purchasable."""
     rows = installed_items()
     mapped_guns = default_weapon_presets()
     return {int(item_id): row for item_id, row in rows.items()
@@ -79,6 +92,13 @@ def stock_catalog():
             and (row['initial_guide_price'] > 0 or
                  item_id.startswith(MANDEL_BRICK_PREFIX))
             and 0 < row['length'] <= 9 and 0 < row['width'] <= 40}
+
+
+@lru_cache(maxsize=1)
+def stock_catalog():
+    medicines = medicine_sale_ids()
+    return {item_id: row for item_id, row in priced_inventory_catalog().items()
+            if item_id // 1000000000 != 14 or item_id in medicines}
 
 
 @lru_cache(maxsize=1)
@@ -361,12 +381,13 @@ def response_fields(request, backend, local_session):
                                for item_id, row in catalog.items()],
                 'past_stable_price': bool(fields.get('past_stable_price', False))}
     if name == 'CSAuctionGetGameItemSellPriceReq':
+        recycle = priced_inventory_catalog()
         ids = [int(value) for value in fields.get('prop_ids', [])]
         return {'result': 0, 'sell_props': [
-            {'prop_id': item_id, 'sell_price': _price(catalog[item_id]),
-             'sell_money': CURRENCY_ID, 'dynamic_price': _price(catalog[item_id]),
-             'static_price': _price(catalog[item_id])}
-            for item_id in ids if item_id in catalog]}
+            {'prop_id': item_id, 'sell_price': _price(recycle[item_id]),
+             'sell_money': CURRENCY_ID, 'dynamic_price': _price(recycle[item_id]),
+             'static_price': _price(recycle[item_id])}
+            for item_id in ids if item_id in recycle]}
     if name == 'CSMarketGetPlayerInfoReq':
         return {'result': 0, 'is_open': True, 'max_rack_cnt': 100,
                 'init_rack_cnt': 100, 'open_time': now - 86400,
@@ -451,6 +472,7 @@ def response_fields(request, backend, local_session):
             result['match_info'] = fields['match_info']
         return result
     if name == 'CSMallSellReq':
+        recycle = priced_inventory_catalog()
         props = fields.get('sell_props') or []
         prices = fields.get('prices') or []
         if not 1 <= len(props) <= 32 or not 1 <= len(prices) <= 32:
@@ -460,7 +482,7 @@ def response_fields(request, backend, local_session):
         for prop in props:
             item_id = int(prop.get('id') or 0)
             quantity = int(prop.get('num') or 0)
-            row = catalog.get(item_id)
+            row = recycle.get(item_id)
             if row is None:
                 return {'result': error_code('DepositPropDescNotFound')}
             if not 1 <= quantity <= 1000:
@@ -575,7 +597,9 @@ def response_fields(request, backend, local_session):
         else:
             item_id = int(fields.get('prop_id') or 0)
             count = int(fields.get('buy_num') or 1)
-        row = stock_row(item_id)
+        row = catalog.get(item_id)
+        if row is None:
+            return {'result': error_code('DepositPropDescNotFound')}
         price = _price(row)
         if name != 'CSMallBuyReq' and (int(fields.get('price') or 0) != price
                                        or int(fields.get('currency') or 0) != CURRENCY_ID

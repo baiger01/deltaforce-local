@@ -40,6 +40,7 @@
 | 商品时间判断 | 按客户端时钟用法将心跳时间改为 Unix 秒；购买前后商品详情的开放时间与心跳时间兼容的回归用例已通过 | `dfserver/handshake_diagnostic.py`、`tests/test_local_commerce.py`、[数据来源](DATA_PROVENANCE.md) |
 | 单条防具报价 | 类型目录与商品详情使用客户端 `GetPropSaleInfo` 的档位 0 回退规则，保留满耐久比例 | `dfserver/local_commerce.py`、`tests/test_local_commerce.py`、[数据来源](DATA_PROVENANCE.md) |
 | 购买与出售事务 | 实现扣款、物品持久化、指定位置、堆叠上限、出售删除与货币变更 | `dfserver/local_commerce.py`、`dfserver/core.py`、`tests/test_local_commerce.py` |
+| 药品可售范围 | 按客户端主类和子类保留 22 件治疗、维修用品，按中文配方锚点保留 7 件标准强化针；特殊药剂和饮品不再因有指导价而开放购买；已拥有物品仍可读取、移动和出售，旧报价购买拒绝且不扣款 | `medicine_sale_policy.json`、`dfserver/local_commerce.py`、`tests/test_local_commerce.py`、[范围与来源](DATA_PROVENANCE.md)；原生界面回测待确认 |
 | 近战数据与装备 | 从客户端条目 7276 恢复 18 组刀具 receiver/外观对应，本地提供原客户端确认解锁的 15 组；迁移误用的喷枪记录，下发匹配的收藏与装备数据，保存所选刀具，切换使用装备删除/加入响应 | `melee_weapon_catalog.json`、`dfserver/melee_weapons.py`、`tests/test_melee_inventory.py` |
 | 枪械皮肤数据 | 恢复 1776 条真实外观与武器、预设关系，本地提供 1514 条开放的普通外观；按归属和枪种校验装备，保存单枪及同枪种默认设置，保留组件和枪内弹药 | `gun_skin_catalog.json`、`dfserver/gun_skins.py`、`tests/test_native_cosmetics.py` |
 | 曼德尔目录与购买 | 恢复 34 种砖与奖池、11 项商城关系、5 项经验卡赠送密钥配置；实现整批报价校验、扣款与收藏入账，迁移旧密钥货币记录并防止重复迁移 | `mandel_box_catalog.json`、`dfserver/mandel.py`、`tests/test_native_cosmetics.py` |
@@ -78,6 +79,7 @@
 - 2026-10-01：按原客户端省略槽位的穿戴请求复现并修正错误码 117302，名单与穿戴的 16 项直接相关用例通过；拒绝未拥有服装及非法槽位，保存后重读一致。
 - 2026-10-01：11:29 的 720 秒试验结束，原 SDK 恢复并与源文件哈希一致。日志定位两次匹配分配未响应的超时及四次身体容器重叠错误；库存移动修正的 15 项用例、购买原有 48 项用例、新增加密交换用例及日志监听用例通过，实机界面效果尚待本轮用户确认。
 - 2026-10-01：独立审查复现仓库旋转标记未写入协议位置的问题，修正后移动响应、库存重取、数据库重开和移入胸挂的加密回归通过；购买与库存协议的 50 项用例、身体容器的 15 项用例通过。11:59 的 720 秒试验结束，原 SDK 恢复并与源文件哈希一致。
+- 2026-10-01：药品可售范围修正后 53 项购买与库存协议用例通过，覆盖保留标准药品、下架条目无报价、旧单买和混合批量购买不扣款，以及已拥有下架物品的读取、移动和仓库出售。原始客户端导出中的 16 行强化针中文、ID、产物字符串与源哈希核验通过。
 - GitHub 仓库已按用户指示改为公开，源码、测试、静态目录和来源信息已上传；上传文件审计通过。
 
 ## 协作依据
