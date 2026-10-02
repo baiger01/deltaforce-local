@@ -213,10 +213,11 @@ class Backend:
         with self.connection() as connection:
             connection.executescript(SCHEMA)
             from . import (weapon_pendants, battle_pass, native_settings, native_keycards,
-                           native_keychains, native_safehouse, native_quests)
+                           native_keychains, native_safehouse, native_quests, native_session_auxiliary)
             connection.executescript(weapon_pendants.SCHEMA + battle_pass.SCHEMA
                                      + native_settings.SCHEMA + native_keycards.SCHEMA + native_keychains.SCHEMA
-                                     + native_safehouse.SCHEMA + native_quests.SCHEMA)
+                                     + native_safehouse.SCHEMA + native_quests.SCHEMA
+                                     + native_session_auxiliary.SCHEMA)
             connection.execute("BEGIN IMMEDIATE")
             previous = connection.execute("SELECT value FROM metadata WHERE key='definitions_hash'").fetchone()
             if previous and previous[0] != definition_hash:

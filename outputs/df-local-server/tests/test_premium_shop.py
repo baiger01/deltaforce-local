@@ -178,6 +178,49 @@ class PremiumShopTests(unittest.TestCase):
         self.assertEqual(self.backend.native_lobby_profile(self.token), before)
         self.assertEqual(len(self.request('CSShopGetBuyRecordReq')['open_lottery_records']), 1)
 
+    def test_native_seventh_staff_round_grants_subtype_15_weapon_skin(self):
+        from dfserver import gun_skins
+        with self.backend.connection() as connection:
+            player_id = self.backend._authorize(connection, self.token)
+            for number in range(3, 9):
+                connection.execute('INSERT INTO native_lobby_staff_draws '
+                    '(player_id,lottery_id,won_ids_json,record_json) VALUES (?,?,?,?)',
+                    (player_id, 20300003, json.dumps([number]),
+                     json.dumps({'lottery_id': 20300003, 'num': 1})))
+            connection.commit()
+        # Native seq790 bought the 25 keys needed for round 7 inline.
+        fields = {'lottery_id': 20300003, 'round': 7, 'buy_prop': {
+            'item_id': 32370000002, 'num': 25, 'currency_type': 17888808889,
+            'price': 2500, 'currency_type_substitute': 17888808888}}
+        request = self.codec.decode(self.codec.encode(
+            'CSShopOpenLotteryItemReq', fields, sequence=790))
+        with patch('dfserver.premium_shop.secrets.randbelow', return_value=8):
+            result = response_fields(request, self.backend, self.token)
+        self.codec.response(request, result)
+        self.assertEqual(result['result'], 0)
+        self.assertEqual(result['change']['currency_changes'][0]['delta'], -2500)
+        changes = [r for r in result['change']['prop_changes'] if r['prop']['id'] == 28150150001]
+        self.assertEqual(changes, [{'change_type': 1, 'delta': 1,
+                                   'prop': {'id': 28150150001, 'gid': 0, 'num': 1}}])
+        self.assertNotIn(28150150001, self.collection())
+        self.assertEqual(gun_skins.SKINS[28150150001]['weapon_id'], 18150000001)
+        self.assertEqual(result['lottery_pool_info']['prop_num_ids'], [3, 4, 5, 6, 7, 8, 2])
+        self.assertEqual(result['lottery_pool_info']['cost_num'], 31)
+        self.assertEqual(self.collection().get(32370000002, 0), 0)
+        self.backend = Backend(self.backend.database, ROOT / 'definitions.json')
+        with self.backend.connection() as connection:
+            owned = connection.execute('SELECT skin_id,gid FROM native_lobby_gun_skins '
+                'WHERE player_id=? AND skin_id=?', (player_id, 28150150001)).fetchone()
+        self.assertEqual(tuple(owned), (28150150001, 0))
+        applied = self.request('CSWAssemblyApplySkinReq', {'data_type': 0, 'cmds': [{
+            'weapon_id': 18150000001, 'skin_id': 28150150001, 'apply_all': True}]})
+        self.assertEqual(applied['result'], 0)
+        self.assertEqual(applied['changes']['weapon_skin_setup'], [{
+            'weapon_id': 18150000001, 'skin_id': 28150150001, 'skin_gid': 0}])
+        before = self.backend.native_lobby_profile(self.token)
+        self.assertNotEqual(self.request('CSShopOpenLotteryItemReq', fields)['result'], 0)
+        self.assertEqual(self.backend.native_lobby_profile(self.token), before)
+
     def test_hero_fashion_cannot_equip_another_hero_or_unowned_skin(self):
         result = self.request('CSHeroEquipFashionReq', {'hero_id': 88000000027,
             'new_fashions': [{'slot': 0, 'id': 30000060008}]})

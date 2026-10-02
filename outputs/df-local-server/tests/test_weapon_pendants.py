@@ -106,6 +106,59 @@ class WeaponPendantTests(unittest.TestCase):
         self.assertEqual(self.state()['pendant_id'], 0)
         self.assertEqual(self.state(1002)['pendant_id'], PENDANT)
 
+    def test_bow_skin_default_uses_its_recovered_receiver_without_creating_parts(self):
+        before = self.backend.native_lobby_profile(self.token)['props']
+        for weapon_id in (18150000001, 10150000001):
+            with self.subTest(weapon_id=weapon_id):
+                request = self.codec.decode(self.codec.encode('CSWAssemblyApplySkinReq', {
+                    'data_type': 0, 'cmds': [{'weapon_id': weapon_id, 'skin_id': 28150150001,
+                        'skin_gid': 0, 'apply_all': True, 'pendant_id': 0,
+                        'pendant_gid': 0, 'pendant_apply_all': False}]}, sequence=81))
+                result = weapon_pendants.response_fields(request, self.backend, self.token)
+                self.codec.response(request, result)
+                self.assertEqual(result['result'], 0)
+                self.assertEqual(result['changes'], {'prop_changes': [], 'weapon_skin_setup': [{
+                    'weapon_id': 18150000001, 'skin_id': 28150150001, 'skin_gid': 0}]})
+        self.backend = Backend(self.backend.database, ROOT / 'definitions.json')
+        profile = self.backend.native_lobby_profile(self.token)
+        self.assertEqual(profile['props'], before)
+        self.assertIn({'weapon_id': 18150000001, 'skin_id': 28150150001, 'skin_gid': 0},
+                      profile['weapon_skin_setup'])
+        cleared = self.response({'cmds': [{'weapon_id': 18150000001, 'skin_id': 0,
+                                          'apply_all': True}]})
+        self.assertEqual(cleared['result'], 0)
+        self.assertEqual(cleared['changes']['weapon_skin_setup'], [{
+            'weapon_id': 18150000001, 'skin_id': 0, 'skin_gid': 0}])
+        self.assertEqual(self.backend.native_lobby_profile(self.token)['props'], before)
+
+    def test_bow_unowned_mismatched_or_foreign_skin_does_not_write_defaults(self):
+        before = self.backend.native_lobby_profile(self.token)
+        for skin_id, skin_gid in ((28150130002, 0), (SKIN, 0),
+                                  (28150150001, 12345), (999999, 0)):
+            with self.subTest(skin_id=skin_id, skin_gid=skin_gid):
+                result = self.response({'cmds': [{'weapon_id': 18150000001,
+                    'skin_id': skin_id, 'skin_gid': skin_gid, 'apply_all': True}]})
+                self.assertNotEqual(result['result'], 0)
+                self.assertEqual(self.backend.native_lobby_profile(self.token), before)
+
+    def test_bow_pendant_commands_without_recovered_attachments_rollback_batch(self):
+        before = self.backend.native_lobby_profile(self.token)
+        for pendant in ({'pendant_id': PENDANT}, {'pendant_apply_all': True},
+                        {'pendant_gid': 12345}):
+            with self.subTest(pendant=pendant):
+                result = self.response({'cmds': [self.command(), {
+                    'weapon_id': 18150000001, 'skin_id': 28150150001,
+                    'apply_all': True, **pendant}]})
+                self.assertNotEqual(result['result'], 0)
+                self.assertEqual(self.backend.native_lobby_profile(self.token), before)
+
+    def test_unknown_receiver_cannot_create_an_empty_skin_default(self):
+        before = self.backend.native_lobby_profile(self.token)
+        result = self.response({'cmds': [{'weapon_id': 18159999999, 'skin_id': 0,
+                                          'apply_all': True}]})
+        self.assertNotEqual(result['result'], 0)
+        self.assertEqual(self.backend.native_lobby_profile(self.token), before)
+
     def test_unknown_unowned_foreign_or_unrestored_instance_rejects_batch(self):
         ungranted = next(item for item, row in weapon_pendants.PENDANTS.items()
                          if not row['is_mystical'] and item not in weapon_pendants.ORDINARY)

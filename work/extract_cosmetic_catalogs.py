@@ -1,5 +1,6 @@
 """Recover cosmetic links and Mandel box records from local client exports."""
 
+import argparse
 import hashlib
 import json
 from pathlib import Path
@@ -48,13 +49,17 @@ def export(entry):
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--gun-skins-only', action='store_true')
+    args = parser.parse_args()
     items = json.loads((PROTOCOL / 'game_item_catalog.json').read_text(encoding='utf-8'))['rows']
     skins, skin_source = export(7292)
     skin_rows = []
     for row in skins:
         f = row['fields']
         skin, weapon = f[1820], f[1792]
-        if not str(skin).startswith('280') or str(skin) not in items:
+        # CollectionServer.lua 0.14 also treats subtype 15 as a firearm skin.
+        if not str(skin).startswith(('280', '2815')) or str(skin) not in items:
             continue
         skin_rows.append({'skin_id': skin, 'weapon_id': weapon, 'preset_id': f[1794],
                           'open_collection': f[1812],
@@ -72,6 +77,9 @@ def main():
                   'rows': skin_rows}
     (PROTOCOL / 'gun_skin_catalog.json').write_text(
         json.dumps(gun_report, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+    if args.gun_skins_only:
+        print('gun_skin_rows', len(skin_rows))
+        return
 
     boxes, box_source = export(6764)
     groups, group_source = export(6766)

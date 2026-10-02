@@ -55,7 +55,9 @@
 | 批量材料补齐购买 | 按原客户端 `scene=301` 的三条实际材料请求接入拍卖整批购买；统一核价、一次扣费、仓库保存，错误报价或余额不足整批回滚 | `dfserver/local_commerce.py`、`tests/test_native_material_batch.py`；新响应界面回测待确认 |
 | 药品可售范围 | 按客户端主类和子类保留 22 件治疗、维修用品，按中文配方锚点保留 7 件标准强化针；特殊药剂和饮品不再因有指导价而开放购买；已拥有物品仍可读取、移动和出售，旧报价购买拒绝且不扣款 | `medicine_sale_policy.json`、`dfserver/local_commerce.py`、`tests/test_local_commerce.py`、[范围与来源](DATA_PROVENANCE.md)；原生界面回测待确认 |
 | 近战数据与装备 | 从客户端条目 7276 恢复 18 组刀具 receiver/外观对应，本地提供原客户端确认解锁的 15 组；迁移误用的喷枪记录，下发匹配的收藏与装备数据，保存所选刀具，切换使用装备删除/加入响应 | `melee_weapon_catalog.json`、`dfserver/melee_weapons.py`、`tests/test_melee_inventory.py` |
-| 枪械皮肤数据 | 恢复 1776 条真实外观与武器、预设关系，本地提供 1514 条开放的普通外观；按归属和枪种校验装备，保存单枪及同枪种默认设置，保留组件和枪内弹药 | `gun_skin_catalog.json`、`dfserver/gun_skins.py`、`tests/test_native_cosmetics.py` |
+| 枪械皮肤数据 | 恢复 1781 条真实外观与武器、预设关系，本地提供 1518 条开放的普通外观；按归属和枪种校验装备，保存单枪及同枪种默认设置，保留组件和枪内弹药 | `gun_skin_catalog.json`、`dfserver/gun_skins.py`、`tests/test_native_cosmetics.py` |
+| 收藏枪皮肤与研究发奖 | 补回原表 5 条 `2815` 外观，修正研究池 `20300003` 第 7 轮发奖返回 `14008`；原始 25 枚研究密钥补齐购买向量通过扣款、发奖、重读及重复请求校验；已恢复 receiver 的纯皮肤装备可独立于组件树保存 | `work/extract_cosmetic_catalogs.py`、`dfserver/weapon_pendants.py`、`tests/test_premium_shop.py`、`tests/test_weapon_pendants.py`；弓组件和挂饰装配尚未恢复，新外观实机穿戴待确认 |
+| 辅助查询与单向消息 | 接入好友推荐、快速补丁、按钮状态和测速目录的原生空记录响应；商城补发检查和 Tlog 按原协议无 Res 处理，上报仅保存有界摘要；两套连接流程在单向消息后均能继续查询 | `dfserver/native_session_auxiliary.py`、`tests/test_native_session_auxiliary.py`、`tests/test_native_auxiliary_wire.py`；租借券发放规则未恢复，明确拒绝 `157012` |
 | 曼德尔目录与购买 | 恢复 34 种砖配置、11 项商城关系、5 项经验卡赠送密钥配置；购买目录只开放客户端商城与真实奖池同时关联的 11 种砖，旧条目不能误入扫描页；整批核价、扣款与收藏入账，防止重复迁移密钥 | `mandel_box_catalog.json`、`dfserver/mandel.py`、`tests/test_native_cosmetics.py`、`tests/test_native_mandel_view.py` |
 | 本地扫描事务与协议 | 实现砖和密钥扣除、真实皮肤实例、历史与计数持久化；收藏通知先于购买回调，十连动画响应只含十件奖励。抽样使用明确记录的本地规则 | `dfserver/mandel.py`、`dfserver/handshake_diagnostic.py`、`tests/test_native_cosmetics.py`、[规则与来源](DATA_PROVENANCE.md) |
 | 商城配置提取 | 恢复 158 条推荐、61 条特供、8 个干员研究奖池的 64 条奖励、54 条外观归属及原生主页签；保留原始行、偏移与来源哈希 | `premium_shop_catalog.json`、`work/extract_premium_shop_catalog.py`、[数据来源](DATA_PROVENANCE.md) |
@@ -103,6 +105,9 @@
 - 2026-10-02：20:12 启动的 720 秒试验完整结束，原 SDK 恢复并通过哈希核验；两次真实任务 `11001`、`21001` 接受响应成功，变更通知已发送，保存状态均为 3。此轮日志未见 Fatal 或 Lua 异常堆栈；卡包界面与放卡效果尚待用户确认。
 - 2026-10-02：初始化日志定位五次设置读取返回 `152006`，触发“不能分享默认方案”提示；按三份原包 Lua 的明确空值消费分支修正，8 项设置回归通过。诊断日志仅记录已确认的可选键名，保留未知键错误；修正后客户端回测另行记录。
 - 2026-10-02：设置与活动协议的 11 项联合回归通过（2.437 秒），三个真实加密设置回包核验成功并确认未知键不会写入日志。20:39 新版原客户端初始化捕获 `SaveBaseSetting`、`SaveSOLMarkingItems`、`SaveSensititySetting`、`InventoryAutoLine`、`FriendDynamic` 均返回 0，未再出现 `152006`；库存查询收到响应。该记录确认初始化响应，卡包实际放卡仍待用户确认。
+- 2026-10-02：审计上一轮日志，按原客户端函数确认 Level `Reason0`、Dispatcher `process`、通行证预加载 `false` 等为状态日志；商城 PaperSprite 的 75 次、16 条路径则为真实加载失败，尚未解决。原包和 shadow 的相关包哈希一致，全部 PAK 目录索引加密，未找到可读同版本资源登记表，不能用扫描无命中断言资源缺失或改用占位图。
+- 2026-10-02：修正日志异常文本输出、研究发奖漏映射与辅助请求后，稳定源码的全部 552 项自动测试通过（100.421 秒），包含两套真实 socket 连续请求回归。此前一次完整回归的通知压测发生原生 protobuf 内存访问异常；同环境单项及稳定完整回归通过，未改编码器或放宽测试时限，该偶发异常未稳定复现。
+- 2026-10-02：22:45 启动的 720 秒试验完整结束（721.36 秒），417 条处理记录、0 条未响应；四类辅助查询均成功，单向消息不发送伪造响应，租借券发放明确返回 `157012`。原 SDK 恢复并与源文件哈希一致；自动输入未能操作原游戏，未将此轮记为卡包或商城界面测试通过。现存档完整性检查和胸挂、背包落位预览正常，无需数据迁移。
 - GitHub 仓库已按用户指示改为公开，源码、测试、静态目录和来源信息已上传；上传文件审计通过。
 
 ## 协作依据

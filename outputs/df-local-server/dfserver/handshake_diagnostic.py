@@ -29,7 +29,7 @@ from .container_layouts import capacity as container_capacity
 from .core import (POCKET_LAYOUT, POCKET_POSITION,
                    BACKPACK_LAYOUT, BACKPACK_POSITION, CHEST_RIG_LAYOUT,
                    CHEST_RIG_POSITION, SAFE_BOX_POSITION, DomainError)
-from . import safe_boxes, native_safehouse, native_quests
+from . import safe_boxes, native_safehouse, native_quests, native_session_auxiliary
 
 ACTIVITY_REQUESTS = native_safehouse.SUPPORTED_REQUESTS | native_quests.SUPPORTED_REQUESTS
 from .gcp_crypto import decode_received_body, encrypt_body
@@ -103,7 +103,7 @@ class State:
 def _log_request_progress(entry, phase):
     fields = ('request_name', 'service', 'prefix_sequence', 'elapsed_ms',
               'response_sent', 'response_elapsed_ms', 'local_commerce_result',
-              'request_not_answered', 'failure_code', 'failure_detail', 'local_bullet_commands',
+              'request_not_answered', 'failure_code', 'local_bullet_commands',
               'local_equip_commands', 'local_inventory_failure',
               'local_body_container_snapshots', 'local_serial_buy_items',
               'local_lottery_purchase_items', 'local_inventory_change_notification_sent',
@@ -112,7 +112,9 @@ def _log_request_progress(entry, phase):
               'local_warehouse_sort_result', 'local_warehouse_sort_change_count',
               'local_weapon_assembly_request', 'local_battle_pass_request',
               'local_optional_setting_key',
-              'local_activity_request', 'local_activity_result', 'local_activity_notification_sent')
+              'local_activity_request', 'local_activity_result', 'local_activity_notification_sent',
+              'local_auxiliary_one_way', 'local_auxiliary_response_expected', 'local_auxiliary_result',
+              'local_telemetry_entry_count', 'local_telemetry_payload_bytes', 'local_retro_reward_pending_count')
     event = {'event': 'business_request', 'phase': phase, 'observed_at_utc': _time()}
     event.update({name: entry[name] for name in fields if name in entry})
     print(json.dumps(event), flush=True)
@@ -1425,6 +1427,25 @@ def _candidate_local_activity_response(message, backend, local_session, key,
                              header_word9=header_word9, max_output=1024 * 1024)
 
 
+def _candidate_local_auxiliary_response(message, backend, local_session, key,
+                                       *, header_word4, header_word9, diagnostic_entry=None):
+    if len(message) < 5:
+        raise ValueError('Truncated auxiliary package')
+    codec = _candidate_codec()
+    request = codec.decode(message[4:])
+    if native_session_auxiliary.handle_one_way(
+            request, backend, local_session, diagnostic_entry=diagnostic_entry):
+        return None
+    fields = native_session_auxiliary.response_fields(request, backend, local_session)
+    if fields is None:
+        raise ValueError('Not a supported local auxiliary request')
+    if diagnostic_entry is not None:
+        diagnostic_entry['local_auxiliary_response_expected'] = True
+        diagnostic_entry['local_auxiliary_result'] = fields['result']
+    return encode_data_frame((codec.response(request, fields),), key, direction='server_to_client',
+                             opaque_flag=64, header_word4=header_word4, header_word9=header_word9)
+
+
 def _candidate_local_safehouse_response(message, backend, local_session, key,
                                         *, header_word4, header_word9):
     return _candidate_local_activity_response(message, backend, local_session, key,
@@ -1692,6 +1713,11 @@ def _continue_character_creation(connection, decoder, queue, current, ack,
                     entry['local_commerce_response'] = True
                     entry['local_commerce_result'] = _candidate_local_commerce_result(
                         response, ack.session_key)
+                elif name in (native_session_auxiliary.SUPPORTED_REQUESTS
+                             | native_session_auxiliary.ONE_WAY_REQUESTS):
+                    response = _candidate_local_auxiliary_response(
+                        message, backend, local_session, ack.session_key,
+                        header_word4=current.header_word4, header_word9=outbound_sequence, diagnostic_entry=entry)
                 elif name and name.endswith('Ntf'):
                     entry['notification_observed'] = True
                     response = None
@@ -2327,6 +2353,12 @@ def inspect_exchange(connection, modulus=None, *, timeout=12, diagnostic_exponen
                                                                         entry['local_commerce_response'] = True
                                                                         entry['local_commerce_result'] = _candidate_local_commerce_result(
                                                                             next_response, ack.session_key)
+                                                                    elif name in (native_session_auxiliary.SUPPORTED_REQUESTS
+                                                                                 | native_session_auxiliary.ONE_WAY_REQUESTS):
+                                                                        next_response = _candidate_local_auxiliary_response(
+                                                                            message, backend, local_session, ack.session_key,
+                                                                            header_word4=current.header_word4,
+                                                                            header_word9=outbound_sequence, diagnostic_entry=entry)
                                                                     elif (name and name.startswith('CS')
                                                                           and name.endswith('Req')):
                                                                         next_response = _candidate_read_only_empty_response(
@@ -2350,6 +2382,17 @@ def inspect_exchange(connection, modulus=None, *, timeout=12, diagnostic_exponen
                                                                         break
                                                                     if current is None:
                                                                         result['bounded_business_stop'] = 'client_closed_after_unanswered_request'
+                                                                        break
+                                                                    continue
+                                                                if next_response is None:
+                                                                    _log_request_progress(entry, 'processed')
+                                                                    try:
+                                                                        current = _receive_one(connection, decoder, queue)
+                                                                    except (TimeoutError, socket.timeout):
+                                                                        result['bounded_business_stop'] = 'receive_timeout'
+                                                                        break
+                                                                    if current is None:
+                                                                        result['bounded_business_stop'] = 'client_closed'
                                                                         break
                                                                     continue
                                                                 frames = _candidate_local_activity_response_frames(

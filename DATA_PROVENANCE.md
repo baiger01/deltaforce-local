@@ -1,5 +1,15 @@
 # 数据从哪里来
 
+## 辅助请求与研究奖励核验（2026-10-02）
+
+`native_session_auxiliary.py` 记录了 7 类请求的原 PAK 编解码入口、SHA-256 与消费函数。`FriendServer.lua` 条目 6871 的 `0.41.0`、`QuickPatchServer.lua` 条目 6920 的 `0.4.0`、`InventoryServer_LabelLogic.lua` 条目 6885 的 `0.8/0.8.0`、`IDCSpeedLogic.lua` 条目 4938 的 `0.0.0/0.15` 均有明确空记录消费分支；按钮状态查询不产生点击记录，测速目录不生成服务器地址。`CSShopAutoRetroRewardReq` 和 `CSTlogAgentTglogReq` 没有对应 Res；`ProtoManager.lua` 的 `0.86` 对 Tlog 调用 `SendNtf`。本地商城扣款、奖励及记录同一事务提交，没有待补发队列；上报仅保留每账号最多 128 条摘要回执，不保存或外发原始事件。
+
+`CollectionServer.lua` 条目 6860 的 `0.214` 触发低级租借券发放，`ArmedForceConfig.lua` 给出真实低券 `32330000001`，GameItem 堆叠上限为 10；这些客户端消费者没有给出发放周期、数量或资格计算。服务明确返回原码 `CollectionPropDescNotFound=157012`，不发奖励或编造下次时间。原提示链证明该码会显示普通错误提示；这只结束请求等待，不代表发放功能已经恢复。13 个相关源的入口、哈希、函数和检索边界保存于 `protocol/collection_auto_distribution_consumer_evidence.json`。
+
+20:19:39 的真实研究请求为奖池 `20300003`、轮次 7、购买 `32370000002` 共 25 枚，币种 `17888808889`、总价 2500、替代币种 `17888808888`。失败奖品 `28150150001` 位于 `LotteryProbDistribution` 条目 6774 的 source row 18；`WeaponSkinDataTable` 条目 7292 的 row 758、偏移 654877，字段 1820/1792/1794/1812 对应外观、receiver `18150000001`、预设 `10150000001`、开放标记。`CollectionServer.lua` 的 `0.14` 将主类 28、子类 15 归入枪械皮肤，旧提取器只保留 `280` 前缀导致漏行。修正仅补回原表 5 条 `2815` 外观，其中 4 条开放、1 条锁定。纯皮肤装备按已恢复外观表校验 receiver；未恢复的弓组件和挂饰路径仍拒绝。
+
+日志分类也核对了原函数：`LevelLoadManager.lua` 的 `0.35.0` 无条件打印完成计数，`LevelGlobalConst` 的 Success 为 0；`ServerManager.lua` 的 `0.6` 在处理器返回 true 后打印 process；`LuaResourcesRegister.lua` 的 `0.5.0` 打印 WaitLoadFinish 配置位。相反，`ResImageUtil.lua` 的 `0.0.0` 只在资源回调失败时打印 failed。上一轮 75 次 PaperSprite 失败涉及 16 条原表资源路径，不能归为普通状态日志；当前原安装与 shadow 的相关包哈希一致，但全部 PAK 索引加密且没有可读资源登记表，尚无证据支持路径替换或商品下架。
+
 ## 可选初始化设置的空值响应（2026-10-02）
 
 `SystemSettingServer.lua`（PAK1 条目 6945、偏移 35201024，SHA-256 `475e83736ef1a76a2df664a64ae85c145f6ba6bd96402ba839b9d991009d6d47`）的函数 `0.28/0.35/0.37/0.39/0.46/0.49` 读取 `PlayerSensitity`、`SaveBaseSetting`、`SaveSensititySetting`、`PlayerBase`、`InventoryAutoLine`、`SaveSOLMarkingItems`，回调在成功且 `kv.value == ''` 时保留客户端默认配置并跳过解码。
@@ -30,7 +40,7 @@ GitHub 协作仓库仅包含源码、静态 JSON 目录、重建描述符和来�
 | `weapon_ammo_catalog.json` | 基础包 `pakchunk2-WindowsClient.pak` 条目 4489/4555；热更新 PartsData/PartsFunction；基础包 Lua `cs_deposit_pb.lua` | `work/extract_weapon_ammo_catalog.py` 恢复弹药类别、已有弹匣容量与装卸弹枚举，交叉核对客户端 Lua 规则；未恢复的弹匣或武器关系保持未知。目录记录源哈希、行偏移与函数。 |
 | `client_error_catalog.json` | 基础包 `pakchunk1-WindowsClient.pak` 的 `errcode_pb.lua` 条目 6809 | `work/extract_client_error_catalog.py` 只读恢复实际错误名与值；不以统一猜测结果码代替库存业务错误。 |
 | `melee_weapon_catalog.json` | 当前安装 `DeltaForce/Content/Paks/pak-0-0-pakchunk2-WindowsClient.pak` 明文导出条目 7276 | `work/extract_melee_catalog.py` 读取 18 行中序列化字段索引 40/41 的外观 ID 与武器 ID。源文件 SHA-256 为 `e6ab2c414dc8b972b0f20b647a8deedcb39c82912d968209f057db469defb845`。15 组对应由原客户端 `MeleeWeaponSkinDataTable` 日志交叉确认；加密名称表未恢复，不能冒称已解出原属性名。每行保留偏移、GameItem 名称键与尺寸。 |
-| `gun_skin_catalog.json` | 当前安装基础包 `pak-0-0-pakchunk2-WindowsClient.pak` 明文导出条目 7292 | `work/extract_cosmetic_catalogs.py` 从 1781 行恢复可与 GameItem 核对的 1776 条外观；序列化字段 1820/1792/1794/1812 分别关联外观、武器、预设和收藏开放标志。源 SHA-256 为 `03929c8c36ef4bd21de0e6262809095a863f3e65d6e44e8eefcf6ac57a59cce7`。本地提供 1514 条开放普通皮肤，曼德尔实例单独保存。 |
+| `gun_skin_catalog.json` | 当前安装基础包 `pak-0-0-pakchunk2-WindowsClient.pak` 明文导出条目 7292 | `work/extract_cosmetic_catalogs.py` 从 1781 行恢复可与 GameItem 核对的 1781 条外观；序列化字段 1820/1792/1794/1812 分别关联外观、武器、预设和收藏开放标志。源 SHA-256 为 `03929c8c36ef4bd21de0e6262809095a863f3e65d6e44e8eefcf6ac57a59cce7`。本地提供 1518 条开放普通皮肤，曼德尔实例单独保存。 |
 | `mandel_box_catalog.json` | 同一基础包条目 6764/6766/6768/7152/7134，以及已有 GameItem 导出 | `work/extract_cosmetic_catalogs.py` 保留 464 行箱体、558 行分组、3962 行奖励、11 项商城关联、5 项经验卡赠送配置及 34 种砖的 ConnectedPool。每行保留原始索引与偏移，各源 SHA-256 在目录头内；名称沿用客户端 GameItem 名称键。 |
 | `premium_shop_catalog.json` | 当前安装基础包 `pak-0-0-pakchunk2-WindowsClient.pak` 条目 7142/7156/7152/6774/6394/7154 | `work/extract_premium_shop_catalog.py` 恢复推荐配方、礼包价格、干员奖池、奖励与外观归属、主页签。所有记录保留行号、序列化偏移；完整来源和限制见下节。 |
 | `profile_cosmetics_catalog.json` | 当前安装基础包 `pak-0-0-pakchunk2-WindowsClient.pak` 条目 7110，`SocialAvatarDataTable` | `work/extract_profile_cosmetics_catalog.py` 恢复 2098 条社交外观 ID 与类别，字段索引 5213/5215；SHA-256 为 `50fe5c89e0ae53540ebf1a3df8cfca572b2c7558513516601f321fb12a7e8cbe`。原始行、偏移和解析数量完整校验；资源与开放时间仍由原客户端读取。 |
