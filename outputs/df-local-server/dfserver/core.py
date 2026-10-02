@@ -50,6 +50,7 @@ BACKPACK_POSITION = 108001
 SAFE_BOX_POSITION = 109001
 # common_pb.lua 0, instructions 426-428: Pocket=199997; CarryOutPropsPos=1999.
 POCKET_POSITION = 199997
+KEYCHAIN_POSITION = 116001
 # QuickOperationLogic and captured snapshots use five 1x1 pocket spaces.
 POCKET_LAYOUT = ((1, 1),) * 5
 
@@ -211,9 +212,11 @@ class Backend:
         definition_hash = hashlib.sha256(canonical(self.definitions).encode()).hexdigest()
         with self.connection() as connection:
             connection.executescript(SCHEMA)
-            from . import weapon_pendants, battle_pass, native_settings, native_keycards
+            from . import (weapon_pendants, battle_pass, native_settings, native_keycards,
+                           native_keychains, native_safehouse, native_quests)
             connection.executescript(weapon_pendants.SCHEMA + battle_pass.SCHEMA
-                                     + native_settings.SCHEMA + native_keycards.SCHEMA)
+                                     + native_settings.SCHEMA + native_keycards.SCHEMA + native_keychains.SCHEMA
+                                     + native_safehouse.SCHEMA + native_quests.SCHEMA)
             connection.execute("BEGIN IMMEDIATE")
             previous = connection.execute("SELECT value FROM metadata WHERE key='definitions_hash'").fetchone()
             if previous and previous[0] != definition_hash:
@@ -519,6 +522,7 @@ class Backend:
                     "devices": [dict(row) for row in devices],
                     "selected_hero_id": selected_hero[0] if selected_hero else None,
                     "safe_box_permissions": self._native_safe_box_permissions(connection, player_id),
+                    "keychain_permissions": self._native_keychain_permissions(connection, player_id),
                     "extension_pos_order": json.loads(extension_order[0]) if extension_order else [],
                     "sort_config": json.loads(sort_config[0]) if sort_config else
                                    {"sort_style": 0, "sort_every_enter": False, "has_sorted": False}}
@@ -588,6 +592,17 @@ class Backend:
             layout = Backend._native_body_layout(connection, player_id, position)
             if layout and 1 <= prop['x'] <= len(layout):
                 prop['space_width'] = layout[prop['x'] - 1][0]
+        elif position == KEYCHAIN_POSITION:
+            layout = Backend._native_body_layout(connection, player_id, position)
+            if layout and prop['x'] in layout:
+                prop['space_width'] = layout[prop['x']][0]
+        elif position == 116:
+            permission = connection.execute('SELECT expire_timestamp FROM native_lobby_keychain_permissions '
+                'WHERE player_id=? AND template_id=? AND gid=?',
+                (player_id, prop['template_id'], prop['gid'])).fetchone()
+            if permission is None:
+                fail('INVALID_EQUIPMENT', 'Equipped keychain has no owned permission')
+            prop['expire_timestamp'] = permission[0]
         return prop
 
     @staticmethod
@@ -596,7 +611,19 @@ class Backend:
         return permissions(connection, player_id)
 
     @staticmethod
+    def _native_keychain_permissions(connection, player_id):
+        from .native_keychains import permissions
+        return permissions(connection, player_id)
+
+    def ensure_native_lobby_keychains(self, token, *, template_ids, selected_template_id=None):
+        from .native_keychains import ensure
+        return ensure(self, token, template_ids=template_ids, selected_template_id=selected_template_id)
+
+    @staticmethod
     def _native_body_layout(connection, player_id, position):
+        if position == KEYCHAIN_POSITION:
+            from .native_keychains import layout
+            return layout(connection, player_id)
         if position == POCKET_POSITION:
             return POCKET_LAYOUT
         slot = {CHEST_RIG_POSITION: 107, BACKPACK_POSITION: 108, SAFE_BOX_POSITION: 109}.get(position)
@@ -1185,7 +1212,10 @@ class Backend:
 
     def native_lobby_sell(self, token, *, items, currency_id, total_price):
         """Remove owned inventory and credit its quoted resale total atomically."""
+        from .local_commerce import CURRENCY_ID, owned_bundle_price_limit
         integer(currency_id, "currency_id", 1, 2**63 - 1)
+        if currency_id != CURRENCY_ID:
+            fail('INVALID_ARGUMENT', 'Sale uses an unsupported currency')
         integer(total_price, "total_price", 0, 2**63 - 1)
         if not isinstance(items, list) or not 1 <= len(items) <= 32:
             fail("INVALID_ARGUMENT", "Expected a bounded sale")
@@ -1194,6 +1224,7 @@ class Backend:
             player_id = self._authorize(connection, token)
             sold = []
             seen = set()
+            price_limit = 0
             for item in items:
                 gid = integer(item.get("gid"), "gid", 1, 2**63 - 1)
                 quantity = integer(item.get("quantity"), "quantity", 1, 1000)
@@ -1214,8 +1245,9 @@ class Backend:
                         and not equipped_gun):
                     fail("INVALID_ARGUMENT", "Equipped items must be unequipped before sale")
                 before = self._container_prop(connection, player_id, row)
-                if before.get('weapon', {}).get('load_bullets'):
-                    fail('INVALID_ARGUMENT', 'Unload ammunition before selling its weapon')
+                if (before.get('components') or before.get('weapon', {}).get('load_bullets')) and quantity != row['quantity']:
+                    fail('INVALID_ARGUMENT', 'An assembled weapon must be sold as a whole')
+                price_limit += owned_bundle_price_limit(before, quantity)
                 remaining = row["quantity"] - quantity
                 if remaining:
                     connection.execute("UPDATE native_lobby_props SET quantity=? WHERE gid=?",
@@ -1224,6 +1256,8 @@ class Backend:
                     connection.execute("DELETE FROM native_lobby_props WHERE gid=?", (gid,))
                 sold.append({"before": before, "remaining": remaining,
                              "sold_quantity": quantity})
+            if total_price > price_limit:
+                fail('INVALID_ARGUMENT', 'Sale quote exceeds the owned bundle price')
             balance = connection.execute(
                 "SELECT amount FROM native_lobby_currencies WHERE player_id=? AND currency_id=?",
                 (player_id, currency_id)).fetchone()
@@ -1243,7 +1277,8 @@ class Backend:
         maximum = max(connection.execute(f'SELECT MAX(gid) FROM {table}').fetchone()[0] or 0
                       for table in ('native_lobby_props', 'native_lobby_weapon_parts', 'native_lobby_weapon_bullets',
                                     'native_lobby_melee_props', 'native_lobby_gun_skins',
-                                    'native_lobby_safe_box_permissions', 'native_lobby_pendant_instances'))
+                                    'native_lobby_safe_box_permissions', 'native_lobby_pendant_instances',
+                                    'native_lobby_keychain_permissions'))
         return max(6311504805269387000, maximum) + 1
 
     def native_lobby_operate_bullets(self, token, commands):
@@ -1367,12 +1402,16 @@ class Backend:
                 equipped = next((row for row in rows if row['grid_page_id'] == slot), None)
                 layouts[position] = catalog.get(equipped['template_id'] if equipped else None)
             layouts[SAFE_BOX_POSITION] = self._native_body_layout(connection, player_id, SAFE_BOX_POSITION)
+            layouts[KEYCHAIN_POSITION] = self._native_body_layout(connection, player_id, KEYCHAIN_POSITION)
+            layouts = {position: (layout if isinstance(layout, dict) else
+                                  dict(enumerate(layout, 1)) if layout is not None else None)
+                       for position, layout in layouts.items()}
             spaces, placements, requested = set(), [], {}
             for snapshot in snapshots:
                 position = integer(int(snapshot.get('pos') or 0), 'position', 1)
                 space = integer(int(snapshot.get('space') or 0), 'space', 1)
                 layout = layouts.get(position)
-                if layout is None or space > len(layout) or (position, space) in spaces:
+                if layout is None or space not in layout or (position, space) in spaces:
                     fail('INVALID_ARGUMENT', 'Unavailable or repeated container space')
                 spaces.add((position, space))
                 props = snapshot.get('props') or []
@@ -1383,7 +1422,7 @@ class Backend:
                     owned = before.get(gid)
                     if owned is None:
                         fail('PROP_NOT_FOUND', 'Snapshot prop is not owned by this account')
-                    if owned['grid_page_id'] == 109:
+                    if owned['grid_page_id'] in (109, 116):
                         fail('INVALID_ARGUMENT', 'Safety-box permissions cannot be placed as physical items')
                     if int(prop.get('id') or 0) != owned['template_id']:
                         fail('INVALID_ARGUMENT', 'Snapshot template does not match the owned prop')
@@ -1400,6 +1439,11 @@ class Backend:
                         fail('INVALID_ARGUMENT', 'Snapshot location does not match its container')
                     start_x = integer(int(loc.get('start_x') or 0), 'start_x')
                     start_y = integer(int(loc.get('start_y') or 0), 'start_y')
+                    if position == KEYCHAIN_POSITION:
+                        from .native_keychains import equipped, validate_card
+                        bag = equipped(connection, player_id, active=True)
+                        validate_card(bag['template_id'], owned,
+                            {'space_id': space, 'start_x': start_x, 'start_y': start_y})
                     source_container = owned['grid_page_id'] in layouts
                     size_x = owned['width'] if source_container else owned['length']
                     size_y = owned['length'] if source_container else owned['width']
@@ -1408,7 +1452,7 @@ class Backend:
                     rotated = bool(loc.get('rotate', False))
                     if rotated:
                         size_x, size_y = size_y, size_x
-                    space_width, space_height = layout[space - 1]
+                    space_width, space_height = layout[space]
                     if start_x + size_x > space_width or start_y + size_y > space_height:
                         fail('POSITION_OCCUPIED', 'Snapshot item exceeds the container space')
                     placements.append((gid, {**owned, 'quantity': count, 'grid_page_id': position,
@@ -1441,14 +1485,18 @@ class Backend:
                     key, x, y, size_x, size_y = (2, 0), row['x'], row['y'], row['length'], row['width']
                 elif position in layouts:
                     layout = layouts[position]
-                    if layout is None or not 1 <= row['x'] <= len(layout):
+                    if layout is None or row['x'] not in layout:
                         fail('INVALID_EQUIPMENT', 'Saved container has no verified layout')
-                    space_width, space_height = layout[row['x'] - 1]
+                    space_width, space_height = layout[row['x']]
                     key = (position, row['x'])
                     x, y = row['y'] % space_width, row['y'] // space_width
                     size_x, size_y = row['width'], row['length']
                     if x + size_x > space_width or y + size_y > space_height:
                         fail('POSITION_OCCUPIED', 'Saved container placement is invalid')
+                    if position == KEYCHAIN_POSITION:
+                        from .native_keychains import equipped, validate_card
+                        validate_card(equipped(connection, player_id)['template_id'], row,
+                            {'space_id': row['x'], 'start_x': x, 'start_y': y})
                 else:
                     continue
                 cells = {(cx, cy) for cx in range(x, x + size_x) for cy in range(y, y + size_y)}
@@ -1490,7 +1538,7 @@ class Backend:
 
     def native_lobby_move_props(self, token, commands):
         """Apply authenticated warehouse/equipment moves as one transaction."""
-        from .local_commerce import inventory_location
+        from .native_keychains import location as inventory_location
         if not isinstance(commands, list) or not 1 <= len(commands) <= 32:
             fail("INVALID_ARGUMENT", "Expected one or more equipment moves")
         changes = []
@@ -1523,7 +1571,11 @@ class Backend:
                     fail("WAREHOUSE_FULL", "No room for the moved prop")
                 return location
 
-            def container_position(length, width, target, ignored, spec_loc):
+            def container_position(length, width, target, ignored, spec_loc, template_id=None, quantity=1):
+                if target == KEYCHAIN_POSITION:
+                    from .native_keychains import container_position as keychain_position
+                    return keychain_position(connection, player_id, template_id,
+                                             length, width, ignored, spec_loc, quantity=quantity)
                 layout = self._native_body_layout(connection, player_id, target)
                 if layout is None:
                     fail("INVALID_EQUIPMENT", "The target container has no verified layout")
@@ -1579,6 +1631,10 @@ class Backend:
                      "No target container space fits the moved prop")
 
             for command in commands:
+                if command.get('target_pos') == 116:
+                    from .native_keychains import equip
+                    changes.extend(equip(self, connection, player_id, command))
+                    continue
                 if command.get('target_pos') == 109:
                     changes.extend(self._native_equip_safe_box(connection, player_id, command))
                     continue
@@ -1605,7 +1661,8 @@ class Backend:
                 gid = integer(command.get("prop_gid"), "prop_gid", 1, 2**63 - 1)
                 target = integer(command.get("target_pos"), "target_pos", 2, POCKET_POSITION)
                 if target != 2 and not (101 <= target <= 138 or
-                                        target in (CHEST_RIG_POSITION, BACKPACK_POSITION, SAFE_BOX_POSITION, POCKET_POSITION)):
+                                        target in (CHEST_RIG_POSITION, BACKPACK_POSITION, SAFE_BOX_POSITION,
+                                                   POCKET_POSITION, KEYCHAIN_POSITION)):
                     fail("INVALID_ARGUMENT", "Unsupported equipment position")
                 row = connection.execute(
                     "SELECT p.*,COALESCE(r.rotated,0) AS rotated "
@@ -1615,7 +1672,7 @@ class Backend:
                 if row is None:
                     fail("PROP_NOT_FOUND", "The moved prop is not in this account")
                 source = row["grid_page_id"]
-                if source == 109:
+                if source in (109, 116):
                     fail('INVALID_ARGUMENT', 'Safety-box permissions must use the permission equipment command')
                 if int(command.get("prop_id") or row["template_id"]) != row["template_id"]:
                     fail("INVALID_ARGUMENT", "Moved prop template does not match")
@@ -1637,11 +1694,12 @@ class Backend:
                     changes.append({'before': receipt_before,
                                     'after': self._container_prop(connection, player_id, row)})
                     continue
-                if source == target and target not in (2, CHEST_RIG_POSITION, BACKPACK_POSITION, SAFE_BOX_POSITION, POCKET_POSITION):
+                if source == target and target not in (2, CHEST_RIG_POSITION, BACKPACK_POSITION,
+                                                       SAFE_BOX_POSITION, POCKET_POSITION, KEYCHAIN_POSITION):
                     fail("INVALID_ARGUMENT", "The prop is already in that equipment slot")
                 if source != 2 and not (101 <= source <= 138 or
                                         source in (CHEST_RIG_POSITION, BACKPACK_POSITION, SAFE_BOX_POSITION,
-                                                   POCKET_POSITION)):
+                                                   POCKET_POSITION, KEYCHAIN_POSITION)):
                     fail("INVALID_ARGUMENT", "Unsupported source position")
                 old = self._container_prop(connection, player_id, row)
                 if source in (CHEST_RIG_POSITION, BACKPACK_POSITION):
@@ -1657,7 +1715,8 @@ class Backend:
                         fail('INVALID_ARGUMENT', 'The installed safety-box rules reject this item')
                 incumbent = None
                 target_gid = int(command.get('target_prop_gid') or 0)
-                spatial_target = target in (2, CHEST_RIG_POSITION, BACKPACK_POSITION, SAFE_BOX_POSITION, POCKET_POSITION)
+                spatial_target = target in (2, CHEST_RIG_POSITION, BACKPACK_POSITION, SAFE_BOX_POSITION,
+                                             POCKET_POSITION, KEYCHAIN_POSITION)
                 if spatial_target and target_gid:
                     incumbent = connection.execute(
                         "SELECT p.*,COALESCE(r.rotated,0) AS rotated FROM native_lobby_props p "
@@ -1694,7 +1753,7 @@ class Backend:
                         fail('INVALID_EQUIPMENT', 'Orphaned carrying contents require explicit recovery')
                 preferred = None
                 source_is_container = source in (CHEST_RIG_POSITION, BACKPACK_POSITION,
-                                                 SAFE_BOX_POSITION, POCKET_POSITION)
+                                                 SAFE_BOX_POSITION, POCKET_POSITION, KEYCHAIN_POSITION)
                 item_length = row["width"] if source_is_container else row["length"]
                 item_width = row["length"] if source_is_container else row["width"]
                 if row['rotated']:
@@ -1710,12 +1769,13 @@ class Backend:
                             fail("INVALID_ARGUMENT", "Destination location does not match its container")
                         preferred = (int(loc.get("start_x") or 0), int(loc.get("start_y") or 0))
                     x, y = warehouse_position(new_length, new_width, ignored, preferred, exact=bool(loc))
-                elif target in (CHEST_RIG_POSITION, BACKPACK_POSITION, SAFE_BOX_POSITION, POCKET_POSITION):
+                elif target in (CHEST_RIG_POSITION, BACKPACK_POSITION, SAFE_BOX_POSITION,
+                                POCKET_POSITION, KEYCHAIN_POSITION):
                     loc = command.get("spec_loc") or {}
                     if int(loc.get('pos') or target) != target:
                         fail("INVALID_ARGUMENT", "Destination location does not match its container")
                     x, y, new_length, new_width, rotated = container_position(
-                        item_length, item_width, target, ignored, loc)
+                        item_length, item_width, target, ignored, loc, row['template_id'], row['quantity'])
                 else:
                     x = y = 0
                     new_length, new_width, rotated = item_length, item_width, False
@@ -1739,7 +1799,8 @@ class Backend:
                         dx, dy = warehouse_position(dl, dw, ignored,
                             (source_loc['start_x'], source_loc['start_y']), exact=True)
                     elif source_is_container:
-                        dx, dy, dl, dw, dr = container_position(dl, dw, source, ignored, source_loc)
+                        dx, dy, dl, dw, dr = container_position(dl, dw, source, ignored, source_loc,
+                                                              displaced['template_id'], displaced['quantity'])
                     else:
                         fail("INVALID_ARGUMENT", "A spatial swap needs a spatial source")
                     if source == target:
@@ -1750,10 +1811,10 @@ class Backend:
                                                for cy in range(dy, dy + dw)}
                         else:
                             layout = self._native_body_layout(connection, player_id, target)
-                            sw = layout[x - 1][0]
+                            sw = layout[x if target == KEYCHAIN_POSITION else x - 1][0]
                             destination_cells = {(x, cx, cy) for cx in range(y % sw, y % sw + new_width)
                                                  for cy in range(y // sw, y // sw + new_length)}
-                            sw = layout[dx - 1][0]
+                            sw = layout[dx if target == KEYCHAIN_POSITION else dx - 1][0]
                             displaced_cells = {(dx, cx, cy) for cx in range(dy % sw, dy % sw + dw)
                                                for cy in range(dy // sw, dy // sw + dl)}
                         if destination_cells & displaced_cells:

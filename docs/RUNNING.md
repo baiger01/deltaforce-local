@@ -42,6 +42,15 @@ python outputs/native-account-provider/verify_provider.py --sdk "$env:DF_LOCAL_S
 
 3. 设置上述 `PYTHONPATH`，用 `python -m dfserver --port 8878 --database work/native-test-account/save.sqlite3` 启动临时服务。在另一终端同样设置 `PYTHONPATH`，执行 `python -m dfserver.accounts register YOUR_LOCAL_USERNAME --port 8878`，通过隐藏输入设置自己的密码。完成后停止临时服务。原客户端测试与网页入口使用各自的数据库。
 
+如需给该本地测试账号提供默认门禁卡包，先在服务停止时预览，再执行提供：
+
+```powershell
+python work/provision_native_test_keychain.py --template-id 11120000001
+python work/provision_native_test_keychain.py --template-id 11120000001 --apply
+```
+
+工具要求库内恰好一个账号，应用前自动备份存档并核验实际原生库存响应。该模板及六区共 24 格来自客户端原表；提供权限是本地测试策略。已经装备其它卡包时，工具拒绝覆盖，应通过客户端切换。普通新账号不会自动获得卡包。
+
 ## 12 分钟原客户端测试
 
 关闭游戏和 WeGame 后，在项目根目录启动日志监听：

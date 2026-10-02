@@ -14,6 +14,11 @@ import struct
 import sys
 
 from local_game_paths import game_paths
+from read_keybox_manager_interface import capture as capture_manager_interface
+from read_keybox_config_map import capture as capture_config_map
+from native_config_names import ConfigNameCodec, read_config_name
+from read_keybox_rows import capture as capture_keybox_rows
+from read_keybox_rowmap import capture as capture_keybox_rowmap
 
 ROOT = Path(__file__).resolve().parent.parent
 IMAGE_BASE = 0x140000000
@@ -32,15 +37,58 @@ FIXED_CODE = {'package_constructor': (0x10ea66f0, 384),
               'registration_string_conversion': (0xf13910, 384),
               'registration_name_constructor': (0x10b56070, 768),
               # Exact source ClassParams and named function-link records.
-              'datatable_class_getter': (0xe2abf0, 128),
+              'datatable_class_getter': (0xe2abf0, 192),
               'datatable_get_function_link': (0xe2a7e0, 64),
-              'datatable_get_table_function_link': (0xe2a810, 64)}
+              'datatable_get_table_function_link': (0xe2a810, 64),
+              'registration_name_storage': (0x10b54df0, 272),
+              # Verified direct call at RVA 0x10b54edf in the runtime capture.
+              'registration_name_entry': (0x10b6edd0, 768),
+              'registration_name_lookup': (0x10b6ea10, 1024),
+              'registration_name_ascii_copy': (0x10b5fd00, 0x210),
+              'registration_name_wide_copy': (0x10b5ff10, 0x290),
+              'registration_name_pool_find': (0x10b70cf0, 1024),
+              'registration_name_entry_match': (0x10b54060, 1024),
+              'datatable_native_registration': (0xe2c1a0, 128),
+              'datatable_native_get': (0xe2c950, 512),
+              'datatable_native_get_table': (0xe2cab0, 768),
+              'datatable_native_lite_interface': (0xe2cf70, 0x150),
+              'datatable_native_csv_key': (0xe2ced0, 0xa0),
+              'datatable_get_rows_binding_primary': (0xe08f20, 256),
+              'datatable_get_rows_binding_secondary': (0xe08200, 256),
+              'datatable_lite_content_binding': (0xe078b0, 256),
+              'datatable_lite_interface_binding': (0xe09050, 256),
+              # Direct Get call and registered class-constructor callback.
+              'datatable_manager_get': (0xdba610, 1024),
+              'datatable_context_class_link': (0xe28f50, 64),
+              'datatable_manager_storage_helper': (0x10ecea20, 512),
+              'datatable_context_class_getter': (0x132f07d0, 512),
+              'datatable_constructor_callback': (0xe2b4a0, 1024),
+              'datatable_constructor_nonnull': (0xd97fe0, 1536),
+              'datatable_object_chunk_index': (0xd60500, 0x640),
+              'datatable_object_item_index': (0xd60d00, 0x670)}
+FIXED_CODE.update({'datatable_content_map_find': (0xdb77b0, 2048),
+                   'datatable_content_data_pointer': (0xd968d0, 256),
+                   'datatable_lite_rows_primary': (0xdbb5e0, 768),
+                   'datatable_lite_rows_secondary': (0xdbb950, 512),
+                   'datatable_lite_content_table': (0xdc4bd0, 1024),
+                   'datatable_lite_content_valid': (0xdd6320, 512)})
 FIXED_DATA = {'package_cache': (0x1e189000, 8), 'package_params': (0x18afc1c0, 32),
               'descrow_cache': (0x1db36508, 8), 'descrow_params': (0x1ca06ae0, 72),
               'keybox_ops_vtable': (0x18b27150, 64),
               'datatable_class_params': (0x14f057a0, 80),
               'datatable_get_function_links': (0x14f05410, 32),
-              'datatable_class_label': (0x14f05828, 64)}
+              'datatable_class_label': (0x14f05828, 64),
+              'datatable_class_cache': (0x1db36498, 8),
+              'datatable_lite_content_descriptor': (0x14ee09d8, 64),
+              'datatable_manager_descriptor': (0x14ee6eb0, 64),
+              'datatable_lite_interface_descriptor': (0x14ee9988, 64),
+              'datatable_manager_storage': (0x1c9fe850, 16),
+              'registration_name_pool_header': (0x1e326a80, 16),
+              'registration_name_pool_init': (0x1e3267ac, 8),
+              'datatable_object_array_header': (0x1e34ee50, 32),
+              'datatable_object_accessor_override': (0x1db3a770, 8),
+              'datatable_object_index_selector': (0x1e318780, 0x50)}
+FIXED_DATA['datatable_content_data_accessor'] = (0x1d59de58, 8)
 
 
 def reflection_source():
@@ -155,7 +203,7 @@ def main():
 
         report = {'pid': args.pid, 'native_pe_sha256': EXPECTED_PE, 'module_base': base,
                   'module_size': info.size, 'registrations': {}, 'fixed_code': {}, 'fixed_data': {},
-                  'read_policy': 'Fixed verified module metadata/code only; no cache-object reads or code execution',
+                  'read_policy': 'Verified module code, configuration-manager cache and identified Key/KeyBox rows; no account objects or code execution',
                   'reflection_source': proof_origin,
                   'runtime_witness': 'work/native-client-tests/1790844138358611900/socket-helper-readonly.txt'}
         for rva, expected_hex in CODE_WITNESSES.items():
@@ -213,6 +261,45 @@ def main():
             report['fixed_code'][name] = {'rva': rva, 'size': size, 'bytes': code.hex(),
                 'instructions': [{'rva': item.address - base, 'op': item.mnemonic, 'args': item.op_str}
                                  for item in disassembler.disasm(code, base + rva)]}
+        manager = capture_manager_interface(read, base)
+        report['manager_interface'] = manager
+        if manager['status'] == 'captured':
+            code = bytes.fromhex(manager['target_code_hex'])
+            manager['instructions'] = [
+                {'rva': item.address - base, 'op': item.mnemonic, 'args': item.op_str}
+                for item in disassembler.disasm(code, manager['target_address'])]
+        config_map = capture_config_map(read, base)
+        report['config_map'] = config_map
+        if config_map['status'] == 'captured':
+            code = bytes.fromhex(config_map['allocation_accessor_code_hex'])
+            config_map['allocation_accessor_instructions'] = [
+                {'rva': item.address - base, 'op': item.mnemonic, 'args': item.op_str}
+                for item in disassembler.disasm(code, base + config_map['allocation_accessor_rva'])]
+            name_codec = ConfigNameCodec(report)
+            for entry in config_map.get('entries', []):
+                comparison_id, number = struct.unpack('<II', bytes.fromhex(entry['fname_hex']))
+                try:
+                    entry['name'] = read_config_name(read, base, name_codec, comparison_id, number)
+                except (OSError, ValueError, struct.error, UnicodeError) as error:
+                    entry['name_status'] = type(error).__name__
+        keybox_rows = capture_keybox_rows(read, base, config_map)
+        report['keybox_rows'] = keybox_rows
+        if keybox_rows['status'] == 'captured':
+            for row in keybox_rows['rows']:
+                comparison_id, number = struct.unpack('<II', bytes.fromhex(row['item_id_fname_hex']))
+                row['item_name'] = read_config_name(read, base, name_codec, comparison_id, number)
+        for report_key, table_name in (('keybox_rowmap', 'Key/KeyBox'),
+                                       ('keybox_rowmap_short', 'KeyBox')):
+            rowmap = capture_keybox_rowmap(read, base, config_map, table_name=table_name)
+            report[report_key] = rowmap
+            if rowmap['status'] == 'captured':
+                code = bytes.fromhex(rowmap['rowmap_accessor_code_hex'])
+                rowmap['instructions'] = [
+                    {'rva': item.address - base, 'op': item.mnemonic, 'args': item.op_str}
+                    for item in disassembler.disasm(code, base + rowmap['rowmap_accessor_rva'])]
+                for row in rowmap.get('rows', []):
+                    comparison_id, number = struct.unpack('<II', bytes.fromhex(row['item_id_fname_hex']))
+                    row['item_name'] = read_config_name(read, base, name_codec, comparison_id, number)
         args.output.parent.mkdir(parents=True, exist_ok=True)
         args.output.write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')
         print({'registrations_verified': len(report['registrations']),

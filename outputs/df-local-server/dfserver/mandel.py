@@ -13,6 +13,13 @@ CATALOG = json.loads((Path(__file__).resolve().parent.parent /
                      'protocol/mandel_box_catalog.json').read_text(encoding='utf-8'))
 BRICKS = {row['item_id']: row for row in CATALOG['bricks']}
 BOXES = {row['fields']['470']: row['fields'] for row in CATALOG['boxes']}
+# MandelBrickPagePanel passes the selected market ID unchanged to the draw view.
+# StoreServer.GetDrawByMandelID requires an exact StoreLottery MandelItemId;
+# a GameItem ConnectedPool alone does not provide a usable draw entry.
+DRAW_BRICK_IDS = frozenset(
+    row['item_id'] for row in CATALOG['store_lotteries']
+    if row['lottery_type'] == 1 and row['item_id'] in BRICKS
+    and BRICKS[row['item_id']]['box_id'] in BOXES)
 GROUPS = {}
 REWARDS = {}
 for row in CATALOG['groups']:
@@ -227,7 +234,7 @@ def purchase(backend, token, fields):
             product = offer['buy_item_id']
             gifts[item_id] = count * offer['present_num']
             quote = total
-        elif item_id in BRICKS:
+        elif item_id in DRAW_BRICK_IDS:
             currency = 17888808887
             quote = _price(stock_catalog()[item_id])
             total = quote * count

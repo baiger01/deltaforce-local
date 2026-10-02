@@ -17,6 +17,7 @@ import time
 import psutil
 from client_resource_sampling import capture_resources
 from local_game_paths import game_paths
+from watch_client_log import follow as follow_client_log
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "outputs/df-local-server"))
@@ -193,13 +194,17 @@ report = {"observed_at_utc":datetime.now(timezone.utc).isoformat(),"entry":str(E
 
 def save():
     report["local_identity_service_queries"] = backend.identity_queries
-    REPORT.write_text(json.dumps(report,ensure_ascii=False,indent=2) + "\n",encoding="utf-8")
+    pending_report = REPORT.with_suffix(".json.tmp")
+    pending_report.write_text(json.dumps(report,ensure_ascii=False,indent=2) + "\n",encoding="utf-8")
+    os.replace(pending_report, REPORT)
 
 
 renamed = installed = config_written = bootstrap_written = False
 owned = {}
 child = None
 wire_server = wire_thread = wire_state = None
+client_log_thread = None
+client_log_stop, client_log_ready = threading.Event(), threading.Event()
 try:
     save()
     if args.wire_identity_probe:
@@ -243,6 +248,23 @@ try:
     # Bounded code-only diagnostics for the two runtime-proven SDK caller
     # ranges. The DLL accepts no arbitrary range or protected-process read.
     env["DF_LOCAL_CODE_TRACE_DIR"] = str(TEST_ROOT)
+    client_log_path = GAME / 'DeltaForce/Saved/Logs/DeltaForce.log'
+    client_alert_path = TEST_ROOT / 'client-alerts.log'
+    report['client_log_capture'] = {'source': str(client_log_path), 'path': str(client_alert_path)}
+
+    def capture_client_log():
+        try:
+            report['client_log_alert_count'] = follow_client_log(
+                client_log_path, client_alert_path, args.observation_seconds + 30,
+                stop=client_log_stop, ready=client_log_ready)
+        except Exception as error:
+            report['client_log_capture_error'] = type(error).__name__
+            client_log_ready.set()
+
+    client_log_thread = threading.Thread(target=capture_client_log, daemon=True)
+    client_log_thread.start()
+    if not client_log_ready.wait(5) or report.get('client_log_capture_error'):
+        raise RuntimeError('Client log capture did not initialize')
     child = subprocess.Popen([str(ENTRY),*report["arguments"]],cwd=ENTRY.parent,env=env,
         stdin=subprocess.DEVNULL,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
     report["root_pid"] = child.pid
@@ -253,6 +275,9 @@ try:
     load_seen = set()
     authorization_seen = set()
     socket_evidence_captured = False
+    keybox_probe_digest = None
+    keybox_probe_attempts = 0
+    keybox_probe_next_at = 30
     for iteration in range((report["observation_limit_seconds"] + 15) // 1 + 1):
         report["resource_samples"].append(capture_resources(time.monotonic()-start, "iteration_start", owned))
         for auth in psutil.process_iter(["pid", "name", "create_time"]):
@@ -309,12 +334,25 @@ try:
                     stdout=output, stderr=subprocess.STDOUT, timeout=10)
             report['socket_helper_readonly_evidence'] = {'returncode': evidence.returncode,
                 'path': str(TEST_ROOT / 'socket-helper-readonly.txt')}
-            with (TEST_ROOT / 'keybox-registration-readonly.txt').open('w', encoding='utf-8') as output:
-                evidence = subprocess.run([sys.executable, str(ROOT / 'work/probe_live_keybox_registration.py'),
-                    '--pid', str(child.pid), '--output', str(TEST_ROOT / 'keybox-registration-readonly.json')],
-                    stdout=output, stderr=subprocess.STDOUT, timeout=15)
-            report['keybox_registration_readonly_evidence'] = {'returncode': evidence.returncode,
-                'path': str(TEST_ROOT / 'keybox-registration-readonly.json')}
+        if (os.environ.get('DF_LOCAL_SOCKET_EVIDENCE') == '1'
+                and keybox_probe_attempts < 8 and report['elapsed_seconds'] >= keybox_probe_next_at
+                and child.poll() is None):
+            keybox_probe_next_at = report['elapsed_seconds'] + 30
+            probe = ROOT / 'work/probe_live_keybox_registration.py'
+            current_digest = digest(probe)
+            if current_digest != keybox_probe_digest:
+                keybox_probe_digest = current_digest
+                suffix = '' if keybox_probe_attempts == 0 else f'-{int(report["elapsed_seconds"])}'
+                keybox_probe_attempts += 1
+                evidence_path = TEST_ROOT / f'keybox-registration-readonly{suffix}.json'
+                with evidence_path.with_suffix('.txt').open('w', encoding='utf-8') as output:
+                    evidence = subprocess.run([sys.executable, str(probe),
+                        '--pid', str(child.pid), '--output', str(evidence_path)],
+                        stdout=output, stderr=subprocess.STDOUT, timeout=15)
+                record = {'returncode': evidence.returncode, 'path': str(evidence_path),
+                          'probe_sha256': current_digest, 'elapsed_seconds': report['elapsed_seconds']}
+                report['keybox_registration_readonly_evidence'] = record
+                report.setdefault('keybox_registration_readonly_captures', []).append(record)
         report["root_exit_code"] = child.poll()
         report["resource_samples"].append(capture_resources(time.monotonic()-start, "iteration_end", owned))
         save()
@@ -342,6 +380,9 @@ finally:
             report["scoped_cleanup"].append({"pid":pid,"termination_requested":True})
         except (psutil.NoSuchProcess,psutil.AccessDenied) as error:
             report["scoped_cleanup"].append({"pid":pid,"result":type(error).__name__})
+    client_log_stop.set()
+    if client_log_thread:
+        client_log_thread.join(timeout=2)
     for attempt in range(20):
         try:
             if renamed:

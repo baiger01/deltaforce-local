@@ -322,7 +322,7 @@ class LocalCommerceTests(unittest.TestCase):
         self.codec.response(request, fields)
 
     def test_deciphered_mandel_bricks_can_pass_client_market_type_gate(self):
-        item_id = 16110000001
+        item_id = 16110000014
         self.assertIn(item_id, stock_catalog())
         type_fields = response_fields(
             self.request('CSMarketGetTypeListReq', {'prop_ids': [str(item_id)]}),

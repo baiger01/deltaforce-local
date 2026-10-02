@@ -99,7 +99,9 @@ def priced_inventory_catalog():
 def stock_catalog():
     medicines = medicine_sale_ids()
     return {item_id: row for item_id, row in priced_inventory_catalog().items()
-            if item_id // 1000000000 != 14 or item_id in medicines}
+            if (item_id // 1000000000 != 14 or item_id in medicines)
+            and (not str(item_id).startswith(MANDEL_BRICK_PREFIX)
+                 or item_id in mandel.DRAW_BRICK_IDS)}
 
 
 @lru_cache(maxsize=1)
@@ -163,6 +165,37 @@ def _price(row):
     if row['id'].startswith(MANDEL_BRICK_PREFIX):
         return MANDEL_BRICK_LOCAL_PRICE
     raise ValueError('No local market price for item')
+
+
+def owned_bundle_price_limit(prop, quantity):
+    """Bound a sale using saved components and ammunition, never request trees.
+
+    ShopServer.GetShopDynamicGuidePrice skips model-only components; its
+    CheckPropIsValidSell loop includes the remaining components and loaded ammo.
+    """
+    metadata = installed_items()
+    priced = priced_inventory_catalog()
+
+    def unit_price(item_id):
+        row = metadata.get(str(item_id))
+        if row is None:
+            raise DomainError('INVALID_ARGUMENT', 'Sale bundle contains an unknown client item')
+        if row['is_model_only']:
+            return 0
+        row = priced.get(item_id)
+        if row is None:
+            raise DomainError('INVALID_ARGUMENT', 'Sale bundle has no verified local price')
+        return _price(row)
+
+    total = unit_price(int(prop['template_id'])) * quantity
+    pending = [part['prop_data'] for part in prop.get('components', [])]
+    pending.extend(prop.get('weapon', {}).get('load_bullets', []))
+    while pending:
+        child = pending.pop()
+        total += unit_price(int(child['id'])) * int(child['num'])
+        pending.extend(part['prop_data'] for part in child.get('components', []))
+        pending.extend(child.get('weapon', {}).get('load_bullets', []))
+    return total
 
 
 def _prop(item_id, row, count=1):
@@ -350,7 +383,7 @@ def _collection_purchase_change(purchase):
         'currency_changes': currencies}
 
 
-def response_fields(request, backend, local_session):
+def response_fields(request, backend, local_session, *, diagnostic_entry=None):
     """Return declared commerce response fields, or None for unrelated requests."""
     if request.name in native_settings.SUPPORTED_REQUESTS:
         return native_settings.response_fields(request, backend, local_session)
@@ -502,7 +535,6 @@ def response_fields(request, backend, local_session):
         if not 1 <= len(props) <= 32 or not 1 <= len(prices) <= 32:
             return {'result': error_code('DepositInvalidReq')}
         items = []
-        price_limit = 0
         for prop in props:
             item_id = int(prop.get('id') or 0)
             quantity = int(prop.get('num') or 0)
@@ -513,18 +545,17 @@ def response_fields(request, backend, local_session):
                 return {'result': error_code('DepositInvalidReq')}
             items.append({'template_id': item_id,
                           'gid': int(prop.get('gid') or 0), 'quantity': quantity})
-            price_limit += _price(row) * quantity
         if any(int(price.get('money_type') or 0) != CURRENCY_ID or
                int(price.get('price') or 0) < 0 for price in prices):
             return {'result': error_code('DepositInvalidReq')}
         total_price = sum(int(price.get('price') or 0) for price in prices)
-        if total_price > price_limit:
-            return {'result': error_code('DepositInvalidReq')}
         try:
             sale = backend.native_lobby_sell(
                 local_session, items=items, currency_id=CURRENCY_ID,
                 total_price=total_price)
         except DomainError as error:
+            if diagnostic_entry is not None:
+                diagnostic_entry['local_inventory_failure'] = {'code': error.code, 'detail': error.message}
             return {'result': inventory_error(error)}
         return {'result': 0, 'get_moneys': prices,
                 'prop_changes': _sell_change(sale), 'version_info': VERSION}

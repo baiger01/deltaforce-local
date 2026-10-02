@@ -41,21 +41,30 @@ class NativeKeycardsTests(unittest.TestCase):
         self.assertFalse(keys.is_keychain(11120000011))
         self.assertFalse(keys.is_keychain(11100200001))
         self.assertFalse(keys.is_keychain(19))
+        self.assertEqual([space['id'] for space in keys.grid_spaces(11120000001)],
+                         [19, 22, 39, 81, 88, 89])
         with self.assertRaises(keys.UnverifiedKeychainLayout):
-            keys.grid_spaces(11120000001)
+            keys.grid_spaces(11120000011)
 
     def test_keychain_raw_order_and_capacity_are_preserved(self):
         rows = keys.catalog()['raw_key_boxes']
         first = next(row for row in rows if row['Index'] == 1)
         self.assertEqual(first['ItemID_fname'], {'index': 19, 'number': 0})
         self.assertEqual((first['MapID'], first['DefaultSlotNum'], first['BoxLength']), (19, 4, 4))
-        self.assertEqual(keys.catalog()['resolved_key_boxes'], [])
+        resolved = keys.catalog()['resolved_key_boxes']
+        self.assertEqual(len(resolved), 104)
+        self.assertEqual(next(row for row in resolved if row['Index'] == 1),
+                         {**first, 'item_id': 11120000001})
+        self.assertEqual(len(keys.catalog()['missing_game_item_key_box_bindings']), 5)
+        spaces = keys.grid_spaces(11120000001)
+        self.assertEqual([(row['length'], row['width'], row['base_cnt']) for row in spaces],
+                         [(4, 1, 4)] * 6)
 
-    def test_no_resolved_layout_is_exposed_as_empty_or_successful(self):
+    def test_missing_game_item_layout_is_not_exposed_as_empty_or_successful(self):
         with self.assertRaises(keys.UnverifiedKeychainLayout):
-            keys.position_change(11120000001)
+            keys.position_change(11120000011)
         with self.assertRaises(keys.UnverifiedKeychainLayout):
-            keys.validate_location(11120000001, 15050100001, 22, 0, 0)
+            keys.validate_location(11120000011, 15050100001, 22, 0, 0)
 
     def test_persisted_health_is_per_physical_owned_gid(self):
         with sqlite3.connect(':memory:') as connection:

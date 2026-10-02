@@ -29,7 +29,9 @@ from .container_layouts import capacity as container_capacity
 from .core import (POCKET_LAYOUT, POCKET_POSITION,
                    BACKPACK_LAYOUT, BACKPACK_POSITION, CHEST_RIG_LAYOUT,
                    CHEST_RIG_POSITION, SAFE_BOX_POSITION, DomainError)
-from . import safe_boxes
+from . import safe_boxes, native_safehouse, native_quests
+
+ACTIVITY_REQUESTS = native_safehouse.SUPPORTED_REQUESTS | native_quests.SUPPORTED_REQUESTS
 from .gcp_crypto import decode_received_body, encrypt_body
 from .gcp_data import decode_data_frame, encode_data_frame
 from .gcp_framing import Frame, StreamDecoder
@@ -108,7 +110,8 @@ def _log_request_progress(entry, phase):
               'local_premium_shop_request', 'local_customization_request',
               'local_collection_change_notification_sent', 'local_warehouse_sort_request',
               'local_warehouse_sort_result', 'local_warehouse_sort_change_count',
-              'local_weapon_assembly_request', 'local_battle_pass_request')
+              'local_weapon_assembly_request', 'local_battle_pass_request',
+              'local_activity_request', 'local_activity_result', 'local_activity_notification_sent')
     event = {'event': 'business_request', 'phase': phase, 'observed_at_utc': _time()}
     event.update({name: entry[name] for name in fields if name in entry})
     print(json.dumps(event), flush=True)
@@ -568,7 +571,8 @@ def _candidate_local_commerce_response(message, backend, local_session, key,
             diagnostic_entry['local_battle_pass_request'] = request.fields
             diagnostic_entry['_battle_pass_changes'] = committed
     else:
-        fields = local_commerce_response_fields(request, backend, local_session)
+        fields = local_commerce_response_fields(request, backend, local_session,
+                                               diagnostic_entry=diagnostic_entry)
     if fields is None:
         raise ValueError('Not a supported local commerce request')
     response = codec.response(request, fields)
@@ -964,12 +968,24 @@ def _candidate_local_collection_response(message, backend, local_session, key, *
                              header_word9=header_word9)
 
 
+def _deposit_inventory_location(row):
+    from .native_keychains import location
+    return location(row)
+
+
 def _candidate_local_deposit_response(message, backend, local_session, key, *, header_word4, header_word9):
     """Provide the local account's warehouse grid and its persisted props."""
     if len(message) < 5:
         raise ValueError('Truncated deposit package')
     codec = _candidate_codec()
     request = codec.decode(message[4:])
+    if request.name == 'CSDepositGetExtensionPropsReq':
+        # _FetchAllItems_Start2 resets warehouse extensions, not 116/116001.
+        # Keychain items are loaded once in the main GetProps response.
+        backend.native_lobby_profile(local_session)
+        response = codec.response(request, {'result': 0, 'extension_slots': [], 'in_extension_pages': []})
+        return encode_data_frame((response,), key, direction='server_to_client',
+                                 opaque_flag=64, header_word4=header_word4, header_word9=header_word9)
     if request.name != 'CSDepositGetPropsReq':
         raise ValueError('Not the main warehouse fetch')
     backend.ensure_native_lobby_melee_collection(local_session)
@@ -1026,10 +1042,14 @@ def _candidate_local_deposit_response(message, backend, local_session, key, *, h
                            for index, (x, y) in enumerate(safe_layout, 1)],
             'load_props': [],
         }
+    from .native_keychains import wire_slots
+    equipment.update({row['position']: row for row in wire_slots(state)})
     occupied = set()
     pocket_slots = set()
     for prop in state['props']:
         position = prop['grid_page_id']
+        if position in (116, 116001):
+            continue
         if position == grid['grid_page_id']:
             if prop['x'] + prop['length'] > grid['grid_length'] or prop['y'] + prop['width'] > grid['grid_width']:
                 raise ValueError('Warehouse prop exceeds the installed grid')
@@ -1105,7 +1125,8 @@ def _candidate_local_deposit_response(message, backend, local_session, key, *, h
         'sort_config': state['sort_config'],
         'extension_pos_order': state['extension_pos_order'],
         'safe_boxes': state['safe_box_permissions'],
-        'safe_and_card_pack_permission': state['safe_box_permissions'],
+        'access_card_packs': state['keychain_permissions'],
+        'safe_and_card_pack_permission': state['safe_box_permissions'] + state['keychain_permissions'],
         'cur_extension_num': 0,
         'max_extension_num': 0,
         'upperlimit_extension_num': 0,
@@ -1176,7 +1197,8 @@ def _candidate_local_equip_response(message, backend, local_session, key, *,
         for move in moves:
             before, after = move['before'], move['after']
             row = after or before
-            if row['grid_page_id'] in (109, SAFE_BOX_POSITION):
+            if any(prop and prop['grid_page_id'] in (109, SAFE_BOX_POSITION, 116, 116001)
+                   for prop in (before, after)):
                 changes.extend(_native_inventory_changes([move])['prop_changes'])
                 continue
             if after['template_id'] in WEAPONS:
@@ -1209,6 +1231,12 @@ def _candidate_local_equip_response(message, backend, local_session, key, *,
                        if row['grid_page_id'] == 109)
             fields['deposit_change'].setdefault('pos_changes', []).append(
                 safe_boxes.position_change(box['template_id']))
+        if any(command.get('target_pos') == 116 for command in commands):
+            from .native_keycards import position_change
+            bag = next(row for row in backend.native_lobby_profile(local_session)['props']
+                       if row['grid_page_id'] == 116)
+            fields['deposit_change'].setdefault('pos_changes', []).append(
+                position_change(bag['template_id']))
     response = codec.response(request, fields)
     return encode_data_frame((response,), key, direction='server_to_client',
                              opaque_flag=64, header_word4=header_word4,
@@ -1220,8 +1248,8 @@ def _native_inventory_changes(moves):
     for move in moves:
         before, after = move['before'], move['after']
         row = after or before
-        destination = inventory_location(after) if after else {'pos': 0}
-        source = inventory_location(before) if before else {'pos': 0}
+        destination = _deposit_inventory_location(after) if after else {'pos': 0}
+        source = _deposit_inventory_location(before) if before else {'pos': 0}
         # common_pb.lua 0, instructions 618-642: Modify=3, ModifyWithMove=4, Move=5.
         change_type = (2 if after is None else 1 if before is None
                        else 3 if source == destination
@@ -1231,7 +1259,8 @@ def _native_inventory_changes(moves):
             'prop': {'id': row['template_id'], 'gid': row['gid'], 'num': row['quantity'],
                 'position': row['grid_page_id'], 'length': row['length'], 'width': row['width'],
                 **item_condition_fields(row['template_id'], components=row.get('components'), weapon=row.get('weapon'), health=row.get('health')),
-                'loc': inventory_location(row)}})
+                **({'expire_timestamp': row['expire_timestamp']} if 'expire_timestamp' in row else {}),
+                'loc': _deposit_inventory_location(row)}})
     return {'prop_changes': changes}
 
 
@@ -1366,27 +1395,54 @@ def _candidate_local_deposit_sort_response(message, backend, local_session, key,
                              header_word9=header_word9)
 
 
-def _candidate_local_safehouse_response(message, backend, local_session, key,
-                                        *, header_word4, header_word9):
-    """Expose the authenticated account's persisted safehouse device levels."""
+def _candidate_local_activity_response(message, backend, local_session, key,
+                                       *, header_word4, header_word9, diagnostic_entry=None):
+    """Apply source-bound production and quest operations for this local account."""
     if len(message) < 5:
-        raise ValueError('Truncated safehouse package')
+        raise ValueError('Truncated activity package')
     codec = _candidate_codec()
     request = codec.decode(message[4:])
-    devices = [{'device_id': row['device_id'], 'level': row['level']}
-               for row in backend.native_lobby_profile(local_session)['devices']]
-    if request.name == 'CSSafehouseGetInfoReq':
-        fields = {'result': 0, 'devices': devices,
-                  'upgraded_device_list': [device['device_id'] for device in devices],
-                  'is_safehouse_unlocked': bool(devices)}
-    elif request.name == 'CSSafehouseGetPlayerDeviceReq':
-        fields = {'result': 0, 'device_infos': devices}
-    else:
-        raise ValueError('Not a safehouse device request')
+    module = (native_safehouse if request.name in native_safehouse.SUPPORTED_REQUESTS else
+              native_quests if request.name in native_quests.SUPPORTED_REQUESTS else None)
+    if module is None:
+        raise ValueError('Not a supported local activity request')
+    committed = {}
+    fields = module.response_fields(request, backend, local_session, changes=committed)
+    if diagnostic_entry is not None:
+        diagnostic_entry['local_activity_request'] = {
+            name: int(request.fields[name]) for name in ('device_id', 'formula_id', 'quest_id')
+            if name in request.fields}
+        diagnostic_entry['local_activity_result'] = fields['result']
+        diagnostic_entry['_local_activity_changes'] = committed
     response = codec.response(request, fields)
     return encode_data_frame((response,), key, direction='server_to_client',
                              opaque_flag=64, header_word4=header_word4,
-                             header_word9=header_word9)
+                             header_word9=header_word9, max_output=1024 * 1024)
+
+
+def _candidate_local_safehouse_response(message, backend, local_session, key,
+                                        *, header_word4, header_word9):
+    return _candidate_local_activity_response(message, backend, local_session, key,
+        header_word4=header_word4, header_word9=header_word9)
+
+
+def _candidate_local_activity_response_frames(response, key, entry):
+    committed = entry.pop('_local_activity_changes', {})
+    messages = []
+    if committed.get('inventory_moves'):
+        messages.append(('CSDepositChangeNtf', {
+            'deposit_change': _native_inventory_changes(committed['inventory_moves'])}))
+    if committed.get('quest_notification'):
+        messages.append(('CSQuestDataChangeNtf', committed['quest_notification']))
+    frames = []
+    for name, fields in messages:
+        body = _candidate_codec().encode(name, fields, sequence=0)
+        frames.append(encode_data_frame((body,), key, direction='server_to_client', opaque_flag=64,
+            header_word4=response.header_word4, header_word9=response.header_word9 + len(frames),
+            max_output=1024 * 1024))
+    if frames:
+        response = replace(response, header_word9=response.header_word9 + len(frames))
+    return (*frames, response)
 
 
 def _candidate_local_safehouse_unlock_response(message, key, *, header_word4, header_word9):
@@ -1521,7 +1577,7 @@ def _continue_character_creation(connection, decoder, queue, current, ack,
                         message, backend, local_session, expected_identity, ack.session_key,
                         header_word4=current.header_word4, header_word9=outbound_sequence)
                     entry['local_account_state_response'] = True
-                elif name == 'CSDepositGetPropsReq':
+                elif name in ('CSDepositGetPropsReq', 'CSDepositGetExtensionPropsReq'):
                     response = _candidate_local_deposit_response(
                         message, backend, local_session, ack.session_key,
                         header_word4=current.header_word4, header_word9=outbound_sequence)
@@ -1571,11 +1627,11 @@ def _continue_character_creation(connection, decoder, queue, current, ack,
                         message, backend, local_session, ack.session_key,
                         header_word4=current.header_word4, header_word9=outbound_sequence, diagnostic_entry=entry)
                     entry['local_warehouse_sort_response'] = True
-                elif name in ('CSSafehouseGetInfoReq', 'CSSafehouseGetPlayerDeviceReq'):
-                    response = _candidate_local_safehouse_response(
+                elif name in ACTIVITY_REQUESTS:
+                    response = _candidate_local_activity_response(
                         message, backend, local_session, ack.session_key,
-                        header_word4=current.header_word4, header_word9=outbound_sequence)
-                    entry['local_safehouse_device_response'] = True
+                        header_word4=current.header_word4, header_word9=outbound_sequence, diagnostic_entry=entry)
+                    entry['local_activity_response'] = True
                 elif name == 'CSSafehouseGetConfigReq':
                     response = _candidate_local_safehouse_config_response(
                         message, ack.session_key,
@@ -1645,6 +1701,12 @@ def _continue_character_creation(connection, decoder, queue, current, ack,
                                          else type(error).__name__)
                 response = None
             if response is not None:
+                frames = _candidate_local_activity_response_frames(response, ack.session_key, entry)
+                for notification in frames[:-1]:
+                    connection.sendall(notification.encode())
+                    entry['local_activity_notification_sent'] = True
+                response = frames[-1]
+                outbound_sequence = response.header_word9
                 if name in COLLECTION_REQUESTS:
                     frames = _candidate_local_collection_response_frames(response, ack.session_key, backend, local_session)
                     for notification in frames[:-1]:
@@ -2121,7 +2183,7 @@ def inspect_exchange(connection, modulus=None, *, timeout=12, diagnostic_exponen
                                                                             header_word4=current.header_word4,
                                                                             header_word9=outbound_sequence)
                                                                         entry['local_account_state_response'] = True
-                                                                    elif name == 'CSDepositGetPropsReq':
+                                                                    elif name in ('CSDepositGetPropsReq', 'CSDepositGetExtensionPropsReq'):
                                                                         next_response = _candidate_local_deposit_response(
                                                                             message, backend, local_session, ack.session_key,
                                                                             header_word4=current.header_word4,
@@ -2184,14 +2246,13 @@ def inspect_exchange(connection, modulus=None, *, timeout=12, diagnostic_exponen
                                                                             header_word4=current.header_word4,
                                                                             header_word9=outbound_sequence, diagnostic_entry=entry)
                                                                         entry['local_warehouse_sort_response'] = True
-                                                                    elif name in ('CSSafehouseGetInfoReq',
-                                                                                  'CSSafehouseGetPlayerDeviceReq'):
-                                                                        next_response = _candidate_local_safehouse_response(
+                                                                    elif name in ACTIVITY_REQUESTS:
+                                                                        next_response = _candidate_local_activity_response(
                                                                             message, backend, local_session,
                                                                             ack.session_key,
                                                                             header_word4=current.header_word4,
-                                                                            header_word9=outbound_sequence)
-                                                                        entry['local_safehouse_device_response'] = True
+                                                                            header_word9=outbound_sequence, diagnostic_entry=entry)
+                                                                        entry['local_activity_response'] = True
                                                                     elif name == 'CSSafehouseGetConfigReq':
                                                                         next_response = _candidate_local_safehouse_config_response(
                                                                             message, ack.session_key,
@@ -2286,6 +2347,13 @@ def inspect_exchange(connection, modulus=None, *, timeout=12, diagnostic_exponen
                                                                         result['bounded_business_stop'] = 'client_closed_after_unanswered_request'
                                                                         break
                                                                     continue
+                                                                frames = _candidate_local_activity_response_frames(
+                                                                    next_response, ack.session_key, entry)
+                                                                for activity_change in frames[:-1]:
+                                                                    connection.sendall(activity_change.encode())
+                                                                    entry['local_activity_notification_sent'] = True
+                                                                next_response = frames[-1]
+                                                                outbound_sequence = next_response.header_word9
                                                                 if name in COLLECTION_REQUESTS:
                                                                     frames = _candidate_local_collection_response_frames(
                                                                         next_response, ack.session_key, backend, local_session)
