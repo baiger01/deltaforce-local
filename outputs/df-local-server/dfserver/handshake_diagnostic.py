@@ -111,6 +111,7 @@ def _log_request_progress(entry, phase):
               'local_collection_change_notification_sent', 'local_warehouse_sort_request',
               'local_warehouse_sort_result', 'local_warehouse_sort_change_count',
               'local_weapon_assembly_request', 'local_battle_pass_request',
+              'local_optional_setting_key',
               'local_activity_request', 'local_activity_result', 'local_activity_notification_sent')
     event = {'event': 'business_request', 'phase': phase, 'observed_at_utc': _time()}
     event.update({name: entry[name] for name in fields if name in entry})
@@ -563,7 +564,11 @@ def _candidate_local_commerce_response(message, backend, local_session, key,
         raise ValueError('Truncated commerce package')
     codec = _candidate_codec()
     request = codec.decode(message[4:])
-    from . import battle_pass
+    from . import battle_pass, native_settings
+    if diagnostic_entry is not None and request.name == 'CSSettingGetValueByKeyReq':
+        setting_key = request.fields.get('key', '')
+        diagnostic_entry['local_optional_setting_key'] = (
+            setting_key if setting_key in native_settings.OPTIONAL_SETTING_KEYS else '<other>')
     if request.name in battle_pass.SUPPORTED_REQUESTS:
         committed = {}
         fields = battle_pass.response_fields(request, backend, local_session, changes=committed)

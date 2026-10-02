@@ -42,7 +42,7 @@
 | 门禁卡包分区与存取 | 原生只读核验 `Key/KeyBox` 与 `KeyBox` 两表的 109 行、21 个 FName 组；104 行对应 20 个现有模板，按真实 MapID 下发格子；权限装备、卡片移动与交换、切包、身体快照和保存重开有覆盖，堆叠卡及失败操作整批回滚 | `dfserver/native_keychains.py`、`work/bind_native_keybox_catalog.py`、`tests/test_native_keychains.py`；默认模板 `11120000001` 六区共 24 格，槽位解锁及缺失模板未恢复，界面回测待确认 |
 | 安全屋生产与领取 | 492 条配方与 73 条升级配置通过原生反射和序列化核验；确定产物配方按设备、源日期和实际材料开工，扣材料、保存生产与到期领取使用事务，通知包含实际库存变更；仓满回滚、跨账号隔离有覆盖 | `native_safehouse_catalog.json`、`dfserver/native_safehouse.py`、`tests/test_native_safehouse.py`；458 条受支持配方的生产、领取及通知编码通过，蓝图、随机产物及未恢复物理布局仍拒绝 |
 | 普通任务接受与同步 | 恢复 2365 条任务、13 条任务线及 5585 条奖励配置；普通 Mission 接受校验真实等级、任务线、已领奖前置和冷却，保存实际目标并在响应前发送 `CSQuestDataChangeNtf`；重开恢复、失败无写入或通知有覆盖 | `native_quest_catalog.json`、`dfserver/native_quests.py`、`tests/test_native_quests.py`、`tests/test_native_activity_wire.py`；特殊任务类型、完成判定与领奖流程未接入 |
-| 设置保存与本地聊天查询 | 按原 Lua 字段保存设置，按账号和类型读取；本地世界频道、聊天摘要返回真实协议形状的空记录，结束未响应状态 | `dfserver/native_settings.py`、`dfserver/local_chat.py`、`tests/test_native_settings.py`、`tests/test_local_chat.py` |
+| 设置保存与本地聊天查询 | 按原 Lua 字段保存设置，按账号和类型读取；8 个原生可选初始化键缺省时下发明确空值，保留客户端默认配置，已有记录优先；本地世界频道、聊天摘要返回真实协议形状的空记录，结束未响应状态 | `dfserver/native_settings.py`、`dfserver/local_chat.py`、`tests/test_native_settings.py`、`tests/test_local_chat.py` |
 | 安全箱来源与存取 | 恢复 38 条真实安全箱 ID、容量和原始尺寸；本地账号提供方向明确的 4 格和 9 格安全箱权限，支持原生无 gid 装备请求、容量更新、物品移动、快照与单件/批量购买；切换保留内容坐标，容量不足整笔回滚，权限物品不能作为普通货物移出 | `safe_box_layout_catalog.json`、`dfserver/safe_boxes.py`、`tests/test_native_safe_box.py`；非方形方向及官方归属未恢复，实机操作待确认 |
 | 主仓库实际整理 | 主仓库页 2 整理返回实际位置和旋转变更，事务保存并保留数量、枪械组件、枪内弹药；接入原生 `CSDepositSetCommonConfigReq` 并保存设置；无效页和无法完整落位的请求返回错误并回滚 | `dfserver/deposit_sort.py`、`tests/test_native_deposit_sort.py`；采用本地确定性落位策略，多扩容页及官方分类对应尚未恢复 |
 | 容器同步 | 接入已观察的胸挂、背包和口袋同步；实现落位检查、堆叠拆分、数量守恒及失败整批回滚 | `dfserver/core.py`、`tests/test_local_commerce.py`、`tests/test_native_inventory.py` |
@@ -100,6 +100,8 @@
 - 2026-10-01：原生批量材料请求先复现失败再通过修正；购买、门卡及定址读取探针的 73 项相关回归通过（32.663 秒），包括错误报价与余额不足时全批回滚。
 - 2026-10-02：带弹整枪出售、卡包、生产、任务及关联库存、装配、商城的 298 项联合回归通过（196.182 秒）；另以空目录从原始 PAK 重建生产和任务目录，全部行与字段一致。458 条受支持生产配方逐条验证开工、领取与库存通知编码。
 - 2026-10-02：保留并备份本地测试存档后，显式提供真实默认卡包 `11120000001`；实际加密 `CSDepositGetPropsRsp` 核验装备、六个真实 MapID 与 24 格容量一致。预览、提供和响应核验工具见 `work/provision_native_test_keychain.py`；原客户端界面回测待确认。
+- 2026-10-02：20:12 启动的 720 秒试验完整结束，原 SDK 恢复并通过哈希核验；两次真实任务 `11001`、`21001` 接受响应成功，变更通知已发送，保存状态均为 3。此轮日志未见 Fatal 或 Lua 异常堆栈；卡包界面与放卡效果尚待用户确认。
+- 2026-10-02：初始化日志定位五次设置读取返回 `152006`，触发“不能分享默认方案”提示；按三份原包 Lua 的明确空值消费分支修正，8 项设置回归通过。诊断日志仅记录已确认的可选键名，保留未知键错误；修正后客户端回测另行记录。
 - GitHub 仓库已按用户指示改为公开，源码、测试、静态目录和来源信息已上传；上传文件审计通过。
 
 ## 协作依据

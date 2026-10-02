@@ -1,9 +1,10 @@
 """Opaque local settings using installed cs_setting_editor_pb.lua fields.
 
 PAK1 entries 6766/6767 define all seven SettingKeyValue fields. Consumers in
-SystemSettingServer.lua entry 6945 read value/title/cloud_keys verbatim. A
-successful missing-key response is invalid for those consumers, so use the
-installed SettingEmptyRecord result. No share codes are generated locally.
+SystemSettingServer.lua entry 6945 read value/title/cloud_keys verbatim. Its
+optional initialization keys accept an explicit empty value and retain the
+client's own defaults. Unknown missing keys use SettingEmptyRecord. No share
+codes or default configuration contents are generated locally.
 """
 
 import json
@@ -17,6 +18,15 @@ from .core import DomainError, fail
 SUPPORTED_REQUESTS = frozenset({'CSSettingPutKeyValueReq', 'CSSettingGetValueByKeyReq',
                                 'CSSettingGetValuesByTypeReq'})
 KV_FIELDS = frozenset({'key', 'type', 'value', 'share_code', 'title', 'value_byte', 'cloud_keys'})
+# SystemSettingServer.lua entry 6945: 0.28/0.35/0.37/0.39/0.46/0.49
+# and their callbacks explicitly skip an empty kv.value.
+# IrisSafeHouseServer.lua entry 6894: root SAFEHOUSE_LOC_KEY, 0.1/0.1.0;
+# SHA-256 6f2fbc7857eab2ee033ebd67ea3e7036c556b5c349f7345b5e258a8807e0f367.
+# FriendServer.lua entry 6871: 0.2 sets FriendDynamic, 0.99/0.99.0 read it;
+# SHA-256 ec54b7529b3e50a6f5361682237113cc4e05f577d6272780ee6306f061e469fd.
+OPTIONAL_SETTING_KEYS = frozenset({'PlayerSensitity', 'SaveBaseSetting', 'SaveSensititySetting',
+                                  'PlayerBase', 'InventoryAutoLine', 'SaveSOLMarkingItems',
+                                  'SAFEHOUSE_LOC_KEY', 'FriendDynamic'})
 # Local save bound: leave enough envelope space to return every setting of a type.
 MAX_STORED_JSON_BYTES = MAX_ENVELOPE_BYTES // 2
 SCHEMA = """
@@ -72,6 +82,8 @@ def response_fields(request, backend, token):
                 row = connection.execute('SELECT kv_json FROM native_lobby_settings '
                     'WHERE player_id=? AND key=?', (player_id, key)).fetchone()
                 if row is None:
+                    if key in OPTIONAL_SETTING_KEYS:
+                        return {'result': 0, 'kv': {'key': key, 'value': ''}}
                     fail('SettingEmptyRecord', 'Local account has no setting for this key')
                 return {'result': 0, 'kv': json.loads(row['kv_json'])}
             category = _required(fields.get('type'), 'type')

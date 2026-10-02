@@ -71,6 +71,25 @@ class NativeSettingsTests(unittest.TestCase):
         self.assertEqual(self.request('CSSettingGetValuesByTypeReq', {'type': 'absent'})[0],
                          {'result': 0, 'kv_array': []})
 
+    def test_missing_optional_native_settings_preserve_client_defaults(self):
+        for key in ('SaveBaseSetting', 'SaveSensititySetting', 'InventoryAutoLine',
+                    'SaveSOLMarkingItems', 'PlayerSensitity', 'PlayerBase', 'SAFEHOUSE_LOC_KEY',
+                    'FriendDynamic'):
+            with self.subTest(key=key):
+                result, decoded = self.request('CSSettingGetValueByKeyReq', {'key': key})
+                self.assertEqual(result, {'result': 0, 'kv': {'key': key, 'value': ''}})
+                self.assertEqual(decoded, result)
+        with self.backend.connection() as connection:
+            self.assertEqual(connection.execute('SELECT COUNT(*) FROM native_lobby_settings').fetchone()[0], 0)
+
+    def test_saved_optional_setting_overrides_empty_fallback_only_for_its_owner(self):
+        kv = {'key': 'SaveBaseSetting', 'type': 'SaveSystemSetting', 'value': 'opaque-client-setting'}
+        self.assertEqual(self.request('CSSettingPutKeyValueReq', {'kv': kv})[0]['result'], 0)
+        self.backend = Backend(self.backend.database, ROOT / 'definitions.json')
+        self.assertEqual(self.request('CSSettingGetValueByKeyReq', {'key': kv['key']})[0]['kv'], kv)
+        self.assertEqual(self.request('CSSettingGetValueByKeyReq', {'key': kv['key']}, self.other)[0],
+                         {'result': 0, 'kv': {'key': kv['key'], 'value': ''}})
+
     def test_empty_values_are_stored_and_repeated_put_is_idempotent(self):
         kv = {'key': 'empty', 'type': 'local', 'value': '', 'value_byte': ''}
         for _ in range(3):
