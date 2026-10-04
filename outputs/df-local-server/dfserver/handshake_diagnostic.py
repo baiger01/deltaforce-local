@@ -29,7 +29,7 @@ from .container_layouts import capacity as container_capacity
 from .core import (POCKET_LAYOUT, POCKET_POSITION,
                    BACKPACK_LAYOUT, BACKPACK_POSITION, CHEST_RIG_LAYOUT,
                    CHEST_RIG_POSITION, SAFE_BOX_POSITION, DomainError)
-from . import safe_boxes, native_safehouse, native_quests, native_session_auxiliary
+from . import safe_boxes, native_safehouse, native_quests, native_session_auxiliary, native_match_unavailable
 
 ACTIVITY_REQUESTS = native_safehouse.SUPPORTED_REQUESTS | native_quests.SUPPORTED_REQUESTS
 from .gcp_crypto import decode_received_body, encrypt_body
@@ -1836,6 +1836,8 @@ def _candidate_local_auxiliary_response(message, backend, local_session, key,
         return None
     fields = native_session_auxiliary.response_fields(request, backend, local_session)
     if fields is None:
+        fields = native_match_unavailable.response_fields(request, backend, local_session)
+    if fields is None:
         raise ValueError('Not a supported local auxiliary request')
     if diagnostic_entry is not None:
         diagnostic_entry['local_auxiliary_response_expected'] = True
@@ -2180,7 +2182,8 @@ def _continue_local_lobby(connection, decoder, queue, current, ack,
                     header_word4=current.header_word4,
                     header_word9=outbound_sequence)
                 entry['local_room_mode_response'] = True
-            elif name == 'CSMatchGateIsRankEnableReq':
+            elif (name == 'CSMatchGateIsRankEnableReq'
+                  and game_server_probe is not None and game_server_probe.listening):
                 next_response = _candidate_local_match_rank_response(
                     message, ack.session_key,
                     header_word4=current.header_word4,
@@ -2221,6 +2224,12 @@ def _continue_local_lobby(connection, decoder, queue, current, ack,
                     header_word4=current.header_word4,
                     header_word9=outbound_sequence)
                 entry['local_solo_room_hero_response'] = True
+            elif (name in native_match_unavailable.SUPPORTED_REQUESTS
+                  and (game_server_probe is None or not game_server_probe.listening)):
+                next_response = _candidate_local_auxiliary_response(
+                    message, backend, local_session, ack.session_key,
+                    header_word4=current.header_word4,
+                    header_word9=outbound_sequence, diagnostic_entry=entry)
             elif name in ('CSRoomMatchStartAllocReq',
                           'CSRoomMatchQuitAllocReq',
                           'CSMatchCheckTReq',

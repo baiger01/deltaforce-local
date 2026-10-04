@@ -6,7 +6,14 @@ FriendServer 6871 0.41.0 accepts an empty recommendation list; QuickPatchServer
 queries button state, while 0.6 and 0.11 handle actual changes. IDCSpeedLogic
 4938 0.0.0 accepts an empty IDC directory and 0.15 disables DS polling when
 client_ping_switch is absent. CollectionServer 6860 0.214 triggers low-rental
-voucher distribution; its entitlement rules are unavailable and are refused.
+voucher distribution. This save has no automatic rental entitlement or scheduler;
+its authenticated receipt carries a zero timestamp and grants no vouchers.
+AccountServer 0.35.0 accepts an absent punish_info for its empty voice query;
+the local account has no voice punishment records.
+GameModeServer 0.289.0 reports the returned rank capability to the client; ranked
+matchmaking is unavailable locally. PayServer 0.15.0 only logs the token-update
+result. Its authenticated local-context receipt neither validates nor stores
+external payment credentials and does not change local purchase permissions.
 
 ShopAutoRetroReward and TlogAgentTglog have no declared Res message. Local shop
 purchases commit debit, grants, and purchase records atomically, so this save has
@@ -28,6 +35,8 @@ from .core import DomainError, fail
 SUPPORTED_REQUESTS = frozenset({
     'CSCollectionAutoDistributionReq', 'CSFriendRecommendReq', 'CSPatchQuickPatchReq',
     'CSPlayerInfoAddButtonHasBeenClickedReq', 'CSRoundtripDirReq',
+    'CSAccountAllowRealTimeVoiceReq', 'CSAccountUpdatePayTokenReq',
+    'CSMatchGateIsRankEnableReq',
 })
 ONE_WAY_REQUESTS = frozenset({'CSShopAutoRetroRewardReq', 'CSTlogAgentTglogReq'})
 MAX_SITUATIONS = 256
@@ -46,6 +55,18 @@ CREATE TABLE IF NOT EXISTS native_session_telemetry_receipts (
 # PAK entry, SHA-256, and matched encode/decode function IDs. These contain no
 # original instructions or event payloads and are checked against codec metadata.
 WIRE_CONTRACTS = {
+    'CSAccountAllowRealTimeVoiceReq': {
+        'source': 'cs_account_editor_pb.lua',
+        'sha256': '9207df061e390303213bdf7a61f4a29e7301f1cc01b740238066f43c33fdb6aa',
+        'encode': '0.49', 'decode': '0.48'},
+    'CSAccountUpdatePayTokenReq': {
+        'source': 'cs_account_editor_pb.lua',
+        'sha256': '9207df061e390303213bdf7a61f4a29e7301f1cc01b740238066f43c33fdb6aa',
+        'encode': '0.37', 'decode': '0.36'},
+    'CSMatchGateIsRankEnableReq': {
+        'source': 'cs_matchgate_editor_pb.lua',
+        'sha256': 'b0f14326054a5d6fdec305520721d6c6bb50bd0059d7b0cc0f8f5fead3d1c0dd',
+        'encode': '0.9', 'decode': '0.8'},
     'CSCollectionAutoDistributionReq': {'entry': 6674,
         'sha256': 'bc6ea0f3b16b372eadcf331e16b189b6d1bed5ce4a083eb5fb875ce3c13974f6', 'encode': '0.99', 'decode': '0.98'},
     'CSFriendRecommendReq': {'entry': 6686,
@@ -62,6 +83,15 @@ WIRE_CONTRACTS = {
         'sha256': '77d1530ca0c1c8fa96e3f29bb5890b85cd607b6e115d0e526819bcb1448e439f', 'encode': '0.1', 'decode': '0.0'},
 }
 CONSUMER_SOURCES = {
+    'AccountServer.lua': {
+        'sha256': '6c27d297cd5d768dc537f79f0b1dea1e7ebd6a1bbd8860205f138143d1a2d5ec',
+        'functions': ['0.35', '0.35.0']},
+    'PayServer.lua': {'entry_offset': 34816000,
+        'sha256': 'a87fb1dd451a6c13b73fb84cbedfb27d91c03aeb6b4f699653e20f7cd029d7e2',
+        'functions': ['0.15', '0.15.0', '0.22']},
+    'GameModeServer.lua': {'entry_offset': 34375680,
+        'sha256': 'c4ced93f1059d9cb8f91874a1d0084090d4263a95d443dcd7d9101548088e381',
+        'functions': ['0.289', '0.289.0']},
     'CollectionServer.lua': {'entry': 6860,
         'sha256': '30fd97e50c22998e987b1fdcf8ee7a0e4edfe1ae51b93dc1d6e11ff5e7bf37f2', 'functions': ['0.214', '0.214.0']},
     'FriendServer.lua': {'entry': 6871,
@@ -98,7 +128,16 @@ def response_fields(request, backend, token):
         with backend.connection() as connection:
             backend._authorize(connection, token)
             if request.name == 'CSCollectionAutoDistributionReq':
-                return {'result': error_code('CollectionPropDescNotFound')}
+                # Zero disables the client's replenishment timer. No entitlement,
+                # grant quantity, or future distribution interval is inferred.
+                return {'result': 0, 'next_distribute_ts': 0}
+            if request.name == 'CSAccountAllowRealTimeVoiceReq':
+                return {'result': 0}
+            if request.name == 'CSAccountUpdatePayTokenReq':
+                # Receipt for this local session, without external token validation.
+                return {'result': 0}
+            if request.name == 'CSMatchGateIsRankEnableReq':
+                return {'result': 0, 'is_rank_enable': False}
             if request.name == 'CSFriendRecommendReq':
                 return {'result': 0, 'player_list': []}
             if request.name == 'CSPatchQuickPatchReq':

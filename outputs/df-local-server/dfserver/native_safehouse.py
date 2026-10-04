@@ -9,6 +9,7 @@ import time
 from .client_errors import error_code, inventory_error
 from .core import DomainError, fail
 from .premium_shop import ITEMS
+from .weapon_components import PRESETS, ROWS
 
 
 PROTOCOL = Path(__file__).resolve().parent.parent / 'protocol'
@@ -37,6 +38,23 @@ def _items(value):
             fail('SafehouseInvalidFormula', 'Recipe references an unavailable native item')
         items[item] = items.get(item, 0) + count
     return [{'prop_id': item, 'num': count, 'bind_type': 0} for item, count in items.items()]
+
+
+def _physical_product(item_id):
+    # ItemBase.GetSize resolves presets to their receivers before reading size.
+    receiver_id = PRESETS.get(item_id, item_id)
+    metadata = ITEMS[str(receiver_id)]
+    if receiver_id != item_id:
+        source = ROWS.get(str(receiver_id))
+        if (source is None or source['preset_id'] != item_id or
+                source['prop']['id'] != receiver_id or
+                (source['prop']['length'], source['prop']['width']) !=
+                (metadata['length'], metadata['width'])):
+            fail('SafehouseInvalidFormula', 'Source preset has no verified physical component tree')
+    if (not 1 <= metadata['length'] <= 9 or not 1 <= metadata['width'] <= 40 or
+            not 1 <= metadata['max_stack_count'] <= 1000):
+        fail('SafehouseInvalidFormula', 'Source product has no supported warehouse layout')
+    return receiver_id, metadata
 
 
 def _formula_timestamp(value):
@@ -108,10 +126,7 @@ def _produce(connection, player_id, fields, now):
     if not products:
         fail('SafehouseInvalidFormula', 'Source recipe has no deterministic product')
     for product in products:
-        metadata = ITEMS[str(product['prop_id'])]
-        if (not 1 <= metadata['length'] <= 9 or not 1 <= metadata['width'] <= 40 or
-                not 1 <= metadata['max_stack_count'] <= 1000):
-            fail('SafehouseInvalidFormula', 'Source product needs another verified physical grant path')
+        _physical_product(product['prop_id'])
     # InventoryServer.GetItemNumById defaults to the Player inventory group.
     for material in materials:
         owned = connection.execute('SELECT COALESCE(SUM(quantity),0) FROM native_lobby_props '
@@ -144,10 +159,9 @@ def _produce(connection, player_id, fields, now):
 def _grant_products(backend, connection, player_id, products):
     granted = []
     for product in products:
-        metadata = ITEMS[str(product['prop_id'])]
+        item_id, metadata = _physical_product(product['prop_id'])
+        product = {**product, 'prop_id': item_id}
         length, width, maximum = metadata['length'], metadata['width'], metadata['max_stack_count']
-        if not 1 <= length <= 9 or not 1 <= width <= 40 or not 1 <= maximum <= 1000:
-            fail('SafehouseInvalidFormula', 'Source product has no supported warehouse layout')
         remaining = product['num']
         for row in connection.execute('SELECT gid,quantity FROM native_lobby_props '
                 'WHERE player_id=? AND template_id=? AND grid_page_id=2 ORDER BY gid',

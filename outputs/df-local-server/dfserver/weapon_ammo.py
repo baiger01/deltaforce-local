@@ -21,6 +21,7 @@ def matches_ammo(receiver_id, bullet_id):
 def magazine_capacity(components, receiver_id=None):
     magazines = []
     unknown_magazine = False
+    additions = []
 
     def visit(parts):
         nonlocal unknown_magazine
@@ -31,13 +32,22 @@ def magazine_capacity(components, receiver_id=None):
                 magazines.append(row)
             elif int(prop['id']) in CATALOG['magazine_item_ids']:
                 unknown_magazine = True
+            addition = CATALOG.get('capacity_additions', {}).get(str(prop['id']))
+            if addition:
+                additions.append(addition['capacity'])
             visit(prop.get('components', []))
 
     visit(components)
     if unknown_magazine or len(magazines) > 1:
         return None
-    if not magazines:
+    row = magazines[0] if magazines else None
+    if row is None or row.get('capacity_mode') == 'base':
         weapon = CATALOG['weapons'].get(str(PRESETS.get(int(receiver_id), int(receiver_id)))) if receiver_id else None
-        return weapon['base_capacity'] if weapon else None
-    row = magazines[0]
-    return row['capacity'] + (row['sub_clip_capacity'] if row['dual_clip'] else 0)
+        if weapon is None:
+            return None
+        capacity = weapon['base_capacity']
+    else:
+        capacity = row['capacity']
+    if row and row['dual_clip']:
+        capacity += row['sub_clip_capacity']
+    return capacity + sum(additions)

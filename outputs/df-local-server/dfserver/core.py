@@ -53,6 +53,123 @@ POCKET_POSITION = 199997
 KEYCHAIN_POSITION = 116001
 # QuickOperationLogic and captured snapshots use five 1x1 pocket spaces.
 POCKET_LAYOUT = ((1, 1),) * 5
+NATIVE_PURCHASE_PACKING_STEPS = 100000
+
+
+def _native_purchase_placements(items, layouts, occupied):
+    """Plan the local purchase policy without moving owned items or writing state."""
+    errors = {2: 'WAREHOUSE_FULL', CHEST_RIG_POSITION: 'CHEST_RIG_FULL',
+              BACKPACK_POSITION: 'BACKPACK_FULL', POCKET_POSITION: 'POCKET_FULL',
+              SAFE_BOX_POSITION: 'SAFE_BOX_FULL'}
+    for position, layout in layouts.items():
+        required = sum(((item['quantity'] + item['max_stack_count'] - 1)
+                        // item['max_stack_count']) * item['length'] * item['width']
+                       for item in items if item['target_position'] == position)
+        available = sum(width * height - len(occupied[position][space])
+                        for space, (width, height) in enumerate(layout, 1))
+        if required > available:
+            fail(errors[position], 'No verified space fits the purchased items')
+
+    jobs = []
+    for item in items:
+        remaining = item['quantity']
+        while remaining:
+            stack = min(remaining, item['max_stack_count'])
+            jobs.append((item, stack))
+            remaining -= stack
+    planned = {}
+    for position, layout in layouts.items():
+        indices = tuple(index for index, (item, _) in enumerate(jobs)
+                        if item['target_position'] == position)
+        initial = [sum(1 << (y * width + x) for x, y in occupied[position][space])
+                   for space, (width, _) in enumerate(layout, 1)]
+        choices = {}
+        for index in indices:
+            item = jobs[index][0]
+            shape = (item['length'], item['width'])
+            if shape in choices:
+                continue
+            candidates = []
+            for space, (width, height) in enumerate(layout, 1):
+                orientations = ((*shape, False), (*shape[::-1], True))
+                if shape[0] == shape[1]:
+                    orientations = orientations[:1]
+                for span_x, span_y, rotated in orientations:
+                    for y in range(height - span_y + 1):
+                        for x in range(width - span_x + 1):
+                            mask = sum(1 << (cy * width + cx)
+                                       for cy in range(y, y + span_y)
+                                       for cx in range(x, x + span_x))
+                            if not mask & initial[space - 1]:
+                                candidates.append((space, x, y, span_x, span_y, rotated, mask))
+            choices[shape] = candidates
+
+        masks, selected = initial[:], {}
+        for index in indices:
+            item = jobs[index][0]
+            choice = next((candidate for candidate in choices[(item['length'], item['width'])]
+                           if not candidate[-1] & masks[candidate[0] - 1]), None)
+            if choice is None:
+                break
+            selected[index] = choice
+            masks[choice[0] - 1] |= choice[-1]
+        else:
+            planned.update(selected)
+            continue
+
+        # First-fit can fragment the only space suitable for a longer item.
+        # Retry only this batch, using most-constrained rectangles and both
+        # orientations. Bound candidate checks as well as recursive states.
+        masks, selected, failed = initial[:], {}, set()
+        steps = NATIVE_PURCHASE_PACKING_STEPS
+
+        def search(remaining):
+            nonlocal steps
+            if not remaining:
+                return True
+            state = (remaining, tuple(masks))
+            if state in failed:
+                return False
+            best = None
+            seen = set()
+            for index in remaining:
+                item = jobs[index][0]
+                shape = (item['length'], item['width'])
+                if shape in seen:
+                    continue
+                seen.add(shape)
+                possible = []
+                for candidate in choices[shape]:
+                    steps -= 1
+                    if steps < 0:
+                        fail(errors[position], 'No verified arrangement found within the local packing limit')
+                    if not candidate[-1] & masks[candidate[0] - 1]:
+                        possible.append(candidate)
+                if not possible:
+                    failed.add(state)
+                    return False
+                rank = (len(possible), -shape[0] * shape[1], -max(shape), index)
+                if best is None or rank < best[0]:
+                    best = (rank, index, possible)
+            _, index, possible = best
+            rest = tuple(other for other in remaining if other != index)
+            for candidate in possible:
+                space = candidate[0] - 1
+                previous = masks[space]
+                masks[space] |= candidate[-1]
+                selected[index] = candidate
+                if search(rest):
+                    return True
+                masks[space] = previous
+                del selected[index]
+            failed.add(state)
+            return False
+
+        if not search(indices):
+            fail(errors[position], 'No verified space fits the purchased items')
+        planned.update(selected)
+    return [(item, stack, *planned[index][:-1])
+            for index, (item, stack) in enumerate(jobs)]
 
 
 SCHEMA = """
@@ -1142,7 +1259,6 @@ class Backend:
                     occupied[position][space_id].update(
                         (x, y) for x in range(start_x, start_x + span_x)
                         for y in range(start_y, start_y + span_y))
-            placements = []
             for item in items:
                 length, width = item["length"], item["width"]
                 position = item["target_position"]
@@ -1152,39 +1268,7 @@ class Backend:
                         fail('INVALID_ARGUMENT', 'The installed safety-box rules reject this item')
                 if position == POCKET_POSITION and (length, width) != (1, 1):
                     fail("INVALID_ARGUMENT", "The pocket spaces hold one-cell items")
-                remaining = item["quantity"]
-                while remaining:
-                    found = None
-                    for space_id, (space_width, space_height) in enumerate(layouts[position], 1):
-                        for span_x, span_y, rotated in ((length, width, False),
-                                                         (width, length, True)):
-                            if span_x > space_width or span_y > space_height:
-                                continue
-                            for start_y in range(space_height - span_y + 1):
-                                for start_x in range(space_width - span_x + 1):
-                                    cells = {(x, y) for x in range(start_x, start_x + span_x)
-                                             for y in range(start_y, start_y + span_y)}
-                                    if not cells & occupied[position][space_id]:
-                                        found = (space_id, start_x, start_y,
-                                                 span_x, span_y, rotated, cells)
-                                        break
-                                if found:
-                                    break
-                            if found:
-                                break
-                        if found:
-                            break
-                    if found is None:
-                        fail({2: "WAREHOUSE_FULL", CHEST_RIG_POSITION: "CHEST_RIG_FULL",
-                              BACKPACK_POSITION: "BACKPACK_FULL",
-                              POCKET_POSITION: "POCKET_FULL", SAFE_BOX_POSITION: "SAFE_BOX_FULL"}[position],
-                             "No verified space fits the purchased items")
-                    space_id, start_x, start_y, span_x, span_y, rotated, cells = found
-                    occupied[position][space_id].update(cells)
-                    stack = min(remaining, item["max_stack_count"])
-                    placements.append((item, stack, space_id, start_x, start_y,
-                                       span_x, span_y, rotated))
-                    remaining -= stack
+            placements = _native_purchase_placements(items, layouts, occupied)
             next_gid = self._next_native_prop_gid(connection)
             if next_gid + len(placements) >= 2**63:
                 fail("CHEST_RIG_FULL", "Local prop identifier range is exhausted")

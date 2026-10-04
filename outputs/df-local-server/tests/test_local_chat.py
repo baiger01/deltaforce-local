@@ -55,6 +55,25 @@ class LocalChatTests(unittest.TestCase):
         self.assertEqual(self.request('CSChatWorldLoadTReq', {'read_msg_index': -1})[0]['result'], 124031)
         self.assertEqual(self.request('CSChatWorldLoadTReq', token='invalid-local-session')[0]['result'], 124038)
 
+    def test_pc_mark_all_private_read_acknowledges_the_empty_local_history(self):
+        before = self.backend.native_lobby_profile(self.token)
+        for fields in ({}, {'last_msg_index': 0, 'target_player_id': 0}):
+            result, decoded = self.request('CSChatPrivateReadStatUpdateReq', fields)
+            self.assertEqual(result, {'result': 0})
+            self.assertEqual(decoded, result)
+        self.assertEqual(self.backend.native_lobby_profile(self.token), before)
+        self.assertEqual(self.request('CSChatPrivateReadStatUpdateReq',
+            token='invalid-local-session')[0]['result'], 124038)
+
+    def test_private_read_does_not_acknowledge_a_cursor_absent_from_local_history(self):
+        before = self.backend.native_lobby_profile(self.token)
+        for fields in ({'last_msg_index': -1}, {'last_msg_index': 1},
+                       {'target_player_id': 1},
+                       {'last_msg_index': 37, 'target_player_id': 42}):
+            with self.subTest(fields=fields):
+                self.assertNotEqual(self.request('CSChatPrivateReadStatUpdateReq', fields)[0]['result'], 0)
+        self.assertEqual(self.backend.native_lobby_profile(self.token), before)
+
     def test_rolling_notice_occurrences_are_rejected_on_send_and_receive(self):
         for fields in ({'rolling_notice': {}}, {'rolling_notices': [{}]},
                        {'rolling_notice': {'content': 'not-an-offline-record'}},

@@ -158,7 +158,7 @@ class WeaponAssemblyCapacityTests(unittest.TestCase):
         self.backend = Backend(self.path, ROOT / 'definitions.json')
         self.assertEqual(self.profile(), before)
 
-    def test_loaded_rounds_equal_proposed_capacity_keep_ammo_and_return_magazine(self):
+    def test_loaded_rounds_equal_proposed_capacity_keep_ammo_without_materializing_model_magazine(self):
         self.load(10)
         fields, magazine_gid = self.proposal()
         before = next(prop for prop in self.profile()['props'] if prop['gid'] == 2001)
@@ -167,8 +167,11 @@ class WeaponAssemblyCapacityTests(unittest.TestCase):
         state = {prop['gid']: prop for prop in self.profile()['props']}
         self.assertEqual(state[2001]['weapon']['magazine_capacity'], 10)
         self.assertEqual(state[2001]['weapon']['load_bullets'], before['weapon']['load_bullets'])
-        self.assertEqual(state[magazine_gid]['template_id'], 13120000252)
-        self.assertEqual(state[magazine_gid]['grid_page_id'], 2)
+        # GameItem marks this default magazine IsModelOnly with a zero price.
+        self.assertNotIn(magazine_gid, state)
+        self.backend = Backend(self.path, ROOT / 'definitions.json')
+        restored = {prop['gid']: prop for prop in self.profile()['props']}
+        self.assertEqual(restored, state)
 
 
 if __name__ == '__main__':

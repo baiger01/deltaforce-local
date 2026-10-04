@@ -41,6 +41,7 @@ class NativeSessionAuxiliaryTests(unittest.TestCase):
             ('CSFriendRecommendReq', {'result': 0, 'player_list': []}),
             ('CSPatchQuickPatchReq', {'result': 0, 'patches': []}),
             ('CSRoundtripDirReq', {'result': 0, 'idc_list': []}),
+            ('CSAccountAllowRealTimeVoiceReq', {'result': 0}),
             ('CSPlayerInfoAddButtonHasBeenClickedReq', {'result': 0, 'button_status_list': []}),
         ):
             with self.subTest(name=name):
@@ -60,14 +61,50 @@ class NativeSessionAuxiliaryTests(unittest.TestCase):
             self.assertEqual(result, expected)
             self.assertEqual(decoded, expected)
 
-    def test_distribution_without_recovered_entitlement_is_explicitly_refused(self):
+    def test_distribution_without_local_entitlement_has_no_grant_or_schedule_after_reopen(self):
         with self.backend.connection() as connection:
-            before = list(connection.execute('SELECT * FROM native_lobby_collection_props'))
-        result, decoded = self.response('CSCollectionAutoDistributionReq')
-        self.assertEqual(result, {'result': 157012})
-        self.assertEqual(decoded, result)
+            before = list(connection.iterdump())
+        for _ in range(2):
+            result, decoded = self.response('CSCollectionAutoDistributionReq')
+            self.assertEqual(result, {'result': 0, 'next_distribute_ts': 0})
+            self.assertEqual(decoded, {'result': 0, 'next_distribute_ts': '0'})
+            self.assertNotIn('prop_num', result)
+            self.backend = Backend(self.backend.database, ROOT / 'definitions.json')
+            with self.backend.connection() as connection:
+                self.assertEqual(list(connection.iterdump()), before)
+
+    def test_rank_capability_query_reports_disabled_without_changing_local_state(self):
         with self.backend.connection() as connection:
-            self.assertEqual(list(connection.execute('SELECT * FROM native_lobby_collection_props')), before)
+            before = list(connection.iterdump())
+        for fields in ({}, {'mode_info': {'game_mode': 1, 'game_rule': 2, 'map_id': 101}},
+                       {'mode_info': {'game_mode': 5, 'team_mode': 4, 'match_mode_id': 12345}}):
+            request = self.decoded('CSMatchGateIsRankEnableReq', fields)
+            result = auxiliary.response_fields(request, self.backend, self.token)
+            self.assertEqual(result, {'result': 0, 'is_rank_enable': False})
+            response = self.codec.decode(self.codec.response(request, result))
+            self.assertEqual(response.name, 'CSMatchGateIsRankEnableRes')
+            self.assertEqual(response.sequence, 23)
+            self.assertEqual(response.fields, result)
+        with self.backend.connection() as connection:
+            self.assertEqual(list(connection.iterdump()), before)
+
+    def test_local_payment_context_receipt_does_not_store_or_validate_external_tokens(self):
+        with self.backend.connection() as connection:
+            before = list(connection.iterdump())
+        for fields in ({}, {'token': {
+                'openid': 'unit-test-openid', 'openkey': 'unit-test-secret-openkey',
+                'session_id': 'unit-test-session-id', 'pfkey': 'unit-test-secret-pfkey',
+                'region': 'CN', 'currency_type': 'CNY', 'pay_channel': 'os_midaspay'}}):
+            request = self.decoded('CSAccountUpdatePayTokenReq', fields)
+            result = auxiliary.response_fields(request, self.backend, self.token)
+            self.assertEqual(result, {'result': 0})
+            response = self.codec.decode(self.codec.response(request, result))
+            self.assertEqual(response.name, 'CSAccountUpdatePayTokenRes')
+            self.assertEqual(response.sequence, 23)
+            self.assertEqual(response.fields, result)
+            self.backend = Backend(self.backend.database, ROOT / 'definitions.json')
+        with self.backend.connection() as connection:
+            self.assertEqual(list(connection.iterdump()), before)
 
     def test_queries_require_local_authorization_and_original_error_codes(self):
         for name, code in (
@@ -76,6 +113,9 @@ class NativeSessionAuxiliaryTests(unittest.TestCase):
             ('CSCollectionAutoDistributionReq', 157000),
             ('CSPatchQuickPatchReq', 10010),
             ('CSRoundtripDirReq', 10010),
+            ('CSAccountAllowRealTimeVoiceReq', 10010),
+            ('CSMatchGateIsRankEnableReq', 10010),
+            ('CSAccountUpdatePayTokenReq', 10010),
         ):
             with self.subTest(name=name):
                 self.assertEqual(self.response(name, token='invalid-local-session')[0], {'result': code})

@@ -1,0 +1,34 @@
+{
+  "request": "CSRoomMatchStartAllocReq",
+  "response": "CSRoomMatchStartAllocRes",
+  "service": "matchgate",
+  "error_name": "MatchGateServiceInMaintenance",
+  "supported_local_response": {"result": 139005},
+  "consumer_source": {
+    "archive": "pak-0-0-pakchunk1-WindowsClient.pak",
+    "name": "TeamServer.lua",
+    "entry_offset": 35215360,
+    "sha256": "446ddb180043f2c5d71cf91da5f9edaf9f2eb556fa54be0b82ce7546a2d0a268",
+    "request_function": "0.116",
+    "request_offset": 92254,
+    "callback_function": "0.116.1",
+    "callback_offset": 94536,
+    "callback_lines": [2105, 2189],
+    "failure_cleanup_instructions": [1, 5],
+    "general_failure_instructions": [66, 76],
+    "rule": "Every failure clears the delay timer and sending flag. This error uses the general failure event; only result zero starts matching."
+  },
+  "error_source": {
+    "entry": 6809,
+    "sha256": "0b656ef417f1b3c6c429ebdf8ce59c1450a5d466a0b788dbced43981222ea2a5",
+    "instruction": 4634
+  },
+  "codec_source": {
+    "name": "cs_matchgate_editor_pb.lua",
+    "sha256": "b0f14326054a5d6fdec305520721d6c6bb50bd0059d7b0cc0f8f5fead3d1c0dd",
+    "encode_function": "0.3",
+    "decode_function": "0.2",
+    "result_field": {"number": 1, "type": "i32"}
+  },
+  "local_policy": "Authenticated explicit failure for an unavailable matching service. No room state, allocation, node, DS address, URL or inventory change is created."
+}

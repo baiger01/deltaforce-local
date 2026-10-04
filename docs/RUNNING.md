@@ -2,6 +2,8 @@
 
 以下 PowerShell 命令从项目根目录执行。推荐独立 Python 3.12 环境；使用 `hashlib.file_digest` 的工具至少需要 Python 3.11。
 
+统一源码从 `main` 拉取，包含装备、商城、地图集成代码及其静态配置、测试和工具。实际运行目录为根目录的 `outputs/df-local-server` 和 `work`；`进图调研/资料` 保留历史参考版本。
+
 ## 服务与测试
 
 ```powershell
@@ -16,7 +18,12 @@ $env:PYTHONPATH = (Resolve-Path outputs/df-local-server).Path
 在另一终端执行测试：
 
 ```powershell
-.\.venv\Scripts\python.exe -m unittest discover -s outputs/df-local-server/tests -t outputs/df-local-server -v
+Push-Location outputs/df-local-server
+try {
+    & ..\..\.venv\Scripts\python.exe -m unittest discover -s tests -v
+} finally {
+    Pop-Location
+}
 ```
 
 下文的 `python` 需使用已安装依赖的解释器，例如 `.\.venv\Scripts\python.exe`。`definitions.json` 中 `local_*` 数据是独立服务的测试数据。
@@ -51,20 +58,38 @@ python work/provision_native_test_keychain.py --template-id 11120000001 --apply
 
 工具要求库内恰好一个账号，应用前自动备份存档并核验实际原生库存响应。该模板及六区共 24 格来自客户端原表；提供权限是本地测试策略。已经装备其它卡包时，工具拒绝覆盖，应通过客户端切换。普通新账号不会自动获得卡包。
 
-## 12 分钟原客户端测试
+## 30 分钟原客户端测试
 
 关闭游戏和 WeGame 后，在项目根目录启动日志监听：
 
 ```powershell
-python work/watch_client_log.py --source "$env:DF_LOCAL_SHADOW_GAME/DeltaForce/Saved/Logs/DeltaForce.log" --output work/evidence/native-trial-live.log --duration-seconds 780
+python work/watch_client_log.py --source "$env:DF_LOCAL_SHADOW_GAME/DeltaForce/Saved/Logs/DeltaForce.log" --output work/evidence/native-trial-live.log --duration-seconds 1860
 ```
 
 在另一终端设置相同路径，执行以下命令，Windows UAC 由用户确认：
 
 ```powershell
-python work/run_native_elevated_trial.py --entry shipping --game-root "$env:DF_LOCAL_SHADOW_GAME" --wire-identity-probe --wire-auth-response-probe --wire-auth-identity-probe --wire-ready-probe --wire-ready-identity-probe --wire-business-login-probe --wire-business-bootstrap-probe --observation-seconds 720 --precreate-game-nick
+python work/run_native_elevated_trial.py --entry shipping --game-root "$env:DF_LOCAL_SHADOW_GAME" --wire-identity-probe --wire-auth-response-probe --wire-auth-identity-probe --wire-ready-probe --wire-ready-identity-probe --wire-business-login-probe --wire-business-bootstrap-probe --observation-seconds 1800 --precreate-game-nick
 ```
 
-默认测试时长为 720 秒，届时自动关闭测试客户端；日志监听多保留 60 秒。默认目录可使用 `--game-root ../shadow`；多账号库需额外传入 `--native-username`。诊断服务只监听 `127.0.0.1:65010`，结束后必须核对 `original_sdk_restored` 为 `true`。
+默认测试时长为 1800 秒，届时自动关闭测试客户端；独立日志监听多保留 60 秒。默认目录可使用 `--game-root ../shadow`；多账号库需额外传入 `--native-username`。诊断服务只监听 `127.0.0.1:65010`，结束后必须核对 `original_sdk_restored` 为 `true`。
 
 游戏本体、原始资源、账号数据库、会话、日志及编译 DLL 保留本地。重新提取所需原始条目需按 [数据来源](../DATA_PROVENANCE.md) 定位；已有静态目录可以直接用于开发。
+
+## 高级地图研究模式
+
+上述普通大厅命令不依赖私有地图采样记录。服务端公开测试使用前述 `discover -s tests` 命令；`work` 中的实源研究测试另需本机证据。
+
+启用 `--ds-control-probe` 会校验原始 Welcome 证据；启用 `--ds-initial-actor-bootstrap` 还需原始元数据。完整研究模式使用 `--game-server-probe`、`--ds-handshake-probe`、`--ds-packet-ack-probe`、`--ds-control-probe`、`--replication-metadata-export`、`--ds-initial-actor-bootstrap`、`--ds-map-id 2201`，并要求 `--ds-join-after-ready` 和 `--disable-device-seamless`。这些开关使用同一 Shipping shadow 和完整本地业务登录参数。
+
+该模式按源码中的固定哈希读取以下本地原证据：
+
+- `work/evidence/login-welcome-offline-review/official-Dam-native-LoadMap-FURL.json`
+- `work/native-client-tests/1791073668497579200/replication-metadata-after-actor-open/result.json`
+- `work/evidence/native-player-class-and-iris-level-path-review.json`
+- `work/evidence/native-engine-network-protocol-version-source-summary.json`
+- `work/evidence/native-player-controller-base-tail-profile.json`
+- `work/official-interface-observations/1791043432995-pid243608/result.json`
+- `work/evidence/native-spawn-role-and-connection-semantics.json`
+
+公开派生摘要不能替代这些原始文件通过哈希校验。`work/test_native_control_welcome_profile.py` 的实源测试及 `work/test_replication_metadata_trial.py` 的初始 Actor 测试使用这些记录，缺少时不能作为公开源码的普通测试执行。地图可操作场景仍待验证，当前结果见 [集成记录](MAP_EQUIPMENT_INTEGRATION_20261004.md)。

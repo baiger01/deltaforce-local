@@ -1055,13 +1055,16 @@ class MapHandshakeDiagnosticTests(unittest.TestCase):
     def test_room_mode_list_excludes_conflicting_map_ids(self):
         codec = _candidate_codec()
         key = b'0123456789abcdef'
-        root = Path(__file__).resolve().parent.parent
+        reference_protocol = (Path(__file__).resolve().parents[3]
+                              / '进图调研/资料/outputs/df-local-server/protocol')
+        self.addCleanup(_candidate_local_map_board_catalog.cache_clear)
         request = b'ABCD' + codec.encode('CSRoomGetMatchModeListReq',
                                          {'game_mode': 1}, sequence=49)
         for catalog in ('map_board_zero_dam_candidate_20260930.json',
                         'map_board_trial_modes_20260930.json'):
             with patch.dict('os.environ', {
-                    'DF_LOCAL_MAP_BOARD_CATALOG': str(root / 'protocol' / catalog)}):
+                    'DF_LOCAL_MAP_BOARD_CATALOG': str(reference_protocol / catalog)}):
+                _candidate_local_map_board_catalog.cache_clear()
                 frame = _candidate_local_room_mode_response(
                     request, key, header_word4=12, header_word9=49)
                 reply = codec.decode(decode_data_frame(

@@ -16,6 +16,8 @@ from local_game_paths import game_paths, project_path
 
 ROOT = Path(__file__).resolve().parent.parent
 RUNNER = ROOT / "work/verify_local_provider_client.py"
+RESOURCE_PROBE = ROOT / "work/probe_live_resource_implementations.py"
+RESOURCE_REGISTRATION = ROOT / "work/probe_live_resource_loader.py"
 REPORT = ROOT / "outputs/native-account-provider/elevated-launch-observation.json"
 CONTROL_PROFILE = ROOT / "outputs/df-local-server/protocol/native_ds_wire_profile.json"
 def load_control_trial_profile(profile_path, root, client_sha256, selected_map_id):
@@ -128,7 +130,7 @@ parser.add_argument("--disable-device-seamless", action="store_true",
 parser.add_argument("--disable-dynamic-address-switch", action="store_true",
                     help="Keep the shipping shadow client's local DS endpoint fixed")
 parser.add_argument("--ds-map-id", type=int)
-parser.add_argument("--observation-seconds", type=int, default=720)
+parser.add_argument("--observation-seconds", type=int, default=1800)
 parser.add_argument("--precreate-game-nick", action="store_true")
 parser.add_argument("--native-username")
 parser.add_argument("--source-game", type=Path)
@@ -541,6 +543,10 @@ if args.worker:
     assert request["runner_sha256"] == digest(RUNNER)
     assert request["wrapper_sha256"] == digest(Path(__file__))
     assert type(request["socket_helper_readonly_evidence"]) is bool
+    assert type(request["resource_helper_readonly_evidence"]) is bool
+    if request["resource_helper_readonly_evidence"]:
+        assert request["resource_helper_sha256"] == digest(RESOURCE_PROBE)
+        assert request["resource_registration_sha256"] == digest(RESOURCE_REGISTRATION)
     if args.ds_connection_class_code_probe:
         assert request["class_reader_sha256"] == digest(ROOT / "work/read_ds_connection_class_code.py")
     if args.ds_control_code_probe:
@@ -561,6 +567,14 @@ if args.worker:
         os.environ["DF_LOCAL_SOCKET_EVIDENCE"] = "1"
     else:
         os.environ.pop("DF_LOCAL_SOCKET_EVIDENCE", None)
+    if request["resource_helper_readonly_evidence"]:
+        os.environ["DF_LOCAL_RESOURCE_EVIDENCE"] = "1"
+        os.environ["DF_LOCAL_RESOURCE_PROBE_SHA256"] = request["resource_helper_sha256"]
+        os.environ["DF_LOCAL_RESOURCE_REGISTRATION_SHA256"] = request["resource_registration_sha256"]
+    else:
+        for key in ("DF_LOCAL_RESOURCE_EVIDENCE", "DF_LOCAL_RESOURCE_PROBE_SHA256",
+                    "DF_LOCAL_RESOURCE_REGISTRATION_SHA256"):
+            os.environ.pop(key, None)
     os.environ["DF_LOCAL_DS_JOIN_PROBE_AFTER_READY"] = (
         "1" if request["ds_join_after_ready"] else "0")
     if request["map_board_catalog"]:
@@ -694,7 +708,12 @@ request = {"requested_at_utc":datetime.now(timezone.utc).isoformat(), "entry":ar
            "image_code_reader_sha256":digest(ROOT / "work/snapshot_native_image_code.py")
                if args.ds_image_code_cache else None,
            "normal_windows_uac":True, "authorization_window_operated_by_tool":False,
-           "socket_helper_readonly_evidence":os.environ.get("DF_LOCAL_SOCKET_EVIDENCE") == "1"}
+           "socket_helper_readonly_evidence":os.environ.get("DF_LOCAL_SOCKET_EVIDENCE") == "1",
+           "resource_helper_readonly_evidence":os.environ.get("DF_LOCAL_RESOURCE_EVIDENCE") == "1",
+           "resource_helper_sha256":digest(RESOURCE_PROBE)
+               if os.environ.get("DF_LOCAL_RESOURCE_EVIDENCE") == "1" else None,
+           "resource_registration_sha256":digest(RESOURCE_REGISTRATION)
+               if os.environ.get("DF_LOCAL_RESOURCE_EVIDENCE") == "1" else None}
 request_path.write_text(json.dumps(request, indent=2) + "\n", encoding="utf-8")
 
 class ShellInfo(C.Structure):

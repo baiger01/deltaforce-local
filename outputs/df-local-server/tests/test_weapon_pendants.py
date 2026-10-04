@@ -142,6 +142,9 @@ class WeaponPendantTests(unittest.TestCase):
                 self.assertEqual(self.backend.native_lobby_profile(self.token), before)
 
     def test_bow_pendant_commands_without_recovered_attachments_rollback_batch(self):
+        self.assertIn(18150000001, weapon_pendants.RECEIVERS)
+        self.assertNotIn(18150000001, weapon_pendants.PENDANT_RECEIVERS)
+        self.assertIn(WEAPON, weapon_pendants.PENDANT_RECEIVERS)
         before = self.backend.native_lobby_profile(self.token)
         for pendant in ({'pendant_id': PENDANT}, {'pendant_apply_all': True},
                         {'pendant_gid': 12345}):
