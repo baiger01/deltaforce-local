@@ -1,0 +1,102 @@
+{
+  "scope": "Read-only installed-client metadata and static consumer analysis; no client execution, source archives, raw Lua chunks, or invented entitlement rules.",
+  "request": "CSCollectionAutoDistributionReq",
+  "response": "CSCollectionAutoDistributionRes",
+  "supported_local_result": 157012,
+  "supported_local_error_name": "CollectionPropDescNotFound",
+  "distribution_rule_recovered": false,
+  "unknown_rule_fields": [
+    "server entitlement conditions",
+    "voucher grant quantity",
+    "replenishment period and time zone",
+    "meaning of next_distribute_ts for ineligible or full players"
+  ],
+  "known_client_behavior": [
+    {
+      "source": "CollectionServer.lua",
+      "functions": ["0.1", "0.214", "0.214.0", "0.215"],
+      "finding": "The initial next timestamp is zero. Unforced calls send after the stored timestamp expires. Only result zero updates next_distribute_ts and emits the success event. A refusal preserves the previous timestamp."
+    },
+    {
+      "source": "CollectionServer.lua",
+      "functions": ["0.11", "0.24"],
+      "finding": "Loading collection props invokes distribution with force true. Filtering collection props of RentalVoucher type also invokes distribution."
+    },
+    {
+      "source": "ArmedForceConfig.lua",
+      "function": "0",
+      "instructions": [6259, 6260, 6261, 6262, 6263, 6264, 6265, 6266],
+      "finding": "RentalConsumableID contains the four real voucher IDs below. The first ID is the voucher displayed with a replenishment timer.",
+      "rental_consumable_ids": [32330000001, 32330000002, 32330000003, 32330000004]
+    },
+    {
+      "source": "AssemblyRentalMainPanel.lua",
+      "functions": ["0.18", "0.18.1"],
+      "finding": "For the first voucher below its item stack limit, a positive next timestamp and seasonLevel at least EquipmentPresetLimitLevel enable a 0.5-second repeating timer. An expired timestamp invokes a forced request. The client fallback limit is two; it does not establish the server entitlement rule. An initial timestamp of zero does not enable this timer."
+    },
+    {
+      "source": "AssemblyHDRentalMainPanel.lua",
+      "functions": ["0.17", "0.17.1"],
+      "finding": "The HD panel applies the equivalent timer and forced-request conditions."
+    },
+    {
+      "source": "DFMGlobalConst.lua",
+      "functions": ["0.1", "0.2"],
+      "finding": "Global constants come from the Value field of GlobalConstTable, with a caller-supplied fallback. The actual source table has not been recovered for this rule."
+    },
+    {
+      "source": "ProtocolProcessingToolClass.lua",
+      "functions": ["0.38", "0.46"],
+      "finding": "A matched response consumes the wait timer, resend state and callback regardless of nonzero result. Default requests with high frequency disabled are suppressed when sent less than one os.clock second after the same message. Timer-based followup requests and later UI calls can still occur."
+    }
+  ],
+  "refusal_ui_behavior": {
+    "observed_in_running_client": false,
+    "static_conclusion": "Result 157012 enters the normal error pop-tip path. It does not select the login reconnect or login confirmation branches. Missing ErrorTable text also produces a nonempty shipping fallback containing the error code.",
+    "chain": [
+      {"source": "ProtoDefaultConfig.lua", "function": "0", "finding": "Error tips are enabled by default; 157012 is absent from NoNeedTipsCode."},
+      {"source": "ProtocolProcessingToolClass.lua", "function": "0.38", "finding": "Nonzero response results reach the configured error handler."},
+      {"source": "ErrHandler.lua", "function": "0.2", "finding": "HandleProtoError invokes OnErrHandleShowTip."},
+      {"source": "CommonTipsLogic.lua", "functions": ["0.10", "0.9"], "finding": "The event is bound to _ShowCommonErrorTip, which calls DoCommonPopTipShow for this result."},
+      {"source": "CommonTipsField.lua", "function": "0.11", "finding": "Missing per-code display text falls back to NotFoundErrorCodeConfigShipping."},
+      {"source": "CommonTipsConfig.lua", "function": "0", "instructions": [963, 964, 965, 966], "finding": "The shipping fallback is a nonempty temporary-failure message with a code placeholder."}
+    ]
+  },
+  "item_catalog_anchor": {
+    "artifact": "game_item_catalog.json",
+    "source_table": "/Game/R13N/Common/Base/DataTables/GameItem",
+    "source_pak": "1.101.37117.36.10_WindowsNoEditor_37127_P.pak",
+    "source_uasset_sha256": "07ff30a1da65a9e28e73756bd0f3406f4b2f00a9c1fdb05a3c98394be3cd673a",
+    "source_uexp_sha256": "77928aabcb5f84e02ddd22eafbcada059f64fad77bd7a0b4fb8b0903f59e8ef1",
+    "id": 32330000001,
+    "serialized_uexp_offset": 9013888,
+    "quality": 2,
+    "game_item_type": 233,
+    "max_stack_count": 10,
+    "finding": "The stack limit is an item storage property; it does not establish an automatic grant quantity."
+  },
+  "search_bounds": {
+    "readable_baseline_entries_rescanned": 5895,
+    "rescan_read_failures": 0,
+    "baseline_rescan_terms": ["OnErrHandleShowTip", "EquipmentPresetLimitLevel", "LowRental", "LowRent", "AutoDistribution"],
+    "baseline_pak2_entries_checked": 10782,
+    "baseline_pak2_value_error_decode_count": 853,
+    "finding": "No readable source entitlement or schedule was identified within these bounds. Unreadable or encrypted table names and server-only configuration remain unverified. Equipment-plan daily refresh text cannot establish voucher replenishment."
+  },
+  "source_pak": "pak-0-0-pakchunk1-WindowsClient.pak",
+  "sources": [
+    {"name": "CollectionServer.lua", "entry": 6860, "pak_offset": 34187264, "sha256": "30fd97e50c22998e987b1fdcf8ee7a0e4edfe1ae51b93dc1d6e11ff5e7bf37f2"},
+    {"name": "ArmedForceConfig.lua", "entry": 2446, "pak_offset": 11460608, "sha256": "099b45b57a4d1571e5b7888085130a0b3d4beee43a68c16cebe753c235f2bd58"},
+    {"name": "DFMGlobalConst.lua", "entry": 1882, "pak_offset": 8687616, "sha256": "4887a7f2b5265a5277c5c2553f4ff56ec08f1219a632220e3b2efa367baddcc4"},
+    {"name": "AssemblyRentalMainPanel.lua", "entry": 2536, "pak_offset": 12244992, "sha256": "c61977697dcf6ab0be15d39ee0709b6af9d0f1317d214ba7045b1ec761113983"},
+    {"name": "AssemblyHDRentalMainPanel.lua", "entry": 2534, "pak_offset": 12218368, "sha256": "cbd77f54eb7bf44ad4055e037864d633765a77d839310720919616c6a4b6e7ec"},
+    {"name": "ProtoDefaultConfig.lua", "entry": 7129, "pak_offset": 36007936, "sha256": "b029ef2becabd33d01bfe4526f43cad490fba1c18ded71c5b1ea2177f8ff9ef4"},
+    {"name": "ProtocolProcessingToolClass.lua", "entry": 7128, "pak_offset": 35993600, "sha256": "028d3cd3d0e3f0c10ddcbc70dd492bb7cb8c49ffd951d107f37eb5f064ef543f"},
+    {"name": "ErrHandler.lua", "entry": 7126, "pak_offset": 35985408, "sha256": "49b2c1cd8a9542426f6ea0759c67527997875062e31925c38f002de1c0438b20"},
+    {"name": "CommonTipsLogic.lua", "entry": 3023, "pak_offset": 15347712, "sha256": "f8401da69fcf06d346f4afb8ee6ab57845c5775c05a64de4bd359101cf8d70a6"},
+    {"name": "CommonTipsField.lua", "entry": 3022, "pak_offset": 15341568, "sha256": "36f35da2686ba65235bb6cbcf7364437ffcb7de54b98cd451f6f3e51b91922f0"},
+    {"name": "CommonTipsConfig.lua", "entry": 3021, "pak_offset": 15335424, "sha256": "a1dccf7705ae2b91cb2f695ee1b4bef0766314fb0e187af1ac4f66fb10ebea5d"},
+    {"name": "ServerConfig.lua", "entry": 6935, "pak_offset": 35035136, "sha256": "16ec30579878318ec1fafa1a078646e547e2d894feea403451ed73ba8fad5ed1"},
+    {"name": "TableManager.lua", "entry": 7160, "pak_offset": 36114432, "sha256": "f7cb43b6c7eb7c1cb0fa140f7471c9340d5149e2f6d70db9506d2579e81b4809"}
+  ]
+}

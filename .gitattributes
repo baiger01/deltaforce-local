@@ -1,3 +1,5 @@
 * text=auto eol=lf
 *.cmd text eol=crlf
 *.pb binary
+# Protocol profiles are sealed by SHA-256; preserve their original bytes.
+outputs/df-local-server/protocol/*.json -text whitespace=cr-at-eol

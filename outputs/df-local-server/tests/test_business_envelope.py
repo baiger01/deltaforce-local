@@ -1,4 +1,5 @@
 import unittest
+import tracemalloc
 
 from dfserver.business_envelope import BusinessEnvelope, MAX_ENVELOPE_BYTES, parse_business_envelope
 
@@ -29,6 +30,16 @@ class BusinessEnvelopeTests(unittest.TestCase):
         for wire in (b'\x0a', b'\x12\x04x', bytes.fromhex('0a033a01ff'), b'\x00'):
             with self.subTest(wire=wire), self.assertRaises(ValueError):
                 parse_business_envelope(wire)
+
+    def test_repeated_outer_fields_are_validated_without_collecting_metadata(self):
+        parse_business_envelope(BusinessEnvelope(b'', {}).encode())
+        wire = b'\x12\x00' * 30000
+        tracemalloc.start()
+        try:
+            self.assertEqual(parse_business_envelope(wire), BusinessEnvelope(b'', {}))
+            self.assertLess(tracemalloc.get_traced_memory()[1], 1024 * 1024)
+        finally:
+            tracemalloc.stop()
 
     def test_invalid_values_size_limits_and_repr_do_not_expose_payload(self):
         for header in ({'unknown': 1}, {'name': b'bytes'}, {'result': True}, {'mod_route_id': -1},

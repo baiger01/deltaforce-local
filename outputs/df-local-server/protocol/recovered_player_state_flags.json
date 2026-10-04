@@ -1,0 +1,33 @@
+{
+  "enum": "GlobalPlayerStateEnums",
+  "source_artifact": "work/evidence/carved_lua/81e071e35f33f0e5704d5098ac2a182c794bbe5b1e5a7e24f415a0473b40350b.json",
+  "source_relative_to": "project_root",
+  "source_chunk": "@common_pb.lua",
+  "function_id": "0",
+  "instruction_range": [1898, 1921],
+  "values": {
+    "EPlayerState_Offline": 0,
+    "EPlayerState_Online": 1,
+    "EPlayerState_InMatch": 2,
+    "EPlayerState_Matching": 4,
+    "EPlayerState_Face2FaceTeamRoom": 8,
+    "EPlayerState_WaitDS": 16,
+    "EPlayerState_PickHeroStage": 32,
+    "EPlayerState_InTeam": 256,
+    "EPlayerState_InRoom": 512
+  },
+  "consumer_chunk": "@AccountServer.lua",
+  "consumer_functions": {
+    "0.31": "_ParsePlayerStateCode assigns the received State to _playerStateCode",
+    "0.26": "IsInIdle tests the EPlayerState_Online bit",
+    "0.25": "IsInTeam tests the EPlayerState_InTeam bit"
+  },
+  "entry_gate_chunk": "@MatchServer.lua",
+  "entry_gate_function": "0.85.0",
+  "entry_gate_instruction_range": [116, 142],
+  "entry_gate": "Preparation start-match event requires IsInTeam or IsInIdle",
+  "native_entry_flow_event_verified_after_correction": true,
+  "native_udp_connection_attempt_verified_after_correction": true,
+  "playable_map_entry_verified": false,
+  "native_trial_relative_to_project_root": "work/native-client-tests/1790769019995952200/map-entry-progress.json"
+}

@@ -14,9 +14,13 @@
 - 客户端目录驱动的商店展示、枪械预设到真实 receiver 的映射、持久化枪械组件树、购买与出售事务。
 - 按已恢复客户端配置提供胸挂和背包的具体格子；保留请求指定的目的位置。
 - `CSDepositOperateBulletReq` 的真实装弹/卸弹枚举、弹药兼容关系、已核实弹匣容量、枪内弹药持久化和库存变更通知。
-- `CSDepositUpdateBodyContainerReq` 的当前已观察容器同步，包含数量守恒、落位检查、原位置清空和事务回滚。
+- `CSDepositAssemblySyncBodyContainerReq` 的当前已观察容器同步，包含数量守恒、落位检查、原位置清空和事务回滚。
 
 这些是代码实现范围。模型显示、鼠标卡住、登录状态异常等用户反馈仍需在实机操作中逐项复核；不能据自动测试宣称全部已修好。
+
+2026-09-30 子弹及药品购买后重开的选项丢失已得到用户实测确认修复。16:22 原客户端购弹及装弹成功，重开日志却显示“可交易=false”下架。只读 Lua 追到心跳 `tick_count` 错用运行毫秒，而客户端要求 Unix 秒；修正后 244 项测试通过，16:43/16:44 原客户端两轮购弹及购买 3 份户外医疗箱均成功，用户确认两页重开均正常。时钟来源和哈希见 `DATA_PROVENANCE.md`。这不表示下表其他商品映射和容器流程已完成。
+
+同日防具购买锁定追到 `AuctionServer.GetPropSaleInfo`：本地只提供单条报价，客户端会读档位 0，原实现却将头盔、护甲放在档位 1。修正目录和详情后，244 项测试通过（19.966 秒）；17:00 金刚防弹衣、17:04 赤枭装甲防弹面具购买成功，库存通知已发送，两件物品持久化到客户端指定的 105/101 位置。用户确认护甲、头盔、背包、胸挂四类均可购买。此次 360 秒试验完整结束，`original_sdk_restored=true`，原 SDK SHA-256 校验一致。
 
 ## 待修清单
 
@@ -26,12 +30,13 @@
 | 新资源对应 | receiver `18050000033` 未在本轮基础武器表找到完整弹药类别，需找实际新表 | `weapon_component_catalog.json`、`scan_weapon_tables.py` |
 | 耐久显示 | 甲的最大耐久有来源表。头盔及未知配置仍有历史默认 100，必须继续恢复并替换这些假定值 | `local_commerce.py`、`armor_durability_catalog.json` |
 | 商城与交易行 | 商品目录不等于售卖规则；部分 merchant/exchange 关联仍需客户端证明 | `local_commerce.py`、`handshake_diagnostic.py` |
-| 近战武器 | 已使用实际 ID `18100000001` 并纳入拥有/装备响应；单独持久化的近战数据仍需核对完整装备与移动流程 | `core.py`、`handshake_diagnostic.py` |
-| 容器与购买 | 当前同步只覆盖已观察胸挂、背包和临时区；口袋、安全箱及其他请求需恢复实际行为 | `core.py`、`handshake_diagnostic.py` |
+| 近战系列规则 | 18 组真实刀具/外观已恢复，15 组可见刀具的名称、模型及切换已得到用户确认。`28101250021/22/23` 的系列中间档仍缺实际拥有规则，原客户端拒绝普通收藏下发；当前不提供这三档，保留原始目录证据 | `melee_weapons.py`、`melee_weapon_catalog.json`、`test_melee_inventory.py` |
+| 曼德尔砖与枪械皮肤 | 当前只有砖购买，尚无抽奖消耗与奖励发放；用户反馈砖名称为未知物品、买后不能抽奖，枪械皮肤均未解锁。需恢复同版本砖、钥匙、奖池和普通/特品皮肤关联后接入 | `local_commerce.py`、`core.py`、`handshake_diagnostic.py` |
+| 容器与购买 | 当前同步覆盖已观察胸挂、背包和口袋；安全箱及其他请求需恢复实际行为。`common_pb.lua` 根函数指令 426-428 确认 Pocket=199997，指令 399-401 确认 CarryOutPropsPos=1999，不能混为临时区 | `core.py`、`handshake_diagnostic.py` |
 | 临时区清理 | `CSDepositClearCarryOutTempPropsReq` 仍需按客户端调用链恢复，不能无依据删除已付款物品 | `handshake_diagnostic.py`、只读 Lua 解析工具 |
 | 历史候选配置 | 地图的 `map_id` 与部分安全屋设施 ID/等级仍是历史候选或外部资料推断，需要客户端核实后替换 | `local_map_board_candidates.json`、`safehouse_max_level_candidates.json` |
 | 实机复核 | 登录状态异常、出售、购买后药品落位、模型及退出页面时卡住需要同一轮带日志测试 | `watch_client_log.py`、原客户端受控测试 |
-| 中断恢复 | 2026-09-30 最后一轮测试进程中断，SDK 已按哈希恢复；本机观察报告损坏，需要保留损坏文件并修复恢复记录后再次测试 | `recover_interrupted_trial.py`、`verify_local_provider_client.py` |
+| 中断恢复 | 旧试验 `1790743289202576800` 的损坏观察报告已原样归档，SDK 已按哈希恢复。随后两轮 360 秒试验完整结束，均确认 `original_sdk_restored=true` 与原版哈希一致 | `recover_interrupted_trial.py`、`verify_local_provider_client.py` |
 
 尚未核实容量的 receiver：`18010000011`、`18010000017`、`18050000005`、`18060000007`、`18060000008`、`18070000002`、`18050000008`、`18020000012`、`18050000033`。
 

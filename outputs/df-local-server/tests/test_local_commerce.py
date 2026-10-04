@@ -5,6 +5,7 @@ from pathlib import Path
 import time
 from types import SimpleNamespace
 import unittest
+from unittest.mock import patch
 
 import dfserver.handshake_diagnostic as diagnostic
 from dfserver.candidate_business import CandidateMessage
@@ -26,6 +27,7 @@ from dfserver.local_commerce import (CURRENCY_ID, MANDEL_BRICK_PURCHASE_CURRENCY
                                      default_weapon_presets, item_condition_fields,
                                      order_id, response_fields,
                                      stock_catalog)
+from dfserver.weapon_pendants import PENDANTS
 
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -71,7 +73,7 @@ class LocalCommerceTests(unittest.TestCase):
         self.assertEqual(int(batch_fields['sale_lists'][0]['sale_lists'][0]['order_id']),
                          order_id(item_id))
 
-    def test_auction_type_rows_supply_client_durability_index(self):
+    def test_single_armor_offer_uses_client_fallback_durability_index(self):
         request = self.request('CSAuctionGetTypeListReq',
                                {'prop_ids': [15080010001]})
         fields = response_fields(request, self.backend, self.token)
@@ -85,7 +87,8 @@ class LocalCommerceTests(unittest.TestCase):
                                      {'prop_ids': [armor_id]})
         armor_fields = response_fields(armor_request, self.backend, self.token)
         armor_row = armor_fields['type_lists'][0]
-        self.assertEqual(armor_row['durability_lvl'], 1)
+        # AuctionServer.GetPropSaleInfo reads index 0 unless all three tiers exist.
+        self.assertEqual(armor_row['durability_lvl'], 0)
         self.assertEqual(armor_row['durability_ratio'], 100)
         self.codec.response(armor_request, armor_fields)
 
@@ -93,23 +96,129 @@ class LocalCommerceTests(unittest.TestCase):
                                       {'infos': [{'prop_id': str(armor_id)}]})
         detail_fields = response_fields(detail_request, self.backend, self.token)
         detail = detail_fields['sale_lists'][0]
-        self.assertEqual(detail['durability_lvl'], 1)
+        self.assertEqual(detail['durability_lvl'], 0)
         self.assertEqual(detail['durability_ratio'], 100)
         self.codec.response(detail_request, detail_fields)
+
+    def test_medicine_sale_filter_keeps_normal_items_and_removes_unlisted_offers(self):
+        # Client crafting row 239/240 proves these two names and product IDs.
+        normal, unlisted = 14070000005, 14070000007
+        self.assertIn(normal, stock_catalog())
+        self.assertFalse(unlisted in stock_catalog())
+        for name in ('CSMarketGetTypeListReq', 'CSAuctionGetTypeListReq'):
+            request = self.request(name, {'prop_ids': [normal, unlisted]})
+            fields = response_fields(request, self.backend, self.token)
+            self.assertEqual([row['prop_id'] for row in fields['type_lists']], [normal])
+            self.codec.response(request, fields)
+        request = self.request('CSAuctionGetSaleListBatchReq', {
+            'infos': [{'prop_id': normal}, {'prop_id': unlisted}]})
+        fields = response_fields(request, self.backend, self.token)
+        self.assertEqual([row['prop_id'] for row in fields['sale_lists']], [normal])
+        for name in ('CSMarketGetSaleListReq', 'CSAuctionGetSaleListReq'):
+            fields = response_fields(self.request(name, {'info': {'prop_id': unlisted}}),
+                                     self.backend, self.token)
+            self.assertFalse(fields.get('sale_list_info') or fields.get('sale_list_infos'))
+        for item_id in (14020000003, 11050006003, 11010005011,
+                        11070005004, 11080002001, 37190000001):
+            self.assertTrue(item_id in stock_catalog(), item_id)
+        self.assertEqual({item_id for item_id in stock_catalog()
+                          if str(item_id).startswith('1407')}, {
+                              14070000001, 14070000003, 14070000004,
+                              14070000005, 14070000006, 14070000008, 14070000009})
+        self.assertFalse(any(str(item_id).startswith(('1411', '1499'))
+                             for item_id in stock_catalog()))
+
+    def test_unlisted_medicine_stale_purchase_is_rejected_without_charge(self):
+        normal, unlisted = 14070000005, 14070000007
+        before = self.backend.native_lobby_profile(self.token)
+        items = [{'channel': 2, 'single_auction_prop': {
+            'prop_id': item_id, 'buy_num': 1, 'currency': CURRENCY_ID,
+            'price': price, 'to_pos': 2}}
+            for item_id, price in ((normal, 15000), (unlisted, 24375))]
+        _, response = self._reconnected_request('CSSerialCheapBuyReq', {'buy_list': items})
+        self.assertNotEqual(response.fields['result'], 0)
+        self.assertEqual(self.backend.native_lobby_profile(self.token), before)
+        for name in ('CSAuctionBuyTReq', 'CSMarketBuyTReq'):
+            _, response = self._reconnected_request(name, {
+                'prop_id': unlisted, 'buy_num': 1, 'currency': CURRENCY_ID,
+                'price': 24375, 'order_id': order_id(unlisted)})
+            self.assertIsNotNone(response)
+            self.assertNotEqual(response.fields['result'], 0)
+            self.assertEqual(self.backend.native_lobby_profile(self.token), before)
+
+    def test_unlisted_medicine_owned_inventory_remains_readable_movable_and_sellable(self):
+        self.backend.set_native_lobby_profile(self.token, level=60, currencies={}, props=[
+            {'gid': 2001, 'template_id': 14070000007, 'quantity': 1,
+             'grid_page_id': 2, 'x': 0, 'y': 0, 'length': 1, 'width': 1}])
+        self.assertFalse(14070000007 in stock_catalog())
+        _, response = self._reconnected_request('CSDepositGetPropsReq', {})
+        self.assertEqual(int(response.fields['grid_pages'][0]['props'][0]['id']), 14070000007)
+        _, moved = self._reconnected_request('CSDepositEquipPropReq', {'cmds': [{
+            'prop_id': 14070000007, 'prop_gid': 2001, 'src_pos': 2,
+            'target_pos': 199997, 'num': 1,
+            'spec_loc': {'pos': 199997, 'space_id': 2}}]})
+        self.assertEqual(moved.fields['result'], 0)
+        prop = next(row for row in self.backend.native_lobby_profile(self.token)['props'] if row['gid'] == 2001)
+        self.assertEqual((prop['template_id'], prop['quantity'], prop['grid_page_id']),
+                         (14070000007, 1, 199997))
+        _, prices = self._reconnected_request('CSAuctionGetGameItemSellPriceReq', {
+            'prop_ids': [14070000007]})
+        self.assertEqual(int(prices.fields['sell_props'][0]['sell_price']), 24375)
+        _, moved = self._reconnected_request('CSDepositEquipPropReq', {'cmds': [{
+            'prop_id': 14070000007, 'prop_gid': 2001, 'src_pos': 199997,
+            'target_pos': 2, 'num': 1}]})
+        self.assertEqual(moved.fields['result'], 0)
+        _, sold = self._reconnected_request('CSMallSellReq', {
+            'sell_props': [{'id': 14070000007, 'gid': 2001, 'num': 1}],
+            'prices': [{'money_type': CURRENCY_ID, 'price': 24375}]})
+        self.assertEqual(sold.fields['result'], 0)
+        profile = self.backend.native_lobby_profile(self.token)
+        self.assertFalse(any(row['gid'] == 2001 for row in profile['props']))
+        self.assertEqual([row['template_id'] for row in profile['props']], [11090000002])
+        self.assertEqual(next(p['amount'] for p in profile['currencies']
+                              if p['currency_id'] == CURRENCY_ID), 24375)
+
+    def test_auction_offer_window_contains_heartbeat_time_after_purchase(self):
+        item_id = 37190400001
+        price = stock_catalog()[item_id]['initial_guide_price']
+        detail_request = self.request('CSAuctionGetSaleListBatchReq', {
+            'infos': [{'prop_id': item_id}]})
+        heartbeat = b'ABCD' + self.codec.encode(
+            'CSOnlineHeartbeatReq', {'padding': 17}, sequence=9)
+        key = b'0123456789abcdef'
+        with patch('dfserver.handshake_diagnostic.time.time', return_value=1790756500.75):
+            initial = response_fields(detail_request, self.backend, self.token)
+            purchase = response_fields(self.request('CSSerialCheapBuyReq', {
+                'scene': 503, 'buy_list': [{'channel': 2, 'single_auction_prop': {
+                    'prop_id': item_id, 'buy_num': 30, 'currency': CURRENCY_ID,
+                    'price': price, 'to_pos': 199997}}]}), self.backend, self.token)
+            reopened = response_fields(detail_request, self.backend, self.token)
+            frame = diagnostic._candidate_local_heartbeat_response(
+                heartbeat, key, header_word4=12, header_word9=9)
+        self.assertEqual(purchase['result'], 0)
+        server_time = int(self.codec.decode(decode_data_frame(
+            frame, key, direction='server_to_client',
+            compression_method=1).messages[0]).fields['tick_count'])
+        for response in (initial, reopened):
+            decoded = self.codec.decode(self.codec.response(detail_request, response))
+            detail = decoded.fields['sale_lists'][0]
+            self.assertLessEqual(int(detail['auction_vaild_time_begin']), server_time)
+            self.assertGreaterEqual(int(detail['auction_vaild_time_end']), server_time)
+            self.assertGreater(int(detail['sale_lists'][0]['selling_num']), 0)
 
     def test_type_list_deduplicates_identical_rows_but_keeps_distinct_variants(self):
         fields = response_fields(self.request('CSMarketGetTypeListReq', {}),
                                  self.backend, self.token)
         ids = {int(row['prop_id']) for row in fields['type_lists']}
-        self.assertIn(14990000029, ids)
-        self.assertNotIn(14990000221, ids)
-        self.assertIn(14990000005, ids)
-        self.assertIn(14990000269, ids)
+        self.assertIn(15090010020, ids)
+        self.assertNotIn(15090010021, ids)
+        self.assertIn(15050100008, ids)
+        self.assertIn(15050100020, ids)
         requested = response_fields(self.request(
-            'CSMarketGetTypeListReq', {'prop_ids': [14990000221]}),
+            'CSMarketGetTypeListReq', {'prop_ids': [15090010021]}),
             self.backend, self.token)
         self.assertEqual([int(row['prop_id']) for row in requested['type_lists']],
-                         [14990000221])
+                         [15090010021])
 
     def test_browse_list_hides_receiver_alias_of_a_complete_gun(self):
         complete_gun = 10010000019
@@ -165,7 +274,7 @@ class LocalCommerceTests(unittest.TestCase):
         decoded = decode_data_frame(frame, key, direction='server_to_client',
                                     compression_method=1, max_output=1024 * 1024)
         message = self.codec.decode(decoded.messages[0])
-        self.assertGreater(len(message.fields['type_lists']), 4000)
+        self.assertGreater(len(message.fields['type_lists']), 3000)
         self.assertLess(len(message.fields['type_lists']), len(stock_catalog()))
         self.assertEqual(len({int(row['prop_id']) for row in message.fields['type_lists']}),
                          len(message.fields['type_lists']))
@@ -213,7 +322,7 @@ class LocalCommerceTests(unittest.TestCase):
         self.codec.response(request, fields)
 
     def test_deciphered_mandel_bricks_can_pass_client_market_type_gate(self):
-        item_id = 16110000001
+        item_id = 16110000014
         self.assertIn(item_id, stock_catalog())
         type_fields = response_fields(
             self.request('CSMarketGetTypeListReq', {'prop_ids': [str(item_id)]}),
@@ -238,23 +347,26 @@ class LocalCommerceTests(unittest.TestCase):
             {'item_id': str(item_id), 'num': '10',
              'currency_type': str(MANDEL_BRICK_PURCHASE_CURRENCY), 'price': '20000'},
             {'item_id': str(MANDEL_KEY_ID), 'num': '10',
-             'currency_type': str(MANDEL_KEY_CURRENCY), 'price': '0'},
+             'currency_type': str(MANDEL_KEY_CURRENCY), 'price': '600'},
         ], 'is_open_directly': False})
         fields = response_fields(request, self.backend, self.token)
         self.codec.response(request, fields)
         self.assertEqual(fields['result'], 0)
         self.assertEqual(fields['change']['currency_changes'][0]['delta'], -200000)
-        self.assertEqual(fields['change']['currency_changes'][1], {
-            'currency_id': MANDEL_KEY_ID, 'delta': 10, 'current_num': 10})
+        self.assertEqual(fields['change']['currency_changes'][1]['delta'], -600)
+        self.assertEqual(fields['change']['prop_changes'][2]['prop'], {
+            'id': MANDEL_KEY_ID, 'gid': 0, 'num': 10})
         state = self.backend.native_lobby_profile(self.token)
         self.assertEqual(next(row['amount'] for row in state['currencies']
                               if row['currency_id'] == MANDEL_BRICK_PURCHASE_CURRENCY),
                          300000)
-        self.assertEqual(next(row['amount'] for row in state['currencies']
-                              if row['currency_id'] == MANDEL_KEY_ID), 10)
+        self.assertEqual(next(row['quantity'] for row in state['collection_props']
+                              if row['template_id'] == MANDEL_KEY_ID), 10)
         self.assertEqual(state['props'], [])
         self.assertEqual(state['collection_props'],
-                         [{'template_id': item_id, 'quantity': 10}])
+                         [{'template_id': item_id, 'quantity': 10},
+                          {'template_id': 32210000004, 'quantity': 10},
+                          {'template_id': MANDEL_KEY_ID, 'quantity': 10}])
 
         collection_frame = _candidate_local_collection_response(
             b'ABCD' + self.codec.encode('CSCollectionLoadPropsReq', {}, sequence=18),
@@ -263,7 +375,9 @@ class LocalCommerceTests(unittest.TestCase):
         loaded = self.codec.decode(decode_data_frame(
             collection_frame, b'0123456789abcdef', direction='server_to_client',
             compression_method=1).messages[0])
-        self.assertEqual(int(loaded.fields['common_props'][0]['num']), 10)
+        self.assertEqual([(int(prop['id']), int(prop['gid']), int(prop['num']))
+                          for prop in loaded.fields['common_props']],
+                         [(item_id, 0, 10), (32210000004, 0, 10), (MANDEL_KEY_ID, 0, 10)])
 
         key = b'0123456789abcdef'
         response_frame = _candidate_local_commerce_response(
@@ -272,7 +386,7 @@ class LocalCommerceTests(unittest.TestCase):
                                'currency_type': MANDEL_BRICK_PURCHASE_CURRENCY,
                                'price': 20000},
                               {'item_id': MANDEL_KEY_ID, 'num': 1,
-                               'currency_type': MANDEL_KEY_CURRENCY, 'price': 0}]},
+                               'currency_type': MANDEL_KEY_CURRENCY, 'price': 60}]},
                 sequence=19),
             self.backend, self.token, key, header_word4=12, header_word9=19)
         notification = _candidate_local_inventory_change_notification(
@@ -292,8 +406,20 @@ class LocalCommerceTests(unittest.TestCase):
         self.assertEqual(collection_push.name, 'CSCollectionPropChangeNtf')
         self.assertEqual(int(collection_push.fields['data_change'][0]['prop']['id']),
                          item_id)
-        self.assertEqual(self.backend.native_lobby_profile(self.token)['collection_props'],
-                         [{'template_id': item_id, 'quantity': 11}])
+        collection = self.backend.native_lobby_profile(self.token)['collection_props']
+        self.assertEqual([row for row in collection if row['template_id'] not in PENDANTS],
+                         [{'template_id': item_id, 'quantity': 11},
+                          {'template_id': 32210000004, 'quantity': 11},
+                          {'template_id': MANDEL_KEY_ID, 'quantity': 11}])
+        final_collection_frame = _candidate_local_collection_response(
+            b'ABCD' + self.codec.encode('CSCollectionLoadPropsReq', {}, sequence=22),
+            self.backend, self.token, key, header_word4=12, header_word9=22)
+        final_collection = self.codec.decode(decode_data_frame(
+            final_collection_frame, key, direction='server_to_client',
+            compression_method=1).messages[0])
+        self.assertEqual([(int(prop['id']), int(prop['gid']), int(prop['num']))
+                          for prop in final_collection.fields['common_props']],
+                         [(item_id, 0, 11), (32210000004, 0, 11), (MANDEL_KEY_ID, 0, 11)])
 
     def test_direct_mandel_draw_does_not_charge_without_reward_handler(self):
         item_id = 16110000026
@@ -325,13 +451,11 @@ class LocalCommerceTests(unittest.TestCase):
         self.assertEqual(state['collection_props'],
                          [{'template_id': 16110000026, 'quantity': 10}])
 
-    def test_shop_item_descriptions_cover_mandel_purchase_rows(self):
+    def test_shop_item_descriptions_preserve_client_localization(self):
         request = self.request('CSShopGetGameItemConfigReq', {})
         fields = response_fields(request, self.backend, self.token)
         self.codec.response(request, fields)
-        names = {int(row['item_id']): row['Name'] for row in fields['descs']}
-        self.assertEqual(names[16110000026], '曼德尔砖')
-        self.assertEqual(names[MANDEL_KEY_ID], '量子密钥')
+        self.assertEqual(fields['descs'], [])
 
     def test_purchase_deducts_once_and_adds_nonoverlapping_warehouse_prop(self):
         item_id = 15080010001
@@ -535,6 +659,153 @@ class LocalCommerceTests(unittest.TestCase):
         self.assertEqual(int(gun_change['prop']['weapon']['magazine_capacity']), 17)
         self.assertEqual(sum(int(bullet['num']) for bullet in gun_change['prop']['weapon']['load_bullets']), 17)
 
+    def test_reconnected_ammo_purchase_notifies_and_survives_container_sync_and_fetch(self):
+        # Captured scene 503 buys 120 loose rounds for Pocket and 17 for Vector.
+        self.backend.set_native_lobby_profile(self.token, level=60,
+            currencies={CURRENCY_ID: 100000}, props=[{
+                'gid': 2001, 'template_id': 18020000003, 'quantity': 1,
+                'grid_page_id': 111, 'x': 0, 'y': 0, 'length': 4, 'width': 2}])
+        result, bought = self._reconnected_request('CSSerialCheapBuyReq', {
+            'scene': 503, 'buy_list': [{'channel': 2, 'single_auction_prop': {
+                'prop_id': 37190000001, 'buy_num': count, 'currency': CURRENCY_ID,
+                'price': 215, 'to_pos': position}}
+                for count, position in ((120, 199997), (17, 2))]})
+        self.assertEqual(bought.fields['result'], 0)
+        self.assertTrue(result['registration_continuation'][0].get(
+            'local_inventory_change_notification_sent'))
+        warehouse_ammo = next(prop for prop in self.backend.native_lobby_profile(self.token)['props']
+                              if prop['template_id'] == 37190000001 and prop['grid_page_id'] == 2)
+        result, loaded = self._reconnected_request('CSDepositOperateBulletReq', {'cmds': [{
+            'op_type': 1, 'bullet_id': 37190000001, 'bullet_gid': warehouse_ammo['gid'],
+            'bullet_op_num': 17, 'target_gun_rec_id': 18020000003, 'target_gun_rec_gid': 2001}]})
+        self.assertEqual(loaded.fields['result'], 0)
+        self.assertTrue(result['registration_continuation'][0].get(
+            'local_inventory_change_notification_sent'))
+        key = b'0123456789abcdef'
+        request = b'ABCD' + self.codec.encode('CSDepositGetPropsReq', {}, sequence=31)
+
+        def fetch():
+            frame = _candidate_local_deposit_response(
+                request, self.backend, self.token, key, header_word4=12, header_word9=31)
+            return self.codec.decode(decode_data_frame(
+                frame, key, direction='server_to_client', compression_method=1).messages[0]).fields
+
+        first = fetch()
+        pocket = next(row for row in first['equiped_props'] if int(row['position']) == 199997)
+        self.assertEqual(sum(int(prop['num']) for prop in pocket['load_props']), 120)
+        snapshots = [{'pos': 199997, 'space': int(space['id']),
+                      'props': [prop for prop in pocket['load_props']
+                                if int(prop['loc']['space_id']) == int(space['id'])]}
+                     for space in pocket['grid_space']]
+        _, synced = self._reconnected_request('CSDepositAssemblySyncBodyContainerReq',
+                                               {'snapshots': snapshots})
+        self.assertEqual(synced.fields['result'], 0)
+        self.backend = Backend(Path(self.temporary.name) / 'save.sqlite3', ROOT / 'definitions.json')
+        reopened = fetch()
+        self.assertEqual(reopened['equiped_props'], first['equiped_props'])
+        gun = next(row for row in reopened['equiped_props'] if int(row['position']) == 111)
+        self.assertEqual(sum(int(prop['num']) for prop in gun['load_props'][0]['weapon']['load_bullets']), 17)
+        self.assertEqual(reopened['grid_pages'][0].get('props', []), [])
+
+    def test_native_container_swap_returns_both_locations_and_logs_collision(self):
+        self.backend.set_native_lobby_profile(self.token, level=60, currencies={}, props=[
+            {'gid': 2001, 'template_id': 11070005004, 'quantity': 1,
+             'grid_page_id': 107, 'x': 0, 'y': 0, 'length': 2, 'width': 2},
+            {'gid': 2002, 'template_id': 14020000003, 'quantity': 1,
+             'grid_page_id': 107001, 'x': 5, 'y': 0, 'length': 1, 'width': 1},
+            {'gid': 2003, 'template_id': 15080050006, 'quantity': 1,
+             'grid_page_id': 107001, 'x': 2, 'y': 0, 'length': 1, 'width': 1},
+        ])
+        key = b'0123456789abcdef'
+        command = {'prop_id': 15080050006, 'prop_gid': 2003, 'src_pos': 107001,
+                   'target_pos': 107001, 'num': 1,
+                   'spec_loc': {'pos': 107001, 'space_id': 5, 'x': 1, 'y': 1}}
+
+        def move(cmd, entry):
+            message = b'ABCD' + self.codec.encode('CSDepositEquipPropReq',
+                                                {'cmds': [cmd]}, sequence=38)
+            frame = _candidate_local_equip_response(message, self.backend, self.token,
+                key, header_word4=12, header_word9=38, diagnostic_entry=entry)
+            return self.codec.decode(decode_data_frame(frame, key,
+                direction='server_to_client', compression_method=1).messages[0]).fields
+
+        entry = {}
+        rejected = move(command, entry)
+        self.assertEqual(rejected['result'], diagnostic.inventory_error(
+            DomainError('POSITION_OCCUPIED', 'occupied')))
+        self.assertEqual(entry['local_inventory_failure']['code'], 'POSITION_OCCUPIED')
+        accepted = move({**command, 'target_prop_gid': 2002}, {})
+        self.assertEqual(accepted['result'], 0)
+        changes = {int(p['prop']['gid']): p for p in accepted['deposit_change']['prop_changes']}
+        self.assertEqual(set(changes), {2002, 2003})
+        self.assertTrue(all(p['change_type'] == 5 for p in changes.values()))
+        self.assertEqual(changes[2002]['dest']['space_id'], 2)
+        self.assertEqual(changes[2003]['dest']['space_id'], 5)
+        self.assertEqual(changes[2003]['dest'].get('start_x', 0), 0)
+        self.assertEqual(changes[2003]['dest'].get('start_y', 0), 0)
+
+    def test_warehouse_rotation_survives_wire_fetch_and_container_move(self):
+        self.backend.set_native_lobby_profile(self.token, level=60, currencies={}, props=[
+            {'gid': 2001, 'template_id': 11070005004, 'quantity': 1,
+             'grid_page_id': 107, 'x': 0, 'y': 0, 'length': 2, 'width': 2},
+            {'gid': 2002, 'template_id': 14020000005, 'quantity': 1,
+             'grid_page_id': 2, 'x': 0, 'y': 0, 'length': 3, 'width': 1},
+        ])
+        command = {'prop_id': 14020000005, 'prop_gid': 2002, 'src_pos': 2,
+                   'target_pos': 2, 'num': 1, 'spec_loc': {
+                       'pos': 2, 'start_x': 4, 'start_y': 2, 'rotate': True}}
+        _, moved = self._reconnected_request('CSDepositEquipPropReq', {'cmds': [command]})
+        self.assertEqual(moved.fields['result'], 0)
+        change = moved.fields['deposit_change']['prop_changes'][0]
+        self.assertTrue(change['dest'].get('rotate'))
+        self.assertTrue(change['prop']['loc'].get('rotate'))
+        self.assertEqual((change['dest']['x'], change['dest']['y']), (1, 3))
+        self.backend = Backend(Path(self.temporary.name) / 'save.sqlite3', ROOT / 'definitions.json')
+        _, fetched = self._reconnected_request('CSDepositGetPropsReq', {})
+        stored = next(p for p in fetched.fields['grid_pages'][0]['props']
+                      if int(p['gid']) == 2002)
+        self.assertTrue(stored['loc'].get('rotate'))
+        _, moved = self._reconnected_request('CSDepositEquipPropReq', {'cmds': [{
+            **command, 'target_pos': 107001, 'spec_loc': {
+                'pos': 107001, 'space_id': 1, 'rotate': True}}]})
+        self.assertEqual(moved.fields['result'], 0)
+        change = moved.fields['deposit_change']['prop_changes'][0]
+        self.assertTrue(change['src'].get('rotate'))
+        self.assertTrue(change['dest'].get('rotate'))
+        self.assertEqual((change['dest']['x'], change['dest']['y']), (1, 3))
+
+    def test_owned_ammo_can_move_to_pocket_and_survives_fetch(self):
+        item_id = 37190000001
+        row = stock_catalog()[item_id]
+        stored = self.backend.native_lobby_purchase(self.token, template_id=item_id,
+            quantity=60, unit_price=row['initial_guide_price'], currency_id=CURRENCY_ID,
+            length=row['length'], width=row['width'],
+            max_stack_count=row['max_stack_count'])['props'][0]
+        key = b'0123456789abcdef'
+        message = b'ABCD' + self.codec.encode('CSDepositEquipPropReq', {'cmds': [{
+            'prop_id': item_id, 'prop_gid': stored['gid'], 'src_pos': 2,
+            'target_pos': 199997, 'num': 60,
+            'spec_loc': {'pos': 199997, 'space_id': 3, 'start_x': 0, 'start_y': 0}}]}, sequence=32)
+        frame = _candidate_local_equip_response(
+            message, self.backend, self.token, key, header_word4=12, header_word9=32)
+        reply = self.codec.decode(decode_data_frame(
+            frame, key, direction='server_to_client', compression_method=1).messages[0])
+        self.assertEqual(reply.fields['result'], 0)
+        change = reply.fields['deposit_change']['prop_changes'][0]
+        self.assertEqual(int(change['dest']['pos']), 199997)
+        self.assertEqual(int(change['dest']['space_id']), 3)
+        saved = self.backend.native_lobby_profile(self.token)['props'][0]
+        self.assertEqual((saved['grid_page_id'], saved['x'], saved['quantity']), (199997, 3, 60))
+        fetch = b'ABCD' + self.codec.encode('CSDepositGetPropsReq', {}, sequence=33)
+        frame = _candidate_local_deposit_response(
+            fetch, self.backend, self.token, key, header_word4=12, header_word9=33)
+        reply = self.codec.decode(decode_data_frame(
+            frame, key, direction='server_to_client', compression_method=1).messages[0])
+        pocket = next(row for row in reply.fields['equiped_props'] if int(row['position']) == 199997)
+        self.assertEqual(len(pocket['load_props']), 1)
+        self.assertEqual(int(pocket['load_props'][0]['loc']['space_id']), 3)
+        self.assertEqual(int(pocket['load_props'][0]['num']), 60)
+
     def test_reconnected_client_guide_progress_is_acknowledged(self):
         result, response = self._reconnected_request(
             'CSGuideSetDataReq', {'data': [{'key': 53020, 'data': 'AQID'}]})
@@ -652,7 +923,7 @@ class LocalCommerceTests(unittest.TestCase):
                          if int(row['position']) == 107001)
         self.assertEqual(len(rig_space['load_props']), 6)
 
-    def test_quick_operation_temporary_target_buys_medicine_atomically(self):
+    def test_quick_operation_pocket_target_buys_medicine_atomically(self):
         item_id = 14020000003
         price = stock_catalog()[item_id]['initial_guide_price']
         request = self.request('CSSerialCheapBuyReq', {'scene': 504,
@@ -681,7 +952,7 @@ class LocalCommerceTests(unittest.TestCase):
         self.assertEqual(fields['auction_changes']['currency_changes'][0]['delta'],
                          -4 * price)
 
-    def test_purchased_temporary_item_can_move_to_warehouse(self):
+    def test_purchased_pocket_item_can_move_to_warehouse(self):
         item_id = 14020000003
         request = self.request('CSSerialCheapBuyReq', {'scene': 504,
             'buy_list': [{'channel': 2, 'single_auction_prop': {
@@ -923,7 +1194,8 @@ class LocalCommerceTests(unittest.TestCase):
         self.assertEqual(len(gids), len(set(gids)))
         self.assertTrue(all(gid > 0 and gid != int(prop['gid']) for gid in gids))
         reopened = Backend(self.backend.database, ROOT / 'definitions.json')
-        saved = reopened.native_lobby_profile(self.token)['props'][0]['components']
+        saved = next(row for row in reopened.native_lobby_profile(self.token)['props']
+                     if row['gid'] == int(prop['gid']))['components']
         self.assertEqual([part['prop_data']['gid'] for part in saved], gids)
 
     def test_chest_rig_batch_rejects_overflow_without_charge_or_partial_items(self):

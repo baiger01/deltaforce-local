@@ -1,5 +1,5 @@
 
-è∂:
+µ≈:
 local_candidate_business.protopb"˛
 ABTagQueryFlow
 	GameSvrId (	
@@ -7378,7 +7378,20 @@ VGameAppid (	
 	AddReason (
 Result (
 SeasonID (
-Trace (	"Ω
+Trace (	"∆
+BattlePassInfo
+
+has_bought (-
+season_info (2.pb.BattlePassSeasonInfo)
+	main_line (2.pb.BattlePassMainLine'
+archives (2.pb.BattlePassArchive$
+pack (2.pb.BattlePassPackInfo
+m_time (
+c_time (
+type (
+previous_season_type	 (+
+traces
+ (2.pb.BattlePassPurchaseTrace"Ω
 BattlePassJumpSourceFlow
 	GameSvrId (	
 DtEventTime (	
@@ -7422,7 +7435,20 @@ level_info (2.pb.BattlePassLevelInfo
 
 bonus_rate (
 bonus_start_time (
-bonus_end_time ("ƒ
+bonus_end_time ("ﬂ
+BattlePassPackInfo
+
+valid_time (
+pack_id (
+
+has_bought (
+
+start_time (
+end_time (
+level (=
+bought_packs (2'.pb.BattlePassPackInfo_BoughtPacksEntry
+bought_pack_list (B "%
+#BattlePassPackInfo_BoughtPacksEntry"ƒ
 BattlePassPurchaseConfirmFlow
 	GameSvrId (	
 DtEventTime (	
@@ -10013,33 +10039,70 @@ pack_price
 archive_id (
 clue_id (
 binded_delta_coin (
-unbinded_delta_coin ("`
+unbinded_delta_coin ("J
+CSBattlePassBuyClueRes
+result ( 
+info (2.pb.BattlePassInfo"`
 CSBattlePassBuyLevelReq
 level (
 binded_delta_coin (
-unbinded_delta_coin ("a
+unbinded_delta_coin ("K
+CSBattlePassBuyLevelRes
+result ( 
+info (2.pb.BattlePassInfo"a
 CSBattlePassBuyPackReq
 pack_id (
 binded_delta_coin (
-unbinded_delta_coin ("^
+unbinded_delta_coin ("J
+CSBattlePassBuyPackRes
+result ( 
+info (2.pb.BattlePassInfo"^
 CSBattlePassBuyReq
 buy_type (
 binded_delta_coin (
-unbinded_delta_coin ("/
+unbinded_delta_coin ("F
+CSBattlePassBuyRes
+result ( 
+info (2.pb.BattlePassInfo"/
 CSBattlePassGetInfoReq
-get_info_type ("9
+get_info_type ("]
+CSBattlePassGetInfoRes
+result ( 
+info (2.pb.BattlePassInfo
+	season_id ("ó
+CSBattlePassLevelUpNtf+
+
+prev_level (2.pb.BattlePassLevelInfo*
+	new_level (2.pb.BattlePassLevelInfo$
+new_info (2.pb.BattlePassInfo"e
+CSBattlePassOverseaDirectBuyNtf
+buy_type ( 
+info (2.pb.BattlePassInfo
+action ("9
 #CSBattlePassReceiveArchiveRewardReq
 
-archive_id ("G
+archive_id ("W
+#CSBattlePassReceiveArchiveRewardRes
+result ( 
+info (2.pb.BattlePassInfo"G
  CSBattlePassReceiveClueRewardReq
 
 archive_id (
-clue_id (":
+clue_id ("T
+ CSBattlePassReceiveClueRewardRes
+result ( 
+info (2.pb.BattlePassInfo":
 CSBattlePassUseExprCardReq
 card_id (
-num ("/
+num ("N
+CSBattlePassUseExprCardRes
+result ( 
+info (2.pb.BattlePassInfo"/
 CSBattlePassUseUnlockCardReq
-card_id ("
+card_id ("P
+CSBattlePassUseUnlockCardRes
+result ( 
+info (2.pb.BattlePassInfo"
 CSBhdCancelQuickJoinReq")
 CSBhdCancelQuickJoinRes
 result ("?
@@ -10540,7 +10603,16 @@ ds_room_id (""
 forbid_info (2.pb.CSChatForbidInfo"H
 CSChatWorldLoadTReq
 worldchat_room_id (
-read_msg_index ("f
+read_msg_index ("ã
+CSChatWorldLoadTRes
+result ("
+msg_list (2.pb.GroupChatMsg
+new_rooom_id (
+new_room_id (
+load_msg_interval (#
+rm_speech_playerid_list (B )
+rolling_notice (2.pb.RollingNotice*
+rolling_notices (2.pb.RollingNotice"f
 CSChatWorldSendTReq
 worldchat_room_id (
 content (2.pb.ChatMsg
@@ -37481,7 +37553,12 @@ RollGameId (
 IsRoundFinish (
 LifelampQuantity (
 AccumulateActvPoints (
-MantelbrickNum ("ë
+MantelbrickNum ("f
+RollingNotice
+begin_timestamp (
+end_timestamp (
+content (	
+is_multiline ("ë
 RollmatchPoolStayInfo
 	GameSvrId (	
 DtEventTime (	
