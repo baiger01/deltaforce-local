@@ -1,0 +1,27 @@
+{
+  "kind": "decoded_bunch_receive_component_evidence",
+  "client_sha256": "4254fbe66585f260f1f9dbfc5e302887842552e7baed8939e023160a5e250be0",
+  "component_relative_to_server_root": "dfserver/legacy_ds_decoded_bunch.py",
+  "tests_relative_to_server_root": "tests/test_legacy_ds_decoded_bunch.py",
+  "source_samples_relative_to_project_root": "work/native-client-tests/1790847786646593300/ds-native-control-code",
+  "native_next_bunch_code_sha256": "e3644fb80684cd50f280627453846c941aa4d3caf73a24240f9f4f5602e59ea8",
+  "native_next_bunch_code_bytes": 3152,
+  "native_raw_bunch_code_sha256": "06c81120e891c6a4ef02a408fc5bf19271f0419d9521316ebcfaebca2dd00773",
+  "rule_analysis_relative_to_project_root": "work/evidence/received-next-bunch-state-machine.json",
+  "source_validation_relative_to_project_root": "work/evidence/received-next-bunch-source-validation.json",
+  "supported_scope": "Ordinary non-internal-ACK processing of already decoded bunch objects: reliable ordering/queue, partial assembly, channel opening/closing and skip-ACK separation.",
+  "state_interaction_tests_passed": 14,
+  "transport_probe_regression_tests_passed": 6,
+  "implementation_qualifications": [
+    "Semantic input flag masks are native object flags, not a recovered on-wire header.",
+    "GUID exports require an upstream decoder to explicitly report processing success.",
+    "Connection-specific special open paths and both-initial-and-final inputs are unimplemented.",
+    "Assembly byte limits and fail-stop behavior for current-input errors are local resource/error policies.",
+    "Queued skip-ACK/errors are separate from the current packet; native queue drain does not propagate those flags back."
+  ],
+  "udp_decoder_connected": false,
+  "control_message_dispatcher_implemented": false,
+  "native_control_protocol_verified": false,
+  "playable_map_verified": false,
+  "default_transport_probe_acknowledges_unknown_control_payloads": false
+}

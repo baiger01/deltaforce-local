@@ -1,0 +1,206 @@
+{
+  "kind": "native_map_trial_failure_evidence",
+  "trial_relative_path": "work/native-client-tests/1791082007292269400",
+  "reviewed_at_utc": "2026-10-04T02:55:29.444537+00:00",
+  "source": {
+    "log_relative_path": "DeltaForce/Saved/Logs/DeltaForce.log",
+    "log_snapshot_sha256": "339c2fc2384799c106753e2a07442037f52ad0004f8a83e3e103feea750c3ed0",
+    "log_snapshot_bytes": 9327607,
+    "log_snapshot_lines": 63250,
+    "snapshot_copied": false,
+    "mutable_log": true,
+    "decoder": "Remove optional UTF-8 BOM; XOR each remaining byte with 0x5c; decode UTF-8 with replacement; splitlines and use one-based line numbers.",
+    "timestamp_timezone": "Asia/Shanghai; UTC is local minus eight hours",
+    "metadata_relative_path": "work/native-client-tests/1791082007292269400/replication-metadata-after-actor-open/result.json",
+    "metadata_sha256": "aac1781d3489833f3f4433642d635c11b867c85c771824d5df809b487f77d848",
+    "metadata_observed_at_utc": "2026-10-04T02:51:32.415028+00:00",
+    "metadata_status": "metadata_export_complete",
+    "metadata_requested_pid": 259272,
+    "ds_report_relative_path": "work/native-client-tests/1791082007292269400/game-server-packets/report.json",
+    "ds_report_sha256": "6e52bc2ad3be8aaafa7ad7084c11be92ae8b4e1ab44d19e89fe8947277cf1a21"
+  },
+  "preparation": {
+    "roles": [
+      "PlayerController",
+      "GameState",
+      "Pawn"
+    ],
+    "actor_channel_indices": {
+      "PlayerController": 2,
+      "GameState": 3,
+      "Pawn": 4
+    },
+    "optional_role_rejections": {},
+    "first_metadata_attempt_completed_elapsed_seconds": 110.12,
+    "role_sources": {
+      "PlayerController": "archive_same_build_not_current_process",
+      "GameState": "archive_same_build_not_current_process",
+      "Pawn": "current_metadata"
+    },
+    "send_order_gameplay_verified": false
+  },
+  "window": {
+    "start_utc": "2026-10-04T02:51:27+00:00",
+    "end_utc": "2026-10-04T02:52:30+00:00",
+    "exact_text_occurrences": {
+      "SerializeNewActor": 3,
+      "ReadLen:": 0,
+      "Bunch.IsError": 0,
+      "FBitReader": 0,
+      "Failed to resolve": 0,
+      "AllPlayerReady": 0
+    }
+  },
+  "events": [
+    {
+      "line": 45661,
+      "at_utc": "2026-10-04T02:51:27.593+00:00",
+      "event": "Seamless LoadMap: set LastNetDriver = GetNetDriver"
+    },
+    {
+      "line": 45686,
+      "at_utc": "2026-10-04T02:51:27.597+00:00",
+      "event": "Set New NetDriver to world"
+    },
+    {
+      "line": 45884,
+      "at_utc": "2026-10-04T02:51:28.702+00:00",
+      "event": "SerializeNewActor",
+      "guid": 4,
+      "packet_id": 6098,
+      "actor_path": "/Game/Maps/Iris_Entry/Iris_Entry.Iris_Entry:PersistentLevel.BP_DFMPlayerController_C_2147469152",
+      "role": "PlayerController",
+      "nonnull_native_object_logged": true
+    },
+    {
+      "line": 45899,
+      "at_utc": "2026-10-04T02:51:28.703+00:00",
+      "event": "OnActorChannelSpawnNewPC: NewPlayerController",
+      "nonnull_pointer_logged": true
+    },
+    {
+      "line": 45900,
+      "at_utc": "2026-10-04T02:51:28.703+00:00",
+      "event": "UGPActorChannel::FirstPlayerPreprocessDefault CachePlayerController!!"
+    },
+    {
+      "line": 45901,
+      "at_utc": "2026-10-04T02:51:28.703+00:00",
+      "event": "UGPActorChannel::FirstPlayerPreprocessDefault NewPlayerController!!"
+    },
+    {
+      "line": 45903,
+      "at_utc": "2026-10-04T02:51:28.703+00:00",
+      "event": "SerializeNewActor",
+      "guid": 6,
+      "packet_id": 6099,
+      "actor_path": "/Game/Maps/Iris_Entry/Iris_Entry.Iris_Entry:PersistentLevel.BP_GameState_PVPVE_C_2147469115",
+      "role": "GameState",
+      "nonnull_native_object_logged": true
+    },
+    {
+      "line": 45904,
+      "at_utc": "2026-10-04T02:51:28.703+00:00",
+      "event": "FirstPlayerPreprocessDefault OnRep GameState"
+    },
+    {
+      "line": 45907,
+      "at_utc": "2026-10-04T02:51:28.705+00:00",
+      "event": "SerializeNewActor",
+      "guid": 2,
+      "packet_id": 6100,
+      "actor_path": "/Game/Maps/Iris_Entry/Iris_Entry.Iris_Entry:PersistentLevel.BP_DFMCharacter_C_2147469110",
+      "role": "Pawn",
+      "nonnull_native_object_logged": true
+    },
+    {
+      "line": 45908,
+      "at_utc": "2026-10-04T02:51:28.706+00:00",
+      "event": "LogNet Error: Multiple BeginPlayDitheredActor! Previous GameState will execute beginplay now.",
+      "fatal_causality_proved": false
+    },
+    {
+      "line": 46852,
+      "at_utc": "2026-10-04T02:52:28.730+00:00",
+      "event": "UNetConnection::Tick Connection TIMED OUT",
+      "elapsed_seconds": 60.03,
+      "threshold_seconds": 60,
+      "driver_name": "GameNetDriver",
+      "driver_object": "GPNetDriver_2147469715",
+      "connection_object": "GPNetConnection_2147469714",
+      "loopback_server_port": 58086,
+      "player_controller_null": true,
+      "owner_null": true,
+      "unique_id_invalid": true
+    },
+    {
+      "line": 46853,
+      "at_utc": "2026-10-04T02:52:28.730+00:00",
+      "event": "UEngine::BroadcastNetworkFailure ConnectionTimeout",
+      "first_fatal_network_failure_in_window": true
+    },
+    {
+      "line": 47159,
+      "at_utc": "2026-10-04T02:52:28.982+00:00",
+      "event": "UEngine::BroadcastNetworkFailure ConnectionLost",
+      "driver_object": "GPNetDriver_2147469715"
+    },
+    {
+      "line": 47168,
+      "at_utc": "2026-10-04T02:52:28.984+00:00",
+      "event": "UGPNetDriver::Shutdown"
+    }
+  ],
+  "binding_observations": {
+    "exact_window_keywords_without_lines": [
+      "SetPlayer",
+      "OnActorChannelOpen",
+      "ReceivedPlayer",
+      "LogNetPlayerMovement",
+      "InitActor"
+    ],
+    "absent_log_keyword_is_not_proof_function_was_not_called": true,
+    "native_player_controller_creation_and_game_preprocess_observed": true,
+    "connection_player_controller_binding_completed": false,
+    "connection_owner_binding_completed": false,
+    "pawn_possession_verified": false,
+    "driver_outer_path": null,
+    "driver_outer_qualification": "Not recorded by current roots.drivers schema; no exact driver Outer path found in examined log window.",
+    "actor_outer_path": "/Game/Maps/Iris_Entry/Iris_Entry.Iris_Entry:PersistentLevel"
+  },
+  "transport_snapshot": {
+    "queued_actor_channels": 3,
+    "actor_delivery_acks": 3,
+    "pending_actor_channels": 0,
+    "initial_actor_datagrams_sent": 12,
+    "client_load_map_join_observed_count": 2,
+    "udp_receive_state": "running",
+    "udp_receive_thread_alive": true,
+    "udp_receive_errors": {
+      "10054": 4
+    },
+    "udp_receive_failure": null,
+    "pending_persistence_records": 0,
+    "failed_persistence_records": 0,
+    "ack_is_not_native_creation_or_possession_proof": true
+  },
+  "conclusion": {
+    "prior_readlen_and_package_outer_rejection_seen_this_window": false,
+    "three_native_actor_objects_logged": true,
+    "prior_fix_completed_actor_emission_but_not_connection_binding": true,
+    "first_current_fatal_blocker": "After three native Actor creations, the connection times out at 60.03 seconds with PC NULL and Owner NULL.",
+    "all_player_ready_observed": false,
+    "playable_map_verified": false,
+    "next_minimal_requirement": "Establish the actual local PlayerController-to-current-connection binding and subsequent possession/ready state using source-backed game-specific handling; object creation and packet ACK alone do not establish these states.",
+    "binding_root_cause_yet_proved": false,
+    "production_files_modified": false,
+    "new_process_or_capture_started": false,
+    "credentials_included": false
+  },
+  "public_reference_snapshot": {
+    "reference_only": true,
+    "source_relative_path": "work/evidence/native-map-trial-1791082007292269400-failure.json",
+    "source_sha256": "7d682dbe3bacbd47d52824f729d135d29d93096fb049b40fc6aaeafe7101b222",
+    "machine_process_identity_removed": true
+  }
+}

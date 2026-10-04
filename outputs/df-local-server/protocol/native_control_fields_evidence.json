@@ -1,0 +1,49 @@
+{
+  "kind": "native_control_field_codec_evidence",
+  "updated_on": "2026-10-02",
+  "client_sha256": "4254fbe66585f260f1f9dbfc5e302887842552e7baed8939e023160a5e250be0",
+  "implementation": "dfserver/legacy_ds_control_fields.py",
+  "tests": "tests/test_legacy_ds_control_fields.py",
+  "field_boundary_tests_passed": 13,
+  "native_string_sample_relative_to_project_root": "work/native-client-tests/1790875160889006700/ds-native-control-code/unknown_control_field_109ea340.dfcode",
+  "native_string_sample_file_sha256": "1f2746e42afcba80170572265706c823ea15d7068355174412b3346d2faaa6f8",
+  "native_string_code_sha256": "ac7168027c0f6346062fe45c773b71bed613431c3d6a01c4415278e7726adf19",
+  "native_string_code_bytes": 1679,
+  "native_string_instruction_count": 445,
+  "native_string_instruction_evidence": "work/evidence/native-string-field-109ea340-semantics.json",
+  "independent_codec_review": "work/evidence/native-string-field-local-codec-review.json",
+  "native_conversion_helpers_evidence": "work/evidence/native-control-conversion-helpers-semantics.json",
+  "native_conversion_helpers_evidence_sha256": "ed6453e00a3259170fa269d78b7327efccf60370f8fec02ad210395a3a6b3d65",
+  "message_field_order_evidence": "work/evidence/native-control-fallback-layout-1790852438755252500.json",
+  "supported_message_ids": [0, 1, 2, 3, 4, 6, 9],
+  "supported_profile": "Already decoded byte-aligned control payload, non-swapped u8/u32/signed string length, native counted narrow conversion and raw UTF-16LE wide strings.",
+  "native_rules": [
+    "Positive count serializes one byte per unit; negative count serializes two bytes per unit. Count includes the trailing terminator.",
+    "INT_MIN length is rejected. Native archive+0x38 provides a positive unit limit; a nonpositive native value does not impose that limit.",
+    "Loader overwrites the final byte/unit with NUL. It does not require the received final unit to be NUL.",
+    "Wide 0xffff is changed to NUL and invokes first-NUL shrink. Ordinary interior NULs otherwise remain in the copied string.",
+    "Normal empty narrow string serializes zero count. Forced Unicode empty serializes -1 followed by a two-byte NUL.",
+    "Wide length is counted in 16-bit units, including surrogate units, rather than Python Unicode characters.",
+    "The complete narrow conversion helper copies bytes 0..127 into wide units and replaces bytes 128..255 with the caller's 0x003f argument. Interior NUL does not end its counted loop."
+  ],
+  "explicit_local_policies": {
+    "maximum_string_units": 4096,
+    "maximum_payload_bytes": 8192,
+    "maximum_messages": 32,
+    "canonical_encoder_rejects_embedded_nul": true,
+    "byte_swapped_archive_profile_not_exposed": true,
+    "unknown_messages_and_identity_fields_rejected": true
+  },
+  "qualifications": [
+    "The table proves fallback field consumption when Notify did not consume the message; it does not establish concrete NotifyControlMessage semantics.",
+    "Login's identity helper delegates to another uncollected function on a separate archive branch. Its conditional length/token/string path is not used as a guessed network identity schema.",
+    "The four-byte scalar swap helper is recovered; this codec does not infer the native archive's fast-buffer invariants or expose a swapped message profile.",
+    "The conversion helpers call external diagnostics after replacing high units. Those side effects remain unknown and are not represented by this pure byte codec.",
+    "Literal test vectors are derived from native instructions, not claimed to be captured server packets."
+  ],
+  "udp_decoder_connected": false,
+  "control_message_dispatcher_implemented": false,
+  "unknown_nonempty_payload_ack_enabled": false,
+  "native_control_message_accepted": false,
+  "playable_map_verified": false
+}

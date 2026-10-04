@@ -7,6 +7,7 @@ Internet account session. Reports contain only framing and field lengths.
 """
 import argparse
 from collections import deque
+from dataclasses import replace
 from datetime import datetime, timezone
 from functools import lru_cache
 import hashlib
@@ -23,11 +24,14 @@ from .gcp_control import AuthResponse, CommonAuthResponse, ReadyResponse, parse_
 from .business_probe import summarize_message_shape, summarize_prefixed_envelope
 from .business_envelope import BusinessEnvelope, parse_business_envelope
 from .candidate_business import CandidateBusinessCodec
-from .client_errors import inventory_error
+from .client_errors import error_code, inventory_error
 from .container_layouts import capacity as container_capacity
-from .core import (ASSEMBLY_TEMP_LAYOUT, ASSEMBLY_TEMP_POSITION,
+from .core import (POCKET_LAYOUT, POCKET_POSITION,
                    BACKPACK_LAYOUT, BACKPACK_POSITION, CHEST_RIG_LAYOUT,
-                   CHEST_RIG_POSITION, DomainError)
+                   CHEST_RIG_POSITION, SAFE_BOX_POSITION, DomainError)
+from . import safe_boxes, native_safehouse, native_quests, native_session_auxiliary, native_match_unavailable
+
+ACTIVITY_REQUESTS = native_safehouse.SUPPORTED_REQUESTS | native_quests.SUPPORTED_REQUESTS
 from .gcp_crypto import decode_received_body, encrypt_body
 from .gcp_data import decode_data_frame, encode_data_frame
 from .gcp_framing import Frame, StreamDecoder
@@ -35,6 +39,10 @@ from .gcp_handshake import DhAckBody, DhAckHeader, ServerDhAcknowledgement, crea
 from .local_commerce import (SUPPORTED_REQUESTS as LOCAL_COMMERCE_REQUESTS,
                              response_fields as local_commerce_response_fields,
                              installed_items, item_condition_fields, inventory_location)
+from .melee_weapons import WEAPONS, MELEE_POSITION
+from . import hero_customization, premium_shop, profile_cosmetics
+
+COLLECTION_REQUESTS = frozenset(name[:-3] + 'Req' for name in premium_shop.COLLECTION_RESPONSES)
 
 
 LOCAL_FINISHED_GUIDE_STAGES = (6, 7, 1, 2, 3, 5, 34)
@@ -95,7 +103,18 @@ class State:
 def _log_request_progress(entry, phase):
     fields = ('request_name', 'service', 'prefix_sequence', 'elapsed_ms',
               'response_sent', 'response_elapsed_ms', 'local_commerce_result',
-              'request_not_answered', 'failure_code')
+              'request_not_answered', 'failure_code', 'local_bullet_commands',
+              'local_equip_commands', 'local_inventory_failure',
+              'local_body_container_snapshots', 'local_serial_buy_items',
+              'local_lottery_purchase_items', 'local_inventory_change_notification_sent',
+              'local_premium_shop_request', 'local_customization_request',
+              'local_collection_change_notification_sent', 'local_warehouse_sort_request',
+              'local_warehouse_sort_result', 'local_warehouse_sort_change_count',
+              'local_weapon_assembly_request', 'local_battle_pass_request',
+              'local_optional_setting_key',
+              'local_activity_request', 'local_activity_result', 'local_activity_notification_sent',
+              'local_auxiliary_one_way', 'local_auxiliary_response_expected', 'local_auxiliary_result',
+              'local_telemetry_entry_count', 'local_telemetry_payload_bytes', 'local_retro_reward_pending_count')
     event = {'event': 'business_request', 'phase': phase, 'observed_at_utc': _time()}
     event.update({name: entry[name] for name in fields if name in entry})
     print(json.dumps(event), flush=True)
@@ -232,6 +251,25 @@ def _candidate_local_login_response(message, expected_identity, key, *, header_w
     return frame
 
 
+@lru_cache(maxsize=1)
+def _client_online_player_state():
+    """Use the client enum, rather than treating wire State=0 as idle.
+
+    AccountServer._ParsePlayerStateCode replaces the client's current flags
+    with this response. Zero is EPlayerState_Offline, so it clears the online
+    bit that MatchServer checks before invoking its preparation entry event.
+    """
+    source = Path(__file__).resolve().parent.parent / 'protocol/recovered_player_state_flags.json'
+    document = json.loads(source.read_text(encoding='utf-8'))
+    flags = document['values']
+    online = flags['EPlayerState_Online']
+    if (document.get('enum') != 'GlobalPlayerStateEnums' or type(online) is not int
+            or online <= 0 or online & (online - 1)
+            or flags['EPlayerState_Offline'] != 0):
+        raise ValueError('Invalid recovered online-player state enum')
+    return online
+
+
 def _candidate_local_state_response(message, expected_identity, key, *, header_word4, header_word9):
     if len(message) < 5:
         raise ValueError('Truncated state package')
@@ -241,7 +279,7 @@ def _candidate_local_state_response(message, expected_identity, key, *, header_w
         raise ValueError('Unexpected post-login state request')
     response = codec.response(request, {
         'PlayerID': expected_identity['native_id'],
-        'State': 0,
+        'State': _client_online_player_state(),
         'result': 0,
     })
     return encode_data_frame((response,), key,
@@ -261,7 +299,8 @@ def _candidate_local_heartbeat_response(message, key, *, header_word4, header_wo
     padding = request.fields.get('padding', 0)
     response = codec.response(request, {
         'padding': padding,
-        'tick_count': int(time.monotonic() * 1000),
+        # ClockManager uses this value directly with os.time() in seconds.
+        'tick_count': int(time.time()),
     })
     return encode_data_frame((response,), key, direction='server_to_client',
                              opaque_flag=64, header_word4=header_word4,
@@ -444,34 +483,17 @@ def _candidate_local_hero_response(message, backend, local_session, key, *, head
     codec = _candidate_codec()
     request = codec.decode(message[4:])
     ids = _candidate_known_operator_ids()
-    fashions = _candidate_operator_base_fashions()
     if request.name == 'CSHeroGetHeroIDListReq':
         fields = {'result': 0, 'hero_ids': list(ids)}
     elif request.name == 'CSHeroLoadHeroListReq':
-        selected = backend.native_lobby_profile(local_session)['selected_hero_id'] or 88000000025
-        if selected not in ids:
-            selected = 88000000025
-        fields = {
-            'result': 0,
-            'hero_ids': list(ids),
-            'mp_hero_selected': selected,
-            'sol_hero_selected': selected,
-            'heros': [{
-                'hero_id': hero_id,
-                'is_unlock': True,
-                'can_use': True,
-                'is_blast_unlock': True,
-                'fashion_list': [{'fashion': {'slot': 0, 'id': fashions[hero_id]},
-                                  'is_unlock': True, 'is_def': True, 'is_read': True}],
-                'fashion_equipped': [{'slot': 0, 'id': fashions[hero_id]}],
-            } for hero_id in ids],
-        }
+        fields = hero_customization.load_fields(backend, local_session,
+            hero_ids=ids, request_fields=request.fields)
     else:
         raise ValueError('Not a supported hero catalogue request')
     response = codec.response(request, fields)
     return encode_data_frame((response,), key, direction='server_to_client',
                              opaque_flag=64, header_word4=header_word4,
-                             header_word9=header_word9)
+                             header_word9=header_word9, max_output=1024 * 1024)
 
 
 def _candidate_local_hero_select_response(message, backend, local_session, key,
@@ -489,7 +511,7 @@ def _candidate_local_hero_select_response(message, backend, local_session, key,
     mode = int(request.fields.get('mode', 0))
     if not -(1 << 31) <= mode < (1 << 31):
         raise ValueError('Unsupported hero selection mode')
-    backend.set_native_selected_hero(local_session, hero_id)
+    backend.set_native_selected_hero_for_mode(local_session, hero_id, mode)
     response = codec.response(request, {
         'result': 0, 'mode': mode, 'hero_id': hero_id,
         'reborn_boss_type': int(request.fields.get('reborn_boss_type', 0)),
@@ -513,9 +535,14 @@ def _candidate_local_map_board_catalog():
                  'match_mode_id': map_id, 'min_level': 1}
                 for map_id in range(first, last + 1)]
     root = Path(__file__).resolve().parent.parent
-    rows = json.loads((root / 'protocol/local_map_board_candidates.json').read_text(
-        encoding='utf-8'))['operations']
-    if len({(row['point_id'], row.get('match_mode_type', 1)) for row in rows}) != len(rows):
+    catalog_path = Path(os.environ.get(
+        'DF_LOCAL_MAP_BOARD_CATALOG',
+        root / 'protocol/local_map_board_candidates.json'))
+    rows = json.loads(catalog_path.read_text(encoding='utf-8'))['operations']
+    if not isinstance(rows, list):
+        raise ValueError('Local map board catalog must contain an operations list')
+    if len({(row['point_id'], row.get('sub_mode', 10),
+             row.get('match_mode_type', 1)) for row in rows}) != len(rows):
         raise ValueError('Invalid bounded local map board candidates')
     for row in rows:
         if any(type(row[field]) is not int or row[field] <= 0 for field in
@@ -523,11 +550,14 @@ def _candidate_local_map_board_catalog():
             raise ValueError('Invalid local map board candidate field')
         if type(row.get('match_mode_type', 1)) is not int or row.get('match_mode_type', 1) <= 0:
             raise ValueError('Invalid local map board match mode type')
+        for field in ('game_mode', 'game_rule', 'sub_mode', 'team_mode', 'mode_group'):
+            if field in row and (type(row[field]) is not int or row[field] < 0):
+                raise ValueError(f'Invalid local map board {field}')
     return rows
 
 
 def _candidate_local_prepare_map_response(message, backend, local_session, key,
-                                          *, header_word4, header_word9):
+                                          *, header_word4, header_word9, observation=None):
     """Answer preparation boards with locally observed map candidates.
 
     This only populates the operations board for a bounded client trial. The
@@ -545,25 +575,409 @@ def _candidate_local_prepare_map_response(message, backend, local_session, key,
         level = backend.native_lobby_profile(local_session)['level']
         fields['board_info_array'] = [
             {'point_id': row['point_id'], 'mode': {
-                'game_mode': 1, 'game_rule': 4, 'sub_mode': 10, 'team_mode': 3,
+                'game_mode': row.get('game_mode', 1),
+                'game_rule': row.get('game_rule', 4),
+                'sub_mode': row.get('sub_mode', 10),
+                'team_mode': row.get('team_mode', 3),
                 'map_id': row['map_id'], 'match_mode_id': row['match_mode_id']},
              'need_level': row['min_level'], 'is_open': int(level >= row['min_level']),
-             'is_show': 1, 'lock_reason': 0 if level >= row['min_level'] else 1,
-             'match_mode_type': row.get('match_mode_type', 1)}
-            for row in _candidate_local_map_board_catalog()]
+             'is_show': 1, 'lock_reason': 0 if level >= row['min_level'] else 4,
+             'match_mode_type': row.get('match_mode_type', 1),
+             **({'mode_group': row['mode_group']} if 'mode_group' in row else {})}
+            for row in _candidate_local_map_board_catalog()
+            if _candidate_valid_world_map_row(row)]
+    response = codec.response(request, fields)
+    if observation is not None:
+        # Capture what the serializer actually emitted, rather than the input
+        # catalogue. MapBoardInfo contains no account credentials.
+        observation.update(request_name=request.name, response_name=request.name[:-3] + 'Res',
+                           observed_at_utc=_time(),
+                           response_fields=codec.decode(response).fields)
+    return encode_data_frame((response,), key, direction='server_to_client',
+                             opaque_flag=64, header_word4=header_word4,
+                             header_word9=header_word9)
+
+
+def _candidate_valid_world_map_row(row):
+    """Do not advertise the observed safehouse mode as a world entrance."""
+    return not (int(row.get('game_mode', 1)) == 1 and
+                int(row['match_mode_id']) in (1, 31100003))
+
+
+def _candidate_local_room_mode_response(message, key, *, header_word4, header_word9):
+    """Publish only map modes with an unambiguous ID in the trial catalogue."""
+    if len(message) < 5:
+        raise ValueError('Truncated room mode package')
+    codec = _candidate_codec()
+    request = codec.decode(message[4:])
+    if request.name != 'CSRoomGetMatchModeListReq':
+        raise ValueError('Not a room mode list request')
+    requested_game_mode = int(request.fields.get('game_mode') or 0)
+    modes = {}
+    ambiguous = set()
+    for row in _candidate_local_map_board_catalog():
+        if not _candidate_valid_world_map_row(row):
+            continue
+        mode = {
+            'game_mode': row.get('game_mode', 1),
+            'game_rule': row.get('game_rule', 4),
+            'sub_mode': row.get('sub_mode', 10),
+            'team_mode': row.get('team_mode', 3),
+            'map_id': row['map_id'],
+            'match_mode_id': row['match_mode_id'],
+        }
+        if requested_game_mode and mode['game_mode'] != requested_game_mode:
+            continue
+        mode_id = mode['match_mode_id']
+        if mode_id in modes and modes[mode_id] != mode:
+            ambiguous.add(mode_id)
+        else:
+            modes[mode_id] = mode
+    available = [mode for mode_id, mode in modes.items() if mode_id not in ambiguous]
+    response = codec.response(request, {
+        'result': 0,
+        'mode_info_array': available,
+        'mode_info_list': [
+            {'mode_info': mode, 'BeginMatchMinPlayerNum': 1,
+             'BeginMatchValidTeamNum': 1, 'BeginMatchCampMinPlayerNum': 1}
+            for mode in available
+        ],
+    })
+    return encode_data_frame((response,), key, direction='server_to_client',
+                             opaque_flag=64, header_word4=header_word4,
+                             header_word9=header_word9)
+
+
+def _candidate_local_match_rank_response(message, key, *, header_word4, header_word9):
+    """Answer the map-selection rank gate for the local game session."""
+    if len(message) < 5:
+        raise ValueError('Truncated rank-gate package')
+    codec = _candidate_codec()
+    request = codec.decode(message[4:])
+    if request.name != 'CSMatchGateIsRankEnableReq':
+        raise ValueError('Not a rank-gate request')
+    response = codec.response(request, {'result': 0, 'is_rank_enable': True})
+    return encode_data_frame((response,), key, direction='server_to_client',
+                             opaque_flag=64, header_word4=header_word4,
+                             header_word9=header_word9)
+
+
+def _candidate_local_solo_room_team_response(message, backend, local_session,
+                                             match_mode_info, key, *,
+                                             header_word4, header_word9):
+    """Return the local player's selected operator for a valid room handoff."""
+    if len(message) < 5:
+        raise ValueError('Truncated solo room team package')
+    codec = _candidate_codec()
+    request = codec.decode(message[4:])
+    if request.name != 'CSMatchRoomGetSolRoomTeamTReq':
+        raise ValueError('Not a solo room team request')
+    identity = backend.native_identity(local_session)
+    player_id = int(identity['native_id'])
+    room_id = int(request.fields.get('room_id') or 0)
+    if (not match_mode_info or not _candidate_valid_world_map_row(match_mode_info)
+            or room_id != player_id):
+        fields = {'result': 1, 'room_id': room_id}
+    else:
+        profile = backend.native_lobby_profile(local_session)
+        hero_id = int(profile['selected_hero_id'] or 88000000025)
+        if hero_id not in _candidate_known_operator_ids():
+            raise ValueError('Selected hero is absent from the installed catalogue')
+        fashion_id = _candidate_operator_base_fashions()[hero_id]
+        room_start_time = int(time.time())
+        fields = {
+            'result': 0,
+            'room_id': room_id,
+            'room_start_time': room_start_time,
+            # AssemblySquadPick subtracts 8 seconds from stage_end_time.
+            # The normal Zero Dam trace also uses an 18-second interval,
+            # giving the player a 10-second operator-selection countdown.
+            'stage_end_time': room_start_time + 18,
+            'player_info_array': [{
+                'player_id': player_id,
+                'hero_info': {
+                    'hero_id': hero_id, 'is_unlock': True, 'can_use': True,
+                    'is_blast_unlock': True,
+                    'fashion_equipped': [{'slot': 0, 'id': fashion_id}],
+                },
+                'is_ready': False,
+                'nick_name': identity.get('game_nick') or identity['username'],
+                'player_idx': 1,
+                'is_bot': False,
+                'pre_selected_hero_id': hero_id,
+            }],
+        }
     response = codec.response(request, fields)
     return encode_data_frame((response,), key, direction='server_to_client',
                              opaque_flag=64, header_word4=header_word4,
                              header_word9=header_word9)
 
 
+def _candidate_local_solo_room_hero_response(message, backend, local_session,
+                                             match_mode_info, key, *,
+                                             header_word4, header_word9):
+    """Apply a room selection to the same SOL operator used by the lobby."""
+    if len(message) < 5:
+        raise ValueError('Truncated solo room selection package')
+    codec = _candidate_codec()
+    request = codec.decode(message[4:])
+    if request.name not in ('CSMatchRoomSetPreSelectedHeroTReq',
+                            'CSMatchRoomSetSolRoomHeroTReq',
+                            'CSMatchRoomLockSelectedHeroTReq'):
+        raise ValueError('Not a solo room selection request')
+    identity = backend.native_identity(local_session)
+    player_id = int(identity['native_id'])
+    room_id = int(request.fields.get('room_id') or 0)
+    preview = request.name == 'CSMatchRoomSetPreSelectedHeroTReq'
+    lock = request.name == 'CSMatchRoomLockSelectedHeroTReq'
+    field = 'pre_selected_hero_id' if preview else 'hero_id'
+    hero_id = int(request.fields.get(field) or 0)
+    if request.fields.get('random_hero') and not hero_id:
+        hero_id = int(backend.native_lobby_profile(local_session)['selected_hero_id']
+                      or 88000000025)
+    valid = (match_mode_info and _candidate_valid_world_map_row(match_mode_info)
+             and room_id == player_id and
+             (hero_id in _candidate_known_operator_ids() or (preview and hero_id == 0)))
+    notification = None
+    if valid:
+        if not preview:
+            backend.set_native_selected_hero(local_session, hero_id)
+        else:
+            hero_id = int(backend.native_lobby_profile(local_session)['selected_hero_id']
+                          or 88000000025)
+        if lock:
+            notice = codec.encode('CSMatchRoomSolReadyNtf', {
+                'room_id': room_id, 'player_id': player_id,
+            }, sequence=0)
+        else:
+            fashion_id = _candidate_operator_base_fashions()[hero_id]
+            notice = codec.encode('CSMatchRoomSolChangeHeroNtf', {
+                'room_id': room_id,
+                'player_id': player_id,
+                'hero_info': {
+                    'hero_id': hero_id, 'is_unlock': True, 'can_use': True,
+                    'is_blast_unlock': True,
+                    'fashion_equipped': [{'slot': 0, 'id': fashion_id}],
+                },
+                'pre_selected_hero_id': int(request.fields.get(field) or 0),
+            }, sequence=0)
+        notification = encode_data_frame(
+            (notice,), key, direction='server_to_client', opaque_flag=64,
+            header_word4=header_word4, header_word9=header_word9 + 1)
+    response = codec.response(request, {'result': 0 if valid else 1})
+    frame = encode_data_frame((response,), key, direction='server_to_client',
+                              opaque_flag=64, header_word4=header_word4,
+                              header_word9=header_word9)
+    return frame, notification
+
+
+def _candidate_local_solo_room_ready_response(message, backend, local_session,
+                                              match_mode_info, key, *,
+                                              header_word4, header_word9):
+    """Acknowledge the SOL panel's actual end-of-countdown request.
+
+    AssemblySquadPick:SetHeroReady calls ArmedForceServer:ReqSolReady;
+    it does not send LockSelectedHero. Ready must refer to our allocated room.
+    """
+    if len(message) < 5:
+        raise ValueError('Truncated solo room ready package')
+    codec = _candidate_codec()
+    request = codec.decode(message[4:])
+    if request.name != 'CSMatchRoomSolReadyTReq':
+        raise ValueError('Not a solo room ready request')
+    player_id = int(backend.native_identity(local_session)['native_id'])
+    room_id = int(request.fields.get('room_id') or 0)
+    valid = (match_mode_info and _candidate_valid_world_map_row(match_mode_info)
+             and room_id == player_id)
+    response = codec.response(request, {'result': 0 if valid else 1})
+    frame = encode_data_frame((response,), key, direction='server_to_client',
+                              opaque_flag=64, header_word4=header_word4,
+                              header_word9=header_word9)
+    notification = None
+    if valid:
+        ready = codec.encode('CSMatchRoomSolReadyNtf', {
+            'room_id': room_id, 'player_id': player_id,
+        }, sequence=0)
+        notification = encode_data_frame((ready,), key, direction='server_to_client',
+                                         opaque_flag=64, header_word4=header_word4,
+                                         header_word9=header_word9 + 1)
+    return frame, notification
+
+
+def _candidate_local_match_alloc_response(message, key, *, header_word4, header_word9,
+                                          game_server_probe=None):
+    """Reject matchmaking until a real local game-server handoff exists.
+
+    A successful allocation response starts the client's matching spinner.
+    It must not be sent merely because this lobby service can decode the
+    request: there is no local DS process to allocate or connect to yet.
+    """
+    if len(message) < 5:
+        raise ValueError('Truncated matchmaking package')
+    codec = _candidate_codec()
+    request = codec.decode(message[4:])
+    if request.name == 'CSRoomMatchStartAllocReq':
+        modes = request.fields.get('mode_infos') or []
+        invalid_world_mode = any(
+            int(mode.get('game_mode') or 0) == 1 and
+            int(mode.get('match_mode_id') or 0) in (1, 31100003)
+            for mode in modes)
+        fields = {'result': 0 if (game_server_probe is not None and
+                                 game_server_probe.listening and modes and
+                                 not invalid_world_mode) else 1}
+    elif request.name == 'CSRoomMatchQuitAllocReq':
+        fields = {'result': 0}
+    elif request.name in ('CSMatchCheckTReq',
+                          'CSMatchRoomSolReadyTReq',
+                          'CSMatchRoomStartMatchTglogTReq'):
+        fields = {'result': 0}
+    else:
+        raise ValueError('Not a matchmaking allocation request')
+    response = codec.response(request, fields)
+    return encode_data_frame((response,), key, direction='server_to_client',
+                             opaque_flag=64, header_word4=header_word4,
+                             header_word9=header_word9)
+
+
+def _candidate_local_match_prepare_probe(backend, local_session, match_mode_info, key,
+                                         *, header_word4, header_word9):
+    """Probe the client's room transition with an isolated local bot roster.
+
+    This diagnostic deliberately stops before PlayerJoinMatch: no game server
+    is advertised until one actually exists at a reachable local endpoint.
+    """
+    mode_id = int(match_mode_info.get('match_mode_id') or 0)
+    if (int(match_mode_info.get('game_mode') or 0) == 1 and
+            mode_id in (1, 31100003)):
+        raise ValueError('World map cannot use a placeholder or safehouse match mode')
+    identity = backend.native_identity(local_session)
+    player_id = int(identity['native_id'])
+    members = [{
+        'player_id': player_id, 'team_id': 1, 'player_idx': 1, 'camp': 1,
+        'nick_name': identity.get('game_nick') or identity['username'],
+        'is_robot': False, 'is_team_leader': True,
+    }]
+    for index in range(1, 4):
+        members.append({
+            'player_id': player_id + index, 'team_id': 2, 'player_idx': index + 1,
+            'camp': 2, 'nick_name': f'LocalBot{index:02d}', 'is_robot': True,
+        })
+    notification = _candidate_codec().encode('CSPrepareJoinMatchNtf', {
+        'ds_room_id': player_id, 'time_stamp': int(time.time()),
+        'player_id': player_id, 'team_id': 1, 'random_seed': 1,
+        'player_idx': 1, 'game_mode': int(match_mode_info.get('game_mode') or 1),
+        'match_mode_id': mode_id,
+        'room_member_infos': members,
+    }, sequence=0)
+    return encode_data_frame((notification,), key, direction='server_to_client',
+                             opaque_flag=64, header_word4=header_word4,
+                             header_word9=header_word9)
+
+
+def _candidate_local_match_join_probe(backend, local_session, match_mode_info,
+                                      game_server_probe, key, *, header_word4, header_word9):
+    """Advertise only an active loopback DS probe in a bounded client trial.
+
+    A successful notification advertises a local connection. With native
+    control enabled it issues a lobby-bound admission ticket; actor replication
+    and playable gameplay remain unimplemented.
+    """
+    if game_server_probe is None or not game_server_probe.listening:
+        raise ValueError('No active local game-server probe')
+    identity = backend.native_identity(local_session)
+    player_id = int(identity['native_id'])
+    mode_id = int(match_mode_info.get('match_mode_id') or 0)
+    if (int(match_mode_info.get('game_mode') or 0) == 1 and
+            mode_id in (1, 31100003)):
+        raise ValueError('World map cannot use a placeholder or safehouse match mode')
+    map_id = int(match_mode_info.get('map_id') or 0)
+    map_id_override = os.environ.get('DF_LOCAL_DS_MAP_ID')
+    if map_id_override and int(map_id_override) != map_id:
+        raise ValueError('Local DS map ID differs from the selected map')
+    if not 0 < map_id < 1 << 32:
+        raise ValueError('No bounded map ID for local game-server handoff')
+    def varint(value):
+        if not 0 <= value < 1 << 64:
+            raise ValueError('Invalid positive protobuf integer')
+        output = bytearray()
+        while value > 127:
+            output.append((value & 127) | 128)
+            value >>= 7
+        output.append(value)
+        return bytes(output)
+
+    def integer(field, value):
+        return varint(field << 3) + varint(value)
+
+    def data(field, value):
+        value = value.encode('utf-8') if isinstance(value, str) else value
+        return varint(field << 3 | 2) + varint(len(value)) + value
+
+    # The full MatchPlayerInfo descriptor is excluded because two unrelated
+    # settlement submessages were not recovered.  Only fields observed in the
+    # installed client's encoder are emitted here, without inventing those
+    # missing nested definitions.
+    ds_token = secrets.token_hex(16)
+    if getattr(game_server_probe, 'match_admission_enabled', False):
+        selected_hero_id = backend.native_lobby_profile(local_session)['selected_hero_id']
+        if type(selected_hero_id) is not int or not 0 < selected_hero_id < 1 << 64:
+            raise ValueError('No persisted SOL operator for local match admission')
+        ticket = game_server_probe.issue_match_admission(
+            player_id=player_id, room_id=player_id, map_id=map_id,
+            match_mode_id=mode_id,
+            selected_hero_id=selected_hero_id)
+        # Installed MatchServer.GetLevelUrl takes player.ds_token (field24)
+        # as its Cookie option. It is distinct from top-level secret_key19.
+        ds_token = ticket.cookie
+    player = (integer(1, player_id) + integer(2, 1) + integer(3, 1) +
+              integer(13, 1) + data(24, ds_token))
+    ds_address = (data(1, '127.0.0.1') +
+                  integer(2, game_server_probe.port))
+    # _ParseDsInfoAsync resolves each HostInfo.ds_domain even when IPv4
+    # addresses are supplied. An omitted domain becomes an empty string
+    # and sends the native resolver through its failure/timeout fallback.
+    # Keep both the resolver and its fallback entirely on loopback.
+    ds_domain = 'localhost'
+    ds_host = data(1, ds_domain) + data(2, ds_address)
+    # This receiver has no negotiated DS encryption key.  Sending a random
+    # hexadecimal string as secret_key falsely advertises one.  MatchServer's
+    # AppendSecretKeyToUrl explicitly leaves the URL alone for an empty key.
+    # Keep this transport-only probe unencrypted; a gameplay server will need
+    # to implement the actual key exchange before advertising a session key.
+    body = (integer(1, player_id) + data(10, '127.0.0.1') +
+            integer(3, game_server_probe.port) +
+            integer(5, map_id) +
+            integer(6, 0) + data(8, player) + data(9, ds_domain) + integer(11, mode_id) +
+            data(12, ds_host) + integer(14, 0))
+    notification = BusinessEnvelope(body, {
+        'client_sequence_id': 0, 'name': 'CSPlayerJoinMatchNtf',
+        'service': 'matchroom',
+    }).encode()
+    return encode_data_frame((notification,), key, direction='server_to_client',
+                             opaque_flag=64, header_word4=header_word4,
+                             header_word9=header_word9)
+
+
 def _candidate_local_commerce_response(message, backend, local_session, key,
-                                       *, header_word4, header_word9):
+                                       *, header_word4, header_word9, diagnostic_entry=None):
     if len(message) < 5:
         raise ValueError('Truncated commerce package')
     codec = _candidate_codec()
     request = codec.decode(message[4:])
-    fields = local_commerce_response_fields(request, backend, local_session)
+    from . import battle_pass, native_settings
+    if diagnostic_entry is not None and request.name == 'CSSettingGetValueByKeyReq':
+        setting_key = request.fields.get('key', '')
+        diagnostic_entry['local_optional_setting_key'] = (
+            setting_key if setting_key in native_settings.OPTIONAL_SETTING_KEYS else '<other>')
+    if request.name in battle_pass.SUPPORTED_REQUESTS:
+        committed = {}
+        fields = battle_pass.response_fields(request, backend, local_session, changes=committed)
+        if diagnostic_entry is not None:
+            diagnostic_entry['local_battle_pass_request'] = request.fields
+            diagnostic_entry['_battle_pass_changes'] = committed
+    else:
+        fields = local_commerce_response_fields(request, backend, local_session,
+                                               diagnostic_entry=diagnostic_entry)
     if fields is None:
         raise ValueError('Not a supported local commerce request')
     response = codec.response(request, fields)
@@ -692,6 +1106,42 @@ def _candidate_local_commerce_result(response_frame, key):
     return None if result is None else int(result)
 
 
+def _candidate_local_battle_pass_notifications(entry, key, *, header_word4, header_word9):
+    committed = entry.pop('_battle_pass_changes', {})
+    messages = []
+    deposit = {'currency_changes': committed.get('currency_changes', []),
+               'prop_changes': committed.get('deposit_changes', [])}
+    if any(deposit.values()):
+        messages.append(('CSDepositChangeNtf', {'deposit_change': deposit}))
+    collection = committed.get('collection_changes', [])
+    if collection:
+        messages.append(('CSCollectionPropChangeNtf', {'data_change': [
+            {'change_type': row['change_type'], 'prop': row['prop'],
+             'delta_num': row['delta'], 'after_num': row['prop']['num']}
+            for row in collection]}))
+    return [encode_data_frame((_candidate_codec().encode(name, fields, sequence=0),), key,
+                direction='server_to_client', opaque_flag=64, header_word4=header_word4,
+                header_word9=header_word9 + index + 1)
+            for index, (name, fields) in enumerate(messages)]
+
+
+def _candidate_local_premium_shop_summary(message):
+    fields = _candidate_codec().decode(message[4:]).fields
+    return {key: fields[key] for key in (
+        'tab_id', 'banner_type', 'item_ids', 'goods_id', 'num', 'lottery_id', 'round',
+        'currency_type', 'price', 'currency_type_substitute', 'price_substitute',
+        'hero_id', 'new_fashions', 'buy_prop', 'is_cash_buy') if key in fields}
+
+
+def _candidate_local_customization_summary(message):
+    fields = _candidate_codec().decode(message[4:]).fields
+    return {key: fields[key] for key in (
+        'hero_id', 'new_fashions', 'accessory_item', 'is_unequip', 'mode',
+        'prop_id', 'prop_ids', 'avatar_id', 'military_tag', 'title', 'honor_mark',
+        'is_fashion_prior', 'prior_settings', 'badge', 'badges',
+        'filter_by_id', 'hero_id_list') if key in fields}
+
+
 def _candidate_local_inventory_change_notification(response_frame, key, *,
                                                    header_word4, header_word9):
     """Push a committed commerce change through the client's inventory listener."""
@@ -704,15 +1154,18 @@ def _candidate_local_inventory_change_notification(response_frame, key, *,
     if int(response.fields.get('result', 1)) != 0:
         return None
     change = (response.fields.get('change') or response.fields.get('changes')
+              or response.fields.get('data_change')
               or response.fields.get('deposit_change')
               or response.fields.get('prop_changes')
               or response.fields.get('mall_changes')
               or response.fields.get('auction_changes'))
     if not change:
         return None
-    if response.name == 'CSShopBuyLotteryItemRes':
+    if response.name in premium_shop.COLLECTION_RESPONSES:
         # Its prop changes are consumed by CollectionServer, never DepositServer.
         change = {'currency_changes': change.get('currency_changes', [])}
+        if not change['currency_changes']:
+            return None
     notification = codec.encode('CSDepositChangeNtf',
                                 {'deposit_change': change}, sequence=0)
     return encode_data_frame((notification,), key, direction='server_to_client',
@@ -722,22 +1175,23 @@ def _candidate_local_inventory_change_notification(response_frame, key, *,
 
 def _candidate_local_collection_change_notification(response_frame, key, *,
                                                     header_word4, header_word9):
-    """Push purchased Mandel bricks through the collection listener."""
+    """Push Mandel purchases and scan rewards through the collection listener."""
     codec = _candidate_codec()
     decoded = decode_data_frame(response_frame, key, direction='server_to_client',
                                 compression_method=1)
     if len(decoded.messages) != 1:
         raise ValueError('Expected one local purchase response')
     response = codec.decode(decoded.messages[0])
-    if response.name != 'CSShopBuyLotteryItemRes' or int(response.fields.get('result', 1)) != 0:
+    if (response.name not in premium_shop.COLLECTION_RESPONSES
+            or int(response.fields.get('result', 1)) != 0):
         return None
     changes = []
-    for entry in response.fields.get('change', {}).get('prop_changes', []):
+    change = response.fields.get('change') or response.fields.get('data_change') or {}
+    for entry in change.get('prop_changes', []):
         prop = entry.get('prop') or {}
-        changes.append({'change_type': 1,
-                        'prop': {'id': int(prop['id']), 'gid': 0,
-                                 'num': int(prop['num'])},
-                        'delta_num': int(prop['num'])})
+        changes.append({'change_type': int(entry['change_type']), 'prop': prop,
+                        'delta_num': int(entry.get('delta', prop.get('num', 0))),
+                        'after_num': int(prop.get('num', 0))})
     if not changes:
         return None
     notification = codec.encode('CSCollectionPropChangeNtf',
@@ -745,6 +1199,50 @@ def _candidate_local_collection_change_notification(response_frame, key, *,
     return encode_data_frame((notification,), key, direction='server_to_client',
                              opaque_flag=64, header_word4=header_word4,
                              header_word9=header_word9)
+
+
+def _candidate_local_collection_response_frames(response_frame, key, backend=None, local_session=None):
+    """Update collection state before a purchase callback or scan animation starts."""
+    notification = _candidate_local_collection_change_notification(
+        response_frame, key, header_word4=response_frame.header_word4,
+        header_word9=response_frame.header_word9)
+    notifications = [notification] if notification is not None else []
+    codec = _candidate_codec()
+    response = codec.decode(decode_data_frame(response_frame, key,
+        direction='server_to_client', compression_method=1).messages[0])
+    change = response.fields.get('change') or response.fields.get('data_change') or {}
+    if backend is not None and int(response.fields.get('result', 1)) == 0:
+        heroes = {hero_id for row in change.get('prop_changes', [])
+                  if int(row.get('delta', row.get('prop', {}).get('num', 0))) > 0
+                  for hero_id in hero_customization.affected_heroes(int(row.get('prop', {}).get('id', 0)))}
+        if heroes:
+            body = codec.encode('CSHeroUnlockNtf',
+                {'heros': premium_shop.hero_records(backend, local_session, heroes)}, sequence=0)
+            notifications.append(encode_data_frame((body,), key, direction='server_to_client',
+                opaque_flag=64, header_word4=response_frame.header_word4,
+                header_word9=response_frame.header_word9 + len(notifications), max_output=1024 * 1024))
+    if not notifications:
+        return (response_frame,)
+    if response.name in ('CSLotteryBlindBoxDrawRes', 'CSShopOpenLotteryItemRes'):
+        # RewardServer.lua 0.17.0 displays positive Modify stacks regardless of delta.
+        # Consumed stacks belong in the notification, not its ten-slot animation.
+        fields = dict(response.fields)
+        field_name = 'data_change' if response.name == 'CSLotteryBlindBoxDrawRes' else 'change'
+        prizes = None if field_name == 'data_change' else {
+            p['id'] for r in fields['lottery_pool_info']['lottery_rewards'] for p in r['props']}
+        fields[field_name] = {**fields[field_name], 'prop_changes': [
+            {**row, 'prop': {**row['prop'], 'num': int(row.get('delta', row['prop'].get('num', 0)))}}
+            for row in fields[field_name]['prop_changes']
+            if int(row['change_type']) in (1, 3)
+            and int(row.get('delta', row['prop'].get('num', 0))) > 0
+            and (prizes is None or row['prop']['id'] in prizes)]}
+        body = codec.encode(response.name, fields, sequence=response.sequence)
+        response_frame = encode_data_frame((body,), key, direction='server_to_client',
+            opaque_flag=64, header_word4=response_frame.header_word4,
+            header_word9=response_frame.header_word9 + len(notifications))
+    else:
+        response_frame = replace(response_frame, header_word9=response_frame.header_word9 + len(notifications))
+    return (*notifications, response_frame)
 
 
 def _candidate_local_hero_unlock_response(message, key, *, header_word4, header_word9):
@@ -823,11 +1321,17 @@ def _candidate_local_account_state_response(message, backend, local_session,
         fields = {'result': 0, 'level': level, 'account_level': level,
                   'blast_level': level, 'exp': 0, 'account_exp': 0,
                   'nick_name': expected_identity.get('game_nick') or expected_identity['username']}
+        fields.update(profile_cosmetics.profile_fields(backend, local_session))
     elif request.name == 'CSPlayerGetBasicInfoReq':
-        fields = {'result': 0, 'info': {
-            'player_id': expected_identity['native_id'],
-            'nick_name': expected_identity.get('game_nick') or expected_identity['username'],
-            'sol_level': level, 'mp_level': level}}
+        target = int(request.fields.get('player_id') or 0)
+        if target and target != expected_identity['native_id']:
+            fields = {'result': error_code('PlayerInfoGetProfileFailed')}
+        else:
+            fields = {'result': 0, 'info': {
+                'player_id': expected_identity['native_id'],
+                'nick_name': expected_identity.get('game_nick') or expected_identity['username'],
+                'sol_level': level, 'mp_level': level,
+                **profile_cosmetics.basic_info_fields(backend, local_session)}}
     elif request.name == 'CSGetCurrencyReq':
         fields = {'result': 0, 'currencys': [
             {'id': row['currency_id'], 'num': row['amount']}
@@ -849,16 +1353,29 @@ def _candidate_local_collection_response(message, backend, local_session, key, *
     request = codec.decode(message[4:])
     if request.name != 'CSCollectionLoadPropsReq':
         raise ValueError('Not a collection load request')
+    backend.ensure_native_lobby_melee_collection(local_session)
     state = backend.native_lobby_profile(local_session)
+    from .gun_skins import collection as gun_skin_collection
+    from .weapon_pendants import PENDANTS, collection as pendant_collection
+    skins = gun_skin_collection(backend, local_session)
     response = codec.response(request, {
         'result': 0,
+        'weapon_skin_props': [{'id': WEAPONS[row['template_id']], 'gid': 0, 'num': 1}
+                              for row in state['melee_props']] + [row for row in skins if not row['gid']],
+        'mystical_skin_props': [row for row in skins if row['gid']],
+        'weapon_pendant_props': pendant_collection(backend, local_session),
         'common_props': [
             {'id': row['template_id'], 'gid': 0, 'num': row['quantity']}
-            for row in state['collection_props']],
+            for row in state['collection_props'] if row['template_id'] not in PENDANTS],
     })
     return encode_data_frame((response,), key, direction='server_to_client',
                              opaque_flag=64, header_word4=header_word4,
                              header_word9=header_word9)
+
+
+def _deposit_inventory_location(row):
+    from .native_keychains import location
+    return location(row)
 
 
 def _candidate_local_deposit_response(message, backend, local_session, key, *, header_word4, header_word9):
@@ -867,11 +1384,17 @@ def _candidate_local_deposit_response(message, backend, local_session, key, *, h
         raise ValueError('Truncated deposit package')
     codec = _candidate_codec()
     request = codec.decode(message[4:])
+    if request.name == 'CSDepositGetExtensionPropsReq':
+        # _FetchAllItems_Start2 resets warehouse extensions, not 116/116001.
+        # Keychain items are loaded once in the main GetProps response.
+        backend.native_lobby_profile(local_session)
+        response = codec.response(request, {'result': 0, 'extension_slots': [], 'in_extension_pages': []})
+        return encode_data_frame((response,), key, direction='server_to_client',
+                                 opaque_flag=64, header_word4=header_word4, header_word9=header_word9)
     if request.name != 'CSDepositGetPropsReq':
         raise ValueError('Not the main warehouse fetch')
-    # GameItem row 18100000001 is a melee receiver; InventoryServer_Network
-    # function 0.12 rejects preset IDs in melee_weapons.
-    backend.ensure_native_lobby_default_melee(local_session, 18100000001)
+    backend.ensure_native_lobby_melee_collection(local_session)
+    backend.ensure_native_lobby_safe_boxes(local_session)
     state = backend.native_lobby_profile(local_session)
     grid = _candidate_main_deposit_grid()
     grid['props'] = []
@@ -879,13 +1402,16 @@ def _candidate_local_deposit_response(message, backend, local_session, key, *, h
                                   'grid_space': [dict(space) for space in row['grid_space']],
                                   'load_props': []}
                  for row in _candidate_body_equipment_positions()}
-    equipment[ASSEMBLY_TEMP_POSITION] = {
-        'position': ASSEMBLY_TEMP_POSITION, 'capacity': len(ASSEMBLY_TEMP_LAYOUT),
+    equipment[POCKET_POSITION] = {
+        'position': POCKET_POSITION, 'capacity': len(POCKET_LAYOUT),
         'src_prop_id': 0,
         'grid_space': [{'id': space_id, 'length': width, 'width': height}
-                       for space_id, (width, height) in enumerate(ASSEMBLY_TEMP_LAYOUT, 1)],
+                       for space_id, (width, height) in enumerate(POCKET_LAYOUT, 1)],
         'load_props': [],
     }
+    for position in (CHEST_RIG_POSITION, BACKPACK_POSITION):
+        equipment[position] = {'position': position, 'capacity': 0,
+                               'src_prop_id': 0, 'grid_space': [], 'load_props': []}
     rig = next((prop for prop in state['props'] if prop['grid_page_id'] == 107), None)
     rig_layout = CHEST_RIG_LAYOUT.get(rig['template_id'] if rig else None)
     if rig:
@@ -911,10 +1437,24 @@ def _candidate_local_deposit_response(message, backend, local_session, key, *, h
             'grid_space': backpack_spaces,
             'load_props': [],
         }
+    safe_box = next((prop for prop in state['props'] if prop['grid_page_id'] == 109), None)
+    safe_layout = safe_boxes.layout(safe_box['template_id'] if safe_box else None)
+    if safe_box and safe_layout:
+        equipment[SAFE_BOX_POSITION] = {
+            'position': SAFE_BOX_POSITION, 'src_prop_id': safe_box['template_id'],
+            'capacity': sum(x * y for x, y in safe_layout),
+            'grid_space': [{'id': index, 'length': x, 'width': y}
+                           for index, (x, y) in enumerate(safe_layout, 1)],
+            'load_props': [],
+        }
+    from .native_keychains import wire_slots
+    equipment.update({row['position']: row for row in wire_slots(state)})
     occupied = set()
-    temporary_slots = set()
+    pocket_slots = set()
     for prop in state['props']:
         position = prop['grid_page_id']
+        if position in (116, 116001):
+            continue
         if position == grid['grid_page_id']:
             if prop['x'] + prop['length'] > grid['grid_length'] or prop['y'] + prop['width'] > grid['grid_width']:
                 raise ValueError('Warehouse prop exceeds the installed grid')
@@ -932,12 +1472,20 @@ def _candidate_local_deposit_response(message, backend, local_session, key, *, h
             if not backpack or (backpack_layout and prop['x'] not in {space['id'] for space in backpack_spaces}):
                 raise ValueError('Unsupported backpack placement')
             destination = equipment[position]['load_props']
-        elif position == ASSEMBLY_TEMP_POSITION:
-            if not 1 <= prop['x'] <= len(ASSEMBLY_TEMP_LAYOUT) or prop['x'] in temporary_slots:
-                raise ValueError('Invalid assembly temporary slot')
+        elif position == SAFE_BOX_POSITION:
+            if not safe_layout or not 1 <= prop['x'] <= len(safe_layout):
+                raise ValueError('Unsupported safety-box placement')
+            loc = inventory_location(prop)
+            width, height = safe_layout[prop['x'] - 1]
+            if loc['start_x'] + loc['x'] > width or loc['start_y'] + loc['y'] > height:
+                raise ValueError('Safety-box item exceeds its verified layout')
+            destination = equipment[position]['load_props']
+        elif position == POCKET_POSITION:
+            if not 1 <= prop['x'] <= len(POCKET_LAYOUT) or prop['x'] in pocket_slots:
+                raise ValueError('Invalid pocket slot')
             if (prop['y'], prop['length'], prop['width']) != (0, 1, 1):
-                raise ValueError('Invalid assembly temporary item placement')
-            temporary_slots.add(prop['x'])
+                raise ValueError('Invalid pocket item placement')
+            pocket_slots.add(prop['x'])
             destination = equipment[position]['load_props']
         elif position in equipment:
             destination = equipment[position]['load_props']
@@ -954,16 +1502,18 @@ def _candidate_local_deposit_response(message, backend, local_session, key, *, h
         destination.append({
             'id': prop['template_id'], 'gid': prop['gid'], 'num': prop['quantity'],
             'position': position, 'length': prop['length'], 'width': prop['width'],
-            **item_condition_fields(prop['template_id'], components=prop.get('components'), weapon=prop.get('weapon')),
+            **item_condition_fields(prop['template_id'], components=prop.get('components'), weapon=prop.get('weapon'), health=prop.get('health')),
             'loc': inventory_location(prop),
         })
     if state['melee_props'] and not equipment[113]['load_props']:
-        melee = state['melee_props'][0]
+        melee = next(row for row in state['melee_props']
+                     if row['template_id'] == state['selected_melee_id'])
         metadata = installed_items()[str(melee['template_id'])]
         equipment[113]['src_prop_id'] = melee['template_id']
         equipment[113]['load_props'] = [{
             'id': melee['template_id'], 'gid': melee['gid'], 'num': 1, 'position': 113,
             'length': metadata['length'], 'width': metadata['width'],
+            **item_condition_fields(melee['template_id']),
             'loc': {'pos': 113, 'start_x': 0, 'start_y': 0, 'x': 1, 'y': 1,
                     'space_id': 0, 'rotate': False},
         }]
@@ -971,11 +1521,17 @@ def _candidate_local_deposit_response(message, backend, local_session, key, *, h
         'result': 0,
         'grid_pages': [grid],
         'equiped_props': list(equipment.values()),
+        'weapon_skin_setup': state['weapon_skin_setup'],
         'melee_weapons': [{'id': row['template_id'], 'gid': row['gid'], 'num': 1,
-                           'position': 113} for row in state['melee_props']],
+                           'position': MELEE_POSITION if row['template_id'] == state['selected_melee_id'] else 0,
+                           **item_condition_fields(row['template_id'])} for row in state['melee_props']],
         'currency': [{'id': row['currency_id'], 'num': row['amount']}
                      for row in state['currencies']],
         'sort_config': state['sort_config'],
+        'extension_pos_order': state['extension_pos_order'],
+        'safe_boxes': state['safe_box_permissions'],
+        'access_card_packs': state['keychain_permissions'],
+        'safe_and_card_pack_permission': state['safe_box_permissions'] + state['keychain_permissions'],
         'cur_extension_num': 0,
         'max_extension_num': 0,
         'upperlimit_extension_num': 0,
@@ -1019,7 +1575,7 @@ def _candidate_local_body_container_summary(message):
 
 
 def _candidate_local_equip_response(message, backend, local_session, key, *,
-                                    header_word4, header_word9):
+                                    header_word4, header_word9, diagnostic_entry=None):
     """Confirm an equipment move and return its authoritative item changes."""
     if len(message) < 5:
         raise ValueError('Truncated equipment move package')
@@ -1038,24 +1594,54 @@ def _candidate_local_equip_response(message, backend, local_session, key, *,
     try:
         moves = backend.native_lobby_move_props(local_session, commands)
     except DomainError as error:
+        if diagnostic_entry is not None:
+            diagnostic_entry['local_inventory_failure'] = {'code': error.code, 'detail': error.message}
         fields = {'result': inventory_error(error), 'cmds': request.fields.get('cmds', [])}
     else:
         changes = []
         for move in moves:
             before, after = move['before'], move['after']
+            row = after or before
+            if any(prop and prop['grid_page_id'] in (109, SAFE_BOX_POSITION, 116, 116001)
+                   for prop in (before, after)):
+                changes.extend(_native_inventory_changes([move])['prop_changes'])
+                continue
+            if after['template_id'] in WEAPONS:
+                # The melee owning list is outside ordinary slots. Lua Move
+                # requires both slots; swap equipped instances with Del/Add.
+                changes.extend(_native_inventory_changes([{
+                    'before': before if before['grid_page_id'] else None,
+                    'after': after if after['grid_page_id'] else None,
+                }])['prop_changes'])
+                continue
 
             changes.append({'change_type': 5,
                             'prop': {'id': after['template_id'], 'gid': after['gid'],
                                      'num': after['quantity'],
                                      'position': after['grid_page_id'],
                                      'length': after['length'], 'width': after['width'],
-                                     **item_condition_fields(after['template_id'], components=after.get('components'), weapon=after.get('weapon')),
+                                     **item_condition_fields(after['template_id'], components=after.get('components'), weapon=after.get('weapon'), health=after.get('health')),
                                      'loc': inventory_location(after)},
                             'src': inventory_location(before),
                             'dest': inventory_location(after),
                             'delta': after['quantity']})
         fields = {'result': 0, 'deposit_change': {'prop_changes': changes},
                   'cmds': request.fields.get('cmds', [])}
+        from .container_layouts import position_changes
+        layouts = position_changes(backend.native_lobby_profile(local_session)['props'], moves)
+        if layouts:
+            fields['deposit_change']['pos_changes'] = layouts
+        if any(command.get('target_pos') == 109 for command in commands):
+            box = next(row for row in backend.native_lobby_profile(local_session)['props']
+                       if row['grid_page_id'] == 109)
+            fields['deposit_change'].setdefault('pos_changes', []).append(
+                safe_boxes.position_change(box['template_id']))
+        if any(command.get('target_pos') == 116 for command in commands):
+            from .native_keycards import position_change
+            bag = next(row for row in backend.native_lobby_profile(local_session)['props']
+                       if row['grid_page_id'] == 116)
+            fields['deposit_change'].setdefault('pos_changes', []).append(
+                position_change(bag['template_id']))
     response = codec.response(request, fields)
     return encode_data_frame((response,), key, direction='server_to_client',
                              opaque_flag=64, header_word4=header_word4,
@@ -1067,8 +1653,8 @@ def _native_inventory_changes(moves):
     for move in moves:
         before, after = move['before'], move['after']
         row = after or before
-        destination = inventory_location(after) if after else {'pos': 0}
-        source = inventory_location(before) if before else {'pos': 0}
+        destination = _deposit_inventory_location(after) if after else {'pos': 0}
+        source = _deposit_inventory_location(before) if before else {'pos': 0}
         # common_pb.lua 0, instructions 618-642: Modify=3, ModifyWithMove=4, Move=5.
         change_type = (2 if after is None else 1 if before is None
                        else 3 if source == destination
@@ -1077,8 +1663,9 @@ def _native_inventory_changes(moves):
             'delta': (after['quantity'] if after else 0) - (before['quantity'] if before else 0),
             'prop': {'id': row['template_id'], 'gid': row['gid'], 'num': row['quantity'],
                 'position': row['grid_page_id'], 'length': row['length'], 'width': row['width'],
-                **item_condition_fields(row['template_id'], components=row.get('components'), weapon=row.get('weapon')),
-                'loc': inventory_location(row)}})
+                **item_condition_fields(row['template_id'], components=row.get('components'), weapon=row.get('weapon'), health=row.get('health')),
+                **({'expire_timestamp': row['expire_timestamp']} if 'expire_timestamp' in row else {}),
+                'loc': _deposit_inventory_location(row)}})
     return {'prop_changes': changes}
 
 
@@ -1090,7 +1677,7 @@ def _candidate_local_bullet_summary(message):
             for command in fields.get('cmds', [])[:32]]
 
 
-def _candidate_local_bullet_response(message, backend, local_session, key, *, header_word4, header_word9):
+def _candidate_local_bullet_response(message, backend, local_session, key, *, header_word4, header_word9, diagnostic_entry=None):
     codec = _candidate_codec()
     request = codec.decode(message[4:])
     if request.name != 'CSDepositOperateBulletReq':
@@ -1102,6 +1689,8 @@ def _candidate_local_bullet_response(message, backend, local_session, key, *, he
     try:
         moves = backend.native_lobby_operate_bullets(local_session, commands)
     except DomainError as error:
+        if diagnostic_entry is not None:
+            diagnostic_entry['local_inventory_failure'] = {'code': error.code, 'detail': error.message}
         fields = {'result': inventory_error(error)}
     else:
         fields = {'result': 0, 'changes': _native_inventory_changes(moves)}
@@ -1110,7 +1699,8 @@ def _candidate_local_bullet_response(message, backend, local_session, key, *, he
                              opaque_flag=64, header_word4=header_word4, header_word9=header_word9)
 
 
-def _candidate_local_body_container_response(message, backend, local_session, key, *, header_word4, header_word9):
+def _candidate_local_body_container_response(message, backend, local_session, key, *,
+                                             header_word4, header_word9, diagnostic_entry=None):
     """Commit the client's container snapshot and return authoritative changes."""
     if len(message) < 5:
         raise ValueError('Truncated body-container sync package')
@@ -1122,6 +1712,8 @@ def _candidate_local_body_container_response(message, backend, local_session, ke
         moves = backend.native_lobby_sync_body_containers(
             local_session, request.fields.get('snapshots', []))
     except DomainError as error:
+        if diagnostic_entry is not None:
+            diagnostic_entry['local_inventory_failure'] = {'code': error.code, 'detail': error.message}
         fields = {'result': inventory_error(error)}
     else:
         fields = {'result': 0, 'deposit_change': _native_inventory_changes(moves)}
@@ -1166,55 +1758,117 @@ def _candidate_local_guide_stage_response(message, key, *, header_word4, header_
 
 
 def _candidate_local_deposit_sort_response(message, backend, local_session, key,
-                                           *, header_word4, header_word9):
-    """Acknowledge sorting an already packed local grid and retain UI options."""
+                                           *, header_word4, header_word9, diagnostic_entry=None):
+    """Return committed inventory changes and the native client's saved settings."""
     if len(message) < 5:
         raise ValueError('Truncated warehouse sorting package')
     codec = _candidate_codec()
     request = codec.decode(message[4:])
-    if request.name == 'CSDepositSortPositionReq':
-        position = int(request.fields.get('pos_id', 0))
-        if position != 2:
-            raise ValueError('Unsupported warehouse sorting position')
-        fields = {'result': 0, 'pos_id': position, 'changes': {}}
-    elif request.name == 'CSDepositSortMultiplePosReq':
-        positions = [int(value) for value in request.fields.get('pos_id', [])]
-        if any(value != 2 for value in positions):
-            raise ValueError('Unsupported warehouse sorting position')
-        fields = {'result': 0, 'changes': {}}
-    elif request.name == 'CSDepositSetSortConfigReq':
-        config = backend.set_native_lobby_sort_config(
-            local_session, request.fields.get('sort_config', {}))
-        fields = {'result': 0, 'cur_sort_config': config}
-    else:
+    if request.name not in ('CSDepositSortPositionReq', 'CSDepositSortMultiplePosReq',
+                            'CSDepositSetSortConfigReq', 'CSDepositSetCommonConfigReq'):
         raise ValueError('Not a warehouse sorting request')
+    if diagnostic_entry is not None:
+        diagnostic_entry['local_warehouse_sort_request'] = request.fields
+    try:
+        if request.name in ('CSDepositSortPositionReq', 'CSDepositSortMultiplePosReq'):
+            positions = ([int(request.fields.get('pos_id', 0))]
+                         if request.name == 'CSDepositSortPositionReq' else request.fields.get('pos_id', []))
+            moves = backend.native_lobby_sort_positions(
+                local_session, positions, request.fields.get('spec_extension_first_class'))
+            fields = {'result': 0, 'changes': _native_inventory_changes(moves)}
+            if request.name == 'CSDepositSortPositionReq':
+                fields['pos_id'] = positions[0]
+            if diagnostic_entry is not None:
+                diagnostic_entry['local_warehouse_sort_change_count'] = len(moves)
+        else:
+            extension_order = (request.fields.get('extension_pos_order', [])
+                               if request.name == 'CSDepositSetCommonConfigReq' else None)
+            config = backend.set_native_lobby_sort_config(
+                local_session, request.fields.get('sort_config', {}), extension_order)
+            fields = {'result': 0, 'cur_sort_config': config}
+            if extension_order is not None:
+                fields['extension_pos_order'] = extension_order
+    except DomainError as error:
+        fields = {'result': inventory_error(error)}
+        if diagnostic_entry is not None:
+            diagnostic_entry['local_inventory_failure'] = {'code': error.code, 'message': error.message}
+    if diagnostic_entry is not None:
+        diagnostic_entry['local_warehouse_sort_result'] = fields['result']
     response = codec.response(request, fields)
     return encode_data_frame((response,), key, direction='server_to_client',
                              opaque_flag=64, header_word4=header_word4,
                              header_word9=header_word9)
+
+
+def _candidate_local_activity_response(message, backend, local_session, key,
+                                       *, header_word4, header_word9, diagnostic_entry=None):
+    """Apply source-bound production and quest operations for this local account."""
+    if len(message) < 5:
+        raise ValueError('Truncated activity package')
+    codec = _candidate_codec()
+    request = codec.decode(message[4:])
+    module = (native_safehouse if request.name in native_safehouse.SUPPORTED_REQUESTS else
+              native_quests if request.name in native_quests.SUPPORTED_REQUESTS else None)
+    if module is None:
+        raise ValueError('Not a supported local activity request')
+    committed = {}
+    fields = module.response_fields(request, backend, local_session, changes=committed)
+    if diagnostic_entry is not None:
+        diagnostic_entry['local_activity_request'] = {
+            name: int(request.fields[name]) for name in ('device_id', 'formula_id', 'quest_id')
+            if name in request.fields}
+        diagnostic_entry['local_activity_result'] = fields['result']
+        diagnostic_entry['_local_activity_changes'] = committed
+    response = codec.response(request, fields)
+    return encode_data_frame((response,), key, direction='server_to_client',
+                             opaque_flag=64, header_word4=header_word4,
+                             header_word9=header_word9, max_output=1024 * 1024)
+
+
+def _candidate_local_auxiliary_response(message, backend, local_session, key,
+                                       *, header_word4, header_word9, diagnostic_entry=None):
+    if len(message) < 5:
+        raise ValueError('Truncated auxiliary package')
+    codec = _candidate_codec()
+    request = codec.decode(message[4:])
+    if native_session_auxiliary.handle_one_way(
+            request, backend, local_session, diagnostic_entry=diagnostic_entry):
+        return None
+    fields = native_session_auxiliary.response_fields(request, backend, local_session)
+    if fields is None:
+        fields = native_match_unavailable.response_fields(request, backend, local_session)
+    if fields is None:
+        raise ValueError('Not a supported local auxiliary request')
+    if diagnostic_entry is not None:
+        diagnostic_entry['local_auxiliary_response_expected'] = True
+        diagnostic_entry['local_auxiliary_result'] = fields['result']
+    return encode_data_frame((codec.response(request, fields),), key, direction='server_to_client',
+                             opaque_flag=64, header_word4=header_word4, header_word9=header_word9)
 
 
 def _candidate_local_safehouse_response(message, backend, local_session, key,
                                         *, header_word4, header_word9):
-    """Expose the authenticated account's persisted safehouse device levels."""
-    if len(message) < 5:
-        raise ValueError('Truncated safehouse package')
-    codec = _candidate_codec()
-    request = codec.decode(message[4:])
-    devices = [{'device_id': row['device_id'], 'level': row['level']}
-               for row in backend.native_lobby_profile(local_session)['devices']]
-    if request.name == 'CSSafehouseGetInfoReq':
-        fields = {'result': 0, 'devices': devices,
-                  'upgraded_device_list': [device['device_id'] for device in devices],
-                  'is_safehouse_unlocked': bool(devices)}
-    elif request.name == 'CSSafehouseGetPlayerDeviceReq':
-        fields = {'result': 0, 'device_infos': devices}
-    else:
-        raise ValueError('Not a safehouse device request')
-    response = codec.response(request, fields)
-    return encode_data_frame((response,), key, direction='server_to_client',
-                             opaque_flag=64, header_word4=header_word4,
-                             header_word9=header_word9)
+    return _candidate_local_activity_response(message, backend, local_session, key,
+        header_word4=header_word4, header_word9=header_word9)
+
+
+def _candidate_local_activity_response_frames(response, key, entry):
+    committed = entry.pop('_local_activity_changes', {})
+    messages = []
+    if committed.get('inventory_moves'):
+        messages.append(('CSDepositChangeNtf', {
+            'deposit_change': _native_inventory_changes(committed['inventory_moves'])}))
+    if committed.get('quest_notification'):
+        messages.append(('CSQuestDataChangeNtf', committed['quest_notification']))
+    frames = []
+    for name, fields in messages:
+        body = _candidate_codec().encode(name, fields, sequence=0)
+        frames.append(encode_data_frame((body,), key, direction='server_to_client', opaque_flag=64,
+            header_word4=response.header_word4, header_word9=response.header_word9 + len(frames),
+            max_output=1024 * 1024))
+    if frames:
+        response = replace(response, header_word9=response.header_word9 + len(frames))
+    return (*frames, response)
 
 
 def _candidate_local_safehouse_unlock_response(message, key, *, header_word4, header_word9):
@@ -1263,223 +1917,527 @@ def _candidate_local_safehouse_config_response(message, key, *, header_word4, he
 
 def _continue_character_creation(connection, decoder, queue, current, ack,
                                  expected_identity, backend, local_session,
-                                 outbound_sequence, result, continuation_seconds=360):
-    """Handle the original client's lobby and name-creation requests."""
-    result['registration_continuation'] = []
-    began = time.monotonic()
-    deadline = time.monotonic() + continuation_seconds
+                                 outbound_sequence, result, continuation_seconds=360,
+                                 *, game_server_probe=None, progress_callback=None):
+    """Continue authenticated followups with the complete lobby dispatcher."""
+    return _continue_local_lobby(
+        connection, decoder, queue, current, ack,
+        expected_identity, backend, local_session,
+        outbound_sequence, result, continuation_seconds,
+        game_server_probe=game_server_probe, progress_callback=progress_callback,
+        records_key='registration_continuation', stop_key='registration_stop')
+
+
+def _continue_local_lobby(connection, decoder, queue, current, ack,
+                          expected_identity, backend, local_session,
+                          outbound_sequence, result, continuation_seconds=360,
+                          *, game_server_probe=None, progress_callback=None,
+                          records_key='bounded_business_continuation',
+                          stop_key='bounded_business_stop'):
+    """Use the same lobby, inventory, and match flow after login or reconnect."""
+    result[records_key] = []
+    continuation_began = time.monotonic()
+    continuation_deadline = time.monotonic() + continuation_seconds
+    local_match_mode_info = None
+    local_match_prepare_sent = False
+    local_match_join_sent = False
     for _ in range(8192):
-        if time.monotonic() >= deadline:
-            result['registration_stop'] = 'deadline'
-            return
+        if time.monotonic() >= continuation_deadline:
+            result[stop_key] = 'continuation_deadline'
+            break
         if current.command == 0x9001:
             outbound_sequence += 1
             connection.sendall(_transport_ping_reply(
                 current, header_word9=outbound_sequence).encode())
-            result['registration_continuation'].append(
-                {'transport_command': '0x9001', 'reply_sent': True,
-                 'elapsed_ms': round((time.monotonic() - began) * 1000)})
-        elif current.command == 0x4013:
-            data = decode_data_frame(current, ack.session_key,
-                                     direction='client_to_server', compression_method=1)
-            if len(data.messages) != 1:
-                result['registration_stop'] = 'merged_messages'
-                result['registration_merged_message_count'] = len(data.messages)
-                return
-            message = data.messages[0]
-            shape = summarize_prefixed_envelope(message)
-            name = shape.get('message_name')
-            entry = {'request_name': name, 'service': shape.get('service'),
-                     'prefix_sequence': shape.get('prefix_word_be'),
-                     'elapsed_ms': round((time.monotonic() - began) * 1000)}
-            result['registration_continuation'].append(entry)
-            _log_request_progress(entry, 'received')
+            result[records_key].append(
+                {'transport_command': '0x9001',
+                 'wire_bytes': current.wire_size,
+                 'reply_sent': True})
             try:
-                outbound_sequence += 1
-                if name == 'CSAccountLoginReq':
-                    response = _candidate_local_login_response(
-                        message, expected_identity, ack.session_key,
-                        header_word4=current.header_word4, header_word9=outbound_sequence)
-                elif name == 'CSStateGetInfoReq':
-                    response = _candidate_local_state_response(
-                        message, expected_identity, ack.session_key,
-                        header_word4=current.header_word4, header_word9=outbound_sequence)
-                elif name == 'CSOnlineHeartbeatReq':
-                    response = _candidate_local_heartbeat_response(
-                        message, ack.session_key,
-                        header_word4=current.header_word4, header_word9=outbound_sequence)
-                elif name in ('CSAccountRandNickReq', 'CSAccountValidateNickReq',
-                              'CSAccountRegisterReq'):
-                    response = _candidate_local_nick_response(
-                        message, backend, local_session, ack.session_key,
-                        header_word4=current.header_word4, header_word9=outbound_sequence)
-                    entry['local_name_operation'] = True
-                    if name == 'CSAccountRegisterReq':
-                        game_profile = backend.native_identity(local_session)
-                        expected_identity['game_nick'] = game_profile['game_nick']
-                        expected_identity['game_registered'] = game_profile['game_registered']
-                        result['character_registration_observed'] = game_profile['game_registered']
-                elif name == 'CSAccountGetUnicodeConfReq':
-                    response = _candidate_local_unicode_conf_response(
-                        message, ack.session_key,
-                        header_word4=current.header_word4, header_word9=outbound_sequence)
-                elif name == 'CSClientEnterHallModeReq':
-                    response = _candidate_local_hall_mode_response(
-                        message, ack.session_key,
-                        header_word4=current.header_word4, header_word9=outbound_sequence)
-                elif name in ('CSHeroGetHeroIDListReq', 'CSHeroLoadHeroListReq'):
-                    response = _candidate_local_hero_response(
-                        message, backend, local_session, ack.session_key,
-                        header_word4=current.header_word4, header_word9=outbound_sequence)
-                    entry['base_avatar_catalogue_probe'] = True
-                elif name == 'CSHeroSelectHeroReq':
-                    response = _candidate_local_hero_select_response(
-                        message, backend, local_session, ack.session_key,
-                        header_word4=current.header_word4, header_word9=outbound_sequence)
-                    entry['local_hero_selection_response'] = True
-                elif name == 'CSHeroGetUnlockInfoReq':
-                    response = _candidate_local_hero_unlock_response(
-                        message, ack.session_key,
-                        header_word4=current.header_word4, header_word9=outbound_sequence)
-                    entry['local_hero_unlock_response'] = True
-                elif name in ('CSAccountGetPlayerProfileReq', 'CSPlayerGetBasicInfoReq',
-                              'CSGetCurrencyReq'):
-                    response = _candidate_local_account_state_response(
-                        message, backend, local_session, expected_identity, ack.session_key,
-                        header_word4=current.header_word4, header_word9=outbound_sequence)
-                    entry['local_account_state_response'] = True
-                elif name == 'CSDepositGetPropsReq':
-                    response = _candidate_local_deposit_response(
-                        message, backend, local_session, ack.session_key,
-                        header_word4=current.header_word4, header_word9=outbound_sequence)
-                    entry['main_warehouse_grid_probe'] = True
-                elif name == 'CSDepositEquipPropReq':
-                    entry['local_equip_commands'] = _candidate_local_equip_summary(message)
-                    response = _candidate_local_equip_response(
-                        message, backend, local_session, ack.session_key,
-                        header_word4=current.header_word4, header_word9=outbound_sequence)
-                    entry['local_equip_response'] = True
-                elif name == 'CSDepositAssemblySyncBodyContainerReq':
-                    entry['local_body_container_snapshots'] = _candidate_local_body_container_summary(message)
-                    response = _candidate_local_body_container_response(
-                        message, backend, local_session, ack.session_key,
-                        header_word4=current.header_word4, header_word9=outbound_sequence)
-                    entry['local_body_container_response'] = True
-                elif name == 'CSDepositOperateBulletReq':
-                    entry['local_bullet_commands'] = _candidate_local_bullet_summary(message)
-                    response = _candidate_local_bullet_response(
-                        message, backend, local_session, ack.session_key,
-                        header_word4=current.header_word4, header_word9=outbound_sequence)
-                    entry['local_bullet_response'] = True
-                    entry['local_commerce_result'] = _candidate_local_commerce_result(response, ack.session_key)
-                elif name == 'CSGuideSetDataReq':
-                    response = _candidate_local_guide_progress_response(
-                        message, ack.session_key,
-                        header_word4=current.header_word4, header_word9=outbound_sequence)
-                    entry['local_guide_progress_response'] = True
-                elif name in ('CSGuideSkipReq', 'CSGuidePassedReq'):
-                    response = _candidate_local_guide_stage_response(
-                        message, ack.session_key,
-                        header_word4=current.header_word4, header_word9=outbound_sequence)
-                    entry['local_guide_stage_response'] = True
-                elif name == 'CSCollectionLoadPropsReq':
-                    response = _candidate_local_collection_response(
-                        message, backend, local_session, ack.session_key,
-                        header_word4=current.header_word4, header_word9=outbound_sequence)
-                    entry['local_collection_response'] = True
-                elif name in ('CSDepositSortPositionReq', 'CSDepositSortMultiplePosReq',
-                              'CSDepositSetSortConfigReq'):
-                    response = _candidate_local_deposit_sort_response(
-                        message, backend, local_session, ack.session_key,
-                        header_word4=current.header_word4, header_word9=outbound_sequence)
-                    entry['local_warehouse_sort_response'] = True
-                elif name in ('CSSafehouseGetInfoReq', 'CSSafehouseGetPlayerDeviceReq'):
-                    response = _candidate_local_safehouse_response(
-                        message, backend, local_session, ack.session_key,
-                        header_word4=current.header_word4, header_word9=outbound_sequence)
-                    entry['local_safehouse_device_response'] = True
-                elif name == 'CSSafehouseGetConfigReq':
-                    response = _candidate_local_safehouse_config_response(
-                        message, ack.session_key,
-                        header_word4=current.header_word4, header_word9=outbound_sequence)
-                    entry['local_safehouse_config_response'] = True
-                elif name == 'CSSafehouseFuncIsUnlockReq':
-                    response = _candidate_local_safehouse_unlock_response(
-                        message, ack.session_key,
-                        header_word4=current.header_word4, header_word9=outbound_sequence)
-                    entry['local_safehouse_unlock_response'] = True
-                elif name == 'CSSwitchLoadModuleStatusReq':
-                    response = _candidate_local_module_status_response(
-                        message, ack.session_key,
-                        header_word4=current.header_word4, header_word9=outbound_sequence)
-                    entry['local_module_status_response'] = True
-                elif name in ('CSActivityGetReq', 'CSAuctionWithdrawReq',
-                              'CSMarketWithdrawReq'):
-                    response = _candidate_local_lobby_critical_response(
-                        message, ack.session_key,
-                        header_word4=current.header_word4, header_word9=outbound_sequence)
-                    entry['local_lobby_critical_response'] = True
-                elif name in ('CSPrepareMapBoardReq', 'CSPrepareTDMMapBoardReq',
-                              'CSPrepareBombMapBoardReq'):
-                    response = _candidate_local_prepare_map_response(
-                        message, backend, local_session, ack.session_key,
-                        header_word4=current.header_word4, header_word9=outbound_sequence)
-                    entry['local_prepare_board_response'] = True
-                elif name in LOCAL_COMMERCE_REQUESTS:
-                    if name in ('CSAuctionGetSaleListBatchReq', 'CSAuctionGetSaleListReq',
-                                'CSMarketGetSaleListReq', 'CSAuctionBuyTReq',
-                                'CSMarketBuyTReq', 'CSMallBuyReq'):
-                        entry['local_commerce_item_ids'] = _candidate_local_commerce_item_ids(message)
-                    if name == 'CSShopBuyLotteryItemReq':
-                        entry['local_lottery_purchase_items'] = _candidate_local_lottery_purchase_summary(message)
-                    if name == 'CSSerialCheapBuyReq':
-                        entry['local_serial_buy_items'] = _candidate_local_serial_buy_summary(message)
-                    if name == 'CSMallSellReq':
-                        entry['local_sell_items'] = _candidate_local_sell_summary(message)
-                    response = _candidate_local_commerce_response(
-                        message, backend, local_session, ack.session_key,
-                        header_word4=current.header_word4, header_word9=outbound_sequence)
-                    entry['local_commerce_response'] = True
-                    entry['local_commerce_result'] = _candidate_local_commerce_result(
-                        response, ack.session_key)
-                elif name and name.endswith('Ntf'):
-                    entry['notification_observed'] = True
-                    response = None
-                else:
-                    response = _candidate_read_only_empty_response(
-                        message, ack.session_key,
-                        header_word4=current.header_word4, header_word9=outbound_sequence)
-                    entry['empty_read_only_response_probe'] = True
-            except (ValueError, DomainError) as error:
-                entry['request_not_answered'] = True
-                entry['failure_code'] = (error.code if isinstance(error, DomainError)
-                                         else type(error).__name__)
-                response = None
-            if response is not None:
-                connection.sendall(response.encode())
-                entry['response_sent'] = True
-                entry['response_elapsed_ms'] = round((time.monotonic() - began) * 1000)
-                if name in ('CSDepositOperateBulletReq', 'CSDepositAssemblySyncBodyContainerReq'):
-                    outbound_sequence += 1
-                    notification = _candidate_local_inventory_change_notification(
-                        response, ack.session_key, header_word4=current.header_word4,
-                        header_word9=outbound_sequence)
-                    if notification is not None:
-                        connection.sendall(notification.encode())
-                        entry['local_inventory_change_notification_sent'] = True
+                current = _receive_one(connection, decoder, queue)
+            except (TimeoutError, socket.timeout):
+                result[stop_key] = 'receive_timeout_after_transport_heartbeat'
+                break
+            if current is None:
+                result[stop_key] = 'client_closed_after_transport_heartbeat'
+                break
+            continue
+        if current.command != 0x4013:
+            result[stop_key] = 'non_data_command'
+            result['bounded_business_non_data_command'] = f'0x{current.command:04x}'
+            break
+        current_data = decode_data_frame(
+            current, ack.session_key,
+            direction='client_to_server', compression_method=1)
+        if len(current_data.messages) != 1:
+            result[stop_key] = 'merged_messages'
+            break
+        message = current_data.messages[0]
+        shape = summarize_prefixed_envelope(message)
+        name = shape.get('message_name')
+        entry = {'request_name': name,
+                 'service': shape.get('service'),
+                 'prefix_sequence': shape.get('prefix_word_be'),
+                 'wire_bytes': current.wire_size,
+                 'elapsed_ms': round((time.monotonic() - continuation_began) * 1000)}
+        result[records_key].append(entry)
+        _log_request_progress(entry, 'received')
+        if name and name.startswith('CS') and name.endswith('Ntf'):
+            entry['notification_observed'] = True
+            try:
+                current = _receive_one(connection, decoder, queue)
+            except (TimeoutError, socket.timeout):
+                result[stop_key] = 'receive_timeout_after_notification'
+                break
+            if current is None:
+                result[stop_key] = 'client_closed_after_notification'
+                break
+            continue
+        room_hero_notice = None
+        try:
+            outbound_sequence += 1
+            if name == 'CSAccountLoginReq':
+                next_response = _candidate_local_login_response(
+                    message, expected_identity, ack.session_key,
+                    header_word4=current.header_word4,
+                    header_word9=outbound_sequence)
+            elif name == 'CSStateGetInfoReq':
+                next_response = _candidate_local_state_response(
+                    message, expected_identity, ack.session_key,
+                    header_word4=current.header_word4,
+                    header_word9=outbound_sequence)
+            elif name == 'CSOnlineHeartbeatReq':
+                next_response = _candidate_local_heartbeat_response(
+                    message, ack.session_key,
+                    header_word4=current.header_word4,
+                    header_word9=outbound_sequence)
+            elif name in ('CSAccountValidateNickReq',
+                          'CSAccountRegisterReq',
+                          'CSAccountRandNickReq'):
+                next_response = _candidate_local_nick_response(
+                    message, backend, local_session,
+                    ack.session_key,
+                    header_word4=current.header_word4,
+                    header_word9=outbound_sequence)
+                entry['local_name_operation'] = True
+                if name == 'CSAccountRegisterReq':
+                    game_profile = backend.native_identity(local_session)
+                    expected_identity['game_nick'] = game_profile['game_nick']
+                    expected_identity['game_registered'] = game_profile['game_registered']
+                    result['character_registration_observed'] = game_profile['game_registered']
+            elif name == 'CSAccountGetUnicodeConfReq':
+                next_response = _candidate_local_unicode_conf_response(
+                    message, ack.session_key,
+                    header_word4=current.header_word4,
+                    header_word9=outbound_sequence)
+            elif name == 'CSClientEnterHallModeReq':
+                next_response = _candidate_local_hall_mode_response(
+                    message, ack.session_key,
+                    header_word4=current.header_word4,
+                    header_word9=outbound_sequence)
+            elif name in ('CSHeroGetHeroIDListReq',
+                          'CSHeroLoadHeroListReq'):
+                entry['local_customization_request'] = _candidate_local_customization_summary(message)
+                next_response = _candidate_local_hero_response(
+                    message, backend, local_session,
+                    ack.session_key,
+                    header_word4=current.header_word4,
+                    header_word9=outbound_sequence)
+                entry['base_avatar_catalogue_probe'] = True
+            elif name == 'CSHeroSelectHeroReq':
+                next_response = _candidate_local_hero_select_response(
+                    message, backend, local_session,
+                    ack.session_key,
+                    header_word4=current.header_word4,
+                    header_word9=outbound_sequence)
+                entry['local_hero_selection_response'] = True
+            elif name == 'CSHeroGetUnlockInfoReq':
+                next_response = _candidate_local_hero_unlock_response(
+                    message, ack.session_key,
+                    header_word4=current.header_word4,
+                    header_word9=outbound_sequence)
+                entry['local_hero_unlock_response'] = True
+            elif name in ('CSAccountGetPlayerProfileReq',
+                          'CSPlayerGetBasicInfoReq',
+                          'CSGetCurrencyReq'):
+                next_response = _candidate_local_account_state_response(
+                    message, backend, local_session,
+                    expected_identity, ack.session_key,
+                    header_word4=current.header_word4,
+                    header_word9=outbound_sequence)
+                entry['local_account_state_response'] = True
+            elif name in ('CSDepositGetPropsReq', 'CSDepositGetExtensionPropsReq'):
+                next_response = _candidate_local_deposit_response(
+                    message, backend, local_session, ack.session_key,
+                    header_word4=current.header_word4,
+                    header_word9=outbound_sequence)
+                entry['main_warehouse_grid_probe'] = True
+            elif name == 'CSDepositEquipPropReq':
+                entry['local_equip_commands'] = _candidate_local_equip_summary(message)
+                next_response = _candidate_local_equip_response(
+                    message, backend, local_session, ack.session_key,
+                    header_word4=current.header_word4,
+                    header_word9=outbound_sequence,
+                    diagnostic_entry=entry)
+                entry['local_equip_response'] = True
+                entry['local_commerce_result'] = _candidate_local_commerce_result(
+                    next_response, ack.session_key)
+            elif name == 'CSDepositAssemblySyncBodyContainerReq':
+                entry['local_body_container_snapshots'] = _candidate_local_body_container_summary(message)
+                next_response = _candidate_local_body_container_response(
+                    message, backend, local_session, ack.session_key,
+                    header_word4=current.header_word4,
+                    header_word9=outbound_sequence,
+                    diagnostic_entry=entry)
+                entry['local_body_container_response'] = True
+                entry['local_commerce_result'] = _candidate_local_commerce_result(
+                    next_response, ack.session_key)
+            elif name == 'CSDepositOperateBulletReq':
+                entry['local_bullet_commands'] = _candidate_local_bullet_summary(message)
+                next_response = _candidate_local_bullet_response(
+                    message, backend, local_session, ack.session_key,
+                    header_word4=current.header_word4,
+                    header_word9=outbound_sequence,
+                    diagnostic_entry=entry)
+                entry['local_bullet_response'] = True
+                entry['local_commerce_result'] = _candidate_local_commerce_result(
+                    next_response, ack.session_key)
+            elif name == 'CSGuideSetDataReq':
+                next_response = _candidate_local_guide_progress_response(
+                    message, ack.session_key,
+                    header_word4=current.header_word4,
+                    header_word9=outbound_sequence)
+                entry['local_guide_progress_response'] = True
+            elif name in ('CSGuideSkipReq', 'CSGuidePassedReq'):
+                next_response = _candidate_local_guide_stage_response(
+                    message, ack.session_key,
+                    header_word4=current.header_word4,
+                    header_word9=outbound_sequence)
+                entry['local_guide_stage_response'] = True
+            elif name == 'CSCollectionLoadPropsReq':
+                next_response = _candidate_local_collection_response(
+                    message, backend, local_session, ack.session_key,
+                    header_word4=current.header_word4,
+                    header_word9=outbound_sequence)
+                entry['local_collection_response'] = True
+            elif name in ('CSDepositSortPositionReq',
+                          'CSDepositSortMultiplePosReq',
+                          'CSDepositSetSortConfigReq', 'CSDepositSetCommonConfigReq'):
+                next_response = _candidate_local_deposit_sort_response(
+                    message, backend, local_session,
+                    ack.session_key,
+                    header_word4=current.header_word4,
+                    header_word9=outbound_sequence, diagnostic_entry=entry)
+                entry['local_warehouse_sort_response'] = True
+            elif name in ACTIVITY_REQUESTS:
+                next_response = _candidate_local_activity_response(
+                    message, backend, local_session,
+                    ack.session_key,
+                    header_word4=current.header_word4,
+                    header_word9=outbound_sequence, diagnostic_entry=entry)
+                entry['local_activity_response'] = True
+            elif name == 'CSSafehouseGetConfigReq':
+                next_response = _candidate_local_safehouse_config_response(
+                    message, ack.session_key,
+                    header_word4=current.header_word4,
+                    header_word9=outbound_sequence)
+                entry['local_safehouse_config_response'] = True
+            elif name == 'CSSafehouseFuncIsUnlockReq':
+                next_response = _candidate_local_safehouse_unlock_response(
+                    message, ack.session_key,
+                    header_word4=current.header_word4,
+                    header_word9=outbound_sequence)
+                entry['local_safehouse_unlock_response'] = True
+            elif name == 'CSSwitchLoadModuleStatusReq':
+                next_response = _candidate_local_module_status_response(
+                    message, ack.session_key,
+                    header_word4=current.header_word4,
+                    header_word9=outbound_sequence)
+                entry['local_module_status_response'] = True
+            elif name in ('CSActivityGetReq',
+                          'CSAuctionWithdrawReq',
+                          'CSMarketWithdrawReq',
+                          'CSArmedForceReportOutfitReq'):
+                next_response = _candidate_local_lobby_critical_response(
+                    message, ack.session_key,
+                    header_word4=current.header_word4,
+                    header_word9=outbound_sequence)
+                entry['local_lobby_critical_response'] = True
+            elif name in ('CSPrepareMapBoardReq',
+                          'CSPrepareTDMMapBoardReq',
+                          'CSPrepareBombMapBoardReq'):
+                map_observation = {}
+                next_response = _candidate_local_prepare_map_response(
+                    message, backend, local_session, ack.session_key,
+                    header_word4=current.header_word4,
+                    header_word9=outbound_sequence,
+                    observation=map_observation)
+                entry['local_prepare_board_response'] = True
+                entry['local_prepare_board_fields'] = map_observation['response_fields']
+                if name == 'CSPrepareMapBoardReq' and progress_callback:
+                    progress_callback(latest_map_board=map_observation)
+            elif name == 'CSRoomGetMatchModeListReq':
+                next_response = _candidate_local_room_mode_response(
+                    message, ack.session_key,
+                    header_word4=current.header_word4,
+                    header_word9=outbound_sequence)
+                entry['local_room_mode_response'] = True
+            elif (name == 'CSMatchGateIsRankEnableReq'
+                  and game_server_probe is not None and game_server_probe.listening):
+                next_response = _candidate_local_match_rank_response(
+                    message, ack.session_key,
+                    header_word4=current.header_word4,
+                    header_word9=outbound_sequence)
+                entry['local_match_rank_response'] = True
+            elif name == 'CSMatchRoomGetSolRoomTeamTReq':
+                room_request = _candidate_codec().decode(message[4:])
+                entry['local_solo_room_requested_id'] = int(
+                    room_request.fields.get('room_id') or 0)
+                next_response = _candidate_local_solo_room_team_response(
+                    message, backend, local_session,
+                    local_match_mode_info, ack.session_key,
+                    header_word4=current.header_word4,
+                    header_word9=outbound_sequence)
+                entry['local_solo_room_team_response'] = True
+            elif name == 'CSMatchRoomSolReadyTReq':
+                ready_request = _candidate_codec().decode(message[4:])
+                entry['local_solo_room_requested_id'] = int(
+                    ready_request.fields.get('room_id') or 0)
+                next_response, room_hero_notice = _candidate_local_solo_room_ready_response(
+                    message, backend, local_session,
+                    local_match_mode_info, ack.session_key,
+                    header_word4=current.header_word4,
+                    header_word9=outbound_sequence)
+                entry['local_solo_room_ready_response'] = True
+            elif name in ('CSMatchRoomSetPreSelectedHeroTReq',
+                          'CSMatchRoomSetSolRoomHeroTReq',
+                          'CSMatchRoomLockSelectedHeroTReq'):
+                hero_request = _candidate_codec().decode(message[4:])
+                entry['local_solo_room_requested_id'] = int(
+                    hero_request.fields.get('room_id') or 0)
+                entry['local_solo_room_requested_hero_id'] = int(
+                    hero_request.fields.get('hero_id') or
+                    hero_request.fields.get('pre_selected_hero_id') or 0)
+                next_response, room_hero_notice = _candidate_local_solo_room_hero_response(
+                    message, backend, local_session,
+                    local_match_mode_info, ack.session_key,
+                    header_word4=current.header_word4,
+                    header_word9=outbound_sequence)
+                entry['local_solo_room_hero_response'] = True
+            elif (name in native_match_unavailable.SUPPORTED_REQUESTS
+                  and (game_server_probe is None or not game_server_probe.listening)):
+                next_response = _candidate_local_auxiliary_response(
+                    message, backend, local_session, ack.session_key,
+                    header_word4=current.header_word4,
+                    header_word9=outbound_sequence, diagnostic_entry=entry)
+            elif name in ('CSRoomMatchStartAllocReq',
+                          'CSRoomMatchQuitAllocReq',
+                          'CSMatchCheckTReq',
+                          'CSMatchRoomStartMatchTglogTReq'):
+                if name == 'CSRoomMatchStartAllocReq':
+                    start_request = _candidate_codec().decode(message[4:])
+                    mode_infos = start_request.fields.get('mode_infos') or []
+                    local_match_mode_info = (mode_infos[0] if mode_infos else None)
+                    local_match_prepare_sent = False
+                    local_match_join_sent = False
+                    if local_match_mode_info:
+                        entry['local_match_mode_info'] = {
+                            field: int(local_match_mode_info.get(field) or 0)
+                            for field in ('game_mode', 'game_rule', 'sub_mode',
+                                          'team_mode', 'map_id', 'match_mode_id')}
+                next_response = _candidate_local_match_alloc_response(
+                    message, ack.session_key,
+                    header_word4=current.header_word4,
+                    header_word9=outbound_sequence,
+                    game_server_probe=game_server_probe)
+                entry['local_match_alloc_response'] = True
+            elif name in LOCAL_COMMERCE_REQUESTS:
+                if name in premium_shop.SUPPORTED_REQUESTS:
+                    entry['local_premium_shop_request'] = _candidate_local_premium_shop_summary(message)
+                if name.startswith('CSHero') or name in profile_cosmetics.SUPPORTED_REQUESTS:
+                    entry['local_customization_request'] = _candidate_local_customization_summary(message)
+                if name in ('CSMarketGetTypeListReq',
+                            'CSAuctionGetTypeListReq'):
+                    entry['local_commerce_type_filters'] = (
+                        _candidate_local_commerce_type_filters(message))
+                if name in ('CSAuctionGetSaleListBatchReq', 'CSAuctionGetSaleListReq',
+                            'CSMarketGetSaleListReq', 'CSAuctionBuyTReq',
+                            'CSMarketBuyTReq', 'CSMallBuyReq'):
+                    entry['local_commerce_item_ids'] = _candidate_local_commerce_item_ids(message)
+                if name == 'CSShopBuyLotteryItemReq':
+                    entry['local_lottery_purchase_items'] = _candidate_local_lottery_purchase_summary(message)
+                if name == 'CSSerialCheapBuyReq':
+                    entry['local_serial_buy_items'] = _candidate_local_serial_buy_summary(message)
+                if name == 'CSWAssemblyDepositPropUpdateReq':
+                    raw_assembly = _candidate_codec().decode(message[4:]).fields
+                    entry['local_weapon_assembly_request'] = {
+                        field: raw_assembly[field] for field in
+                        ('prop', 'local_prop', 'unequip_pos', 'old_prop_id', 'bag_id',
+                         'data_type', 'source', 'swapped_peer_gun') if field in raw_assembly}
+                if name == 'CSMallSellReq':
+                    entry['local_sell_items'] = _candidate_local_sell_summary(message)
+                next_response = _candidate_local_commerce_response(
+                    message, backend, local_session,
+                    ack.session_key,
+                    header_word4=current.header_word4,
+                    header_word9=outbound_sequence,
+                    diagnostic_entry=entry)
+                entry['local_commerce_response'] = True
+                entry['local_commerce_result'] = _candidate_local_commerce_result(
+                    next_response, ack.session_key)
+            elif name in (native_session_auxiliary.SUPPORTED_REQUESTS
+                         | native_session_auxiliary.ONE_WAY_REQUESTS):
+                next_response = _candidate_local_auxiliary_response(
+                    message, backend, local_session, ack.session_key,
+                    header_word4=current.header_word4,
+                    header_word9=outbound_sequence, diagnostic_entry=entry)
+            elif (name and name.startswith('CS')
+                  and name.endswith('Req')):
+                next_response = _candidate_read_only_empty_response(
+                    message, ack.session_key,
+                    header_word4=current.header_word4,
+                    header_word9=outbound_sequence)
+                entry['empty_read_only_response_probe'] = True
+            else:
+                raise ValueError('Unimplemented request')
+        except (ValueError, DomainError) as error:
+            entry['request_not_answered'] = True
+            entry['failure_code'] = (
+                error.code if isinstance(error, DomainError)
+                else type(error).__name__)
+            entry['failure_detail'] = str(error)[:160]
             _log_request_progress(entry, 'processed')
-        else:
-            result['registration_stop'] = f'non_data_0x{current.command:04x}'
-            return
+            try:
+                current = _receive_one(connection, decoder, queue)
+            except (TimeoutError, socket.timeout):
+                result[stop_key] = 'receive_timeout_after_unanswered_request'
+                break
+            if current is None:
+                result[stop_key] = 'client_closed_after_unanswered_request'
+                break
+            continue
+        if next_response is None:
+            _log_request_progress(entry, 'processed')
+            try:
+                current = _receive_one(connection, decoder, queue)
+            except (TimeoutError, socket.timeout):
+                result[stop_key] = 'receive_timeout'
+                break
+            if current is None:
+                result[stop_key] = 'client_closed'
+                break
+            continue
+        frames = _candidate_local_activity_response_frames(
+            next_response, ack.session_key, entry)
+        for activity_change in frames[:-1]:
+            connection.sendall(activity_change.encode())
+            entry['local_activity_notification_sent'] = True
+        next_response = frames[-1]
+        outbound_sequence = next_response.header_word9
+        if name in COLLECTION_REQUESTS:
+            frames = _candidate_local_collection_response_frames(
+                next_response, ack.session_key, backend, local_session)
+            for collection_change in frames[:-1]:
+                connection.sendall(collection_change.encode())
+                entry['local_collection_change_notification_sent'] = True
+            next_response = frames[-1]
+            outbound_sequence = next_response.header_word9
+        connection.sendall(next_response.encode())
+        entry['response_sent'] = True
+        entry['response_elapsed_ms'] = round(
+            (time.monotonic() - continuation_began) * 1000)
+        entry['response_header_word9'] = next_response.header_word9
+        if (name in ('CSMatchRoomSetPreSelectedHeroTReq',
+                     'CSMatchRoomSetSolRoomHeroTReq',
+                     'CSMatchRoomLockSelectedHeroTReq',
+                     'CSMatchRoomSolReadyTReq')
+                and (entry.get('local_solo_room_hero_response') or
+                     entry.get('local_solo_room_ready_response'))
+                and room_hero_notice is not None):
+            outbound_sequence += 1
+            connection.sendall(room_hero_notice.encode())
+            entry['local_solo_room_hero_notice_sent'] = True
+            if (((name == 'CSMatchRoomSolReadyTReq'
+                  and os.environ.get('DF_LOCAL_DS_JOIN_PROBE_AFTER_READY') == '1')
+                 or (name == 'CSMatchRoomLockSelectedHeroTReq'
+                     and os.environ.get('DF_LOCAL_DS_JOIN_PROBE_AFTER_HERO_LOCK') == '1'))
+                    and local_match_prepare_sent
+                    and not local_match_join_sent
+                    and local_match_mode_info
+                    and game_server_probe is not None
+                    and game_server_probe.listening):
+                outbound_sequence += 1
+                join = _candidate_local_match_join_probe(
+                    backend, local_session,
+                    local_match_mode_info,
+                    game_server_probe, ack.session_key,
+                    header_word4=current.header_word4,
+                    header_word9=outbound_sequence)
+                connection.sendall(join.encode())
+                local_match_join_sent = True
+                entry['local_game_server_join_probe_sent'] = True
+                if progress_callback:
+                    progress_callback(latest_match_handoff={
+                        'trigger_request': name,
+                        'observed_at_utc': datetime.now(timezone.utc).isoformat(),
+                        'map_id': int(local_match_mode_info['map_id']),
+                        'match_mode_id': int(local_match_mode_info['match_mode_id']),
+                        'endpoint': '127.0.0.1',
+                        'port': game_server_probe.port,
+                        'gameplay_implemented': False})
+        if (name == 'CSMatchCheckTReq' and not local_match_prepare_sent
+                and local_match_mode_info and backend and local_session
+                and game_server_probe is not None
+                and game_server_probe.listening
+                and _candidate_valid_world_map_row(local_match_mode_info)):
+            outbound_sequence += 1
+            prepare = _candidate_local_match_prepare_probe(
+                backend, local_session, local_match_mode_info,
+                ack.session_key,
+                header_word4=current.header_word4,
+                header_word9=outbound_sequence)
+            connection.sendall(prepare.encode())
+            local_match_prepare_sent = True
+            entry['local_match_prepare_probe_sent'] = True
+        for notification in _candidate_local_battle_pass_notifications(
+                entry, ack.session_key, header_word4=current.header_word4,
+                header_word9=outbound_sequence):
+            connection.sendall(notification.encode())
+            outbound_sequence = notification.header_word9
+        if (name in ('CSShopBuyLotteryItemReq',
+                     'CSLotteryBlindBoxDrawReq',
+                     'CSShopBuyHotRecommendationReq',
+                     'CSShopBuyMallGiftReq',
+                     'CSShopOpenLotteryItemReq',
+                     'CSMarketBuyTReq',
+                     'CSAuctionBuyTReq',
+                     'CSMallBuyReq',
+                     'CSSerialCheapBuyReq',
+                     'CSMallSellReq',
+                     'CSDepositOperateBulletReq',
+                     'CSDepositAssemblySyncBodyContainerReq')
+                and (entry.get('local_commerce_response')
+                     or entry.get('local_bullet_response')
+                     or entry.get('local_body_container_response'))):
+            outbound_sequence += 1
+            inventory_change = _candidate_local_inventory_change_notification(
+                next_response, ack.session_key,
+                header_word4=current.header_word4,
+                header_word9=outbound_sequence)
+            if inventory_change is not None:
+                connection.sendall(inventory_change.encode())
+                entry['local_inventory_change_notification_sent'] = True
+        _log_request_progress(entry, 'processed')
         try:
             current = _receive_one(connection, decoder, queue)
         except (TimeoutError, socket.timeout):
-            result['registration_stop'] = 'receive_timeout'
-            return
+            result[stop_key] = 'receive_timeout'
+            break
         if current is None:
-            result['registration_stop'] = 'client_closed'
-            return
-    result['registration_stop'] = 'response_limit'
+            result[stop_key] = 'client_closed'
+            break
+    else:
+        result[stop_key] = 'response_limit'
 
 
 def _candidate_read_only_empty_response(message, key, *, header_word4, header_word9):
@@ -1574,7 +2532,8 @@ def inspect_exchange(connection, modulus=None, *, timeout=12, diagnostic_exponen
                      expected_identity=None, response_probe=False, ready_probe=False,
                      ready_identity_probe=False, auth_identity_probe=False,
                      business_login_probe=False, business_bootstrap_probe=False,
-                     backend=None, local_session=None, continuation_seconds=360):
+                     backend=None, local_session=None, continuation_seconds=360,
+                     game_server_probe=None, progress_callback=None):
     """Perform only the transport DH step; return credential-free metadata."""
     if ready_probe and not response_probe:
         raise ValueError('Ready parser probe requires the auth parser probe')
@@ -1716,7 +2675,9 @@ def inspect_exchange(connection, modulus=None, *, timeout=12, diagnostic_exponen
                                 _continue_character_creation(
                                     connection, decoder, queue, third, ack,
                                     expected_identity, backend, local_session,
-                                    outbound_sequence, result, continuation_seconds)
+                                    outbound_sequence, result, continuation_seconds,
+                                    game_server_probe=game_server_probe,
+                                    progress_callback=progress_callback)
                                 return result
                             if business_login_probe and len(decoded.messages) == 1:
                                 try:
@@ -1752,7 +2713,9 @@ def inspect_exchange(connection, modulus=None, *, timeout=12, diagnostic_exponen
                                                 _continue_character_creation(
                                                     connection, decoder, queue, fourth, ack,
                                                     expected_identity, backend, local_session,
-                                                    outbound_sequence, result, continuation_seconds)
+                                                    outbound_sequence, result, continuation_seconds,
+                                                    game_server_probe=game_server_probe,
+                                                    progress_callback=progress_callback)
                                             elif business_bootstrap_probe and len(followup.messages) == 1:
                                                 try:
                                                     outbound_sequence += 1
@@ -1789,323 +2752,12 @@ def inspect_exchange(connection, modulus=None, *, timeout=12, diagnostic_exponen
                                                                                       compression_method=1)
                                                             result['post_state_business_shapes'] = [
                                                                 summarize_prefixed_envelope(item) for item in later.messages]
-                                                            result['bounded_business_continuation'] = []
-                                                            current = fifth
-                                                            continuation_began = time.monotonic()
-                                                            continuation_deadline = time.monotonic() + continuation_seconds
-                                                            for _ in range(8192):
-                                                                if time.monotonic() >= continuation_deadline:
-                                                                    result['bounded_business_stop'] = 'continuation_deadline'
-                                                                    break
-                                                                if current.command == 0x9001:
-                                                                    outbound_sequence += 1
-                                                                    connection.sendall(_transport_ping_reply(
-                                                                        current, header_word9=outbound_sequence).encode())
-                                                                    result['bounded_business_continuation'].append(
-                                                                        {'transport_command': '0x9001',
-                                                                         'wire_bytes': current.wire_size,
-                                                                         'reply_sent': True})
-                                                                    try:
-                                                                        current = _receive_one(connection, decoder, queue)
-                                                                    except (TimeoutError, socket.timeout):
-                                                                        result['bounded_business_stop'] = 'receive_timeout_after_transport_heartbeat'
-                                                                        break
-                                                                    if current is None:
-                                                                        result['bounded_business_stop'] = 'client_closed_after_transport_heartbeat'
-                                                                        break
-                                                                    continue
-                                                                if current.command != 0x4013:
-                                                                    result['bounded_business_stop'] = 'non_data_command'
-                                                                    result['bounded_business_non_data_command'] = f'0x{current.command:04x}'
-                                                                    break
-                                                                current_data = decode_data_frame(
-                                                                    current, ack.session_key,
-                                                                    direction='client_to_server', compression_method=1)
-                                                                if len(current_data.messages) != 1:
-                                                                    result['bounded_business_stop'] = 'merged_messages'
-                                                                    break
-                                                                message = current_data.messages[0]
-                                                                shape = summarize_prefixed_envelope(message)
-                                                                name = shape.get('message_name')
-                                                                entry = {'request_name': name,
-                                                                         'service': shape.get('service'),
-                                                                         'prefix_sequence': shape.get('prefix_word_be'),
-                                                                         'wire_bytes': current.wire_size,
-                                                                         'elapsed_ms': round((time.monotonic() - continuation_began) * 1000)}
-                                                                result['bounded_business_continuation'].append(entry)
-                                                                _log_request_progress(entry, 'received')
-                                                                if name and name.startswith('CS') and name.endswith('Ntf'):
-                                                                    entry['notification_observed'] = True
-                                                                    try:
-                                                                        current = _receive_one(connection, decoder, queue)
-                                                                    except (TimeoutError, socket.timeout):
-                                                                        result['bounded_business_stop'] = 'receive_timeout_after_notification'
-                                                                        break
-                                                                    if current is None:
-                                                                        result['bounded_business_stop'] = 'client_closed_after_notification'
-                                                                        break
-                                                                    continue
-                                                                try:
-                                                                    outbound_sequence += 1
-                                                                    if name == 'CSAccountLoginReq':
-                                                                        next_response = _candidate_local_login_response(
-                                                                            message, expected_identity, ack.session_key,
-                                                                            header_word4=current.header_word4,
-                                                                            header_word9=outbound_sequence)
-                                                                    elif name == 'CSStateGetInfoReq':
-                                                                        next_response = _candidate_local_state_response(
-                                                                            message, expected_identity, ack.session_key,
-                                                                            header_word4=current.header_word4,
-                                                                            header_word9=outbound_sequence)
-                                                                    elif name == 'CSOnlineHeartbeatReq':
-                                                                        next_response = _candidate_local_heartbeat_response(
-                                                                            message, ack.session_key,
-                                                                            header_word4=current.header_word4,
-                                                                            header_word9=outbound_sequence)
-                                                                    elif name in ('CSAccountValidateNickReq',
-                                                                                  'CSAccountRegisterReq',
-                                                                                  'CSAccountRandNickReq'):
-                                                                        next_response = _candidate_local_nick_response(
-                                                                            message, backend, local_session,
-                                                                            ack.session_key,
-                                                                            header_word4=current.header_word4,
-                                                                            header_word9=outbound_sequence)
-                                                                        entry['local_name_operation'] = True
-                                                                        if name == 'CSAccountRegisterReq':
-                                                                            game_profile = backend.native_identity(local_session)
-                                                                            expected_identity['game_nick'] = game_profile['game_nick']
-                                                                            expected_identity['game_registered'] = game_profile['game_registered']
-                                                                    elif name == 'CSAccountGetUnicodeConfReq':
-                                                                        next_response = _candidate_local_unicode_conf_response(
-                                                                            message, ack.session_key,
-                                                                            header_word4=current.header_word4,
-                                                                            header_word9=outbound_sequence)
-                                                                    elif name == 'CSClientEnterHallModeReq':
-                                                                        next_response = _candidate_local_hall_mode_response(
-                                                                            message, ack.session_key,
-                                                                            header_word4=current.header_word4,
-                                                                            header_word9=outbound_sequence)
-                                                                    elif name in ('CSHeroGetHeroIDListReq',
-                                                                                  'CSHeroLoadHeroListReq'):
-                                                                        next_response = _candidate_local_hero_response(
-                                                                            message, backend, local_session,
-                                                                            ack.session_key,
-                                                                            header_word4=current.header_word4,
-                                                                            header_word9=outbound_sequence)
-                                                                        entry['base_avatar_catalogue_probe'] = True
-                                                                    elif name == 'CSHeroSelectHeroReq':
-                                                                        next_response = _candidate_local_hero_select_response(
-                                                                            message, backend, local_session,
-                                                                            ack.session_key,
-                                                                            header_word4=current.header_word4,
-                                                                            header_word9=outbound_sequence)
-                                                                        entry['local_hero_selection_response'] = True
-                                                                    elif name == 'CSHeroGetUnlockInfoReq':
-                                                                        next_response = _candidate_local_hero_unlock_response(
-                                                                            message, ack.session_key,
-                                                                            header_word4=current.header_word4,
-                                                                            header_word9=outbound_sequence)
-                                                                        entry['local_hero_unlock_response'] = True
-                                                                    elif name in ('CSAccountGetPlayerProfileReq',
-                                                                                  'CSPlayerGetBasicInfoReq',
-                                                                                  'CSGetCurrencyReq'):
-                                                                        next_response = _candidate_local_account_state_response(
-                                                                            message, backend, local_session,
-                                                                            expected_identity, ack.session_key,
-                                                                            header_word4=current.header_word4,
-                                                                            header_word9=outbound_sequence)
-                                                                        entry['local_account_state_response'] = True
-                                                                    elif name == 'CSDepositGetPropsReq':
-                                                                        next_response = _candidate_local_deposit_response(
-                                                                            message, backend, local_session, ack.session_key,
-                                                                            header_word4=current.header_word4,
-                                                                            header_word9=outbound_sequence)
-                                                                        entry['main_warehouse_grid_probe'] = True
-                                                                    elif name == 'CSDepositEquipPropReq':
-                                                                        entry['local_equip_commands'] = _candidate_local_equip_summary(message)
-                                                                        next_response = _candidate_local_equip_response(
-                                                                            message, backend, local_session, ack.session_key,
-                                                                            header_word4=current.header_word4,
-                                                                            header_word9=outbound_sequence)
-                                                                        entry['local_equip_response'] = True
-                                                                    elif name == 'CSDepositAssemblySyncBodyContainerReq':
-                                                                        entry['local_body_container_snapshots'] = _candidate_local_body_container_summary(message)
-                                                                        next_response = _candidate_local_body_container_response(
-                                                                            message, backend, local_session, ack.session_key,
-                                                                            header_word4=current.header_word4,
-                                                                            header_word9=outbound_sequence)
-                                                                        entry['local_body_container_response'] = True
-                                                                    elif name == 'CSDepositOperateBulletReq':
-                                                                        entry['local_bullet_commands'] = _candidate_local_bullet_summary(message)
-                                                                        next_response = _candidate_local_bullet_response(
-                                                                            message, backend, local_session, ack.session_key,
-                                                                            header_word4=current.header_word4,
-                                                                            header_word9=outbound_sequence)
-                                                                        entry['local_bullet_response'] = True
-                                                                        entry['local_commerce_result'] = _candidate_local_commerce_result(
-                                                                            next_response, ack.session_key)
-                                                                    elif name == 'CSGuideSetDataReq':
-                                                                        next_response = _candidate_local_guide_progress_response(
-                                                                            message, ack.session_key,
-                                                                            header_word4=current.header_word4,
-                                                                            header_word9=outbound_sequence)
-                                                                        entry['local_guide_progress_response'] = True
-                                                                    elif name in ('CSGuideSkipReq', 'CSGuidePassedReq'):
-                                                                        next_response = _candidate_local_guide_stage_response(
-                                                                            message, ack.session_key,
-                                                                            header_word4=current.header_word4,
-                                                                            header_word9=outbound_sequence)
-                                                                        entry['local_guide_stage_response'] = True
-                                                                    elif name == 'CSCollectionLoadPropsReq':
-                                                                        next_response = _candidate_local_collection_response(
-                                                                            message, backend, local_session, ack.session_key,
-                                                                            header_word4=current.header_word4,
-                                                                            header_word9=outbound_sequence)
-                                                                        entry['local_collection_response'] = True
-                                                                    elif name in ('CSDepositSortPositionReq',
-                                                                                  'CSDepositSortMultiplePosReq',
-                                                                                  'CSDepositSetSortConfigReq'):
-                                                                        next_response = _candidate_local_deposit_sort_response(
-                                                                            message, backend, local_session,
-                                                                            ack.session_key,
-                                                                            header_word4=current.header_word4,
-                                                                            header_word9=outbound_sequence)
-                                                                        entry['local_warehouse_sort_response'] = True
-                                                                    elif name in ('CSSafehouseGetInfoReq',
-                                                                                  'CSSafehouseGetPlayerDeviceReq'):
-                                                                        next_response = _candidate_local_safehouse_response(
-                                                                            message, backend, local_session,
-                                                                            ack.session_key,
-                                                                            header_word4=current.header_word4,
-                                                                            header_word9=outbound_sequence)
-                                                                        entry['local_safehouse_device_response'] = True
-                                                                    elif name == 'CSSafehouseGetConfigReq':
-                                                                        next_response = _candidate_local_safehouse_config_response(
-                                                                            message, ack.session_key,
-                                                                            header_word4=current.header_word4,
-                                                                            header_word9=outbound_sequence)
-                                                                        entry['local_safehouse_config_response'] = True
-                                                                    elif name == 'CSSafehouseFuncIsUnlockReq':
-                                                                        next_response = _candidate_local_safehouse_unlock_response(
-                                                                            message, ack.session_key,
-                                                                            header_word4=current.header_word4,
-                                                                            header_word9=outbound_sequence)
-                                                                        entry['local_safehouse_unlock_response'] = True
-                                                                    elif name == 'CSSwitchLoadModuleStatusReq':
-                                                                        next_response = _candidate_local_module_status_response(
-                                                                            message, ack.session_key,
-                                                                            header_word4=current.header_word4,
-                                                                            header_word9=outbound_sequence)
-                                                                        entry['local_module_status_response'] = True
-                                                                    elif name in ('CSActivityGetReq',
-                                                                                  'CSAuctionWithdrawReq',
-                                                                                  'CSMarketWithdrawReq',
-                                                                                  'CSArmedForceReportOutfitReq'):
-                                                                        next_response = _candidate_local_lobby_critical_response(
-                                                                            message, ack.session_key,
-                                                                            header_word4=current.header_word4,
-                                                                            header_word9=outbound_sequence)
-                                                                        entry['local_lobby_critical_response'] = True
-                                                                    elif name in ('CSPrepareMapBoardReq',
-                                                                                  'CSPrepareTDMMapBoardReq',
-                                                                                  'CSPrepareBombMapBoardReq'):
-                                                                        next_response = _candidate_local_prepare_map_response(
-                                                                            message, backend, local_session, ack.session_key,
-                                                                            header_word4=current.header_word4,
-                                                                            header_word9=outbound_sequence)
-                                                                        entry['local_prepare_board_response'] = True
-                                                                    elif name in LOCAL_COMMERCE_REQUESTS:
-                                                                        if name in ('CSMarketGetTypeListReq',
-                                                                                    'CSAuctionGetTypeListReq'):
-                                                                            entry['local_commerce_type_filters'] = (
-                                                                                _candidate_local_commerce_type_filters(message))
-                                                                        if name in ('CSAuctionGetSaleListBatchReq', 'CSAuctionGetSaleListReq',
-                                                                                    'CSMarketGetSaleListReq', 'CSAuctionBuyTReq',
-                                                                                    'CSMarketBuyTReq', 'CSMallBuyReq'):
-                                                                            entry['local_commerce_item_ids'] = _candidate_local_commerce_item_ids(message)
-                                                                        if name == 'CSShopBuyLotteryItemReq':
-                                                                            entry['local_lottery_purchase_items'] = _candidate_local_lottery_purchase_summary(message)
-                                                                        if name == 'CSSerialCheapBuyReq':
-                                                                            entry['local_serial_buy_items'] = _candidate_local_serial_buy_summary(message)
-                                                                        if name == 'CSMallSellReq':
-                                                                            entry['local_sell_items'] = _candidate_local_sell_summary(message)
-                                                                        next_response = _candidate_local_commerce_response(
-                                                                            message, backend, local_session,
-                                                                            ack.session_key,
-                                                                            header_word4=current.header_word4,
-                                                                            header_word9=outbound_sequence)
-                                                                        entry['local_commerce_response'] = True
-                                                                        entry['local_commerce_result'] = _candidate_local_commerce_result(
-                                                                            next_response, ack.session_key)
-                                                                    elif (name and name.startswith('CS')
-                                                                          and name.endswith('Req')):
-                                                                        next_response = _candidate_read_only_empty_response(
-                                                                            message, ack.session_key,
-                                                                            header_word4=current.header_word4,
-                                                                            header_word9=outbound_sequence)
-                                                                        entry['empty_read_only_response_probe'] = True
-                                                                    else:
-                                                                        raise ValueError('Unimplemented request')
-                                                                except (ValueError, DomainError) as error:
-                                                                    entry['request_not_answered'] = True
-                                                                    entry['failure_code'] = (
-                                                                        error.code if isinstance(error, DomainError)
-                                                                        else type(error).__name__)
-                                                                    entry['failure_detail'] = str(error)[:160]
-                                                                    _log_request_progress(entry, 'processed')
-                                                                    try:
-                                                                        current = _receive_one(connection, decoder, queue)
-                                                                    except (TimeoutError, socket.timeout):
-                                                                        result['bounded_business_stop'] = 'receive_timeout_after_unanswered_request'
-                                                                        break
-                                                                    if current is None:
-                                                                        result['bounded_business_stop'] = 'client_closed_after_unanswered_request'
-                                                                        break
-                                                                    continue
-                                                                connection.sendall(next_response.encode())
-                                                                entry['response_sent'] = True
-                                                                entry['response_elapsed_ms'] = round(
-                                                                    (time.monotonic() - continuation_began) * 1000)
-                                                                entry['response_header_word9'] = next_response.header_word9
-                                                                _log_request_progress(entry, 'processed')
-                                                                if (name in ('CSShopBuyLotteryItemReq',
-                                                                             'CSMarketBuyTReq',
-                                                                             'CSAuctionBuyTReq',
-                                                                             'CSMallBuyReq',
-                                                                             'CSSerialCheapBuyReq',
-                                                                             'CSMallSellReq',
-                                                                             'CSDepositOperateBulletReq',
-                                                                             'CSDepositAssemblySyncBodyContainerReq')
-                                                                        and (entry.get('local_commerce_response')
-                                                                             or entry.get('local_bullet_response')
-                                                                             or entry.get('local_body_container_response'))):
-                                                                    outbound_sequence += 1
-                                                                    inventory_change = _candidate_local_inventory_change_notification(
-                                                                        next_response, ack.session_key,
-                                                                        header_word4=current.header_word4,
-                                                                        header_word9=outbound_sequence)
-                                                                    if inventory_change is not None:
-                                                                        connection.sendall(inventory_change.encode())
-                                                                        entry['local_inventory_change_notification_sent'] = True
-                                                                    if name == 'CSShopBuyLotteryItemReq':
-                                                                        outbound_sequence += 1
-                                                                        collection_change = _candidate_local_collection_change_notification(
-                                                                            next_response, ack.session_key,
-                                                                            header_word4=current.header_word4,
-                                                                            header_word9=outbound_sequence)
-                                                                        if collection_change is not None:
-                                                                            connection.sendall(collection_change.encode())
-                                                                            entry['local_collection_change_notification_sent'] = True
-                                                                try:
-                                                                    current = _receive_one(connection, decoder, queue)
-                                                                except (TimeoutError, socket.timeout):
-                                                                    result['bounded_business_stop'] = 'receive_timeout'
-                                                                    break
-                                                                if current is None:
-                                                                    result['bounded_business_stop'] = 'client_closed'
-                                                                    break
-                                                            else:
-                                                                result['bounded_business_stop'] = 'response_limit'
+                                                            _continue_local_lobby(
+                                                                connection, decoder, queue, fifth, ack,
+                                                                expected_identity, backend, local_session,
+                                                                outbound_sequence, result, continuation_seconds,
+                                                                game_server_probe=game_server_probe,
+                                                                progress_callback=progress_callback)
                         except (ValueError, ImportError):
                             result['post_response_data_decoded'] = False
         else:
@@ -2129,7 +2781,7 @@ class Server(socketserver.ThreadingTCPServer):
                  response_probe=False, ready_probe=False, ready_identity_probe=False,
                  auth_identity_probe=False, business_login_probe=False,
                  business_bootstrap_probe=False, backend=None, local_session=None,
-                 continuation_seconds=360):
+                 continuation_seconds=360, game_server_probe=None):
         if ready_probe and not response_probe:
             raise ValueError('Ready parser probe requires the auth parser probe')
         if ready_identity_probe and not ready_probe:
@@ -2154,6 +2806,7 @@ class Server(socketserver.ThreadingTCPServer):
         self.backend = backend
         self.local_session = local_session
         self.continuation_seconds = continuation_seconds
+        self.game_server_probe = game_server_probe
         self.slots = threading.BoundedSemaphore(4)
         super().__init__(address, Handler)
 
@@ -2188,7 +2841,9 @@ class Handler(socketserver.BaseRequestHandler):
                                   business_bootstrap_probe=self.server.business_bootstrap_probe,
                                   backend=self.server.backend,
                                   local_session=self.server.local_session,
-                                  continuation_seconds=self.server.continuation_seconds)
+                                  continuation_seconds=self.server.continuation_seconds,
+                                  game_server_probe=self.server.game_server_probe,
+                                  progress_callback=self.server.state.update)
         self.server.state.record(result)
         print(json.dumps(result), flush=True)
 

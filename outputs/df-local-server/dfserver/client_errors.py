@@ -20,11 +20,13 @@ def inventory_error(error):
         'WAREHOUSE_FULL': 'DepositSpaceNotEnough',
         'CHEST_RIG_FULL': 'DepositSpaceNotEnough',
         'BACKPACK_FULL': 'DepositSpaceNotEnough',
-        'ASSEMBLY_TEMP_FULL': 'DepositSpaceNotEnough',
+        'POCKET_FULL': 'DepositSpaceNotEnough',
+        'SAFE_BOX_FULL': 'DepositSpaceNotEnough',
         'INSUFFICIENT_FUNDS': 'DepositCurrencyNotEnough',
         'INVALID_EQUIPMENT': 'DepositPropDescNotFound',
         'PROP_NOT_FOUND': 'DepositPropNotFound',
         'INSUFFICIENT_PROPS': 'DepositPropNotEnough',
         'INVALID_ARGUMENT': 'DepositInvalidReq',
+        'POSITION_OCCUPIED': 'DepositSpaceHasOccupied',
     }
     return error_code(names.get(error.code, 'DepositInternalError'))

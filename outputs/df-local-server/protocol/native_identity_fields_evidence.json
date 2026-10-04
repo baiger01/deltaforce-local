@@ -1,0 +1,37 @@
+{
+  "kind": "delegated_native_identity_physical_field_decoder",
+  "updated_on": "2026-10-02",
+  "client_sha256": "4254fbe66585f260f1f9dbfc5e302887842552e7baed8939e023160a5e250be0",
+  "implementation": "dfserver/legacy_ds_identity_field.py",
+  "tests": "tests/test_legacy_ds_identity_field.py",
+  "physical_field_tests_passed": 9,
+  "independent_boundary_vectors_passed": 3200,
+  "independent_parser_review": "work/evidence/native-identity-physical-parser-review.json",
+  "independent_parser_review_sha256": "a4b86adc939e0bc24d181a50e83fbaae6a4e6e9222447f4f2a68b7fe1ea063c9",
+  "native_function_rva": "0x12bc0e60",
+  "native_function_code_bytes": 1883,
+  "native_function_code_sha256": "9f5dafb76a339073f19c8c0788fdc4d20576f326bdec3808d8b820cde05577e7",
+  "source_relative_to_project_root": "work/native-client-tests/1790883169018138400/ds-native-control-code/continuations/unknown_control_continuation_12bc0e60.dfcode",
+  "format_evidence": "work/evidence/native-identity-12bc0e60-wire-format.json",
+  "format_evidence_sha256": "f52d766d45f9873ee17605077386aa1686beb812d3f39aff63cba78a0f660407",
+  "rules": [
+    "The first byte contains encoded bit0, early-empty bit1 only when encoded, and a five-bit type hash in bits3..7. Bit2 is retained without invented semantics.",
+    "Raw hash0 requires a verified runtime registry byte result in 1..255; its effective hash is not restricted to the five-bit wire hash range. No default QQ or WeChat mapping is supplied.",
+    "Effective hash31 precedes content with a separately audited native string for the type name.",
+    "The encoded branch uses an unsigned byte count and exactly that many bytes; raw contents are retained without guessing final identifier normalization.",
+    "The unencoded branch uses the separately audited native string representation.",
+    "Explicit empty and encoded zero count have distinct physical layouts. Neither result is described as account or native object acceptance."
+  ],
+  "qualifications": [
+    "This component dissects the physical schema assuming valid native type resolution. The native token predicates and identity factory are not implemented.",
+    "Selecting this delegated archive branch at the parent helper remains unverified for a captured network message.",
+    "The native writer uses an unsaved cache builder, so this module does not provide a canonical identity encoder.",
+    "The local string and byte limits are resource policies, not inferred native global limits."
+  ],
+  "udp_decoder_connected": false,
+  "control_dispatcher_connected": false,
+  "native_registry_validated": false,
+  "account_provider_mapping_verified": false,
+  "native_identity_accepted": false,
+  "playable_map_verified": false
+}

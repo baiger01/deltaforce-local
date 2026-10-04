@@ -65,8 +65,12 @@ class BusinessEnvelope:
 
 def parse_business_envelope(plaintext):
     from google.protobuf.message import DecodeError
+    from .business_probe import _walk
     if not isinstance(plaintext, bytes) or len(plaintext) > MAX_ENVELOPE_BYTES:
         raise ValueError('Expected bounded immutable envelope bytes')
+    # Older protobuf runtimes silently accept a field-zero terminator.
+    if plaintext:
+        _walk(plaintext, max_fields=MAX_ENVELOPE_BYTES, collect=False)
     message = _message_type()()
     try:
         message.ParseFromString(plaintext)

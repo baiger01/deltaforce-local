@@ -5,11 +5,14 @@ import json
 from pathlib import Path
 import time
 
-from .core import (ASSEMBLY_TEMP_POSITION, BACKPACK_POSITION, CHEST_RIG_POSITION,
+from .core import (POCKET_POSITION, BACKPACK_POSITION, CHEST_RIG_POSITION, SAFE_BOX_POSITION,
                    DomainError)
 from .client_errors import error_code, inventory_error
-from .weapon_components import default_components
+from .weapon_components import ROWS as WEAPON_COMPONENTS, PRESETS as RECOVERED_PRESETS, default_components
 from .weapon_ammo import magazine_capacity
+from .container_layouts import BACKPACK_LAYOUT, CHEST_RIG_LAYOUT
+from .melee_weapons import WEAPONS
+from . import gun_skins, hero_customization, mandel, premium_shop, profile_cosmetics, weapon_pendants, battle_pass, native_settings, local_chat
 
 
 CURRENCY_ID = 17020000010
@@ -21,7 +24,7 @@ MANDEL_BRICK_LOCAL_PRICE = 20000
 MANDEL_BRICK_PURCHASE_CURRENCY = 17888808887
 MANDEL_KEY_ID = 32320000001
 MANDEL_KEY_CURRENCY = 17888808888
-VERSION = {'ver': 'local-stock-v1', 'load_time': 1}
+VERSION = {'ver': 'local-stock-v3', 'load_time': 3}
 # The original client rejected 4,325 of 4,326 guessed merchant rows during the
 # first native trial. Keep only the one row it did not reject until Mall table
 # exchange identifiers can be recovered from the installed build.
@@ -45,7 +48,12 @@ SUPPORTED_REQUESTS = frozenset({
     'CSShopGetGameItemConfigReq',
     'CSSerialCheapBuyReq',
     'CSMallSellReq',
-})
+    'CSWAssemblySkinInfoGetReq', 'CSWAssemblyApplySkinReq',
+    'CSWAssemblyDepositPropUpdateReq',
+    'CSCollectionLoadMysticalSkinPropsReq',
+    'CSShopNewGetConfigReq', 'CSGetBoxInfoReq',
+    'CSLotteryBlindBoxDrawReq',
+}) | premium_shop.SUPPORTED_REQUESTS | profile_cosmetics.SUPPORTED_REQUESTS | hero_customization.SUPPORTED_REQUESTS | weapon_pendants.SUPPORTED_REQUESTS | battle_pass.SUPPORTED_REQUESTS | native_settings.SUPPORTED_REQUESTS | local_chat.SUPPORTED_REQUESTS
 
 
 @lru_cache(maxsize=1)
@@ -57,22 +65,96 @@ def default_weapon_presets():
 
 
 @lru_cache(maxsize=1)
+def gunsmith_sale_presets():
+    source = Path(__file__).resolve().parent.parent / 'protocol/weapon_preset_catalog.json'
+    rows = json.loads(source.read_text(encoding='utf-8'))['rows']
+    # InspectorProcessor 0.55 accepts base weapons with a nonzero SOL preset.
+    # Keep verified firearm trees; fishing and non-base special models use
+    # other client paths and cannot be sold as these complete guns.
+    return {int(row['default_preset_id']): int(receiver) for receiver, row in rows.items()
+            if row['is_base_weapon'] and row['default_preset_id']
+            and int(receiver) // 10000000 % 100 in range(1, 8)
+            and RECOVERED_PRESETS.get(int(row['default_preset_id'])) == int(receiver)}
+
+
+@lru_cache(maxsize=1)
 def installed_items():
     source = Path(__file__).resolve().parent.parent / 'protocol/game_item_catalog.json'
     return json.loads(source.read_text(encoding='utf-8'))['rows']
 
 
+def _default_gun_price(receiver, items):
+    # ShopServer 0.131 prices GetAllParts(), not the abstract preset's price.
+    pending = [WEAPON_COMPONENTS[str(receiver)]['prop']]
+    price = 0
+    while pending:
+        prop = pending.pop()
+        metadata = items[str(prop['id'])]
+        if not metadata['is_model_only']:
+            price += metadata['initial_guide_price'] * prop['num']
+        pending.extend(part['prop_data'] for part in prop.get('components', []))
+    return price
+
+
 @lru_cache(maxsize=1)
-def stock_catalog():
+def medicine_sale_ids():
+    source = Path(__file__).resolve().parent.parent / 'protocol/medicine_sale_policy.json'
+    policy = json.loads(source.read_text(encoding='utf-8'))
+    injections = {int(item_id) for item_id in policy['injections']}
+    subtypes = set(policy['regular_subtypes'])
+    return frozenset(int(item_id) for item_id in installed_items()
+                     if int(item_id) // 1000000000 == policy['medicine_main_type']
+                     and ((int(item_id) // 10000000) % 100 in subtypes
+                          or int(item_id) in injections))
+
+
+@lru_cache(maxsize=1)
+def priced_inventory_catalog():
+    """Retain recycle pricing for owned items even when no longer purchasable."""
     rows = installed_items()
     mapped_guns = default_weapon_presets()
-    return {int(item_id): row for item_id, row in rows.items()
+    priced = {int(item_id): row for item_id, row in rows.items()
             if (row.get('name_key') or int(item_id) in CONFIRMED_MALL_IDS)
-            and (not item_id.startswith('100') or int(item_id) in mapped_guns)
+            and not item_id.startswith('100') and int(item_id) not in mapped_guns
             and not row['is_currency'] and not row['is_model_only']
             and (row['initial_guide_price'] > 0 or
                  item_id.startswith(MANDEL_BRICK_PREFIX))
             and 0 < row['length'] <= 9 and 0 < row['width'] <= 40}
+    for preset, receiver in RECOVERED_PRESETS.items():
+        row = rows.get(str(preset))
+        if row is None:
+            continue
+        physical = rows[str(receiver)]
+        price = _default_gun_price(receiver, rows)
+        if (not row.get('name_key') or row['is_currency'] or row['is_model_only']
+                or price <= 0 or not 0 < physical['length'] <= 9
+                or not 0 < physical['width'] <= 40):
+            continue
+        # ItemBase 0.54 resolves preset names/dimensions through the receiver.
+        priced[preset] = {**row, 'name_key': physical['name_key'],
+                          'length': physical['length'], 'width': physical['width'],
+                          'max_stack_count': physical['max_stack_count'],
+                          'initial_guide_price': price}
+    return priced
+
+
+@lru_cache(maxsize=1)
+def stock_catalog():
+    medicines = medicine_sale_ids()
+    presets = default_weapon_presets()
+    sale_presets = gunsmith_sale_presets()
+    sale_receivers = set(sale_presets.values())
+    return {item_id: row for item_id, row in priced_inventory_catalog().items()
+            if (item_id // 1000000000 != 14 or item_id in medicines)
+            and (item_id not in presets or item_id in sale_presets)
+            # WeaponFeature accepts every Receiver before the selection
+            # filter. Special receivers need their own verified sale path.
+            and (item_id // 1000000000 != 18
+                 or item_id in sale_receivers or item_id in CONFIRMED_MALL_IDS)
+            and (not str(item_id).startswith('1107') or item_id in CHEST_RIG_LAYOUT)
+            and (not str(item_id).startswith('1108') or item_id in BACKPACK_LAYOUT)
+            and (not str(item_id).startswith(MANDEL_BRICK_PREFIX)
+                 or item_id in mandel.DRAW_BRICK_IDS)}
 
 
 @lru_cache(maxsize=1)
@@ -80,11 +162,13 @@ def _browse_catalog():
     seen = set()
     rows = {}
     catalog = stock_catalog()
-    complete_gun_names = {row['name_key'] for item_id, row in catalog.items()
-                          if str(item_id).startswith('100')}
+    presets = default_weapon_presets()
+    receivers = set(presets.values())
     for item_id, row in catalog.items():
-        if (str(item_id).startswith('180')
-                and row['name_key'] in complete_gun_names):
+        if item_id in receivers:
+            continue
+        if item_id in presets:
+            rows[item_id] = row
             continue
         signature = tuple((key, value) for key, value in row.items()
                           if key not in ('id', 'serialized_uexp_offset'))
@@ -107,7 +191,7 @@ def _purchase_position(position):
     position = int(position or 0)
     if position in (0, 2):
         return 2
-    if position in (CHEST_RIG_POSITION, BACKPACK_POSITION, ASSEMBLY_TEMP_POSITION):
+    if position in (CHEST_RIG_POSITION, BACKPACK_POSITION, SAFE_BOX_POSITION, POCKET_POSITION):
         return position
     if position not in equipment_slots():
         raise ValueError('Purchase targets an unavailable equipment slot')
@@ -127,7 +211,7 @@ def stock_row(item_id):
 
 def _delivered_stock(catalog, item_id):
     delivered_id = default_weapon_presets().get(item_id, item_id)
-    return delivered_id, catalog[delivered_id]
+    return delivered_id, installed_items()[str(delivered_id)]
 
 
 def _price(row):
@@ -138,15 +222,64 @@ def _price(row):
     raise ValueError('No local market price for item')
 
 
+def owned_bundle_price_limit(prop, quantity):
+    """Bound a sale using saved components and ammunition, never request trees.
+
+    ShopServer.GetShopDynamicGuidePrice skips model-only components; its
+    CheckPropIsValidSell loop includes the remaining components and loaded ammo.
+    """
+    metadata = installed_items()
+    priced = priced_inventory_catalog()
+
+    def unit_price(item_id):
+        row = metadata.get(str(item_id))
+        if row is None:
+            raise DomainError('INVALID_ARGUMENT', 'Sale bundle contains an unknown client item')
+        if row['is_model_only']:
+            return 0
+        row = priced.get(item_id)
+        if row is None:
+            raise DomainError('INVALID_ARGUMENT', 'Sale bundle has no verified local price')
+        return _price(row)
+
+    total = unit_price(int(prop['template_id'])) * quantity
+    pending = [part['prop_data'] for part in prop.get('components', [])]
+    pending.extend(prop.get('weapon', {}).get('load_bullets', []))
+    while pending:
+        child = pending.pop()
+        total += unit_price(int(child['id'])) * int(child['num'])
+        pending.extend(part['prop_data'] for part in child.get('components', []))
+        pending.extend(child.get('weapon', {}).get('load_bullets', []))
+    return total
+
+
 def _prop(item_id, row, count=1):
     return {'id': item_id, 'num': count,
             'length': row['length'], 'width': row['width'],
             **item_condition_fields(item_id)}
 
 
-def item_condition_fields(item_id, *, components=None, weapon=None):
+def _purchased_auction_order(item_id, row, count):
+    # AuctionServer.lua SHA256:
+    # ad10c29ff0fa53ca89ebebf9f0ba447cae2e47195b8921b24731cd01e4a82a6c
+    # DoMultiPriceBuyReq callback 0.77.0 (Lua 1804-1906), PCs 264-277 sums
+    # orders[*].prop.num * buy_price; 0.13 PCs 8-10 identifies the sold listing.
+    price = _price(row)
+    return {'order_id': order_id(item_id), 'prop': _prop(item_id, row, count),
+            'show_prop_id': item_id, 'price_currency': CURRENCY_ID,
+            'price': price, 'buy_price': price, 'state': 1}
+
+
+def item_condition_fields(item_id, *, components=None, weapon=None, health=None):
     """Return item state used by the original client's inventory logic."""
     item_id = str(item_id)
+    from .native_keycards import keycard_fields
+    key_fields = keycard_fields(item_id, health)
+    if key_fields:
+        return key_fields
+    if int(item_id) in WEAPONS:
+        return {'weapon': dict(weapon) if weapon is not None else
+                          {'skin_id': WEAPONS[int(item_id)], 'skin_gid': 0}}
     if (item_id.startswith(('1001', '1002', '1003', '1004',
                             '1005', '1006', '1007', '1008'))
             or int(item_id) in default_weapon_presets().values()):
@@ -173,7 +306,8 @@ def _armor_durability_catalog():
 
 def _listing_durability(item_id):
     if str(item_id).startswith(('1101', '1105')):
-        return 1, 100
+        # AuctionServer.GetPropSaleInfo uses bucket 0 for a single full offer.
+        return 0, 100
     return 0, 0
 
 
@@ -221,11 +355,11 @@ def _auction_sale_detail(item_id, row, now):
 
 def inventory_location(row):
     position = row['grid_page_id']
-    if position == ASSEMBLY_TEMP_POSITION:
+    if position == POCKET_POSITION:
         return {'pos': position, 'start_x': 0, 'start_y': 0,
                 'x': row['width'], 'y': row['length'],
                 'space_id': row['x'], 'rotate': False}
-    if position in (CHEST_RIG_POSITION, BACKPACK_POSITION):
+    if position in (CHEST_RIG_POSITION, BACKPACK_POSITION, SAFE_BOX_POSITION):
         space_width = row.get('space_width')
         if not space_width and row['y']:
             raise ValueError('Container coordinates require the equipped item layout')
@@ -236,7 +370,7 @@ def inventory_location(row):
     return {'pos': position, 'start_x': row['x'], 'start_y': row['y'],
             'x': row['length'] if position == 2 else 1,
             'y': row['width'] if position == 2 else 1,
-            'space_id': 0, 'rotate': False}
+            'space_id': 0, 'rotate': position == 2 and bool(row.get('rotated', False))}
 
 
 def _change(purchase, backend, local_session):
@@ -251,7 +385,7 @@ def _change(purchase, backend, local_session):
                                'num': after['quantity'],
                                'position': after['grid_page_id'],
                                'length': after['length'], 'width': after['width'],
-                               **item_condition_fields(after['template_id'], components=after.get('components'), weapon=after.get('weapon')),
+                               **item_condition_fields(after['template_id'], components=after.get('components'), weapon=after.get('weapon'), health=after.get('health')),
                                'loc': inventory_location(after)}})
     for row in purchase['props']:
         row = owned[row['gid']]
@@ -260,7 +394,7 @@ def _change(purchase, backend, local_session):
         prop = {'id': row['template_id'], 'gid': row['gid'],
                 'num': row['quantity'], 'position': position,
                 'length': row['length'], 'width': row['width'], 'loc': loc,
-                **item_condition_fields(row['template_id'], components=row.get('components'), weapon=row.get('weapon'))}
+                **item_condition_fields(row['template_id'], components=row.get('components'), weapon=row.get('weapon'), health=row.get('health'))}
         props.append({'prop': prop, 'change_type': 1,
                       'dest': loc, 'delta': row['quantity']})
     currencies = [{
@@ -269,7 +403,14 @@ def _change(purchase, backend, local_session):
         'current_num': purchase['currency_current']}]
     if purchase.get('bonus_currency_change'):
         currencies.append(purchase['bonus_currency_change'])
-    return {'prop_changes': props, 'currency_changes': currencies}
+    from .container_layouts import position_changes
+    moves = purchase.get('displaced_props', []) + [
+        {'before': None, 'after': row} for row in purchase['props']]
+    changes = {'prop_changes': props, 'currency_changes': currencies}
+    layouts = position_changes(owned.values(), moves)
+    if layouts:
+        changes['pos_changes'] = layouts
+    return changes
 
 
 def _sell_change(sale):
@@ -282,7 +423,7 @@ def _sell_change(sale):
                 'num': remaining if remaining else before['quantity'],
                 'position': before['grid_page_id'],
                 'length': before['length'], 'width': before['width'],
-                'loc': loc, **item_condition_fields(before['template_id'], components=before.get('components'), weapon=before.get('weapon'))}
+                'loc': loc, **item_condition_fields(before['template_id'], components=before.get('components'), weapon=before.get('weapon'), health=before.get('health'))}
         changes.append({'change_type': 3 if remaining else 2,
                         'prop': prop, 'src': loc,
                         'dest': loc if remaining else {'pos': 0},
@@ -308,10 +449,37 @@ def _collection_purchase_change(purchase):
         'currency_changes': currencies}
 
 
-def response_fields(request, backend, local_session):
+def response_fields(request, backend, local_session, *, diagnostic_entry=None):
     """Return declared commerce response fields, or None for unrelated requests."""
+    if request.name in native_settings.SUPPORTED_REQUESTS:
+        return native_settings.response_fields(request, backend, local_session)
+    if request.name in local_chat.SUPPORTED_REQUESTS:
+        return local_chat.response_fields(request, backend, local_session)
+    if request.name == 'CSWAssemblyDepositPropUpdateReq':
+        from .weapon_assembly import response_fields as assembly_response
+        return assembly_response(request, backend, local_session)
+    if request.name in battle_pass.SUPPORTED_REQUESTS:
+        return battle_pass.response_fields(request, backend, local_session)
+    pendant = weapon_pendants.response_fields(request, backend, local_session)
+    if pendant is not None:
+        return pendant
     name = request.name
     fields = request.fields
+    profile = profile_cosmetics.response_fields(request, backend, local_session)
+    if profile is not None:
+        return profile
+    hero = hero_customization.response_fields(request, backend, local_session)
+    if hero is not None:
+        return hero
+    premium = premium_shop.response_fields(request, backend, local_session)
+    if premium is not None:
+        return premium
+    cosmetic = gun_skins.response_fields(request, backend, local_session)
+    if cosmetic is not None:
+        return cosmetic
+    lottery = mandel.response_fields(request, backend, local_session)
+    if lottery is not None:
+        return lottery
     catalog = stock_catalog()
     now = int(time.time())
     if name in ('CSMarketGetTypeListReq', 'CSAuctionGetTypeListReq'):
@@ -329,14 +497,6 @@ def response_fields(request, backend, local_session):
             result['tax_cfg'] = [{'tax_id': 0, 'percent': 0,
                                   'tax_rate_ten_thousand': 0}]
         return result
-    if name == 'CSShopGetGameItemConfigReq':
-        descs = [{'item_id': item_id, 'Name': '曼德尔砖',
-                  'Quality': row['quality'],
-                  'InitialGuidePrice': _price(row)}
-                 for item_id, row in catalog.items()
-                 if str(item_id).startswith(MANDEL_BRICK_PREFIX)]
-        descs.append({'item_id': MANDEL_KEY_ID, 'Name': '量子密钥', 'Quality': 5})
-        return {'descs': descs}
     if name == 'CSAuctionAutoLoadGuidePriceReq':
         return {'result': 0, 'finish': True,
                 'new_sync_digest': VERSION['ver'],
@@ -344,12 +504,13 @@ def response_fields(request, backend, local_session):
                                for item_id, row in catalog.items()],
                 'past_stable_price': bool(fields.get('past_stable_price', False))}
     if name == 'CSAuctionGetGameItemSellPriceReq':
+        recycle = priced_inventory_catalog()
         ids = [int(value) for value in fields.get('prop_ids', [])]
         return {'result': 0, 'sell_props': [
-            {'prop_id': item_id, 'sell_price': _price(catalog[item_id]),
-             'sell_money': CURRENCY_ID, 'dynamic_price': _price(catalog[item_id]),
-             'static_price': _price(catalog[item_id])}
-            for item_id in ids if item_id in catalog]}
+            {'prop_id': item_id, 'sell_price': _price(recycle[item_id]),
+             'sell_money': CURRENCY_ID, 'dynamic_price': _price(recycle[item_id]),
+             'static_price': _price(recycle[item_id])}
+            for item_id in ids if item_id in recycle]}
     if name == 'CSMarketGetPlayerInfoReq':
         return {'result': 0, 'is_open': True, 'max_rack_cnt': 100,
                 'init_rack_cnt': 100, 'open_time': now - 86400,
@@ -433,86 +594,69 @@ def response_fields(request, backend, local_session):
         if 'match_info' in fields:
             result['match_info'] = fields['match_info']
         return result
-    if name == 'CSShopBuyLotteryItemReq':
-        if fields.get('is_open_directly'):
-            # A draw is a separate state mutation and is not implemented yet.
-            return {'result': 1, 'is_open_directly': True}
-        purchases = fields.get('buy_props', [])
-        if len(purchases) != 2:
-            raise ValueError('Unsupported local Mandel purchase shape')
-        brick, key = purchases
-        item_id = int(brick.get('item_id') or 0)
-        count = int(brick.get('num') or 0)
-        if (str(item_id)[:6] != MANDEL_BRICK_PREFIX or item_id not in catalog
-                or count < 1 or count > 1000
-                or int(brick.get('currency_type') or 0) != MANDEL_BRICK_PURCHASE_CURRENCY
-                or int(brick.get('price') or 0) != _price(catalog[item_id])
-                or int(key.get('item_id') or 0) != MANDEL_KEY_ID
-                or int(key.get('num') or 0) != count
-                or int(key.get('currency_type') or 0) != MANDEL_KEY_CURRENCY
-                or int(key.get('price') or 0) != 0):
-            raise ValueError('Mandel purchase does not match local offer')
-        row = catalog[item_id]
-        try:
-            purchase = backend.native_lobby_collection_purchase(
-                local_session, template_id=item_id, quantity=count,
-                unit_price=_price(row), currency_id=MANDEL_BRICK_PURCHASE_CURRENCY,
-                bonus_currency_id=MANDEL_KEY_ID,
-                bonus_currency_amount=count)
-        except DomainError as error:
-            return {'result': inventory_error(error)}
-        return {'result': 0, 'change': _collection_purchase_change(purchase),
-                'is_open_directly': bool(fields.get('is_open_directly', False))}
     if name == 'CSMallSellReq':
+        recycle = priced_inventory_catalog()
         props = fields.get('sell_props') or []
         prices = fields.get('prices') or []
         if not 1 <= len(props) <= 32 or not 1 <= len(prices) <= 32:
             return {'result': error_code('DepositInvalidReq')}
         items = []
-        price_limit = 0
         for prop in props:
             item_id = int(prop.get('id') or 0)
             quantity = int(prop.get('num') or 0)
-            row = catalog.get(item_id)
+            row = recycle.get(item_id)
             if row is None:
                 return {'result': error_code('DepositPropDescNotFound')}
             if not 1 <= quantity <= 1000:
                 return {'result': error_code('DepositInvalidReq')}
             items.append({'template_id': item_id,
                           'gid': int(prop.get('gid') or 0), 'quantity': quantity})
-            price_limit += _price(row) * quantity
         if any(int(price.get('money_type') or 0) != CURRENCY_ID or
                int(price.get('price') or 0) < 0 for price in prices):
             return {'result': error_code('DepositInvalidReq')}
         total_price = sum(int(price.get('price') or 0) for price in prices)
-        if total_price > price_limit:
-            return {'result': error_code('DepositInvalidReq')}
         try:
             sale = backend.native_lobby_sell(
                 local_session, items=items, currency_id=CURRENCY_ID,
                 total_price=total_price)
         except DomainError as error:
+            if diagnostic_entry is not None:
+                diagnostic_entry['local_inventory_failure'] = {'code': error.code, 'detail': error.message}
             return {'result': inventory_error(error)}
         return {'result': 0, 'get_moneys': prices,
                 'prop_changes': _sell_change(sale), 'version_info': VERSION}
     if name == 'CSSerialCheapBuyReq':
         entries = fields.get('buy_list', [])
+        if any((entry.get('auction_prop') or {}).get('assemble_info')
+               or (entry.get('single_auction_prop') or {}).get('assemble_info')
+               or (entry.get('mall_prop') or {}).get('assemble_info') for entry in entries):
+            from .weapon_assembly import purchase_response
+            response = purchase_response(request, backend, local_session)
+            if response['result'] == 0:
+                offers = [entry.get('auction_prop') or entry['single_auction_prop']
+                          for entry in entries]
+                response['orders'] = [_purchased_auction_order(
+                    int(offer['prop_id']), catalog[int(offer['prop_id'])],
+                    int(offer.get('total_num') or offer.get('buy_num')))
+                    for offer in offers]
+            return response
         if 1 <= len(entries) <= 32 and all(
                 int(entry.get('channel') or 0) == 2
+                and bool(entry.get('single_auction_prop') or entry.get('auction_prop'))
                 and int((entry.get('single_auction_prop') or {}).get('to_pos') or 0)
-                in (2, ASSEMBLY_TEMP_POSITION, CHEST_RIG_POSITION, BACKPACK_POSITION)
+                in (0, 2, POCKET_POSITION, CHEST_RIG_POSITION, BACKPACK_POSITION, SAFE_BOX_POSITION)
                 for entry in entries):
-            items = []
+            items, bought_items = [], []
             for entry in entries:
-                single = entry['single_auction_prop']
-                item_id = int(single.get('prop_id') or 0)
-                count = int(single.get('buy_num') or 0)
+                offer = entry.get('single_auction_prop') or entry['auction_prop']
+                item_id = int(offer.get('prop_id') or 0)
+                count = int(offer.get('buy_num') or offer.get('total_num') or 0)
                 row = catalog.get(item_id)
                 if row is None or not 1 <= count <= 1000:
                     return {'result': 1, 'auction_fail_list': entries}
                 unit_price = _price(row)
-                if (int(single.get('currency') or 0) != CURRENCY_ID
-                        or int(single.get('price') or 0)
+                if (int(offer.get('currency') or 0) != CURRENCY_ID
+                        or int(offer.get('price') or 0)
                         not in (unit_price, unit_price * count)):
                     return {'result': 1, 'auction_fail_list': entries}
                 delivered_id, delivered_row = _delivered_stock(catalog, item_id)
@@ -521,7 +665,8 @@ def response_fields(request, backend, local_session):
                               'length': delivered_row['length'],
                               'width': delivered_row['width'],
                               'max_stack_count': delivered_row['max_stack_count'],
-                              'target_position': _purchase_position(single['to_pos'])})
+                              'target_position': _purchase_position(offer.get('to_pos'))})
+                bought_items.append((item_id, row, count))
             try:
                 positions = {item['target_position'] for item in items}
                 if positions == {2}:
@@ -533,6 +678,7 @@ def response_fields(request, backend, local_session):
             except DomainError as error:
                 return {'result': inventory_error(error), 'auction_fail_list': entries}
             return {'result': 0, 'auction_changes': _change(purchase, backend, local_session),
+                    'orders': [_purchased_auction_order(*item) for item in bought_items],
                     'is_underbuy': False, 'force_buy_channel': 2}
         if len(entries) != 1:
             return {'result': 1, 'mall_fail_list': entries}
@@ -568,17 +714,24 @@ def response_fields(request, backend, local_session):
                                   else 'auction_fail_list'): entries}
         delivered_id, delivered_row = _delivered_stock(catalog, item_id)
         try:
-            purchase = backend.native_lobby_purchase(
-                local_session, template_id=delivered_id, quantity=count,
-                unit_price=unit_price, currency_id=CURRENCY_ID,
-                length=delivered_row['length'], width=delivered_row['width'],
-                max_stack_count=delivered_row['max_stack_count'],
-                target_position=target_position)
+            item = {'template_id': delivered_id, 'quantity': count,
+                    'unit_price': unit_price, 'length': delivered_row['length'],
+                    'width': delivered_row['width'],
+                    'max_stack_count': delivered_row['max_stack_count'],
+                    'target_position': target_position}
+            if target_position in (POCKET_POSITION, CHEST_RIG_POSITION,
+                                   BACKPACK_POSITION, SAFE_BOX_POSITION):
+                purchase = backend.native_lobby_purchase_container_batch(
+                    local_session, items=[item], currency_id=CURRENCY_ID)
+            else:
+                purchase = backend.native_lobby_purchase(
+                    local_session, **item, currency_id=CURRENCY_ID)
         except DomainError as error:
             return {'result': inventory_error(error), ('mall_fail_list' if channel == 'mall'
                                   else 'auction_fail_list'): entries}
         return {'result': 0, ('mall_changes' if channel == 'mall'
                               else 'auction_changes'): _change(purchase, backend, local_session),
+                'orders': [_purchased_auction_order(item_id, row, count)] if channel == 'auction' else [],
                 'is_underbuy': False, 'force_buy_channel': int(entry.get('channel') or 0)}
     if name in ('CSMarketBuyTReq', 'CSAuctionBuyTReq', 'CSMallBuyReq'):
         if name == 'CSMallBuyReq':
@@ -588,12 +741,14 @@ def response_fields(request, backend, local_session):
         else:
             item_id = int(fields.get('prop_id') or 0)
             count = int(fields.get('buy_num') or 1)
-        row = stock_row(item_id)
+        row = catalog.get(item_id)
+        if row is None:
+            return {'result': error_code('DepositPropDescNotFound')}
         price = _price(row)
         if name != 'CSMallBuyReq' and (int(fields.get('price') or 0) != price
                                        or int(fields.get('currency') or 0) != CURRENCY_ID
                                        or int(fields.get('order_id') or 0) != order_id(item_id)):
-            raise ValueError('Purchase does not match the local offer')
+            return {'result': error_code('DepositInvalidReq')}
         delivered_id, delivered_row = _delivered_stock(stock_catalog(), item_id)
         try:
             purchase = backend.native_lobby_purchase(

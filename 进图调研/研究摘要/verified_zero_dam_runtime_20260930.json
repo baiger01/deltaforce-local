@@ -1,0 +1,99 @@
+{
+  "source": "D:/三角洲/WeGameApps/rail_apps/DeltaForce(2001918)/DeltaForce/Saved/Logs/DeltaForce.log",
+  "observation": "Normally launched client, one Zero Dam match on 2026-09-30; selected from the user's current session. Account, room, address, seed and token values were excluded.",
+  "map": {
+    "point_id": 1,
+    "match_mode_id": 142201103,
+    "game_mode": 1,
+    "map_id": 2201,
+    "map_name": "Dam_Iris_Level1",
+    "current_map_type": 10,
+    "gameplay_config_level": "/Game/Maps/Dam_Iris_Level1/GameplayConfig/Dam_Iris_Level1_GameplayConfig",
+    "seamless_enter_table": "SOLSeamlessEnterConfig_HD"
+  },
+  "entrance_evidence": {
+    "ui_log": "[2026.09.30-14.05.29:700][472]LuaMSandBoxMap: Error: [StrategicSelectionSOLMainPanel] refresh group, 2, false, false, false, false, 1",
+    "ui_log_schema": [
+      "group",
+      "is_night",
+      "is_flood",
+      "is_poison",
+      "is_boss",
+      "EntranceIdx"
+    ],
+    "lua_source": "work/evidence/carved_lua/0adc44e766147b3a05c70cc01b7ec1667d2e6c8777658e5fc472a2a994fdff3b.json",
+    "function": "0.21",
+    "instructions": "0022-0034: final log argument reads R1.EntranceIdx; first numeric argument is group R2.",
+    "supersedes": "The old point_id 3 inferred from unrelated guide grouping was not valid."
+  },
+  "observed_sequence": [
+    {
+      "time": "14:05:39.960",
+      "event": "StartMatchCheck"
+    },
+    {
+      "time": "14:05:40.751",
+      "event": "CSPrepareJoinMatchNtf"
+    },
+    {
+      "time": "14:05:42.439",
+      "event": "AssemblySquadPick initialized with self hero"
+    },
+    {
+      "time": "14:05:44.274",
+      "event": "Dam_Iris_Level1 base asset load began"
+    },
+    {
+      "time": "14:05:54.401",
+      "event": "AssemblySquadPick closed"
+    },
+    {
+      "time": "14:06:00.838",
+      "event": "CSPlayerJoinMatchNtf processed"
+    },
+    {
+      "time": "14:06:15.894",
+      "event": "Dam_Iris_Level1 map streaming began"
+    },
+    {
+      "time": "14:06:29.771",
+      "event": "OnDSNotifyAllPlayerReady"
+    }
+  ],
+  "prepare_join_observed_fields": {
+    "client_group": 1,
+    "evacuation_point_config_id": 222,
+    "tod_weather_id": 702,
+    "iris_event_ids": [
+      2202,
+      2204,
+      2205,
+      2217,
+      2210001,
+      2200102
+    ],
+    "enable_seamless_travel": true,
+    "note": "Single-match observations, not established constants for every Zero Dam run."
+  },
+  "operator_selection": {
+    "hero_count": 17,
+    "selected_hero_id": 88000000030,
+    "official_hero_ids_match_local_catalog": true
+  },
+  "handoff": {
+    "player_join_ds_status_request_seen": true,
+    "player_join_ds_status": 1,
+    "ds_all_player_ready_seen": true,
+    "observed_replicated_ai_actor_classes": [
+      "BP_DFMCharacter_AI_DT_C",
+      "BP_DFMCharacter_AI_DT_RPG_C"
+    ],
+    "remaining_gap": "The local DS probe does not implement gameplay replication or the ready event."
+  },
+  "public_reference_snapshot": {
+    "reference_only": true,
+    "source_relative_path": "work/evidence/verified_zero_dam_runtime_20260930.json",
+    "source_sha256": "655c995d925846f6abe22ee423d6e377aeb1ab35fc78dd55a75cf39d7ced1e58",
+    "machine_process_identity_removed": true
+  }
+}

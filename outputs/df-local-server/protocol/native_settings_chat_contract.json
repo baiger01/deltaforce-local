@@ -1,0 +1,761 @@
+{
+  "source_pak": "pak-0-0-pakchunk1-WindowsClient.pak",
+  "sources": {
+    "cs_setting_editor_pb.lua": {
+      "pak": "pak-0-0-pakchunk1-WindowsClient.pak",
+      "entry": 6766,
+      "sha256": "146bf2af0a21d3c0f68059a179f967574dd5ff69c89de11a1a371d049a3db2d3",
+      "size": 10011
+    },
+    "cs_setting_pb.lua": {
+      "pak": "pak-0-0-pakchunk1-WindowsClient.pak",
+      "entry": 6767,
+      "sha256": "317fa11b699b4fb82a4779d8c60eeb4f0ce6f45d835785f7795f19daaf14ec26",
+      "size": 5834
+    },
+    "SystemSettingServer.lua": {
+      "pak": "pak-0-0-pakchunk1-WindowsClient.pak",
+      "entry": 6945,
+      "sha256": "475e83736ef1a76a2df664a64ae85c145f6ba6bd96402ba839b9d991009d6d47",
+      "size": 39869
+    },
+    "CloudSettingCoreLogic.lua": {
+      "pak": "pak-0-0-pakchunk1-WindowsClient.pak",
+      "entry": 6187,
+      "sha256": "7ab9d496720b4acbde2d065423d8ad5c6449b84bdc9f081516e81a29b0b72ebc",
+      "size": 34206
+    },
+    "cs_chat_editor_pb.lua": {
+      "pak": "pak-0-0-pakchunk1-WindowsClient.pak",
+      "entry": 6672,
+      "sha256": "6cd943f0f562dce18d037198ba9c1ecdd3f61a032e5c85ae5b9f75e2e56296d3",
+      "size": 59920
+    },
+    "cs_worldchat_editor_pb.lua": {
+      "pak": "pak-0-0-pakchunk1-WindowsClient.pak",
+      "entry": 6788,
+      "sha256": "7332280651e79a28a42822accab9813e67870ad305dbf655a3e05f88832df1ca",
+      "size": 2449
+    },
+    "FrontEndChatServer.lua": {
+      "pak": "pak-0-0-pakchunk1-WindowsClient.pak",
+      "entry": 6872,
+      "sha256": "c376b2dbfd9b87e691dd04a49b706840129b6eef935d18914d24970b92adcda9",
+      "size": 101852
+    },
+    "ChatConfig.lua": {
+      "pak": "pak-0-0-pakchunk1-WindowsClient.pak",
+      "entry": 2770,
+      "sha256": "2019c89db5f6db1b40808facbfd234a56eb766e50d15dcdebbc3e62d40013950",
+      "size": 39637
+    },
+    "ChatField.lua": {
+      "pak": "pak-0-0-pakchunk1-WindowsClient.pak",
+      "entry": 2771,
+      "sha256": "672f0cb29769e12e05c482fd39ac0be9bcb0d840fa5805e83c698f9b344d3933",
+      "size": 17294
+    },
+    "ChatModule.lua": {
+      "pak": "pak-0-0-pakchunk1-WindowsClient.pak",
+      "entry": 2772,
+      "sha256": "13dc8323d0476e675d8bbf80d44bbc57bae2d91cf21371dba31177199f2897e5",
+      "size": 52931
+    }
+  },
+  "messages": [
+    {
+      "name": "CSChatGetMsgSumyAllChannelReq",
+      "source": "@cs_chat_editor_pb.lua",
+      "source_sha256": "6cd943f0f562dce18d037198ba9c1ecdd3f61a032e5c85ae5b9f75e2e56296d3",
+      "encode_function_id": "0.73",
+      "decode_function_id": "0.72",
+      "fields": [
+        {
+          "name": "team_id",
+          "number": 1,
+          "codec_category": "u64",
+          "repeated": false,
+          "encode_helper": "addu64",
+          "decode_helper": "getu64",
+          "encode_instruction": 7,
+          "decode_instruction": 17,
+          "nested_type": null
+        }
+      ],
+      "unresolved_fields": [],
+      "unpaired_encode_calls": [],
+      "encode_field_calls": 1,
+      "decode_field_calls": 1,
+      "all_observed_field_calls_matched": true
+    },
+    {
+      "name": "CSChatGetMsgSumyAllChannelRes",
+      "source": "@cs_chat_editor_pb.lua",
+      "source_sha256": "6cd943f0f562dce18d037198ba9c1ecdd3f61a032e5c85ae5b9f75e2e56296d3",
+      "encode_function_id": "0.75",
+      "decode_function_id": "0.74",
+      "fields": [
+        {
+          "name": "result",
+          "number": 1,
+          "codec_category": "i32",
+          "repeated": false,
+          "encode_helper": "addi32",
+          "decode_helper": "geti32",
+          "encode_instruction": 7,
+          "decode_instruction": 17,
+          "nested_type": null
+        },
+        {
+          "name": "private_chat_sumys",
+          "number": 2,
+          "codec_category": "submsg",
+          "repeated": true,
+          "encode_helper": "addsubmsg",
+          "decode_helper": "getsubmsgary",
+          "encode_instruction": 22,
+          "decode_instruction": 29,
+          "nested_type": "ChatMsgSummaryPlayer"
+        },
+        {
+          "name": "group_chat_sumys",
+          "number": 3,
+          "codec_category": "submsg",
+          "repeated": true,
+          "encode_helper": "addsubmsg",
+          "decode_helper": "getsubmsgary",
+          "encode_instruction": 39,
+          "decode_instruction": 45,
+          "nested_type": "ChatMsgSummaryGroup"
+        },
+        {
+          "name": "private_chat_msgs_unread",
+          "number": 4,
+          "codec_category": "submsg",
+          "repeated": true,
+          "encode_helper": "addsubmsg",
+          "decode_helper": "getsubmsgary",
+          "encode_instruction": 56,
+          "decode_instruction": 61,
+          "nested_type": "GroupChatMsg"
+        },
+        {
+          "name": "team_chat_msgs_unread",
+          "number": 5,
+          "codec_category": "submsg",
+          "repeated": true,
+          "encode_helper": "addsubmsg",
+          "decode_helper": "getsubmsgary",
+          "encode_instruction": 73,
+          "decode_instruction": 77,
+          "nested_type": "GroupChatMsg"
+        }
+      ],
+      "unresolved_fields": [],
+      "unpaired_encode_calls": [],
+      "encode_field_calls": 5,
+      "decode_field_calls": 5,
+      "all_observed_field_calls_matched": true
+    },
+    {
+      "name": "CSChatWorldLoadTReq",
+      "source": "@cs_chat_editor_pb.lua",
+      "source_sha256": "6cd943f0f562dce18d037198ba9c1ecdd3f61a032e5c85ae5b9f75e2e56296d3",
+      "encode_function_id": "0.77",
+      "decode_function_id": "0.76",
+      "fields": [
+        {
+          "name": "worldchat_room_id",
+          "number": 1,
+          "codec_category": "u64",
+          "repeated": false,
+          "encode_helper": "addu64",
+          "decode_helper": "getu64",
+          "encode_instruction": 7,
+          "decode_instruction": 17,
+          "nested_type": null
+        },
+        {
+          "name": "read_msg_index",
+          "number": 3,
+          "codec_category": "i64",
+          "repeated": false,
+          "encode_helper": "addi64",
+          "decode_helper": "geti64",
+          "encode_instruction": 14,
+          "decode_instruction": 26,
+          "nested_type": null
+        }
+      ],
+      "unresolved_fields": [],
+      "unpaired_encode_calls": [],
+      "encode_field_calls": 2,
+      "decode_field_calls": 2,
+      "all_observed_field_calls_matched": true
+    },
+    {
+      "name": "CSChatWorldLoadTRes",
+      "source": "@cs_chat_editor_pb.lua",
+      "source_sha256": "6cd943f0f562dce18d037198ba9c1ecdd3f61a032e5c85ae5b9f75e2e56296d3",
+      "encode_function_id": "0.79",
+      "decode_function_id": "0.78",
+      "fields": [
+        {
+          "name": "result",
+          "number": 1,
+          "codec_category": "i32",
+          "repeated": false,
+          "encode_helper": "addi32",
+          "decode_helper": "geti32",
+          "encode_instruction": 7,
+          "decode_instruction": 17,
+          "nested_type": null
+        },
+        {
+          "name": "msg_list",
+          "number": 2,
+          "codec_category": "submsg",
+          "repeated": true,
+          "encode_helper": "addsubmsg",
+          "decode_helper": "getsubmsgary",
+          "encode_instruction": 22,
+          "decode_instruction": 29,
+          "nested_type": "GroupChatMsg"
+        },
+        {
+          "name": "new_rooom_id",
+          "number": 3,
+          "codec_category": "u64",
+          "repeated": false,
+          "encode_helper": "addu64",
+          "decode_helper": "getu64",
+          "encode_instruction": 31,
+          "decode_instruction": 42,
+          "nested_type": null
+        },
+        {
+          "name": "new_room_id",
+          "number": 4,
+          "codec_category": "u64",
+          "repeated": false,
+          "encode_helper": "addu64",
+          "decode_helper": "getu64",
+          "encode_instruction": 38,
+          "decode_instruction": 51,
+          "nested_type": null
+        },
+        {
+          "name": "load_msg_interval",
+          "number": 5,
+          "codec_category": "u32",
+          "repeated": false,
+          "encode_helper": "addu32",
+          "decode_helper": "getu32",
+          "encode_instruction": 45,
+          "decode_instruction": 60,
+          "nested_type": null
+        },
+        {
+          "name": "rm_speech_playerid_list",
+          "number": 6,
+          "codec_category": "u64",
+          "repeated": true,
+          "encode_helper": "addu64",
+          "decode_helper": "getu64ary",
+          "encode_instruction": 52,
+          "decode_instruction": 69,
+          "nested_type": null
+        },
+        {
+          "name": "rolling_notice",
+          "number": 7,
+          "codec_category": "submsg",
+          "repeated": false,
+          "encode_helper": "addsubmsg",
+          "decode_helper": "getsubmsg",
+          "encode_instruction": 61,
+          "decode_instruction": 75,
+          "nested_type": "RollingNotice"
+        },
+        {
+          "name": "rolling_notices",
+          "number": 8,
+          "codec_category": "submsg",
+          "repeated": true,
+          "encode_helper": "addsubmsg",
+          "decode_helper": "getsubmsgary",
+          "encode_instruction": 77,
+          "decode_instruction": 83,
+          "nested_type": "RollingNotice"
+        }
+      ],
+      "unresolved_fields": [],
+      "unpaired_encode_calls": [],
+      "encode_field_calls": 8,
+      "decode_field_calls": 8,
+      "all_observed_field_calls_matched": true
+    },
+    {
+      "name": "RollingNotice",
+      "source": "@cs_chat_editor_pb.lua",
+      "source_sha256": "6cd943f0f562dce18d037198ba9c1ecdd3f61a032e5c85ae5b9f75e2e56296d3",
+      "encode_function_id": "0.81",
+      "decode_function_id": "0.80",
+      "fields": [
+        {
+          "name": "begin_timestamp",
+          "number": 1,
+          "codec_category": "u64",
+          "repeated": false,
+          "encode_helper": "addu64",
+          "decode_helper": "getu64",
+          "encode_instruction": 7,
+          "decode_instruction": 17,
+          "nested_type": null
+        },
+        {
+          "name": "end_timestamp",
+          "number": 2,
+          "codec_category": "u64",
+          "repeated": false,
+          "encode_helper": "addu64",
+          "decode_helper": "getu64",
+          "encode_instruction": 14,
+          "decode_instruction": 26,
+          "nested_type": null
+        },
+        {
+          "name": "content",
+          "number": 3,
+          "codec_category": "str",
+          "repeated": false,
+          "encode_helper": "addstr",
+          "decode_helper": "getstr",
+          "encode_instruction": 21,
+          "decode_instruction": 35,
+          "nested_type": null
+        },
+        {
+          "name": "is_multiline",
+          "number": 4,
+          "codec_category": "bool",
+          "repeated": false,
+          "encode_helper": "addbool",
+          "decode_helper": "getbool",
+          "encode_instruction": 28,
+          "decode_instruction": 44,
+          "nested_type": null
+        }
+      ],
+      "unresolved_fields": [],
+      "unpaired_encode_calls": [
+        {
+          "name": "game_mode",
+          "number": 5,
+          "helper": "addu32",
+          "instruction": 35,
+          "nested_candidates": []
+        }
+      ],
+      "encode_field_calls": 5,
+      "decode_field_calls": 4,
+      "all_observed_field_calls_matched": false
+    },
+    {
+      "name": "CSSettingGetValueByKeyReq",
+      "source": "@cs_setting_editor_pb.lua",
+      "source_sha256": "146bf2af0a21d3c0f68059a179f967574dd5ff69c89de11a1a371d049a3db2d3",
+      "encode_function_id": "0.3",
+      "decode_function_id": "0.2",
+      "fields": [
+        {
+          "name": "key",
+          "number": 1,
+          "codec_category": "str",
+          "repeated": false,
+          "encode_helper": "addstr",
+          "decode_helper": "getstr",
+          "encode_instruction": 7,
+          "decode_instruction": 17,
+          "nested_type": null
+        }
+      ],
+      "unresolved_fields": [],
+      "unpaired_encode_calls": [],
+      "encode_field_calls": 1,
+      "decode_field_calls": 1,
+      "all_observed_field_calls_matched": true
+    },
+    {
+      "name": "CSSettingGetValueByKeyRes",
+      "source": "@cs_setting_editor_pb.lua",
+      "source_sha256": "146bf2af0a21d3c0f68059a179f967574dd5ff69c89de11a1a371d049a3db2d3",
+      "encode_function_id": "0.5",
+      "decode_function_id": "0.4",
+      "fields": [
+        {
+          "name": "result",
+          "number": 1,
+          "codec_category": "i32",
+          "repeated": false,
+          "encode_helper": "addi32",
+          "decode_helper": "geti32",
+          "encode_instruction": 7,
+          "decode_instruction": 17,
+          "nested_type": null
+        },
+        {
+          "name": "kv",
+          "number": 2,
+          "codec_category": "submsg",
+          "repeated": false,
+          "encode_helper": "addsubmsg",
+          "decode_helper": "getsubmsg",
+          "encode_instruction": 16,
+          "decode_instruction": 28,
+          "nested_type": "SettingKeyValue"
+        }
+      ],
+      "unresolved_fields": [],
+      "unpaired_encode_calls": [],
+      "encode_field_calls": 2,
+      "decode_field_calls": 2,
+      "all_observed_field_calls_matched": true
+    },
+    {
+      "name": "CSSettingGetValuesByTypeReq",
+      "source": "@cs_setting_editor_pb.lua",
+      "source_sha256": "146bf2af0a21d3c0f68059a179f967574dd5ff69c89de11a1a371d049a3db2d3",
+      "encode_function_id": "0.7",
+      "decode_function_id": "0.6",
+      "fields": [
+        {
+          "name": "type",
+          "number": 1,
+          "codec_category": "str",
+          "repeated": false,
+          "encode_helper": "addstr",
+          "decode_helper": "getstr",
+          "encode_instruction": 7,
+          "decode_instruction": 17,
+          "nested_type": null
+        }
+      ],
+      "unresolved_fields": [],
+      "unpaired_encode_calls": [],
+      "encode_field_calls": 1,
+      "decode_field_calls": 1,
+      "all_observed_field_calls_matched": true
+    },
+    {
+      "name": "CSSettingGetValuesByTypeRes",
+      "source": "@cs_setting_editor_pb.lua",
+      "source_sha256": "146bf2af0a21d3c0f68059a179f967574dd5ff69c89de11a1a371d049a3db2d3",
+      "encode_function_id": "0.9",
+      "decode_function_id": "0.8",
+      "fields": [
+        {
+          "name": "result",
+          "number": 1,
+          "codec_category": "i32",
+          "repeated": false,
+          "encode_helper": "addi32",
+          "decode_helper": "geti32",
+          "encode_instruction": 7,
+          "decode_instruction": 17,
+          "nested_type": null
+        },
+        {
+          "name": "kv_array",
+          "number": 2,
+          "codec_category": "submsg",
+          "repeated": true,
+          "encode_helper": "addsubmsg",
+          "decode_helper": "getsubmsgary",
+          "encode_instruction": 22,
+          "decode_instruction": 29,
+          "nested_type": "SettingKeyValue"
+        }
+      ],
+      "unresolved_fields": [],
+      "unpaired_encode_calls": [],
+      "encode_field_calls": 2,
+      "decode_field_calls": 2,
+      "all_observed_field_calls_matched": true
+    },
+    {
+      "name": "CSSettingPutKeyValueReq",
+      "source": "@cs_setting_editor_pb.lua",
+      "source_sha256": "146bf2af0a21d3c0f68059a179f967574dd5ff69c89de11a1a371d049a3db2d3",
+      "encode_function_id": "0.11",
+      "decode_function_id": "0.10",
+      "fields": [
+        {
+          "name": "kv",
+          "number": 1,
+          "codec_category": "submsg",
+          "repeated": false,
+          "encode_helper": "addsubmsg",
+          "decode_helper": "getsubmsg",
+          "encode_instruction": 9,
+          "decode_instruction": 19,
+          "nested_type": "SettingKeyValue"
+        }
+      ],
+      "unresolved_fields": [],
+      "unpaired_encode_calls": [],
+      "encode_field_calls": 1,
+      "decode_field_calls": 1,
+      "all_observed_field_calls_matched": true
+    },
+    {
+      "name": "CSSettingPutKeyValueRes",
+      "source": "@cs_setting_editor_pb.lua",
+      "source_sha256": "146bf2af0a21d3c0f68059a179f967574dd5ff69c89de11a1a371d049a3db2d3",
+      "encode_function_id": "0.13",
+      "decode_function_id": "0.12",
+      "fields": [
+        {
+          "name": "result",
+          "number": 1,
+          "codec_category": "i32",
+          "repeated": false,
+          "encode_helper": "addi32",
+          "decode_helper": "geti32",
+          "encode_instruction": 7,
+          "decode_instruction": 17,
+          "nested_type": null
+        }
+      ],
+      "unresolved_fields": [],
+      "unpaired_encode_calls": [],
+      "encode_field_calls": 1,
+      "decode_field_calls": 1,
+      "all_observed_field_calls_matched": true
+    },
+    {
+      "name": "SettingKeyValue",
+      "source": "@cs_setting_editor_pb.lua",
+      "source_sha256": "146bf2af0a21d3c0f68059a179f967574dd5ff69c89de11a1a371d049a3db2d3",
+      "encode_function_id": "0.1",
+      "decode_function_id": "0.0",
+      "fields": [
+        {
+          "name": "key",
+          "number": 1,
+          "codec_category": "str",
+          "repeated": false,
+          "encode_helper": "addstr",
+          "decode_helper": "getstr",
+          "encode_instruction": 7,
+          "decode_instruction": 17,
+          "nested_type": null
+        },
+        {
+          "name": "type",
+          "number": 2,
+          "codec_category": "str",
+          "repeated": false,
+          "encode_helper": "addstr",
+          "decode_helper": "getstr",
+          "encode_instruction": 14,
+          "decode_instruction": 26,
+          "nested_type": null
+        },
+        {
+          "name": "value",
+          "number": 3,
+          "codec_category": "str",
+          "repeated": false,
+          "encode_helper": "addstr",
+          "decode_helper": "getstr",
+          "encode_instruction": 21,
+          "decode_instruction": 35,
+          "nested_type": null
+        },
+        {
+          "name": "share_code",
+          "number": 4,
+          "codec_category": "str",
+          "repeated": false,
+          "encode_helper": "addstr",
+          "decode_helper": "getstr",
+          "encode_instruction": 28,
+          "decode_instruction": 44,
+          "nested_type": null
+        },
+        {
+          "name": "title",
+          "number": 5,
+          "codec_category": "str",
+          "repeated": false,
+          "encode_helper": "addstr",
+          "decode_helper": "getstr",
+          "encode_instruction": 35,
+          "decode_instruction": 53,
+          "nested_type": null
+        },
+        {
+          "name": "value_byte",
+          "number": 6,
+          "codec_category": "buffer",
+          "repeated": false,
+          "encode_helper": "addbuffer",
+          "decode_helper": "getstr",
+          "encode_instruction": 42,
+          "decode_instruction": 62,
+          "nested_type": null
+        },
+        {
+          "name": "cloud_keys",
+          "number": 7,
+          "codec_category": "str",
+          "repeated": false,
+          "encode_helper": "addstr",
+          "decode_helper": "getstr",
+          "encode_instruction": 49,
+          "decode_instruction": 71,
+          "nested_type": null
+        }
+      ],
+      "unresolved_fields": [],
+      "unpaired_encode_calls": [],
+      "encode_field_calls": 7,
+      "decode_field_calls": 7,
+      "all_observed_field_calls_matched": true
+    },
+    {
+      "name": "CSWorldChatGetRoomIDReq",
+      "source": "@cs_worldchat_editor_pb.lua",
+      "source_sha256": "7332280651e79a28a42822accab9813e67870ad305dbf655a3e05f88832df1ca",
+      "encode_function_id": "0.1",
+      "decode_function_id": "0.0",
+      "fields": [
+        {
+          "name": "only_ask_college_room",
+          "number": 1,
+          "codec_category": "bool",
+          "repeated": false,
+          "encode_helper": "addbool",
+          "decode_helper": "getbool",
+          "encode_instruction": 7,
+          "decode_instruction": 17,
+          "nested_type": null
+        },
+        {
+          "name": "match_info",
+          "number": 2,
+          "codec_category": "submsg",
+          "repeated": false,
+          "encode_helper": "addsubmsg",
+          "decode_helper": "getsubmsg",
+          "encode_instruction": 16,
+          "decode_instruction": 28,
+          "nested_type": "MatchModeInfo"
+        }
+      ],
+      "unresolved_fields": [],
+      "unpaired_encode_calls": [],
+      "encode_field_calls": 2,
+      "decode_field_calls": 2,
+      "all_observed_field_calls_matched": true
+    },
+    {
+      "name": "CSWorldChatGetRoomIDRes",
+      "source": "@cs_worldchat_editor_pb.lua",
+      "source_sha256": "7332280651e79a28a42822accab9813e67870ad305dbf655a3e05f88832df1ca",
+      "encode_function_id": "0.3",
+      "decode_function_id": "0.2",
+      "fields": [
+        {
+          "name": "result",
+          "number": 1,
+          "codec_category": "i32",
+          "repeated": false,
+          "encode_helper": "addi32",
+          "decode_helper": "geti32",
+          "encode_instruction": 7,
+          "decode_instruction": 17,
+          "nested_type": null
+        },
+        {
+          "name": "room_id",
+          "number": 2,
+          "codec_category": "u64",
+          "repeated": false,
+          "encode_helper": "addu64",
+          "decode_helper": "getu64",
+          "encode_instruction": 14,
+          "decode_instruction": 26,
+          "nested_type": null
+        },
+        {
+          "name": "is_student",
+          "number": 3,
+          "codec_category": "bool",
+          "repeated": false,
+          "encode_helper": "addbool",
+          "decode_helper": "getbool",
+          "encode_instruction": 21,
+          "decode_instruction": 35,
+          "nested_type": null
+        },
+        {
+          "name": "college_room_id",
+          "number": 4,
+          "codec_category": "u64",
+          "repeated": false,
+          "encode_helper": "addu64",
+          "decode_helper": "getu64",
+          "encode_instruction": 28,
+          "decode_instruction": 44,
+          "nested_type": null
+        }
+      ],
+      "unresolved_fields": [],
+      "unpaired_encode_calls": [],
+      "encode_field_calls": 4,
+      "decode_field_calls": 4,
+      "all_observed_field_calls_matched": true
+    }
+  ],
+  "declared_services": {
+    "CSChatGetMsgSumyAllChannelReq": "chat",
+    "CSChatGetMsgSumyAllChannelRes": "chat",
+    "CSChatWorldLoadTReq": "chat",
+    "CSChatWorldLoadTRes": "chat",
+    "RollingNotice": "chat",
+    "SettingKeyValue": "setting",
+    "CSSettingGetValueByKeyReq": "setting",
+    "CSSettingGetValueByKeyRes": "setting",
+    "CSSettingGetValuesByTypeReq": "setting",
+    "CSSettingGetValuesByTypeRes": "setting",
+    "CSSettingPutKeyValueReq": "setting",
+    "CSSettingPutKeyValueRes": "setting",
+    "CSWorldChatGetRoomIDReq": "worldchat",
+    "CSWorldChatGetRoomIDRes": "worldchat"
+  },
+  "settings_consumers": [
+    "SystemSettingServer.lua 0.26.0, 0.28.0, 0.35.0, 0.37.0",
+    "CloudSettingCoreLogic.lua 0.21"
+  ],
+  "chat_consumers": [
+    "FrontEndChatServer.lua 0.5.0, 0.53.0.0.0",
+    "ChatModule.lua 0.25, 0.38.0",
+    "ChatField.lua 0.29-0.30",
+    "ChatConfig.lua 0 DEFAULTINTERVAL/PanelToInterval"
+  ],
+  "polling": {
+    "client_default_interval_seconds": 20.0,
+    "response_interval_is_additive": true,
+    "active_panels_can_reduce_the_client_interval": true,
+    "local_offline_response_increment_seconds": 0
+  },
+  "local_policy": [
+    "Settings are isolated by local player and key; values are stored verbatim.",
+    "A local one-MiB JSON storage bound leaves space for complete type-query envelopes.",
+    "No online room is created; native zero sentinels and empty messages retain the read cursor.",
+    "The asymmetric RollingNotice codec is usable only through omitted/empty references.",
+    "No actual announcements, online history, share-code service or message sending are simulated."
+  ]
+}

@@ -13,7 +13,7 @@
       "uexp_sha256": "a69b1d5bbe8da68cba9558d2c15d2eef660698b2c1e02886b7e625295508fcd0"
     },
     "weapon_attributes": {
-      "file": "pak-0-0-pakchunk2-WindowsClient.pak.entry-4489.bin",
+      "file": "pak-0-0-pakchunk2-WindowsClient.pak.entry-4489.uexp",
       "row_count": 261,
       "sha256": "862a1a0f5655183bb372665a0fc69f706082bf87fc7fb33e953602ae94bb0988",
       "id_property_index": 331,
@@ -36,7 +36,7 @@
       }
     },
     "ammo": {
-      "file": "pak-0-0-pakchunk2-WindowsClient.pak.entry-4555.bin",
+      "file": "pak-0-0-pakchunk2-WindowsClient.pak.entry-4555.uexp",
       "row_count": 176,
       "sha256": "5d4062a6d2c4ee563d34a25e4473054f2bb9b43b067c010bce9edf423f094e16",
       "id_property_index": 595,
@@ -69,18 +69,71 @@
     }
   },
   "client_compatibility": "WeaponHelperTool.lua 0.111: WeaponAttributeTable.AmmoType == GetAmmoConfig(id).Type",
-  "client_capacity": "WeaponAssemblyTool.lua 0.68/0.71/0.72: installed magazine overrides base capacity",
+  "client_capacity": {
+    "source": "WeaponAssemblyTool.lua",
+    "sha256": "3934cf763b87e4ea7cfc779b7db5541f913d321898143b1ff51293994a8d91c5",
+    "functions": [
+      "0.68",
+      "0.69",
+      "0.71",
+      "0.71.1",
+      "0.72"
+    ],
+    "rule": "A missing or zero magazine override uses the receiver WeaponClipAmmoCount; non-magazine additive capacity is summed separately.",
+    "function_table_complete": true
+  },
   "operate_types": {
     "load": 1,
     "unload": 2
   },
   "magazines": {
+    "13130000160": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 230160,
+      "serialized_part_offset": 91043,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13130000169": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 230169,
+      "serialized_part_offset": 94019,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13130000155": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 230155,
+      "serialized_part_offset": 103927,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
     "13120000296": {
       "capacity": 13,
       "function_row": "3943",
       "serialized_function_offset": 1805507,
+      "capacity_mode": "override",
       "function_id": 150296,
       "serialized_part_offset": 147496,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13130000158": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 230158,
+      "serialized_part_offset": 267945,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13130000167": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 230167,
+      "serialized_part_offset": 302161,
       "dual_clip": false,
       "sub_clip_capacity": 0
     },
@@ -88,6 +141,7 @@
       "capacity": 33,
       "function_row": "3941",
       "serialized_function_offset": 1804591,
+      "capacity_mode": "override",
       "function_id": 150294,
       "serialized_part_offset": 318663,
       "dual_clip": false,
@@ -97,6 +151,7 @@
       "capacity": 25,
       "function_row": "3940",
       "serialized_function_offset": 1804133,
+      "capacity_mode": "override",
       "function_id": 150293,
       "serialized_part_offset": 321859,
       "dual_clip": false,
@@ -106,6 +161,7 @@
       "capacity": 45,
       "function_row": "3901",
       "serialized_function_offset": 1786271,
+      "capacity_mode": "override",
       "function_id": 150254,
       "serialized_part_offset": 336459,
       "dual_clip": false,
@@ -115,6 +171,7 @@
       "capacity": 30,
       "function_row": "3900",
       "serialized_function_offset": 1785813,
+      "capacity_mode": "override",
       "function_id": 150253,
       "serialized_part_offset": 339655,
       "dual_clip": false,
@@ -124,6 +181,7 @@
       "capacity": 45,
       "function_row": "3927",
       "serialized_function_offset": 1798179,
+      "capacity_mode": "override",
       "function_id": 150280,
       "serialized_part_offset": 371015,
       "dual_clip": false,
@@ -133,6 +191,7 @@
       "capacity": 35,
       "function_row": "3926",
       "serialized_function_offset": 1797721,
+      "capacity_mode": "override",
       "function_id": 150279,
       "serialized_part_offset": 374211,
       "dual_clip": false,
@@ -142,6 +201,7 @@
       "capacity": 20,
       "function_row": "3954",
       "serialized_function_offset": 1810545,
+      "capacity_mode": "override",
       "function_id": 150300,
       "serialized_part_offset": 399975,
       "dual_clip": false,
@@ -151,6 +211,7 @@
       "capacity": 24,
       "function_row": "3938",
       "serialized_function_offset": 1803217,
+      "capacity_mode": "override",
       "function_id": 150291,
       "serialized_part_offset": 430743,
       "dual_clip": false,
@@ -160,6 +221,7 @@
       "capacity": 10,
       "function_row": "3936",
       "serialized_function_offset": 1802301,
+      "capacity_mode": "override",
       "function_id": 150289,
       "serialized_part_offset": 433751,
       "dual_clip": false,
@@ -169,6 +231,7 @@
       "capacity": 20,
       "function_row": "3956",
       "serialized_function_offset": 1811461,
+      "capacity_mode": "override",
       "function_id": 150150,
       "serialized_part_offset": 463655,
       "dual_clip": false,
@@ -178,6 +241,7 @@
       "capacity": 30,
       "function_row": "3971",
       "serialized_function_offset": 1818331,
+      "capacity_mode": "override",
       "function_id": 150331,
       "serialized_part_offset": 466663,
       "dual_clip": false,
@@ -187,6 +251,7 @@
       "capacity": 40,
       "function_row": "3950",
       "serialized_function_offset": 1808713,
+      "capacity_mode": "override",
       "function_id": 150318,
       "serialized_part_offset": 488171,
       "dual_clip": false,
@@ -196,6 +261,7 @@
       "capacity": 30,
       "function_row": "10929",
       "serialized_function_offset": 5005095,
+      "capacity_mode": "override",
       "function_id": 150359,
       "serialized_part_offset": 574757,
       "dual_clip": false,
@@ -205,6 +271,7 @@
       "capacity": 45,
       "function_row": "3910",
       "serialized_function_offset": 1790393,
+      "capacity_mode": "override",
       "function_id": 150263,
       "serialized_part_offset": 584971,
       "dual_clip": false,
@@ -214,6 +281,7 @@
       "capacity": 45,
       "function_row": "3949",
       "serialized_function_offset": 1808255,
+      "capacity_mode": "override",
       "function_id": 150317,
       "serialized_part_offset": 597519,
       "dual_clip": false,
@@ -223,6 +291,7 @@
       "capacity": 30,
       "function_row": "8006",
       "serialized_function_offset": 3666361,
+      "capacity_mode": "override",
       "function_id": 150315,
       "serialized_part_offset": 600809,
       "dual_clip": false,
@@ -232,6 +301,7 @@
       "capacity": 50,
       "function_row": "3959",
       "serialized_function_offset": 1812835,
+      "capacity_mode": "override",
       "function_id": 150174,
       "serialized_part_offset": 618009,
       "dual_clip": false,
@@ -241,6 +311,7 @@
       "capacity": 30,
       "function_row": "3897",
       "serialized_function_offset": 1784439,
+      "capacity_mode": "override",
       "function_id": 150250,
       "serialized_part_offset": 621205,
       "dual_clip": false,
@@ -250,6 +321,7 @@
       "capacity": 30,
       "function_row": "3909",
       "serialized_function_offset": 1789935,
+      "capacity_mode": "override",
       "function_id": 150262,
       "serialized_part_offset": 636039,
       "dual_clip": false,
@@ -259,6 +331,7 @@
       "capacity": 15,
       "function_row": "3948",
       "serialized_function_offset": 1807797,
+      "capacity_mode": "override",
       "function_id": 150314,
       "serialized_part_offset": 648947,
       "dual_clip": false,
@@ -268,6 +341,7 @@
       "capacity": 60,
       "function_row": "3905",
       "serialized_function_offset": 1788103,
+      "capacity_mode": "override",
       "function_id": 150258,
       "serialized_part_offset": 668371,
       "dual_clip": false,
@@ -277,6 +351,7 @@
       "capacity": 45,
       "function_row": "3961",
       "serialized_function_offset": 1813751,
+      "capacity_mode": "override",
       "function_id": 150307,
       "serialized_part_offset": 700613,
       "dual_clip": false,
@@ -286,6 +361,7 @@
       "capacity": 64,
       "function_row": "3929",
       "serialized_function_offset": 1799095,
+      "capacity_mode": "override",
       "function_id": 150282,
       "serialized_part_offset": 717985,
       "dual_clip": false,
@@ -295,6 +371,7 @@
       "capacity": 125,
       "function_row": "3953",
       "serialized_function_offset": 1810087,
+      "capacity_mode": "override",
       "function_id": 150301,
       "serialized_part_offset": 736797,
       "dual_clip": false,
@@ -304,6 +381,7 @@
       "capacity": 60,
       "function_row": "3967",
       "serialized_function_offset": 1816499,
+      "capacity_mode": "override",
       "function_id": 150321,
       "serialized_part_offset": 796643,
       "dual_clip": false,
@@ -313,6 +391,7 @@
       "capacity": 40,
       "function_row": "3966",
       "serialized_function_offset": 1816041,
+      "capacity_mode": "override",
       "function_id": 150320,
       "serialized_part_offset": 799933,
       "dual_clip": false,
@@ -322,6 +401,7 @@
       "capacity": 30,
       "function_row": "3965",
       "serialized_function_offset": 1815583,
+      "capacity_mode": "override",
       "function_id": 150319,
       "serialized_part_offset": 803223,
       "dual_clip": false,
@@ -331,6 +411,7 @@
       "capacity": 50,
       "function_row": "3924",
       "serialized_function_offset": 1796805,
+      "capacity_mode": "override",
       "function_id": 150277,
       "serialized_part_offset": 836997,
       "dual_clip": false,
@@ -340,6 +421,7 @@
       "capacity": 30,
       "function_row": "3914",
       "serialized_function_offset": 1792225,
+      "capacity_mode": "override",
       "function_id": 150267,
       "serialized_part_offset": 852935,
       "dual_clip": false,
@@ -349,6 +431,7 @@
       "capacity": 20,
       "function_row": "3951",
       "serialized_function_offset": 1809171,
+      "capacity_mode": "override",
       "function_id": 150035,
       "serialized_part_offset": 856131,
       "dual_clip": false,
@@ -358,6 +441,7 @@
       "capacity": 45,
       "function_row": "3881",
       "serialized_function_offset": 1777111,
+      "capacity_mode": "override",
       "function_id": 150234,
       "serialized_part_offset": 891493,
       "dual_clip": false,
@@ -367,6 +451,7 @@
       "capacity": 60,
       "function_row": "3882",
       "serialized_function_offset": 1777569,
+      "capacity_mode": "override",
       "function_id": 150235,
       "serialized_part_offset": 904887,
       "dual_clip": false,
@@ -376,6 +461,7 @@
       "capacity": 10,
       "function_row": "3933",
       "serialized_function_offset": 1800927,
+      "capacity_mode": "override",
       "function_id": 150286,
       "serialized_part_offset": 937133,
       "dual_clip": false,
@@ -385,6 +471,7 @@
       "capacity": 75,
       "function_row": "8325",
       "serialized_function_offset": 3812463,
+      "capacity_mode": "override",
       "function_id": 150332,
       "serialized_part_offset": 949383,
       "dual_clip": false,
@@ -394,6 +481,7 @@
       "capacity": 50,
       "function_row": "3955",
       "serialized_function_offset": 1811003,
+      "capacity_mode": "override",
       "function_id": 150053,
       "serialized_part_offset": 1023893,
       "dual_clip": false,
@@ -403,6 +491,7 @@
       "capacity": 30,
       "function_row": "3960",
       "serialized_function_offset": 1813293,
+      "capacity_mode": "override",
       "function_id": 150049,
       "serialized_part_offset": 1027089,
       "dual_clip": false,
@@ -412,6 +501,7 @@
       "capacity": 20,
       "function_row": "3896",
       "serialized_function_offset": 1783981,
+      "capacity_mode": "override",
       "function_id": 150249,
       "serialized_part_offset": 1030097,
       "dual_clip": false,
@@ -421,6 +511,7 @@
       "capacity": 30,
       "function_row": "3962",
       "serialized_function_offset": 1814209,
+      "capacity_mode": "override",
       "function_id": 150030,
       "serialized_part_offset": 1051409,
       "dual_clip": false,
@@ -430,6 +521,7 @@
       "capacity": 30,
       "function_row": "3969",
       "serialized_function_offset": 1817415,
+      "capacity_mode": "override",
       "function_id": 150329,
       "serialized_part_offset": 1054041,
       "dual_clip": false,
@@ -439,8 +531,17 @@
       "capacity": 60,
       "function_row": "10193",
       "serialized_function_offset": 4668007,
+      "capacity_mode": "override",
       "function_id": 150333,
       "serialized_part_offset": 1059367,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000340": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150340,
+      "serialized_part_offset": 1069595,
       "dual_clip": false,
       "sub_clip_capacity": 0
     },
@@ -448,6 +549,7 @@
       "capacity": 45,
       "function_row": "10184",
       "serialized_function_offset": 4663885,
+      "capacity_mode": "override",
       "function_id": 150341,
       "serialized_part_offset": 1072195,
       "dual_clip": false,
@@ -457,6 +559,7 @@
       "capacity": 30,
       "function_row": "10188",
       "serialized_function_offset": 4665717,
+      "capacity_mode": "override",
       "function_id": 150342,
       "serialized_part_offset": 1075203,
       "dual_clip": false,
@@ -466,6 +569,7 @@
       "capacity": 45,
       "function_row": "10182",
       "serialized_function_offset": 4662969,
+      "capacity_mode": "override",
       "function_id": 150343,
       "serialized_part_offset": 1078587,
       "dual_clip": false,
@@ -475,6 +579,7 @@
       "capacity": 75,
       "function_row": "10186",
       "serialized_function_offset": 4664801,
+      "capacity_mode": "override",
       "function_id": 150344,
       "serialized_part_offset": 1082253,
       "dual_clip": false,
@@ -484,6 +589,7 @@
       "capacity": 70,
       "function_row": "3920",
       "serialized_function_offset": 1794973,
+      "capacity_mode": "override",
       "function_id": 150273,
       "serialized_part_offset": 1148107,
       "dual_clip": false,
@@ -493,6 +599,7 @@
       "capacity": 40,
       "function_row": "3919",
       "serialized_function_offset": 1794515,
+      "capacity_mode": "override",
       "function_id": 150272,
       "serialized_part_offset": 1151397,
       "dual_clip": false,
@@ -502,6 +609,7 @@
       "capacity": 30,
       "function_row": "3918",
       "serialized_function_offset": 1794057,
+      "capacity_mode": "override",
       "function_id": 150271,
       "serialized_part_offset": 1154687,
       "dual_clip": false,
@@ -511,6 +619,7 @@
       "capacity": 50,
       "function_row": "3957",
       "serialized_function_offset": 1811919,
+      "capacity_mode": "override",
       "function_id": 150054,
       "serialized_part_offset": 1199755,
       "dual_clip": false,
@@ -520,6 +629,7 @@
       "capacity": 30,
       "function_row": "3958",
       "serialized_function_offset": 1812377,
+      "capacity_mode": "override",
       "function_id": 150173,
       "serialized_part_offset": 1202951,
       "dual_clip": false,
@@ -529,6 +639,7 @@
       "capacity": 20,
       "function_row": "3970",
       "serialized_function_offset": 1817873,
+      "capacity_mode": "override",
       "function_id": 150330,
       "serialized_part_offset": 1205959,
       "dual_clip": false,
@@ -538,6 +649,7 @@
       "capacity": 60,
       "function_row": "3903",
       "serialized_function_offset": 1787187,
+      "capacity_mode": "override",
       "function_id": 150256,
       "serialized_part_offset": 1273163,
       "dual_clip": false,
@@ -547,6 +659,7 @@
       "capacity": 30,
       "function_row": "3968",
       "serialized_function_offset": 1816957,
+      "capacity_mode": "override",
       "function_id": 150327,
       "serialized_part_offset": 1323179,
       "dual_clip": false,
@@ -556,6 +669,7 @@
       "capacity": 40,
       "function_row": "3886",
       "serialized_function_offset": 1779401,
+      "capacity_mode": "override",
       "function_id": 150239,
       "serialized_part_offset": 1325435,
       "dual_clip": false,
@@ -565,6 +679,7 @@
       "capacity": 70,
       "function_row": "3888",
       "serialized_function_offset": 1780317,
+      "capacity_mode": "override",
       "function_id": 150241,
       "serialized_part_offset": 1350531,
       "dual_clip": false,
@@ -574,6 +689,7 @@
       "capacity": 30,
       "function_row": "3887",
       "serialized_function_offset": 1779859,
+      "capacity_mode": "override",
       "function_id": 150240,
       "serialized_part_offset": 1355575,
       "dual_clip": false,
@@ -583,6 +699,7 @@
       "capacity": 45,
       "function_row": "3892",
       "serialized_function_offset": 1782149,
+      "capacity_mode": "override",
       "function_id": 150245,
       "serialized_part_offset": 1358207,
       "dual_clip": false,
@@ -592,6 +709,7 @@
       "capacity": 75,
       "function_row": "3894",
       "serialized_function_offset": 1783065,
+      "capacity_mode": "override",
       "function_id": 150247,
       "serialized_part_offset": 1361403,
       "dual_clip": false,
@@ -601,6 +719,7 @@
       "capacity": 30,
       "function_row": "3890",
       "serialized_function_offset": 1781233,
+      "capacity_mode": "override",
       "function_id": 150243,
       "serialized_part_offset": 1366447,
       "dual_clip": false,
@@ -610,6 +729,7 @@
       "capacity": 30,
       "function_row": "3947",
       "serialized_function_offset": 1807339,
+      "capacity_mode": "override",
       "function_id": 150313,
       "serialized_part_offset": 1368703,
       "dual_clip": false,
@@ -619,6 +739,7 @@
       "capacity": 30,
       "function_row": "3893",
       "serialized_function_offset": 1782607,
+      "capacity_mode": "override",
       "function_id": 150246,
       "serialized_part_offset": 1378071,
       "dual_clip": false,
@@ -628,6 +749,7 @@
       "capacity": 24,
       "function_row": "3946",
       "serialized_function_offset": 1806881,
+      "capacity_mode": "override",
       "function_id": 150299,
       "serialized_part_offset": 1411945,
       "dual_clip": false,
@@ -637,6 +759,7 @@
       "capacity": 18,
       "function_row": "3945",
       "serialized_function_offset": 1806423,
+      "capacity_mode": "override",
       "function_id": 150298,
       "serialized_part_offset": 1414953,
       "dual_clip": false,
@@ -646,6 +769,7 @@
       "capacity": 30,
       "function_row": "3963",
       "serialized_function_offset": 1814667,
+      "capacity_mode": "override",
       "function_id": 150036,
       "serialized_part_offset": 1443569,
       "dual_clip": false,
@@ -655,8 +779,49 @@
       "capacity": 11,
       "function_row": "8314",
       "serialized_function_offset": 3807425,
+      "capacity_mode": "override",
       "function_id": 150334,
       "serialized_part_offset": 1471703,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13030000085": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 120085,
+      "serialized_part_offset": 2209757,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13040000087": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 130087,
+      "serialized_part_offset": 2445825,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13040000088": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 130088,
+      "serialized_part_offset": 2447673,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13040000089": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 130089,
+      "serialized_part_offset": 2449521,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13040000090": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 130090,
+      "serialized_part_offset": 2451369,
       "dual_clip": false,
       "sub_clip_capacity": 0
     },
@@ -664,8 +829,305 @@
       "capacity": 30,
       "function_row": "3907",
       "serialized_function_offset": 1789019,
+      "capacity_mode": "override",
       "function_id": 150260,
       "serialized_part_offset": 2478863,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13050000116": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 140116,
+      "serialized_part_offset": 2764775,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13050000117": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 140117,
+      "serialized_part_offset": 2766623,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13050000118": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 140118,
+      "serialized_part_offset": 2768471,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13050000119": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 140119,
+      "serialized_part_offset": 2770319,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000001": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150001,
+      "serialized_part_offset": 3216931,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000002": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150002,
+      "serialized_part_offset": 3218779,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000004": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150004,
+      "serialized_part_offset": 3220627,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000005": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150005,
+      "serialized_part_offset": 3222475,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000009": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150009,
+      "serialized_part_offset": 3224323,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000011": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150011,
+      "serialized_part_offset": 3226171,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000012": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150012,
+      "serialized_part_offset": 3228019,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000013": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150013,
+      "serialized_part_offset": 3229867,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000015": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150015,
+      "serialized_part_offset": 3231715,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000016": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150016,
+      "serialized_part_offset": 3233563,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000017": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150017,
+      "serialized_part_offset": 3235411,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000022": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150022,
+      "serialized_part_offset": 3237259,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000026": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150026,
+      "serialized_part_offset": 3239107,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000027": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150027,
+      "serialized_part_offset": 3240955,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000029": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150029,
+      "serialized_part_offset": 3242803,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000031": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150031,
+      "serialized_part_offset": 3244651,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000032": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150032,
+      "serialized_part_offset": 3246499,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000033": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150033,
+      "serialized_part_offset": 3248347,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000034": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150034,
+      "serialized_part_offset": 3250195,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000037": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150037,
+      "serialized_part_offset": 3252043,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000038": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150038,
+      "serialized_part_offset": 3253891,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000039": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150039,
+      "serialized_part_offset": 3255739,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000040": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150040,
+      "serialized_part_offset": 3257587,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000041": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150041,
+      "serialized_part_offset": 3259435,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000042": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150042,
+      "serialized_part_offset": 3261283,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000043": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150043,
+      "serialized_part_offset": 3263131,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000044": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150044,
+      "serialized_part_offset": 3264979,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000045": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150045,
+      "serialized_part_offset": 3266827,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000046": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150046,
+      "serialized_part_offset": 3268675,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000047": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150047,
+      "serialized_part_offset": 3270523,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000048": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150048,
+      "serialized_part_offset": 3272371,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000050": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150050,
+      "serialized_part_offset": 3274219,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000051": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150051,
+      "serialized_part_offset": 3276067,
       "dual_clip": false,
       "sub_clip_capacity": 0
     },
@@ -673,8 +1135,1385 @@
       "capacity": 30,
       "function_row": "3964",
       "serialized_function_offset": 1815125,
+      "capacity_mode": "override",
       "function_id": 150052,
       "serialized_part_offset": 3277915,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000055": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150055,
+      "serialized_part_offset": 3279763,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000056": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150056,
+      "serialized_part_offset": 3281611,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000057": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150057,
+      "serialized_part_offset": 3283459,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000058": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150058,
+      "serialized_part_offset": 3285307,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000059": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150059,
+      "serialized_part_offset": 3287155,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000060": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150060,
+      "serialized_part_offset": 3289003,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000061": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150061,
+      "serialized_part_offset": 3290851,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000062": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150062,
+      "serialized_part_offset": 3292699,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000063": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150063,
+      "serialized_part_offset": 3294547,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000064": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150064,
+      "serialized_part_offset": 3296395,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000065": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150065,
+      "serialized_part_offset": 3298243,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000066": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150066,
+      "serialized_part_offset": 3300091,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000067": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150067,
+      "serialized_part_offset": 3301939,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000068": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150068,
+      "serialized_part_offset": 3303787,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000069": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150069,
+      "serialized_part_offset": 3305635,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000070": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150070,
+      "serialized_part_offset": 3307483,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000071": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150071,
+      "serialized_part_offset": 3309331,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000072": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150072,
+      "serialized_part_offset": 3311179,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000073": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150073,
+      "serialized_part_offset": 3313027,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000074": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150074,
+      "serialized_part_offset": 3314875,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000075": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150075,
+      "serialized_part_offset": 3316723,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000076": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150076,
+      "serialized_part_offset": 3318571,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000077": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150077,
+      "serialized_part_offset": 3320419,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000078": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150078,
+      "serialized_part_offset": 3322267,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000079": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150079,
+      "serialized_part_offset": 3324115,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000080": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150080,
+      "serialized_part_offset": 3325963,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000081": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150081,
+      "serialized_part_offset": 3327811,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000082": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150082,
+      "serialized_part_offset": 3329659,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000083": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150083,
+      "serialized_part_offset": 3331507,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000084": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150084,
+      "serialized_part_offset": 3333355,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000085": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150085,
+      "serialized_part_offset": 3335203,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000086": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150086,
+      "serialized_part_offset": 3337051,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000087": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150087,
+      "serialized_part_offset": 3338899,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000088": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150088,
+      "serialized_part_offset": 3340747,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000089": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150089,
+      "serialized_part_offset": 3342595,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000090": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150090,
+      "serialized_part_offset": 3344443,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000091": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150091,
+      "serialized_part_offset": 3346291,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000092": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150092,
+      "serialized_part_offset": 3348139,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000093": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150093,
+      "serialized_part_offset": 3349987,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000094": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150094,
+      "serialized_part_offset": 3351835,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000095": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150095,
+      "serialized_part_offset": 3353683,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000096": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150096,
+      "serialized_part_offset": 3355531,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000097": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150097,
+      "serialized_part_offset": 3357379,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000098": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150098,
+      "serialized_part_offset": 3359227,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000099": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150099,
+      "serialized_part_offset": 3361075,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000100": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150100,
+      "serialized_part_offset": 3362923,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000101": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150101,
+      "serialized_part_offset": 3364771,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000102": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150102,
+      "serialized_part_offset": 3366619,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000103": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150103,
+      "serialized_part_offset": 3368467,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000104": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150104,
+      "serialized_part_offset": 3370315,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000105": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150105,
+      "serialized_part_offset": 3372163,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000106": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150106,
+      "serialized_part_offset": 3374011,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000107": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150107,
+      "serialized_part_offset": 3375859,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000108": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150108,
+      "serialized_part_offset": 3377707,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000109": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150109,
+      "serialized_part_offset": 3379555,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000110": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150110,
+      "serialized_part_offset": 3381403,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000111": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150111,
+      "serialized_part_offset": 3383251,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000112": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150112,
+      "serialized_part_offset": 3385099,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000113": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150113,
+      "serialized_part_offset": 3386947,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000114": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150114,
+      "serialized_part_offset": 3388795,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000115": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150115,
+      "serialized_part_offset": 3390643,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000116": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150116,
+      "serialized_part_offset": 3392491,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000117": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150117,
+      "serialized_part_offset": 3394339,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000118": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150118,
+      "serialized_part_offset": 3396187,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000119": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150119,
+      "serialized_part_offset": 3398035,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000120": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150120,
+      "serialized_part_offset": 3399883,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000122": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150122,
+      "serialized_part_offset": 3401731,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000123": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150123,
+      "serialized_part_offset": 3403579,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000124": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150124,
+      "serialized_part_offset": 3405427,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000125": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150125,
+      "serialized_part_offset": 3407275,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000126": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150126,
+      "serialized_part_offset": 3409123,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000127": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150127,
+      "serialized_part_offset": 3410971,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000128": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150128,
+      "serialized_part_offset": 3412819,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000129": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150129,
+      "serialized_part_offset": 3414667,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000130": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150130,
+      "serialized_part_offset": 3416515,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000131": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150131,
+      "serialized_part_offset": 3418363,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000132": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150132,
+      "serialized_part_offset": 3420211,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000133": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150133,
+      "serialized_part_offset": 3422059,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000134": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150134,
+      "serialized_part_offset": 3423907,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000135": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150135,
+      "serialized_part_offset": 3425755,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000136": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150136,
+      "serialized_part_offset": 3427603,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000137": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150137,
+      "serialized_part_offset": 3429451,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000138": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150138,
+      "serialized_part_offset": 3431299,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000139": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150139,
+      "serialized_part_offset": 3433147,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000140": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150140,
+      "serialized_part_offset": 3434995,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000141": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150141,
+      "serialized_part_offset": 3436843,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000142": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150142,
+      "serialized_part_offset": 3438691,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000143": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150143,
+      "serialized_part_offset": 3440539,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000144": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150144,
+      "serialized_part_offset": 3442387,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000145": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150145,
+      "serialized_part_offset": 3444235,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000146": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150146,
+      "serialized_part_offset": 3446083,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000147": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150147,
+      "serialized_part_offset": 3447931,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000148": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150148,
+      "serialized_part_offset": 3449779,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000149": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150149,
+      "serialized_part_offset": 3451627,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000151": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150151,
+      "serialized_part_offset": 3453475,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000152": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150152,
+      "serialized_part_offset": 3455323,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000153": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150153,
+      "serialized_part_offset": 3457171,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000154": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150154,
+      "serialized_part_offset": 3459019,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000155": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150155,
+      "serialized_part_offset": 3460867,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000156": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150156,
+      "serialized_part_offset": 3462715,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000157": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150157,
+      "serialized_part_offset": 3464563,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000158": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150158,
+      "serialized_part_offset": 3466411,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000159": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150159,
+      "serialized_part_offset": 3468259,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000160": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150160,
+      "serialized_part_offset": 3470107,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000161": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150161,
+      "serialized_part_offset": 3471955,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000162": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150162,
+      "serialized_part_offset": 3473803,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000163": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150163,
+      "serialized_part_offset": 3475651,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000164": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150164,
+      "serialized_part_offset": 3477499,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000165": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150165,
+      "serialized_part_offset": 3479347,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000166": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150166,
+      "serialized_part_offset": 3481195,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000167": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150167,
+      "serialized_part_offset": 3483043,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000168": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150168,
+      "serialized_part_offset": 3484891,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000169": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150169,
+      "serialized_part_offset": 3486739,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000170": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150170,
+      "serialized_part_offset": 3488587,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000171": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150171,
+      "serialized_part_offset": 3490435,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000172": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150172,
+      "serialized_part_offset": 3492283,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000175": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150175,
+      "serialized_part_offset": 3494131,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000176": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150176,
+      "serialized_part_offset": 3495979,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000177": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150177,
+      "serialized_part_offset": 3497827,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000178": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150178,
+      "serialized_part_offset": 3499675,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000179": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150179,
+      "serialized_part_offset": 3501523,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000180": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150180,
+      "serialized_part_offset": 3503371,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000181": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150181,
+      "serialized_part_offset": 3505219,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000182": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150182,
+      "serialized_part_offset": 3507067,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000183": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150183,
+      "serialized_part_offset": 3508915,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000184": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150184,
+      "serialized_part_offset": 3510763,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000185": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150185,
+      "serialized_part_offset": 3512611,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000186": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150186,
+      "serialized_part_offset": 3514459,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000187": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150187,
+      "serialized_part_offset": 3516307,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000188": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150188,
+      "serialized_part_offset": 3518155,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000189": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150189,
+      "serialized_part_offset": 3520003,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000190": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150190,
+      "serialized_part_offset": 3521851,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000191": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150191,
+      "serialized_part_offset": 3523699,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000192": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150192,
+      "serialized_part_offset": 3525547,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000193": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150193,
+      "serialized_part_offset": 3527395,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000194": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150194,
+      "serialized_part_offset": 3529243,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000195": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150195,
+      "serialized_part_offset": 3531091,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000196": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150196,
+      "serialized_part_offset": 3532939,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000197": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150197,
+      "serialized_part_offset": 3534787,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000198": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150198,
+      "serialized_part_offset": 3536635,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000199": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150199,
+      "serialized_part_offset": 3538483,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000200": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150200,
+      "serialized_part_offset": 3540331,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000201": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150201,
+      "serialized_part_offset": 3542179,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000202": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150202,
+      "serialized_part_offset": 3544027,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000203": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150203,
+      "serialized_part_offset": 3545875,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000204": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150204,
+      "serialized_part_offset": 3547723,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000205": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150205,
+      "serialized_part_offset": 3549571,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000206": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150206,
+      "serialized_part_offset": 3551419,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000207": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150207,
+      "serialized_part_offset": 3553267,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000208": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150208,
+      "serialized_part_offset": 3555115,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000209": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150209,
+      "serialized_part_offset": 3556963,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000210": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150210,
+      "serialized_part_offset": 3558811,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000211": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150211,
+      "serialized_part_offset": 3560659,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000212": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150212,
+      "serialized_part_offset": 3562507,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000213": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150213,
+      "serialized_part_offset": 3564355,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000214": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150214,
+      "serialized_part_offset": 3566203,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000215": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150215,
+      "serialized_part_offset": 3568051,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000216": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150216,
+      "serialized_part_offset": 3569899,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000217": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150217,
+      "serialized_part_offset": 3571747,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000218": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150218,
+      "serialized_part_offset": 3573595,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000219": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150219,
+      "serialized_part_offset": 3575443,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000220": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150220,
+      "serialized_part_offset": 3577291,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000221": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150221,
+      "serialized_part_offset": 3579139,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000222": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150222,
+      "serialized_part_offset": 3580987,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000223": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150223,
+      "serialized_part_offset": 3582835,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000224": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150224,
+      "serialized_part_offset": 3584683,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000225": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150225,
+      "serialized_part_offset": 3586531,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000226": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150226,
+      "serialized_part_offset": 3588379,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000227": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150227,
+      "serialized_part_offset": 3590227,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000229": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150229,
+      "serialized_part_offset": 3593923,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000230": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 350230,
+      "serialized_part_offset": 3595771,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000231": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 350231,
+      "serialized_part_offset": 3597619,
       "dual_clip": false,
       "sub_clip_capacity": 0
     },
@@ -682,6 +2521,7 @@
       "capacity": 20,
       "function_row": "3879",
       "serialized_function_offset": 1776195,
+      "capacity_mode": "override",
       "function_id": 150232,
       "serialized_part_offset": 3599467,
       "dual_clip": false,
@@ -691,6 +2531,7 @@
       "capacity": 30,
       "function_row": "3880",
       "serialized_function_offset": 1776653,
+      "capacity_mode": "override",
       "function_id": 150233,
       "serialized_part_offset": 3601315,
       "dual_clip": false,
@@ -700,6 +2541,7 @@
       "capacity": 100,
       "function_row": "3883",
       "serialized_function_offset": 1778027,
+      "capacity_mode": "override",
       "function_id": 150236,
       "serialized_part_offset": 3603163,
       "dual_clip": false,
@@ -709,6 +2551,7 @@
       "capacity": 20,
       "function_row": "3884",
       "serialized_function_offset": 1778485,
+      "capacity_mode": "override",
       "function_id": 150237,
       "serialized_part_offset": 3605011,
       "dual_clip": false,
@@ -718,6 +2561,7 @@
       "capacity": 30,
       "function_row": "3885",
       "serialized_function_offset": 1778943,
+      "capacity_mode": "override",
       "function_id": 150238,
       "serialized_part_offset": 3606859,
       "dual_clip": false,
@@ -727,6 +2571,7 @@
       "capacity": 20,
       "function_row": "3889",
       "serialized_function_offset": 1780775,
+      "capacity_mode": "override",
       "function_id": 150242,
       "serialized_part_offset": 3608707,
       "dual_clip": false,
@@ -736,6 +2581,7 @@
       "capacity": 30,
       "function_row": "3891",
       "serialized_function_offset": 1781691,
+      "capacity_mode": "override",
       "function_id": 150244,
       "serialized_part_offset": 3610555,
       "dual_clip": false,
@@ -745,6 +2591,7 @@
       "capacity": 10,
       "function_row": "3895",
       "serialized_function_offset": 1783523,
+      "capacity_mode": "override",
       "function_id": 150248,
       "serialized_part_offset": 3612403,
       "dual_clip": false,
@@ -754,6 +2601,7 @@
       "capacity": 50,
       "function_row": "3898",
       "serialized_function_offset": 1784897,
+      "capacity_mode": "override",
       "function_id": 150251,
       "serialized_part_offset": 3614251,
       "dual_clip": false,
@@ -763,6 +2611,7 @@
       "capacity": 15,
       "function_row": "3899",
       "serialized_function_offset": 1785355,
+      "capacity_mode": "override",
       "function_id": 150252,
       "serialized_part_offset": 3616099,
       "dual_clip": false,
@@ -772,6 +2621,7 @@
       "capacity": 30,
       "function_row": "3902",
       "serialized_function_offset": 1786729,
+      "capacity_mode": "override",
       "function_id": 150255,
       "serialized_part_offset": 3617947,
       "dual_clip": false,
@@ -781,6 +2631,7 @@
       "capacity": 30,
       "function_row": "3904",
       "serialized_function_offset": 1787645,
+      "capacity_mode": "override",
       "function_id": 150257,
       "serialized_part_offset": 3619795,
       "dual_clip": false,
@@ -790,6 +2641,7 @@
       "capacity": 20,
       "function_row": "3906",
       "serialized_function_offset": 1788561,
+      "capacity_mode": "override",
       "function_id": 150259,
       "serialized_part_offset": 3621643,
       "dual_clip": false,
@@ -799,6 +2651,7 @@
       "capacity": 20,
       "function_row": "3908",
       "serialized_function_offset": 1789477,
+      "capacity_mode": "override",
       "function_id": 150261,
       "serialized_part_offset": 3627313,
       "dual_clip": false,
@@ -808,6 +2661,7 @@
       "capacity": 10,
       "function_row": "3911",
       "serialized_function_offset": 1790851,
+      "capacity_mode": "override",
       "function_id": 150264,
       "serialized_part_offset": 3629161,
       "dual_clip": false,
@@ -817,6 +2671,7 @@
       "capacity": 10,
       "function_row": "3912",
       "serialized_function_offset": 1791309,
+      "capacity_mode": "override",
       "function_id": 150265,
       "serialized_part_offset": 3631009,
       "dual_clip": false,
@@ -826,6 +2681,7 @@
       "capacity": 10,
       "function_row": "3913",
       "serialized_function_offset": 1791767,
+      "capacity_mode": "override",
       "function_id": 150266,
       "serialized_part_offset": 3632857,
       "dual_clip": false,
@@ -835,6 +2691,7 @@
       "capacity": 100,
       "function_row": "3915",
       "serialized_function_offset": 1792683,
+      "capacity_mode": "override",
       "function_id": 150268,
       "serialized_part_offset": 3634705,
       "dual_clip": false,
@@ -844,6 +2701,7 @@
       "capacity": 75,
       "function_row": "3916",
       "serialized_function_offset": 1793141,
+      "capacity_mode": "override",
       "function_id": 150269,
       "serialized_part_offset": 3636553,
       "dual_clip": false,
@@ -853,6 +2711,7 @@
       "capacity": 17,
       "function_row": "3917",
       "serialized_function_offset": 1793599,
+      "capacity_mode": "override",
       "function_id": 150270,
       "serialized_part_offset": 3638401,
       "dual_clip": false,
@@ -862,6 +2721,7 @@
       "capacity": 25,
       "function_row": "3921",
       "serialized_function_offset": 1795431,
+      "capacity_mode": "override",
       "function_id": 150274,
       "serialized_part_offset": 3640249,
       "dual_clip": false,
@@ -871,6 +2731,7 @@
       "capacity": 20,
       "function_row": "3922",
       "serialized_function_offset": 1795889,
+      "capacity_mode": "override",
       "function_id": 150275,
       "serialized_part_offset": 3642097,
       "dual_clip": false,
@@ -880,6 +2741,7 @@
       "capacity": 30,
       "function_row": "3923",
       "serialized_function_offset": 1796347,
+      "capacity_mode": "override",
       "function_id": 150276,
       "serialized_part_offset": 3643945,
       "dual_clip": false,
@@ -889,6 +2751,7 @@
       "capacity": 25,
       "function_row": "3925",
       "serialized_function_offset": 1797263,
+      "capacity_mode": "override",
       "function_id": 150278,
       "serialized_part_offset": 3645793,
       "dual_clip": false,
@@ -898,6 +2761,7 @@
       "capacity": 32,
       "function_row": "3928",
       "serialized_function_offset": 1798637,
+      "capacity_mode": "override",
       "function_id": 150281,
       "serialized_part_offset": 3647641,
       "dual_clip": false,
@@ -907,6 +2771,7 @@
       "capacity": 5,
       "function_row": "3930",
       "serialized_function_offset": 1799553,
+      "capacity_mode": "override",
       "function_id": 150283,
       "serialized_part_offset": 3649489,
       "dual_clip": false,
@@ -916,6 +2781,7 @@
       "capacity": 7,
       "function_row": "3931",
       "serialized_function_offset": 1800011,
+      "capacity_mode": "override",
       "function_id": 150284,
       "serialized_part_offset": 3651337,
       "dual_clip": false,
@@ -925,6 +2791,7 @@
       "capacity": 5,
       "function_row": "3932",
       "serialized_function_offset": 1800469,
+      "capacity_mode": "override",
       "function_id": 150285,
       "serialized_part_offset": 3653185,
       "dual_clip": false,
@@ -934,6 +2801,7 @@
       "capacity": 5,
       "function_row": "3934",
       "serialized_function_offset": 1801385,
+      "capacity_mode": "override",
       "function_id": 150287,
       "serialized_part_offset": 3655033,
       "dual_clip": false,
@@ -943,6 +2811,7 @@
       "capacity": 5,
       "function_row": "3935",
       "serialized_function_offset": 1801843,
+      "capacity_mode": "override",
       "function_id": 150288,
       "serialized_part_offset": 3656881,
       "dual_clip": false,
@@ -952,6 +2821,7 @@
       "capacity": 15,
       "function_row": "3937",
       "serialized_function_offset": 1802759,
+      "capacity_mode": "override",
       "function_id": 150290,
       "serialized_part_offset": 3658729,
       "dual_clip": false,
@@ -961,6 +2831,7 @@
       "capacity": 17,
       "function_row": "3939",
       "serialized_function_offset": 1803675,
+      "capacity_mode": "override",
       "function_id": 150292,
       "serialized_part_offset": 3660577,
       "dual_clip": false,
@@ -970,6 +2841,7 @@
       "capacity": 7,
       "function_row": "3942",
       "serialized_function_offset": 1805049,
+      "capacity_mode": "override",
       "function_id": 150295,
       "serialized_part_offset": 3662425,
       "dual_clip": false,
@@ -979,6 +2851,7 @@
       "capacity": 12,
       "function_row": "3944",
       "serialized_function_offset": 1805965,
+      "capacity_mode": "override",
       "function_id": 150297,
       "serialized_part_offset": 3664273,
       "dual_clip": false,
@@ -988,6 +2861,7 @@
       "capacity": 30,
       "function_row": "3876",
       "serialized_function_offset": 1774821,
+      "capacity_mode": "override",
       "function_id": 150302,
       "serialized_part_offset": 3666121,
       "dual_clip": false,
@@ -997,6 +2871,7 @@
       "capacity": 50,
       "function_row": "3877",
       "serialized_function_offset": 1775279,
+      "capacity_mode": "override",
       "function_id": 150303,
       "serialized_part_offset": 3667969,
       "dual_clip": false,
@@ -1006,8 +2881,273 @@
       "capacity": 50,
       "function_row": "3878",
       "serialized_function_offset": 1775737,
+      "capacity_mode": "override",
       "function_id": 150304,
       "serialized_part_offset": 3669817,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000305": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150305,
+      "serialized_part_offset": 3671665,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000306": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150306,
+      "serialized_part_offset": 3673513,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000310": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150310,
+      "serialized_part_offset": 3677209,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000316": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150316,
+      "serialized_part_offset": 3682753,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000322": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150322,
+      "serialized_part_offset": 3684601,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000323": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150323,
+      "serialized_part_offset": 3686449,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000324": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150324,
+      "serialized_part_offset": 3688297,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000325": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150325,
+      "serialized_part_offset": 3690145,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000326": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150326,
+      "serialized_part_offset": 3691993,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000328": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150328,
+      "serialized_part_offset": 3693841,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13130000101": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 230101,
+      "serialized_part_offset": 3695689,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13130000102": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 230102,
+      "serialized_part_offset": 3697537,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13130000103": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 230103,
+      "serialized_part_offset": 3699385,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13130000104": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 230104,
+      "serialized_part_offset": 3701233,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13130000105": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 230105,
+      "serialized_part_offset": 3703081,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13130000106": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 230106,
+      "serialized_part_offset": 3704929,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13130000107": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 230107,
+      "serialized_part_offset": 3706777,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13130000108": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 230108,
+      "serialized_part_offset": 3708625,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13130000109": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 230109,
+      "serialized_part_offset": 3710473,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13130000110": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 230110,
+      "serialized_part_offset": 3712321,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13130000111": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 230111,
+      "serialized_part_offset": 3714169,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13130000112": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 230112,
+      "serialized_part_offset": 3716017,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13130000113": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 230113,
+      "serialized_part_offset": 3717865,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13130000153": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 230153,
+      "serialized_part_offset": 3791789,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13130000162": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 230162,
+      "serialized_part_offset": 3802157,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13130000163": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 230163,
+      "serialized_part_offset": 3804005,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13130000176": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 230176,
+      "serialized_part_offset": 3825495,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "18010000033": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 18010033,
+      "serialized_part_offset": 4070853,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "18080000007": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 0,
+      "serialized_part_offset": 4120749,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000309": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150309,
+      "serialized_part_offset": 4166957,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000335": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150335,
+      "serialized_part_offset": 4225297,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000336": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150336,
+      "serialized_part_offset": 4227145,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000338": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150338,
+      "serialized_part_offset": 4300131,
       "dual_clip": false,
       "sub_clip_capacity": 0
     },
@@ -1015,6 +3155,7 @@
       "capacity": 45,
       "function_row": "10345",
       "serialized_function_offset": 4737623,
+      "capacity_mode": "override",
       "function_id": 150345,
       "serialized_part_offset": 4335259,
       "dual_clip": false,
@@ -1024,8 +3165,25 @@
       "capacity": 60,
       "function_row": "10347",
       "serialized_function_offset": 4738539,
+      "capacity_mode": "override",
       "function_id": 150348,
       "serialized_part_offset": 4405109,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000351": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150351,
+      "serialized_part_offset": 4543103,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000360": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150360,
+      "serialized_part_offset": 4691056,
       "dual_clip": false,
       "sub_clip_capacity": 0
     },
@@ -1033,8 +3191,25 @@
       "capacity": 48,
       "function_row": "11381",
       "serialized_function_offset": 5212111,
+      "capacity_mode": "override",
       "function_id": 150361,
       "serialized_part_offset": 4692904,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000362": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150362,
+      "serialized_part_offset": 4882914,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000363": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150363,
+      "serialized_part_offset": 4884762,
       "dual_clip": false,
       "sub_clip_capacity": 0
     },
@@ -1042,6 +3217,7 @@
       "capacity": 12,
       "function_row": "11818",
       "serialized_function_offset": 5412257,
+      "capacity_mode": "override",
       "function_id": 150364,
       "serialized_part_offset": 4887006,
       "dual_clip": false,
@@ -1051,8 +3227,25 @@
       "capacity": 20,
       "function_row": "11820",
       "serialized_function_offset": 5413173,
+      "capacity_mode": "override",
       "function_id": 150365,
       "serialized_part_offset": 4890034,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000370": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150370,
+      "serialized_part_offset": 4999278,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000377": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150377,
+      "serialized_part_offset": 5019606,
       "dual_clip": false,
       "sub_clip_capacity": 0
     },
@@ -1060,6 +3253,7 @@
       "capacity": 20,
       "function_row": "12460",
       "serialized_function_offset": 5706293,
+      "capacity_mode": "override",
       "function_id": 150378,
       "serialized_part_offset": 5061646,
       "dual_clip": false,
@@ -1069,24 +3263,17 @@
       "capacity": 40,
       "function_row": "12462",
       "serialized_function_offset": 5707209,
+      "capacity_mode": "override",
       "function_id": 150379,
       "serialized_part_offset": 5064246,
       "dual_clip": true,
-      "sub_clip_capacity": 0
-    },
-    "13120000380": {
-      "capacity": 75,
-      "function_row": "19547",
-      "serialized_function_offset": 8952139,
-      "function_id": 150380,
-      "serialized_part_offset": 5067222,
-      "dual_clip": false,
       "sub_clip_capacity": 0
     },
     "13120000371": {
       "capacity": 12,
       "function_row": "12176",
       "serialized_function_offset": 5576221,
+      "capacity_mode": "override",
       "function_id": 150371,
       "serialized_part_offset": 5095730,
       "dual_clip": false,
@@ -1096,8 +3283,17 @@
       "capacity": 45,
       "function_row": "12147",
       "serialized_function_offset": 5562939,
+      "capacity_mode": "override",
       "function_id": 150372,
       "serialized_part_offset": 5099020,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000373": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150373,
+      "serialized_part_offset": 5154476,
       "dual_clip": false,
       "sub_clip_capacity": 0
     },
@@ -1105,8 +3301,25 @@
       "capacity": 6,
       "function_row": "12006",
       "serialized_function_offset": 5498361,
+      "capacity_mode": "override",
       "function_id": 790001,
       "serialized_part_offset": 5156324,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000374": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150374,
+      "serialized_part_offset": 5165452,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000375": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150375,
+      "serialized_part_offset": 5219044,
       "dual_clip": false,
       "sub_clip_capacity": 0
     },
@@ -1114,8 +3327,33 @@
       "capacity": 30,
       "function_row": "12660",
       "serialized_function_offset": 5797893,
+      "capacity_mode": "override",
       "function_id": 150382,
       "serialized_part_offset": 5342024,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000383": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150383,
+      "serialized_part_offset": 5345720,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000385": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150385,
+      "serialized_part_offset": 5366816,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000386": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150386,
+      "serialized_part_offset": 5387570,
       "dual_clip": false,
       "sub_clip_capacity": 0
     },
@@ -1123,6 +3361,7 @@
       "capacity": 54,
       "function_row": "19514",
       "serialized_function_offset": 8937025,
+      "capacity_mode": "override",
       "function_id": 150387,
       "serialized_part_offset": 5405272,
       "dual_clip": true,
@@ -1132,8 +3371,17 @@
       "capacity": 35,
       "function_row": "19171",
       "serialized_function_offset": 8779931,
+      "capacity_mode": "override",
       "function_id": 150389,
       "serialized_part_offset": 5427608,
+      "dual_clip": false,
+      "sub_clip_capacity": 0
+    },
+    "13120000390": {
+      "capacity": 0,
+      "capacity_mode": "base",
+      "function_id": 150390,
+      "serialized_part_offset": 5443992,
       "dual_clip": false,
       "sub_clip_capacity": 0
     },
@@ -1141,6 +3389,7 @@
       "capacity": 30,
       "function_row": "19130",
       "serialized_function_offset": 8761153,
+      "capacity_mode": "override",
       "function_id": 150392,
       "serialized_part_offset": 5452794,
       "dual_clip": false,
@@ -1150,10 +3399,27 @@
       "capacity": 20,
       "function_row": "19580",
       "serialized_function_offset": 8967253,
+      "capacity_mode": "override",
       "function_id": 150393,
       "serialized_part_offset": 5468214,
       "dual_clip": false,
       "sub_clip_capacity": 0
+    }
+  },
+  "capacity_additions": {
+    "13020000494": {
+      "capacity": 2,
+      "function_row": "7985",
+      "serialized_function_offset": 3656743,
+      "function_id": 110494,
+      "serialized_part_offset": 874059
+    },
+    "13020000453": {
+      "capacity": 2,
+      "function_row": "3952",
+      "serialized_function_offset": 1809629,
+      "function_id": 110453,
+      "serialized_part_offset": 1240537
     }
   },
   "magazine_item_ids": [

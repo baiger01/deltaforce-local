@@ -39,7 +39,10 @@ def clear_rows(stem):
 
 
 def indexed_rows(entry, id_index, class_index, capacity_index=None):
-    path = EVIDENCE / f'pak-0-0-pakchunk2-WindowsClient.pak.entry-{entry}.bin'
+    stem = f'pak-0-0-pakchunk2-WindowsClient.pak.entry-{entry}'
+    path = EVIDENCE / (stem + '.uexp')
+    if not path.is_file():
+        path = EVIDENCE / (stem + '.bin')
     data = path.read_bytes()
     none_index = struct.unpack_from('<i', data, 29)[0]
     prefix, count = struct.unpack_from('<ii', data, 37)
@@ -76,26 +79,45 @@ def indexed_rows(entry, id_index, class_index, capacity_index=None):
 def main():
     parts, part_source = clear_rows('1.101.37117.36.10_WindowsNoEditor_37127_P.pak.entry-233')
     functions, function_source = clear_rows('1.101.37117.36.537_WindowsNoEditor_37654_P.pak.entry-314')
-    capacities = {}
+    capacities, additions = {}, {}
     for row_name, offset, row in functions:
         if row['Param1'] != 'GMagCapacity':
             continue
-        if (row['PartFunctionType'] != 'EWeaponPartFunctionType::StaticAttributeReplace'
-                or row['Param2'] != 'Initial' or not str(row['Param3']).isdigit()):
-            continue
+        if row['RuleKey'] or not str(row['Param3']).lstrip('-').isdigit():
+            raise ValueError('Conditional or non-integer magazine capacity function')
         function_id = row['FunctionId']
         capacity = int(row['Param3'])
-        if function_id in capacities and capacities[function_id]['capacity'] != capacity:
-            raise ValueError('Ambiguous magazine function')
-        capacities[function_id] = {'capacity': capacity, 'function_row': row_name,
-                                  'serialized_function_offset': offset}
-    magazines = {}
+        if (row['PartFunctionType'] == 'EWeaponPartFunctionType::StaticAttributeReplace'
+                and row['Param2'] == 'Initial' and capacity >= 0):
+            if function_id in capacities and capacities[function_id]['capacity'] != capacity:
+                raise ValueError('Ambiguous magazine function')
+            capacities[function_id] = {'capacity': capacity, 'function_row': row_name,
+                                      'serialized_function_offset': offset}
+        elif (row['PartFunctionType'] == 'EWeaponPartFunctionType::StaticAttributeModify'
+                and row['Param2'] == 'Addend'):
+            if function_id in additions:
+                raise ValueError('Multiple additive capacity functions need separate recovery')
+            additions[function_id] = {'capacity': capacity, 'function_row': row_name,
+                                     'serialized_function_offset': offset}
+        else:
+            raise ValueError('Unrecovered magazine capacity function')
+    magazines, capacity_additions = {}, {}
     for item_id, offset, row in parts:
         function_id = row['FunctionId_SOL']
-        if function_id in capacities:
-            magazines[item_id] = {**capacities[function_id], 'function_id': function_id,
+        if row['MagazineTypeId']:
+            if function_id in additions:
+                raise ValueError('Additive magazine function needs separate recovery')
+            # The entire function table was parsed through its trailer. Absence
+            # of a GMagCapacity override is distinct from an unknown part ID.
+            effect = capacities.get(function_id)
+            magazines[item_id] = {**(effect or {'capacity': 0}),
+                'capacity_mode': 'override' if effect and effect['capacity'] else 'base',
+                'function_id': function_id,
                 'serialized_part_offset': offset, 'dual_clip': row['bDualClipMag'],
                 'sub_clip_capacity': row['SubClipCapacity']}
+        elif function_id in additions:
+            capacity_additions[item_id] = {**additions[function_id], 'function_id': function_id,
+                                          'serialized_part_offset': offset}
     weapons, weapon_source = indexed_rows(4489, 331, 177, 373)
     bullets, bullet_source = indexed_rows(4555, 595, 643)
     enum_path = EVIDENCE / 'pak-0-0-pakchunk1-WindowsClient.pak.entry-6681.bin'
@@ -111,8 +133,14 @@ def main():
         'bullet_enum': {'file': enum_path.name, 'sha256': hashlib.sha256(enum_data).hexdigest(),
                         'function': '0', 'instructions': enum_listing}},
         'client_compatibility': 'WeaponHelperTool.lua 0.111: WeaponAttributeTable.AmmoType == GetAmmoConfig(id).Type',
-        'client_capacity': 'WeaponAssemblyTool.lua 0.68/0.71/0.72: installed magazine overrides base capacity',
+        'client_capacity': {
+            'source': 'WeaponAssemblyTool.lua',
+            'sha256': '3934cf763b87e4ea7cfc779b7db5541f913d321898143b1ff51293994a8d91c5',
+            'functions': ['0.68', '0.69', '0.71', '0.71.1', '0.72'],
+            'rule': 'A missing or zero magazine override uses the receiver WeaponClipAmmoCount; non-magazine additive capacity is summed separately.',
+            'function_table_complete': True},
         'operate_types': {'load': 1, 'unload': 2}, 'magazines': magazines,
+        'capacity_additions': capacity_additions,
         'magazine_item_ids': [int(item_id) for item_id, _, row in parts if row['MagazineTypeId']],
         'weapons': weapons, 'bullets': bullets}
     OUTPUT.write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')
