@@ -1,0 +1,229 @@
+{
+  "kind": "bounded_pc_actor_open_to_connection_binding_review",
+  "shipping_sha256": "4254fbe66585f260f1f9dbfc5e302887842552e7baed8939e023160a5e250be0",
+  "scope": {
+    "disk_only": true,
+    "process_read": false,
+    "production_modified": false,
+    "new_capture": false,
+    "native_called": false
+  },
+  "sources": [
+    {
+      "relative_path": "work/evidence/native-player-controller-base-tail-profile.json",
+      "sha256": "7941c3a10556a232f20558e0a4b83b78659af902e1878ae5998b6ae3d71dddac"
+    },
+    {
+      "relative_path": "work/evidence/native-connection-player-bind-root.json",
+      "sha256": "c51a156002b53a6c9ba633bf64fa549feb19b347777af41914d564e2afc133a5"
+    },
+    {
+      "relative_path": "work/evidence/native-connection-player-bind-root.12b91a80.asm.txt",
+      "sha256": "570962598fbec1c10d5674964ccae1d1f6dc0cf65242ca3f60ceca897b53ffdb"
+    },
+    {
+      "relative_path": "work/evidence/native-post-join-pc-open-rotator-full-roots.12d4ddb0.asm.txt",
+      "sha256": "d174d6f4a10e294701e137c87707b520e9446832f1302b3db1e8e68cdc2621ea"
+    },
+    {
+      "relative_path": "work/evidence/native-post-join-init-new-actor-roots.json",
+      "sha256": "4275e0247fe60a92954be73a2422393324482fae2334dd604309152c422eb570"
+    },
+    {
+      "relative_path": "work/evidence/native-post-join-init-new-actor-roots.1285dda0.asm.txt",
+      "sha256": "2386a82f996c665713d17b95f7b6ff88b1bf6ba75df92b20265de30109550ed2"
+    },
+    {
+      "relative_path": "work/evidence/native-spawn-role-and-connection-semantics.json",
+      "sha256": "d5d0b0f6ee99928980095650f35641346707062872ffdf95305e0d7c8d2234ba"
+    },
+    {
+      "relative_path": "work/evidence/cached-connection-class-trace-1790902501634810000.json",
+      "sha256": "28e43d18f1304e888dbfcfccb824b8c991f8831b6b1d9287eceab745f7d87ae1"
+    },
+    {
+      "relative_path": "work/native-client-tests/1791082007292269400/replication-metadata-after-actor-open/result.json",
+      "sha256": "aac1781d3489833f3f4433642d635c11b867c85c771824d5df809b487f77d848"
+    }
+  ],
+  "verified_complete_code": [
+    {
+      "rva": "0x12b91a80",
+      "bytes": 1036,
+      "file_sha256": "bc9ba2bf7466f7727c87acd8f3a0df91945d629ec5c616be19fb9c5338816395",
+      "code_sha256": "23927d5a680b3e03a4f885dceedbe0ab024374c53d96a812abc1903bb6a473d9",
+      "header_and_sha_verified": true
+    },
+    {
+      "rva": "0x12d4ddb0",
+      "bytes": 392,
+      "file_sha256": "d53308950189f4eb468458283dc0a5767f4622067f8492382a8368cac349ab14",
+      "code_sha256": "76c966977dad7d275e355822cba8a41d3271976459c828aa3180174ec7ee2b41",
+      "header_and_sha_verified": true
+    }
+  ],
+  "actor_channel_dispatch": {
+    "source": "native-post-join-init-new-actor-roots.1285dda0.asm.txt",
+    "lines": [
+      57,
+      58,
+      59,
+      60,
+      61
+    ],
+    "rva": "0x1285de7e",
+    "arguments": "ActorChannel+70 actor asRCX, originalbunch asRDX, ActorChannel+28 connection asR8",
+    "normal_base_path_has_no_required_property_payload": true,
+    "actual_running_channel_or_instance_virtual_dispatch_observed": false
+  },
+  "base_pc_hook_gates": [
+    {
+      "instruction_rva": "0x12d4de08",
+      "fact": "load originalconnection+58 driver, NULL quietlyreturns",
+      "asm_lines": [
+        24,
+        25,
+        26
+      ]
+    },
+    {
+      "instruction_rva": "0x12d4de15",
+      "fact": "originalconnection mustequal driver+98; mismatch quietlyreturns",
+      "asm_lines": [
+        27,
+        28
+      ]
+    },
+    {
+      "instruction_rva": "0x12d4de22",
+      "fact": "rawu8alreadyread into PC+524;zeroindex dispatchesoriginalconnection.v2c0",
+      "asm_lines": [
+        14,
+        15,
+        23,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        40
+      ]
+    },
+    {
+      "instruction_rva": "0x12d4de57",
+      "fact": "nonzeroindex canselect/create childconnection; primaryconnection neednotreceivePC binding",
+      "asm_lines": [
+        44,
+        45,
+        50,
+        56,
+        59,
+        64
+      ]
+    }
+  ],
+  "base_connection_handler": {
+    "rva": "0x12b91a80",
+    "actual_GP_override_identity_not_proved": true,
+    "base_static_slot": {
+      "table_rva": "0x1b1d63f0",
+      "slot": "0x2c0",
+      "target": "0x12b91a80"
+    },
+    "pre_store_flow": [
+      {
+        "rva": "0x12b91af4",
+        "fact": "driver+150 context passed to130532d0; firstnonnull returnedpointer selected asLocalPlayer",
+        "lines": [
+          30,
+          32,
+          33,
+          37,
+          44,
+          56,
+          57
+        ],
+        "callee_130532d0_semantics_not_recovered_by_this_review": true
+      },
+      {
+        "rva": "0x12b91bd5",
+        "fact": "PC+568 getsoriginalconnection(R8argument)",
+        "lines": [
+          95
+        ]
+      },
+      {
+        "rva": "0x12b91bdc",
+        "fact": "PC.vc98 invoked withselectedLocalPlayer; fullbase target12d61390 notinspectedhere",
+        "lines": [
+          92,
+          93,
+          94,
+          96
+        ]
+      }
+    ],
+    "writes_without_property_gate": [
+      {
+        "rva": "0x12b91ca9",
+        "destination": "selectedconnection+15c",
+        "value": 3
+      },
+      {
+        "rva": "0x12b91cb4",
+        "destination": "selectedconnection+30",
+        "value": "PC"
+      },
+      {
+        "rva": "0x12b91cb8",
+        "destination": "selectedconnection+a8",
+        "value": "PC"
+      }
+    ],
+    "stores_follow_normal_return_from_local_player_setup": true,
+    "normal_control_flow_has_no_branch_skipping_PC_and_Owner_stores": true,
+    "no_Pawn_GameState_or_Ready_property_prerequisite_in_saved_base_handler": true,
+    "binding_not_Pawn_possession": true
+  },
+  "saved_runtime_metadata_gap": {
+    "trial_id": "1791082007292269400",
+    "actual_GPNetDriver_in_roots": true,
+    "driver_primary_connection_field_recorded": false,
+    "ActorChannel_connection_recorded": false,
+    "actual_connection_slot2c0_recorded": false,
+    "actual_spawned_PC_hook_target_recorded": false,
+    "qualification": "observed template hook isnot an observed spawnedinstance method; currentmetadata exports class/layout ratherthan theseconnection pointerrelationships"
+  },
+  "diagnostic_minimum": {
+    "must_not_force_binding_or_skip_driver_gate": true,
+    "offline_before_new_collection": "Check currentPC bunch exactindex0 and sourcequalified hook/tail order with existingpacket bytes; do notadd anotherguessed u8.",
+    "later_source_qualified_point_observation_if_required": [
+      "Identify actualspawnedPC and itschannel/connection withexisting identitychecks; a template/CDO cannotreplace this.",
+      "Check channel+28connectionC, C+58driverD, D+98comparison toC, C.vtable+2c0methodRVA in pinnedimage.",
+      "Check spawnedPC actualv3d8target and consumed PC+524 local_player_index.",
+      "PC+568 originalconnection andC+30/+a8 maycrosscheck whether binding reached/selectedchild; identity/type/source proof retained."
+    ],
+    "existing_verbose_log_literals": [
+      {
+        "rva": "0x1b1d9ea8",
+        "format": "%s setplayer %s",
+        "gate": "global verbosity>=7 around12b91be2",
+        "absence_does_not_prove_dispatch_failure": true
+      },
+      {
+        "rva": "0x1b224890",
+        "format": "Client received PlayerController=%s. Num child connections=%i.",
+        "qualification": "new-child branch only; index0 willnotlog this"
+      }
+    ]
+  },
+  "conclusion": "Three valid Actor creations do notprove basePC hook or currentGPconnection binding ran. Silentdriver-primary rejection and nonbaseGP override remainconcrete unobserved boundaries. Missingproperty/RPC isnot a demonstrated explanation of PCNULL atthis layer. No sourceproven singlecodec correction isestablished bythis boundedreview.",
+  "public_reference_snapshot": {
+    "reference_only": true,
+    "source_relative_path": "work/evidence/native-pc-open-connection-bind-gates-review.json",
+    "source_sha256": "bb4260d5ba9e4eac3d1ce3557fe195ecb8b6ccd58d7efbe98ba518705f79afb8",
+    "machine_process_identity_removed": true
+  }
+}

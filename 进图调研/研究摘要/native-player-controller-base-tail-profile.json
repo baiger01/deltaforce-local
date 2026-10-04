@@ -1,0 +1,107 @@
+{
+  "kind": "source_backed_base_player_controller_open_tail_profile",
+  "client_sha256": "4254fbe66585f260f1f9dbfc5e302887842552e7baed8939e023160a5e250be0",
+  "cache_manifest_sha256": "0dc6c0bb1c4ac55f437f07fde93ac2575425d008892e1ff6e6cac9385e4568cf",
+  "preferred_image_base": "0x140000000",
+  "address_domain": "All target and instruction addresses named rva are PE-relative RVAs, without an artificial-base subtraction.",
+  "hook_slot": "0x3d8",
+  "hook_target_rva": "0x12d4ddb0",
+  "tail_encoding": "unaligned_raw_u8",
+  "local_player_index": 0,
+  "local_player_index_semantics": "Zero selects the primary connection; it is not a bit flag or a reliable/channel sequence.",
+  "sample": {
+    "begin_rva": "0x12d4ddb0",
+    "end_exclusive_rva": "0x12d4df38",
+    "code_bytes": 392,
+    "dfcode_relative_path": "work/evidence/native-post-join-pc-open-rotator-full-roots.12d4ddb0.dfcode",
+    "dfcode_sha256": "d53308950189f4eb468458283dc0a5767f4622067f8492382a8368cac349ab14",
+    "code_sha256": "76c966977dad7d275e355822cba8a41d3271976459c828aa3180174ec7ee2b41",
+    "asm_relative_path": "work/evidence/native-post-join-pc-open-rotator-full-roots.12d4ddb0.asm.txt",
+    "asm_sha256": "d174d6f4a10e294701e137c87707b520e9446832f1302b3db1e8e68cdc2621ea",
+    "metadata_relative_path": "work/evidence/native-post-join-pc-open-rotator-full-roots.json",
+    "metadata_sha256": "1e87b75e57daf0ef03278df0751a6cb8b71f4e9ae8d2f6608844a6c494c377d7",
+    "complete_native_body_decoded": true
+  },
+  "immutable_base_class_slot": {
+    "table_rva": "0x1b221ff0",
+    "slot": "0x3d8",
+    "qword_bytes_hex": "b0ddd45201000000",
+    "qword_sha256": "973cb6fc20e94b4280d89fde30fb54e45270e8d9a0a46aa5f96d42d6d646c7ee",
+    "stored_va": "0x152d4ddb0",
+    "target_rva_after_actual_image_base_subtraction": "0x12d4ddb0",
+    "source_relative_path": "work/evidence/native-actor-content-open-order-review.json",
+    "source_sha256": "7cbd60ed689d8bcfedebfee5526daa9ba50a42d4db8afcd2814d2aa464b569c3"
+  },
+  "instruction_anchors": [
+    {
+      "rva": "0x12d4dde0",
+      "fact": "Fast archive cursor loads exactly one byte."
+    },
+    {
+      "rva": "0x12d4dde3",
+      "bytes_hex": "888724050000",
+      "fact": "Stores that byte to PlayerController+0x524."
+    },
+    {
+      "rva": "0x12d4dded",
+      "fact": "Advances the byte cursor by one, without alignment/reset."
+    },
+    {
+      "rva": "0x12d4ddf5",
+      "fact": "Fallback passes size1 to Archive.v0x60."
+    },
+    {
+      "rva": "0x12d4de05",
+      "bytes_hex": "ff5060",
+      "fact": "Fallback reads the same raw byte into PlayerController+0x524."
+    },
+    {
+      "rva": "0x12d4de08",
+      "fact": "Connection+0x58 must have a driver."
+    },
+    {
+      "rva": "0x12d4de15",
+      "fact": "Connection must equal driver+0x98 before local-player binding."
+    },
+    {
+      "rva": "0x12d4de29",
+      "fact": "Zero index follows the primary-connection branch."
+    },
+    {
+      "rva": "0x12d4de48",
+      "fact": "Primary branch tail-calls connection.v0x2c0 with this PlayerController and original connection."
+    },
+    {
+      "rva": "0x12d4de57",
+      "fact": "Nonzero indices1..connection+0x50 select connection+0x48 child array at index-1."
+    },
+    {
+      "rva": "0x12d4de90",
+      "fact": "Larger nonzero index requests a child through driver.v0x358, then calls its v0x2c0."
+    }
+  ],
+  "same_bunch_order": [
+    "PackageMap SerializeNewActor at0x128613c3 consumes the actor envelope first.",
+    "ActorChannel SetActor at0x128614cf precedes InitActor at0x128614e2.",
+    "InitActor passes the same FInBunch to actor.v0x3d8 at0x1285de7e.",
+    "The base PlayerController hook consumes this raw u8 before ReadContentBlockPayload at0x128619b2."
+  ],
+  "qualification": {
+    "derived_override_acceptance_rule": "Allow this base tail profile only when the actual observed target-class/template candidate hook slot0x3d8 resolves to RVA0x12d4ddb0 in the exact pinned Shipping image. A class name, inherited assumption or guessed target is insufficient.",
+    "observed_default_candidate_is_spawned_instance": false,
+    "class_and_archetype_full_paths_must_be_observed_separately": true,
+    "local_player_binding_is_pawn_possession": false,
+    "role_ordering_gameplay_proved": false,
+    "actual_game_spawn_verified": false,
+    "native_spawn": false,
+    "game_launched": false,
+    "uac_requested": false,
+    "live_process_read": false
+  },
+  "public_reference_snapshot": {
+    "reference_only": true,
+    "source_relative_path": "work/evidence/native-player-controller-base-tail-profile.json",
+    "source_sha256": "7941c3a10556a232f20558e0a4b83b78659af902e1878ae5998b6ae3d71dddac",
+    "machine_process_identity_removed": true
+  }
+}

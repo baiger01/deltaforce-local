@@ -1,0 +1,234 @@
+{
+  "kind": "offline_official_match_and_lobby_coverage_review",
+  "scope": {
+    "disk_only": true,
+    "new_capture": false,
+    "process_read": false,
+    "production_modified": false,
+    "credentials_exported": false
+  },
+  "sources": [
+    {
+      "relative_path": "work/official-ds-captures/1790793660080057700/report.json",
+      "sha256": "6ec85d799a930057e2f92c633344c2ede867bf51a3c57b4669e9519e11fe6892"
+    },
+    {
+      "relative_path": "work/official-ds-captures/1790793660080057700/analysis.json",
+      "sha256": "eeb813ce4b21efc702abb14ab29c17da0697e209648396c4f661162210a7100c"
+    },
+    {
+      "relative_path": "work/official-ds-captures/1790793660080057700/runtime-loading-evidence.json",
+      "sha256": "cba4e92438683c5e8d6243f9cdda360ca1f8498f849a69585eba2d8546683dbc"
+    },
+    {
+      "relative_path": "work/official-ds-captures/1790789899859563600/runtime-loading-evidence.json",
+      "sha256": "b6db70f1df64561a0aeb4bbee972243e3b5bd642eb17dfe1c8b80129ace44568"
+    },
+    {
+      "relative_path": "work/evidence/iris-playable-loading-offline-anchors.json",
+      "sha256": "558c808ba09c5d154365bac29fd9b3617a7ce4e2421bd4673ebbb7eb893bcba6"
+    },
+    {
+      "relative_path": "work/official-interface-observations/1791043432995-pid243608/result.json",
+      "sha256": "dd5a951133d77361d2bb791a5aba5fa12d764acff4cef9127f204708b862462d"
+    },
+    {
+      "relative_path": "outputs/df-local-server/protocol/dam_gameplay_asset_catalog.json",
+      "sha256": "48c2a830a6d85b065cdd71882b7cebf050ad3be20e4fdfd1029b807c757cbd37"
+    },
+    {
+      "relative_path": "work/evidence/native-map-trial-1791073668497579200-failure.json",
+      "sha256": "977fb8aab0fae8e9516e90ee64f4e74e41647608186e1536df0766598c7eafb2"
+    },
+    {
+      "relative_path": "work/evidence/carved_lua/4ec5c8287762a75c40be937d8588c03e2e0465e3735a274d86485ead38008be9.json",
+      "sha256": "2ac95b7d339f8a2552ad4190e497b6df82fe176cee8a40f284469a0c95f43695"
+    },
+    {
+      "relative_path": "work/evidence/carved_lua/7233a71c01ae11b6806c7fde9e5a51edc02cd9644f3fc278f88fc3e5ba9a1881.json",
+      "sha256": "ad3387f74b65873282495c79279a425472ad5b323b63267b12df6e90bcaa8adf"
+    }
+  ],
+  "official_real_match": {
+    "capture_id": "1790793660080057700",
+    "capture_record_count": 1842,
+    "matched_client_to_server": 560,
+    "matched_server_to_client": 1248,
+    "stage_report_lines": [
+      70,
+      77,
+      80
+    ],
+    "all_players_ready_observed": true,
+    "birth_decoded_from_packets": false,
+    "birth_qualification": "analysis.json line18 explicitly not_verified_by_capture; formal client logs independently prove nonnull gameplay actors and loading completion",
+    "formal_log_anchors": {
+      "source_sha256": "bbc3c6628bd73eb6f3abad47abb67ccb6659b8d0baabdee56af93697604d5e33",
+      "MapID2201": [
+        39993,
+        40001
+      ],
+      "Dam_gameplay_config_load": [
+        40753,
+        40755,
+        41218
+      ],
+      "PlayerController_spawn": 46607,
+      "Pawn_spawn": 46646,
+      "OnRep_Pawn": [
+        46650,
+        46881
+      ],
+      "GameState_spawn": 46949,
+      "NotifyEverythingReady": 49968,
+      "WaitAllPlayerReady_DS_notification": 50086,
+      "Loading100": 50100,
+      "LoadingEnd": 50115,
+      "ReleasePlayerLocation": 52422,
+      "LoadingFinished": 52427
+    }
+  },
+  "yesterday_lobby_observation": {
+    "relative_path": "work/official-interface-observations/1791043432995-pid243608/result.json",
+    "observed_at_utc": "2026-10-03T16:08:38.428332+00:00",
+    "status": "metadata_export_complete",
+    "observation_mode": "pawn_interface_only",
+    "result_lines": [
+      5,
+      13,
+      14,
+      20,
+      22,
+      295,
+      314,
+      316,
+      374
+    ],
+    "purpose": "Qualify actual Pawn NetRepActorInterface secondary method and the missing raw-u8 spawn extension. It does not measure a new playable match, spawn position or dynamic map icons.",
+    "player_spawn_verified": false,
+    "playable_map_verified": false
+  },
+  "map_identity": {
+    "map_id": 2201,
+    "gameplay_config": "/Game/Maps/Dam_Iris_Level1/GameplayConfig/Dam_Iris_Level1_GameplayConfig",
+    "persistent_world": "/Game/Maps/Iris_Entry/Iris_Entry.Iris_Entry",
+    "meaning": "Iris_Entry is the persistent world for officially serialized gameplay PC/Pawn/GameState; Dam gameplay config and additional streamed resources distinguish the real battlefield. Iris_Entry alone does not prove safehouse or an incorrect Dam."
+  },
+  "last_local_observed_milestones": {
+    "trial_id": "1791073668497579200",
+    "evidence_lines": [
+      35,
+      39,
+      40,
+      44,
+      46,
+      49,
+      51,
+      95,
+      98,
+      151,
+      169
+    ],
+    "nonnull_Pawn_native_log": true,
+    "PC_NULL_at_timeout": true,
+    "Owner_NULL_at_timeout": true,
+    "AllPlayerReady_in_named_window": 0,
+    "read_overflow_in_named_window": 0,
+    "playable_or_possession_proved": false
+  },
+  "static_client_candidates": {
+    "catalog_lines": {
+      "spawn_groups": 310,
+      "first_location": 328,
+      "first_world_unverified": 345,
+      "high_value_containers": 3252,
+      "random_loot_points": 4245,
+      "counts": 13051
+    },
+    "counts": {
+      "spawn_groups": 20,
+      "player_starts": 100,
+      "high_value_container_overrides": 24,
+      "random_loot_points": 265,
+      "explicitly_blocked_loot_actors": 37,
+      "packages_validated": 27
+    },
+    "location_counts": {
+      "spawn_groups": {
+        "rows": 100,
+        "serialized_relative_location_present": 100,
+        "attached_parent_present": 0,
+        "world_coordinates_runtime_verified_count": 0
+      },
+      "high_value_containers": {
+        "rows": 24,
+        "serialized_relative_location_present": 24,
+        "attached_parent_present": 15,
+        "world_coordinates_runtime_verified_count": 0
+      },
+      "random_loot_points": {
+        "rows": 265,
+        "serialized_relative_location_present": 265,
+        "attached_parent_present": 0,
+        "world_coordinates_runtime_verified_count": 0
+      }
+    },
+    "limits": [
+      "Counts are parsed candidate assets from27validated packages, not a complete runtime active point inventory.",
+      "EncVector serialized_float32 is not certified world-space position; origin/decode and transforms must be verified.",
+      "15of24 high-value candidates have an attachment parent.",
+      "HighValueBoxName string-table override does not by itself identify the full map-icon payload/visibility rules.",
+      "37loot candidates explicitly blocked; do not indiscriminately enable265candidates."
+    ],
+    "original_random_selection_recovered": false,
+    "mandel_brick_spawn_drop_recovered": false
+  },
+  "existing_lua_anchors": {
+    "MatchServer_source": "work/evidence/carved_lua/4ec5c8287762a75c40be937d8588c03e2e0465e3735a274d86485ead38008be9.json",
+    "function_id": "0.104",
+    "source_lines": [
+      2092,
+      2581
+    ],
+    "observed_constant_names": [
+      "random_seed",
+      "spawn_point_config_id",
+      "box_event",
+      "MandelSpawnerIDArray",
+      "iris_event_ids"
+    ],
+    "qualification": "Existing intake/protocol field-name anchors, not restored random selection, weighted loot rules or decoded runtime map-marker serialization.",
+    "IrisRaidField_source": "work/evidence/carved_lua/7233a71c01ae11b6806c7fde9e5a51edc02cd9644f3fc278f88fc3e5ba9a1881.json",
+    "SetCurrentSpawnPoint": {
+      "function_id": "0.5",
+      "source_lines": [
+        38,
+        40
+      ]
+    },
+    "GetCurrentSpawnPoint": {
+      "function_id": "0.6",
+      "source_lines": [
+        42,
+        44
+      ]
+    },
+    "IrisRaidField_qualification": "Frontend currentSpawnPoint storage alone does not select a world spawn."
+  },
+  "additional_user_action": {
+    "required_to_use_yesterday_interface_evidence": false,
+    "required_for_already_observed_spawn_ready_sequence": false,
+    "potential_targeted_match_validation": "Only if needed after offline schema/config work: actual Dam spawn, open full map with high-value markers visible, then one brief movement/interact sample. Prepare the exact collection target first; opening official lobby again does not add dynamic match evidence.",
+    "claims_not_supported": [
+      "One captured session cannot determine the random spawn distribution/weights or loot-generation algorithm.",
+      "Saved packets alone do not restore actors/properties/RPC schema or all map variants.",
+      "Static asset candidates do not prove active per-match markers or usable player controls."
+    ]
+  },
+  "public_reference_snapshot": {
+    "reference_only": true,
+    "source_relative_path": "work/evidence/official-match-lobby-and-static-points-coverage.json",
+    "source_sha256": "2f073c84574a617d957c0b8339d5291322da5e60d42e3d9284910bf99c2d503c",
+    "machine_process_identity_removed": true
+  }
+}
