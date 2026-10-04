@@ -33,4 +33,12 @@
 - 294 份本次变更的 Python 源码语法检查通过，Git 差异检查通过。发布检查未发现被禁止的数据库、账号存档、游戏资源、抓包、二进制构建产物或已识别凭据格式。
 - 本机部署保存源码原件及两份未迁移的存档备份，位于项目相对路径 `work/integration-backups/20261004-map-and-equipment`；文件哈希逐一校验。部署未修改游戏文件或生产账号库。
 
-以上自动测试只验证本次代码集成，没有在本次集成中重新启动原客户端，因此不能替代进入地图的实测。
+以上自动测试只验证代码集成，不能替代进入地图的实测。
+
+## 启动时发现的部署遗漏
+
+首次启动合并版本在导入 `Backend` 时因缺少 `protocol/container_layout_catalog.json` 退出，尚未创建游戏窗口。这是本机部署遗漏，不能归因于客户端或地图协议。
+
+补充部署时按合并仓库的完整已跟踪文件清单核对，补齐 7 个运行时模块/配置和 12 个提取、修复工具；不只比较两分支之间新增的文件。5 份缺失配置为 `client_error_catalog.json`、`container_layout_catalog.json`、`weapon_preset_catalog.json`、`weapon_ammo_catalog.json`、`weapon_component_catalog.json`，另两个模块为 `weapon_ammo.py` 和 `weapon_components.py`。已有协议 JSON 的差异均经解析确认仅为字节格式差异，保留原件。
+
+启动包装器现在在输出重定向内部记录异常 traceback，避免退出重定向后将错误写到隐藏控制台。补齐后，实际运行目录中的核心、容器、枪械组件、弹药和握手模块导入检查通过。补充部署清单保存在本机项目相对路径 `work/integration-backups/20261004-launch-diagnostics/missing-dependencies.json`。

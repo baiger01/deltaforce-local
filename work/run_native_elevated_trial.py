@@ -627,7 +627,15 @@ if args.worker:
         sys.argv.extend(("--native-username", args.native_username))
     with log.open("w", encoding="utf-8", buffering=1) as stream:
         with contextlib.redirect_stdout(stream), contextlib.redirect_stderr(stream):
-            runpy.run_path(str(RUNNER), run_name="__main__")
+            try:
+                runpy.run_path(str(RUNNER), run_name="__main__")
+            except BaseException:
+                # Preserve the traceback before redirect_stderr restores the
+                # hidden worker's original stream.
+                import traceback
+                traceback.print_exc(file=stream)
+                stream.flush()
+                raise
     raise SystemExit(0)
 
 folder = ROOT / "work/elevated-native-trials"
