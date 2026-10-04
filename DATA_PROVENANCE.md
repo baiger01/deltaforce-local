@@ -1,14 +1,40 @@
 # 数据从哪里来
 
+## 改枪台与购买目录对照（2026-10-04）
+
+原 `GunsmithInspectorProcessor.lua` 函数 `0.55`（偏移 19447）要求 `IsBaseWeapon`、非零默认预设及模式匹配；`GunsmithInspectorProcessor4SOL.lua` 的 `0.5`（偏移 1761）读取 `GetPresetID4SOL`。按这条链核对 `RecFunction` 与组件节点条目 4567，恢复 98 套完整树，其中 67 套是这条购买路径的基础枪械。抽象预设价格和尺寸为 0／2 不能作为剔除枪种的依据；树必须由真实 receiver 根、唯一父子插槽和已知 GameItem 组成，缺失节点和冲突关系仍不生成默认树。
+
+`ItemBase.lua` 的 `0.54`（偏移 38902）从预设解析机匣名称和尺寸。报价按 `ShopServer.lua` 的 `0.131`（偏移 101597）及递归回调 `0.131.0`（偏移 104516）处理整枪；`0.115`（偏移 89229）确认模型专用部件不计价。本地单价仍使用已有初始指导价，不冒称官方实时交易价格。报价保留原预设 ID，实际入库为对应 receiver 和源组件树；名字或其它元数据相同不能合并不同枪种。源哈希、函数与销售边界见 `protocol/gunsmith_sale_consumer_evidence.json`。
+
+两种原生购买失败的胸挂 `11070002005`、`11070008001` 没有可用的已核实布局：前者没有对应布局行，后者原行分区面积与声明容量冲突。GameItem 尺寸与价格不能替代具体分区。销售目录因此限定为现有 44 件已验证胸挂／背包，不编造格子；回收目录保留已拥有物品的计价。逐件真实协议测试验证报价、装备、分区响应与重读，旧失败报价不能扣款或替换装备。
+
+容量消费者 `WeaponAssemblyTool.lua`（SHA-256 `3934cf763b87e4ea7cfc779b7db5541f913d321898143b1ff51293994a8d91c5`）的 `0.68` 对 nil／0 弹匣覆盖回退到基础值，`0.69` 按 `recId` 读取 `WeaponClipAmmoCount`；`0.71/0.71.1` 递归分离弹匣与其它部件的附加容量，`0.72` 对无原生容量效果返回 0。完整 19767 行 FunctionTable 已解析并核验尾标，现对 385 个源弹匣明确区分覆盖值和无覆盖；两种枪管的真实附加值 2 单独计算。销售枪中 65／67 个基础容量有来源，`18050000033/18010000049` 的 WeaponAttribute 未恢复，继续保持未知。
+
+重建时旧缓存 `entry-4555.bin` 的哈希与目录记录不符，已从本机原始 PAK 重取 `entry-4555.uexp`，SHA-256 `5d4062a6d2c4ee563d34a25e4473054f2bb9b43b067c010bce9edf423f094e16` 与既有弹药来源一致，176 行及尾标完整解析通过；没有以这份失配缓存生成新物品关系。目录保留各源哈希及字段偏移，提取器遇到未核实容量函数时失败，不用默认猜值填满目录。
+
+## 成交明细与超时请求（2026-10-04）
+
+09:20 的原生试验中，六笔 `CSSerialCheapBuyReq` 均成功入账：`15050500001/04/09` 分别为 1／1／4 张，扣款合计 10,395,200。原 `AuctionServer.lua`（SHA-256 `ad10c29ff0fa53ca89ebebf9f0ba447cae2e47195b8921b24731cd01e4a82a6c`）函数 `0.77.0` 的指令 264～277 从 `res.orders[*].prop.num` 及 `buy_price` 累加实际数量、金额，278～280 判断是否部分成交。旧服务返回空 `orders`，因此客户端显示数量 0；新响应返回本次真实成交明细，单价与数量分开，失败事务不返回成交。此处 order_id 是本地卖单标识，不是客户端物品 ID；原函数 `0.13` 对部分售出卖单保留 ID 并扣减数量。
+
+同轮未答复的四类请求由原 Lua 消费分支核对：`AccountServer.lua`（SHA-256 `6c27d297cd5d768dc537f79f0b1dea1e7ebd6a1bbd8860205f138143d1a2d5ec`）函数 `0.35/0.35.0` 允许无语音处罚消息；`FrontEndChatServer.lua`（`c376b2dbfd9b87e691dd04a49b706840129b6eef935d18914d24970b92adcda9`）函数 `0.34` 明确发送私聊已读 `(0,0)`；`GameModeServer.lua`（`c4ced93f1059d9cb8f91874a1d0084090d4263a95d443dcd7d9101548088e381`）函数 `0.289.0` 消费 `is_rank_enable=false`。本地无处罚、私聊历史为空、排位未启用，分别按这些实际状态答复；非零私聊已读目标或索引仍拒绝。
+
+`PayServer.lua`（SHA-256 `a87fb1dd451a6c13b73fb84cbedfb27d91c03aeb6b4f699653e20f7cd029d7e2`）函数 `0.15` 发送支付上下文，回调 `0.15.0` 只打印结果；`0.22` 刷新商品后无条件更新上下文。旧服务返回 `ServerDisabled=10010`，原通用错误处理会弹提示，11:01 试验中共出现 9 次。当前已认证本地会话仅以 `result=0` 确认收件，不验证、存储、输出或外发令牌，也不改变余额和归属；这不是官方支付网关。各请求原编解码入口、消费函数和哈希保存在 `native_session_auxiliary.py`；鉴权失败保留拒绝响应。
+
+10:12 的新版原生试验共 1023 条处理记录、0 条未响应。“东楼经理室” `15050100019` 实际购买 1 张，客户端提示数量 1、购买成功并存入仓库；随后该卡移入 `116001` 的分区 22，“典狱长收藏室” `15050500004` 移入分区 88，两笔响应成功并与存档重读一致。请求中的 `x/y=1/1` 是物品尺寸，省略的 `start_x/start_y` 使用零坐标，不能将尺寸误作落位坐标。此证据确认成交提示与实际存取，不证明监狱分区格子的界面已经显示。
+
+11:01 的试验中 `CSRoomMatchStartAllocReq` 六次没有响应，客户端三次超时。原 `TeamServer.lua`（SHA-256 `446ddb180043f2c5d71cf91da5f9edaf9f2eb556fa54be0b82ce7546a2d0a268`）回调 `0.116.1`（偏移 94536）在失败时清理计时与发送标记，仅成功结果进入匹配。当前本地没有匹配服务，因此使用原 `CSRoomMatchStartAllocRes`、原序号及 `MatchGateServiceInMaintenance=139005` 答复，不生成节点、DS 地址或战局状态。错误名来自原错误表，编解码和来源记录见 `protocol/match_unavailable_consumer_evidence.json`；这是未启用服务的明确失败响应，不是战局功能。
+
 ## 辅助请求与研究奖励核验（2026-10-02）
 
 `native_session_auxiliary.py` 记录了 7 类请求的原 PAK 编解码入口、SHA-256 与消费函数。`FriendServer.lua` 条目 6871 的 `0.41.0`、`QuickPatchServer.lua` 条目 6920 的 `0.4.0`、`InventoryServer_LabelLogic.lua` 条目 6885 的 `0.8/0.8.0`、`IDCSpeedLogic.lua` 条目 4938 的 `0.0.0/0.15` 均有明确空记录消费分支；按钮状态查询不产生点击记录，测速目录不生成服务器地址。`CSShopAutoRetroRewardReq` 和 `CSTlogAgentTglogReq` 没有对应 Res；`ProtoManager.lua` 的 `0.86` 对 Tlog 调用 `SendNtf`。本地商城扣款、奖励及记录同一事务提交，没有待补发队列；上报仅保留每账号最多 128 条摘要回执，不保存或外发原始事件。
 
-`CollectionServer.lua` 条目 6860 的 `0.214` 触发低级租借券发放，`ArmedForceConfig.lua` 给出真实低券 `32330000001`，GameItem 堆叠上限为 10；这些客户端消费者没有给出发放周期、数量或资格计算。服务明确返回原码 `CollectionPropDescNotFound=157012`，不发奖励或编造下次时间。原提示链证明该码会显示普通错误提示；这只结束请求等待，不代表发放功能已经恢复。13 个相关源的入口、哈希、函数和检索边界保存于 `protocol/collection_auto_distribution_consumer_evidence.json`。
+`CollectionServer.lua` 条目 6860 的 `0.214` 触发低级租借券检查，`ArmedForceConfig.lua` 给出真实低券 `32330000001`，GameItem 堆叠上限为 10；这些消费者没有给出发放周期、数量或资格计算。旧服务返回 `CollectionPropDescNotFound=157012`，11:01 试验中触发 24 次错误提示。`0.214.0` 只保存下次时间，`AssemblyRentalMainPanel.lua` 的 `0.18` 仅在时间大于 0 时建立计时器；当前本地没有租借权益或发放计划，成功返回 `next_distribute_ts=0`，不发券、不写库存、不猜发放周期，未确认语义的 `prop_num` 不填写。13 个相关源及明确无计划状态的消费分支见 `protocol/collection_auto_distribution_consumer_evidence.json`。
 
-20:19:39 的真实研究请求为奖池 `20300003`、轮次 7、购买 `32370000002` 共 25 枚，币种 `17888808889`、总价 2500、替代币种 `17888808888`。失败奖品 `28150150001` 位于 `LotteryProbDistribution` 条目 6774 的 source row 18；`WeaponSkinDataTable` 条目 7292 的 row 758、偏移 654877，字段 1820/1792/1794/1812 对应外观、receiver `18150000001`、预设 `10150000001`、开放标记。`CollectionServer.lua` 的 `0.14` 将主类 28、子类 15 归入枪械皮肤，旧提取器只保留 `280` 前缀导致漏行。修正仅补回原表 5 条 `2815` 外观，其中 4 条开放、1 条锁定。纯皮肤装备按已恢复外观表校验 receiver；未恢复的弓组件和挂饰路径仍拒绝。
+20:19:39 的真实研究请求为奖池 `20300003`、轮次 7、购买 `32370000002` 共 25 枚，币种 `17888808889`、总价 2500、替代币种 `17888808888`。失败奖品 `28150150001` 位于 `LotteryProbDistribution` 条目 6774 的 source row 18；`WeaponSkinDataTable` 条目 7292 的 row 758、偏移 654877，字段 1820/1792/1794/1812 对应外观、receiver `18150000001`、预设 `10150000001`、开放标记。`CollectionServer.lua` 的 `0.14` 将主类 28、子类 15 归入枪械皮肤，旧提取器只保留 `280` 前缀导致漏行。修正仅补回原表 5 条 `2815` 外观，其中 4 条开放、1 条锁定。纯皮肤装备按已恢复外观表校验 receiver；10-04 的组件提取补回弓的源树，销售分类与挂饰路径仍未核实。挂饰资格单独限定为已恢复组件树的枪械子类 1～7，不由组件树存在推断特殊武器挂点；弓纯皮肤可装备，带未核实挂饰的批量请求整体回滚。`GunsmithPendantLogic.lua` 的 `0.5`（偏移 3466）无武器参数地取得挂饰列表，`0.16`（偏移 12305）只组装命令；机械组件节点不能代替挂点证据。16 项挂饰回归已通过。
 
-日志分类也核对了原函数：`LevelLoadManager.lua` 的 `0.35.0` 无条件打印完成计数，`LevelGlobalConst` 的 Success 为 0；`ServerManager.lua` 的 `0.6` 在处理器返回 true 后打印 process；`LuaResourcesRegister.lua` 的 `0.5.0` 打印 WaitLoadFinish 配置位。相反，`ResImageUtil.lua` 的 `0.0.0` 只在资源回调失败时打印 failed。上一轮 75 次 PaperSprite 失败涉及 16 条原表资源路径，不能归为普通状态日志；当前原安装与 shadow 的相关包哈希一致，但全部 PAK 索引加密且没有可读资源登记表，尚无证据支持路径替换或商品下架。
+日志分类核对了原函数：`LevelLoadManager.lua` 的 `0.35.0` 无条件打印完成计数，`LevelGlobalConst` 的 Success 为 0；`ServerManager.lua` 的 `0.6` 在处理器返回 true 后打印 process；`LuaResourcesRegister.lua` 的 `0.5.0` 打印 WaitLoadFinish 配置位。2026-10-04 进一步核对 `ResImageUtil.lua`（SHA-256 `af59a73e65c558c8865674d6e9e7c7a838c5d95d6772193f57c2eeea33b82ae6`）：回调 `0.0.0` 指令 11～18 仅在 `map[原请求路径]` 为假时打印 failed，没有返回；指令 19～29 随后取 `next(map)` 的对象并调用图片 setter。因此不能由此断言资源不存在或图片完全未渲染。另一条 `Resource load error` 才是路径已改变的过期回调，并立即返回。
+
+原筛选日志的 75 次／16 条路径不是完整范围；同轮完整日志有 839 次／55 条路径，包含大厅和仓库基础图标，另有 24 次过期回调。`ResourceManager.lua`（SHA-256 `94c6b919058c79a213d514dcbded4dd9485fbb31d1c357ceaa4c89aee506a82e`）函数 `0.3` 默认走原生 `FastRequestAsyncLoad`，Lua 不转换这些路径为 CDN 地址；原生返回键及实际对象仍需运行时核对。257 个基础 PAK 和清单中 28 个 Dolphin PAK 均有成功挂载记录，29 项清单 MD5 与文件一致；资源版本字符串不同本身不是错误证明。相关包哈希一致、索引加密，尚无来源依据替换路径、制作占位图或按该日志下架商品。
 
 ## 可选初始化设置的空值响应（2026-10-02）
 
@@ -60,7 +86,7 @@ GitHub 协作仓库仅包含源码、静态 JSON 目录、重建描述符和来�
 
 `native_safehouse_catalog.json` 从当前安装基础包条目 7068 `SafeHouseFormula`、7072 `SafeHouseUpgrade` 恢复 492/73 行；`native_quest_catalog.json` 从条目 6930 `Quest`、6934 `QuestLine`、6940 `QuestRewards` 恢复 2365/13/5585 行。两个提取器按原版 Shipping EXE 的 C++ 结构注册逐列核验名称、类型、字段偏移与序列化索引；目录保留每张表的哈希、原行及偏移。消费者 Lua 直接从基础 PAK 读取并核验条目和哈希，克隆后重新提取不依赖旧 `work/evidence` 缓存。
 
-生产只使用源 `MaterialList`、确定 `ProductList` 与原始时长。该中文安装的日期按 UTC+8 解释，避免服务器主机时区改变开放窗口；保存设备生产线，事务扣除实际持有材料，到期一次性领取实际产物。458 条受支持配方已在临时数据库验证生产、领取与库存通知编码。蓝图、首领解锁、随机产物及尚未关联物理 receiver 的预制枪械配方仍拒绝，不能先扣材料再让领取永久失败。
+生产只使用源 `MaterialList`、确定 `ProductList` 与原始时长。该中文安装的日期按 UTC+8 解释，避免服务器主机时区改变开放窗口；保存设备生产线，事务扣除实际持有材料，到期一次性领取实际产物。此前 458 条受支持配方已在临时数据库验证生产、领取与库存通知编码。10-04 日志中配方 `100400900` 因预设 `10040000900` 的尺寸为零返回 `118008`；现按源映射关联实际 receiver `18040000001`，生产记录保留源预设，到期库存交付实际机匣与组件。开工前核验物理尺寸及完整树，领取失败保留生产线并回滚；蓝图、首领解锁、随机产物及未恢复物理来源仍拒绝。
 
 任务状态和 Mission 类型来自实际 `common_pb.lua` 枚举；普通任务接受按源任务线、等级、前置领奖与冷却保存真实目标，`QuestServer` 成功回调依赖 `CSQuestDataChangeNtf`，因此通知在接受响应之前发送。当前只实现普通 Mission 接受与查询；特殊任务类型、战局目标完成和任务领奖不由此响应伪造。
 

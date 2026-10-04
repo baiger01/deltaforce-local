@@ -1,7 +1,9 @@
 """Run authenticated one-way/query continuations over actual local sockets."""
 
 import base64
+from contextlib import redirect_stdout
 import hashlib
+import io
 from pathlib import Path
 import socket
 import tempfile
@@ -28,21 +30,26 @@ class NativeAuxiliaryWireTests(unittest.TestCase):
             if registered:
                 backend.register_game_nick(token, 'AuxWire')
             identity = backend.native_identity(token)
+            with backend.connection() as connection:
+                collection_before = [tuple(row) for row in connection.execute(
+                    'SELECT * FROM native_lobby_collection_props ORDER BY player_id,template_id')]
             expected = {'token': token, 'native_id': identity['native_id'],
                         'username': identity['username'],
                         'game_nick': identity['game_nick'], 'game_registered': registered}
             codec = _candidate_codec()
             client, server = socket.socketpair()
             results, failures = [], []
+            progress_output = io.StringIO()
 
             def serve():
                 try:
-                    results.append(inspect_exchange(
-                        server, timeout=3, diagnostic_exponent_one=True,
-                        expected_identity=expected, response_probe=True, ready_probe=True,
-                        auth_identity_probe=True, business_login_probe=True,
-                        business_bootstrap_probe=True, continuation_seconds=30,
-                        backend=backend, local_session=token))
+                    with redirect_stdout(progress_output):
+                        results.append(inspect_exchange(
+                            server, timeout=3, diagnostic_exponent_one=True,
+                            expected_identity=expected, response_probe=True, ready_probe=True,
+                            auth_identity_probe=True, business_login_probe=True,
+                            business_bootstrap_probe=True, continuation_seconds=30,
+                            backend=backend, local_session=token))
                 except Exception as error:
                     failures.append(error)
                 finally:
@@ -72,7 +79,7 @@ class NativeAuxiliaryWireTests(unittest.TestCase):
                     (message,), key, direction='client_to_server',
                     header_word4=12, header_word9=sequence + 2).encode())
 
-            def reply(name, sequence):
+            def reply(name, sequence, result=0):
                 frame = receive()
                 self.assertEqual(frame.command, 0x4013)
                 messages = decode_data_frame(frame, key, direction='server_to_client',
@@ -80,7 +87,7 @@ class NativeAuxiliaryWireTests(unittest.TestCase):
                 self.assertEqual(len(messages), 1)
                 response = codec.decode(messages[0])
                 self.assertEqual((response.name, response.sequence), (name, sequence))
-                self.assertEqual(response.fields['result'], 0)
+                self.assertEqual(response.fields['result'], result)
                 return response.fields
 
             try:
@@ -113,6 +120,20 @@ class NativeAuxiliaryWireTests(unittest.TestCase):
                 self.assertEqual(reply('CSPlayerInfoAddButtonHasBeenClickedRes', 34), {
                     'result': 0, 'button_status_list': [
                         {'situation_id': '176_42', 'has_been_clicked': False}]})
+                send('CSAccountAllowRealTimeVoiceReq', {}, 35)
+                self.assertEqual(reply('CSAccountAllowRealTimeVoiceRes', 35), {'result': 0})
+                send('CSChatPrivateReadStatUpdateReq',
+                     {'last_msg_index': 0, 'target_player_id': 0}, 36)
+                self.assertEqual(reply('CSChatPrivateReadStatUpdateRes', 36), {'result': 0})
+                send('CSMatchGateIsRankEnableReq', {}, 37)
+                self.assertEqual(reply('CSMatchGateIsRankEnableRes', 37),
+                                 {'result': 0, 'is_rank_enable': False})
+                send('CSAccountUpdatePayTokenReq', {'token': {'session_id': 'local-test-context'}}, 38)
+                self.assertEqual(reply('CSAccountUpdatePayTokenRes', 38), {'result': 0})
+                for sequence in (39, 40):
+                    send('CSCollectionAutoDistributionReq', {}, sequence)
+                    self.assertEqual(reply('CSCollectionAutoDistributionRes', sequence),
+                                     {'result': 0, 'next_distribute_ts': '0'})
                 client.shutdown(socket.SHUT_WR)
                 worker.join(4)
                 self.assertFalse(worker.is_alive())
@@ -133,7 +154,10 @@ class NativeAuxiliaryWireTests(unittest.TestCase):
                 entries = result[route_key]
                 self.assertEqual([entry['request_name'] for entry in entries], [
                     'CSShopAutoRetroRewardReq', 'CSTlogAgentTglogReq',
-                    'CSFriendRecommendReq', 'CSPlayerInfoAddButtonHasBeenClickedReq'])
+                    'CSFriendRecommendReq', 'CSPlayerInfoAddButtonHasBeenClickedReq',
+                    'CSAccountAllowRealTimeVoiceReq', 'CSChatPrivateReadStatUpdateReq',
+                    'CSMatchGateIsRankEnableReq', 'CSAccountUpdatePayTokenReq',
+                    'CSCollectionAutoDistributionReq', 'CSCollectionAutoDistributionReq'])
                 for entry in entries:
                     self.assertNotIn('request_not_answered', entry)
                 for entry in entries[:2]:
@@ -146,7 +170,13 @@ class NativeAuxiliaryWireTests(unittest.TestCase):
                     self.assertEqual(result['business_login_probe_result'],
                                      'authenticated_followup_without_login')
                 self.assertNotIn(token, str(result))
+                self.assertNotIn('local-test-context', str(result))
+                self.assertNotIn(token, progress_output.getvalue())
+                self.assertNotIn('local-test-context', progress_output.getvalue())
                 with backend.connection() as connection:
+                    self.assertEqual([tuple(row) for row in connection.execute(
+                        'SELECT * FROM native_lobby_collection_props ORDER BY player_id,template_id')],
+                        collection_before)
                     receipts = list(connection.execute(
                         'SELECT entry_count,payload_bytes,occurrences FROM native_session_telemetry_receipts'))
                     self.assertEqual([tuple(row) for row in receipts], [(1, len(TELEMETRY), 1)])

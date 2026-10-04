@@ -39,15 +39,15 @@ parser.add_argument("--wire-ready-probe", action="store_true")
 parser.add_argument("--wire-ready-identity-probe", action="store_true")
 parser.add_argument("--wire-business-login-probe", action="store_true")
 parser.add_argument("--wire-business-bootstrap-probe", action="store_true")
-parser.add_argument("--observation-seconds", type=int, default=720)
+parser.add_argument("--observation-seconds", type=int, default=1800)
 parser.add_argument("--precreate-game-nick", action="store_true")
 parser.add_argument("--native-username", help="Local username when the test database contains multiple accounts")
 args = parser.parse_args()
 GAME = args.game_root.resolve()
 if GAME not in (SOURCE_GAME, SHADOW_GAME):
     parser.error('--game-root must be the installed client or its checked workspace shadow')
-if not 30 <= args.observation_seconds <= 720:
-    parser.error("--observation-seconds must be between 30 and 720")
+if not 30 <= args.observation_seconds <= 1800:
+    parser.error("--observation-seconds must be between 30 and 1800")
 if args.wire_auth_response_probe and not args.wire_identity_probe:
     parser.error("--wire-auth-response-probe requires --wire-identity-probe")
 if args.wire_auth_identity_probe and not args.wire_auth_response_probe:
@@ -275,6 +275,7 @@ try:
     load_seen = set()
     authorization_seen = set()
     socket_evidence_captured = False
+    resource_evidence_captured = False
     keybox_probe_digest = None
     keybox_probe_attempts = 0
     keybox_probe_next_at = 30
@@ -322,6 +323,29 @@ try:
         if EVENTS.exists():
             report["sdk_events"] = [json.loads(line) for line in EVENTS.read_text(encoding="utf-8").splitlines() if line.strip()]
         report["elapsed_seconds"] = round(time.monotonic()-start,2)
+        if (os.environ.get('DF_LOCAL_RESOURCE_EVIDENCE') == '1'
+                and not resource_evidence_captured and report['elapsed_seconds'] >= 30
+                and child.poll() is None):
+            resource_evidence_captured = True
+            probe = ROOT / 'work/probe_live_resource_implementations.py'
+            registration_probe = ROOT / 'work/probe_live_resource_loader.py'
+            evidence_path = TEST_ROOT / 'resource-implementations-readonly.json'
+            record = {'path': str(evidence_path), 'elapsed_seconds': report['elapsed_seconds']}
+            try:
+                record['probe_sha256'] = digest(probe)
+                if record['probe_sha256'] != os.environ.get('DF_LOCAL_RESOURCE_PROBE_SHA256'):
+                    raise RuntimeError('Resource witness changed after authorization')
+                record['registration_sha256'] = digest(registration_probe)
+                if record['registration_sha256'] != os.environ.get('DF_LOCAL_RESOURCE_REGISTRATION_SHA256'):
+                    raise RuntimeError('Resource registration witness changed after authorization')
+                with evidence_path.with_suffix('.txt').open('w', encoding='utf-8') as output:
+                    evidence = subprocess.run([sys.executable, str(probe),
+                        '--pid', str(child.pid), '--output', str(evidence_path)],
+                        stdout=output, stderr=subprocess.STDOUT, timeout=15)
+                record['returncode'] = evidence.returncode
+            except (OSError, RuntimeError, subprocess.TimeoutExpired) as error:
+                record['error'] = type(error).__name__
+            report['resource_loader_readonly_evidence'] = record
         if (os.environ.get('DF_LOCAL_SOCKET_EVIDENCE') == '1'
                 and not socket_evidence_captured and report['elapsed_seconds'] >= 30
                 and child.poll() is None):

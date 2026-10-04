@@ -16,6 +16,8 @@ from local_game_paths import game_paths, project_path
 
 ROOT = Path(__file__).resolve().parent.parent
 RUNNER = ROOT / "work/verify_local_provider_client.py"
+RESOURCE_PROBE = ROOT / "work/probe_live_resource_implementations.py"
+RESOURCE_REGISTRATION = ROOT / "work/probe_live_resource_loader.py"
 REPORT = ROOT / "outputs/native-account-provider/elevated-launch-observation.json"
 parser = argparse.ArgumentParser()
 parser.add_argument("--entry", choices=("shipping", "bootstrap"), default="shipping")
@@ -26,7 +28,7 @@ parser.add_argument("--wire-ready-probe", action="store_true")
 parser.add_argument("--wire-ready-identity-probe", action="store_true")
 parser.add_argument("--wire-business-login-probe", action="store_true")
 parser.add_argument("--wire-business-bootstrap-probe", action="store_true")
-parser.add_argument("--observation-seconds", type=int, default=720)
+parser.add_argument("--observation-seconds", type=int, default=1800)
 parser.add_argument("--precreate-game-nick", action="store_true")
 parser.add_argument("--native-username")
 parser.add_argument("--source-game", type=Path)
@@ -38,8 +40,8 @@ args = parser.parse_args()
 args.source_game, args.shadow_game = game_paths(args.source_game, args.shadow_game)
 if args.game_root is not None:
     args.game_root = project_path(args.game_root, args.source_game)
-if not 30 <= args.observation_seconds <= 720:
-    parser.error("--observation-seconds must be between 30 and 720")
+if not 30 <= args.observation_seconds <= 1800:
+    parser.error("--observation-seconds must be between 30 and 1800")
 if args.wire_auth_response_probe and not args.wire_identity_probe:
     parser.error("--wire-auth-response-probe requires --wire-identity-probe")
 if args.wire_auth_identity_probe and not args.wire_auth_response_probe:
@@ -76,11 +78,22 @@ if args.worker:
     assert request["game_root"] == str((args.game_root or args.source_game).resolve())
     assert request["runner_sha256"] == digest(RUNNER)
     assert request["wrapper_sha256"] == digest(Path(__file__))
+    if request.get('resource_helper_readonly_evidence'):
+        assert request['resource_helper_sha256'] == digest(RESOURCE_PROBE)
+        assert request['resource_registration_sha256'] == digest(RESOURCE_REGISTRATION)
     log = args.request.with_suffix(".log")
     os.environ["DF_LOCAL_SOURCE_GAME"] = request["source_game"]
     os.environ["DF_LOCAL_SHADOW_GAME"] = request["shadow_game"]
     if request.get('socket_helper_readonly_evidence'):
         os.environ['DF_LOCAL_SOCKET_EVIDENCE'] = '1'
+    if request.get('resource_helper_readonly_evidence'):
+        os.environ['DF_LOCAL_RESOURCE_EVIDENCE'] = '1'
+        os.environ['DF_LOCAL_RESOURCE_PROBE_SHA256'] = request['resource_helper_sha256']
+        os.environ['DF_LOCAL_RESOURCE_REGISTRATION_SHA256'] = request['resource_registration_sha256']
+    else:
+        for key in ('DF_LOCAL_RESOURCE_EVIDENCE', 'DF_LOCAL_RESOURCE_PROBE_SHA256',
+                    'DF_LOCAL_RESOURCE_REGISTRATION_SHA256'):
+            os.environ.pop(key, None)
     sys.argv = [str(RUNNER), "--entry", args.entry,
                 "--game-root", request["game_root"],
                 "--observation-seconds", str(args.observation_seconds)]
@@ -126,7 +139,12 @@ request = {"requested_at_utc":datetime.now(timezone.utc).isoformat(), "entry":ar
            "game_root":str((args.game_root or args.source_game).resolve()),
            "runner_sha256":digest(RUNNER), "wrapper_sha256":digest(Path(__file__)),
            "normal_windows_uac":True, "authorization_window_operated_by_tool":False,
-           "socket_helper_readonly_evidence":os.environ.get('DF_LOCAL_SOCKET_EVIDENCE') == '1'}
+           "socket_helper_readonly_evidence":os.environ.get('DF_LOCAL_SOCKET_EVIDENCE') == '1',
+           "resource_helper_readonly_evidence":os.environ.get('DF_LOCAL_RESOURCE_EVIDENCE') == '1',
+           "resource_helper_sha256":digest(RESOURCE_PROBE)
+               if os.environ.get('DF_LOCAL_RESOURCE_EVIDENCE') == '1' else None,
+           "resource_registration_sha256":digest(RESOURCE_REGISTRATION)
+               if os.environ.get('DF_LOCAL_RESOURCE_EVIDENCE') == '1' else None}
 request_path.write_text(json.dumps(request, indent=2) + "\n", encoding="utf-8")
 
 class ShellInfo(C.Structure):

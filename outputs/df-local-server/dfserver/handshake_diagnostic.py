@@ -29,7 +29,7 @@ from .container_layouts import capacity as container_capacity
 from .core import (POCKET_LAYOUT, POCKET_POSITION,
                    BACKPACK_LAYOUT, BACKPACK_POSITION, CHEST_RIG_LAYOUT,
                    CHEST_RIG_POSITION, SAFE_BOX_POSITION, DomainError)
-from . import safe_boxes, native_safehouse, native_quests, native_session_auxiliary
+from . import safe_boxes, native_safehouse, native_quests, native_session_auxiliary, native_match_unavailable
 
 ACTIVITY_REQUESTS = native_safehouse.SUPPORTED_REQUESTS | native_quests.SUPPORTED_REQUESTS
 from .gcp_crypto import decode_received_body, encrypt_body
@@ -1438,6 +1438,8 @@ def _candidate_local_auxiliary_response(message, backend, local_session, key,
         return None
     fields = native_session_auxiliary.response_fields(request, backend, local_session)
     if fields is None:
+        fields = native_match_unavailable.response_fields(request, backend, local_session)
+    if fields is None:
         raise ValueError('Not a supported local auxiliary request')
     if diagnostic_entry is not None:
         diagnostic_entry['local_auxiliary_response_expected'] = True
@@ -1714,7 +1716,8 @@ def _continue_character_creation(connection, decoder, queue, current, ack,
                     entry['local_commerce_result'] = _candidate_local_commerce_result(
                         response, ack.session_key)
                 elif name in (native_session_auxiliary.SUPPORTED_REQUESTS
-                             | native_session_auxiliary.ONE_WAY_REQUESTS):
+                             | native_session_auxiliary.ONE_WAY_REQUESTS
+                             | native_match_unavailable.SUPPORTED_REQUESTS):
                     response = _candidate_local_auxiliary_response(
                         message, backend, local_session, ack.session_key,
                         header_word4=current.header_word4, header_word9=outbound_sequence, diagnostic_entry=entry)
@@ -2354,7 +2357,8 @@ def inspect_exchange(connection, modulus=None, *, timeout=12, diagnostic_exponen
                                                                         entry['local_commerce_result'] = _candidate_local_commerce_result(
                                                                             next_response, ack.session_key)
                                                                     elif name in (native_session_auxiliary.SUPPORTED_REQUESTS
-                                                                                 | native_session_auxiliary.ONE_WAY_REQUESTS):
+                                                                                 | native_session_auxiliary.ONE_WAY_REQUESTS
+                                                                                 | native_match_unavailable.SUPPORTED_REQUESTS):
                                                                         next_response = _candidate_local_auxiliary_response(
                                                                             message, backend, local_session, ack.session_key,
                                                                             header_word4=current.header_word4,

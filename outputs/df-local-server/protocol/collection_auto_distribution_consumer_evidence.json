@@ -2,8 +2,19 @@
   "scope": "Read-only installed-client metadata and static consumer analysis; no client execution, source archives, raw Lua chunks, or invented entitlement rules.",
   "request": "CSCollectionAutoDistributionReq",
   "response": "CSCollectionAutoDistributionRes",
-  "supported_local_result": 157012,
-  "supported_local_error_name": "CollectionPropDescNotFound",
+  "supported_local_response": {"result": 0, "next_distribute_ts": 0},
+  "local_policy": {
+    "authorization": "The request requires the existing local session authorization.",
+    "entitlement": "This local save defines no automatic rental entitlement or distribution schedule. The receipt completes a zero-grant local evaluation; it does not claim official server eligibility.",
+    "state": "No vouchers, balances, inventory, credentials, or scheduler records are written.",
+    "timestamp": "Zero keeps the original client replenishment timer disabled; no future interval is invented.",
+    "quantity": "prop_num is omitted because its official meaning is unverified. No grant notification is sent."
+  },
+  "response_wire_fields": [
+    {"name": "result", "number": 1, "codec_category": "i32"},
+    {"name": "next_distribute_ts", "number": 2, "codec_category": "i64"},
+    {"name": "prop_num", "number": 3, "codec_category": "i64"}
+  ],
   "distribution_rule_recovered": false,
   "unknown_rule_fields": [
     "server entitlement conditions",
@@ -15,7 +26,7 @@
     {
       "source": "CollectionServer.lua",
       "functions": ["0.1", "0.214", "0.214.0", "0.215"],
-      "finding": "The initial next timestamp is zero. Unforced calls send after the stored timestamp expires. Only result zero updates next_distribute_ts and emits the success event. A refusal preserves the previous timestamp."
+      "finding": "The initial next timestamp is zero. Unforced calls send after the stored timestamp expires. Only result zero updates next_distribute_ts and emits the success event. The callback does not read prop_num or grant an item. A refusal preserves the previous timestamp."
     },
     {
       "source": "CollectionServer.lua",
@@ -51,7 +62,8 @@
     }
   ],
   "refusal_ui_behavior": {
-    "observed_in_running_client": false,
+    "observed_in_running_client": true,
+    "observed_trial": "1791082858867084800: 24 responses with result 157012 matched 24 item-data-error pop tips during the 2026-10-04 trial.",
     "static_conclusion": "Result 157012 enters the normal error pop-tip path. It does not select the login reconnect or login confirmation branches. Missing ErrorTable text also produces a nonempty shipping fallback containing the error code.",
     "chain": [
       {"source": "ProtoDefaultConfig.lua", "function": "0", "finding": "Error tips are enabled by default; 157012 is absent from NoNeedTipsCode."},

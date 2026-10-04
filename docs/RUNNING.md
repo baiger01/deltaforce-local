@@ -51,20 +51,20 @@ python work/provision_native_test_keychain.py --template-id 11120000001 --apply
 
 工具要求库内恰好一个账号，应用前自动备份存档并核验实际原生库存响应。该模板及六区共 24 格来自客户端原表；提供权限是本地测试策略。已经装备其它卡包时，工具拒绝覆盖，应通过客户端切换。普通新账号不会自动获得卡包。
 
-## 12 分钟原客户端测试
+## 30 分钟原客户端测试
 
 关闭游戏和 WeGame 后，在项目根目录启动日志监听：
 
 ```powershell
-python work/watch_client_log.py --source "$env:DF_LOCAL_SHADOW_GAME/DeltaForce/Saved/Logs/DeltaForce.log" --output work/evidence/native-trial-live.log --duration-seconds 780
+python work/watch_client_log.py --source "$env:DF_LOCAL_SHADOW_GAME/DeltaForce/Saved/Logs/DeltaForce.log" --output work/evidence/native-trial-live.log --duration-seconds 1860
 ```
 
 在另一终端设置相同路径，执行以下命令，Windows UAC 由用户确认：
 
 ```powershell
-python work/run_native_elevated_trial.py --entry shipping --game-root "$env:DF_LOCAL_SHADOW_GAME" --wire-identity-probe --wire-auth-response-probe --wire-auth-identity-probe --wire-ready-probe --wire-ready-identity-probe --wire-business-login-probe --wire-business-bootstrap-probe --observation-seconds 720 --precreate-game-nick
+python work/run_native_elevated_trial.py --entry shipping --game-root "$env:DF_LOCAL_SHADOW_GAME" --wire-identity-probe --wire-auth-response-probe --wire-auth-identity-probe --wire-ready-probe --wire-ready-identity-probe --wire-business-login-probe --wire-business-bootstrap-probe --observation-seconds 1800 --precreate-game-nick
 ```
 
-默认测试时长为 720 秒，届时自动关闭测试客户端；日志监听多保留 60 秒。默认目录可使用 `--game-root ../shadow`；多账号库需额外传入 `--native-username`。诊断服务只监听 `127.0.0.1:65010`，结束后必须核对 `original_sdk_restored` 为 `true`。
+默认测试时长为 1800 秒，届时自动关闭测试客户端；独立日志监听多保留 60 秒。默认目录可使用 `--game-root ../shadow`；多账号库需额外传入 `--native-username`。诊断服务只监听 `127.0.0.1:65010`，结束后必须核对 `original_sdk_restored` 为 `true`。
 
 游戏本体、原始资源、账号数据库、会话、日志及编译 DLL 保留本地。重新提取所需原始条目需按 [数据来源](../DATA_PROVENANCE.md) 定位；已有静态目录可以直接用于开发。

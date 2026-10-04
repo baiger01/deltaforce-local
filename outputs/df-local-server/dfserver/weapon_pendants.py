@@ -16,6 +16,9 @@ PENDANTS = {row['pendant_id']: row for row in CATALOG['rows']}
 ORDINARY = frozenset(item for item, row in PENDANTS.items() if row['local_test_grant'])
 RECEIVERS = frozenset(int(item) for item in json.loads(
     (ROOT / 'weapon_component_catalog.json').read_text(encoding='utf-8'))['rows'])
+# A recovered component tree alone does not verify a special weapon's attachment.
+PENDANT_RECEIVERS = frozenset(item for item in RECEIVERS
+    if item // 1000000000 == 18 and item // 10000000 % 100 in range(1, 8))
 SKIN_RECEIVERS = frozenset(row['weapon_id'] for row in gun_skins.SKINS.values())
 SUPPORTED_REQUESTS = frozenset(('CSWAssemblyApplySkinReq', 'CSCollectionLoadMysticalPendantPropsReq'))
 
@@ -123,8 +126,7 @@ def apply(backend, token, fields):
             receiver = gun_skins.receiver(weapon_id)
             if receiver not in RECEIVERS and receiver not in SKIN_RECEIVERS:
                 fail('INVALID_EQUIPMENT', 'Weapon receiver has not been recovered')
-            # WeaponSkinDataTable can recover cosmetics before a usable component tree.
-            if receiver not in RECEIVERS and (int(command.get('pendant_id') or 0)
+            if receiver not in PENDANT_RECEIVERS and (int(command.get('pendant_id') or 0)
                     or int(command.get('pendant_gid') or 0) or command.get('pendant_apply_all')):
                 fail('INVALID_EQUIPMENT', 'Weapon pendant attachment has not been recovered')
             skin_id, skin_gid = int(command.get('skin_id') or 0), int(command.get('skin_gid') or 0)

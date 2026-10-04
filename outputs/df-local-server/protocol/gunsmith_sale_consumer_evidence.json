@@ -1,0 +1,43 @@
+{
+  "source_archive": "pak-0-0-pakchunk1-WindowsClient.pak",
+  "sources": {
+    "ItemBase.lua": {
+      "sha256": "5361e9a383ca5f3a2b675704e464b414f4a4631f10d28e4798821eba2097e837",
+      "function": "0.54",
+      "offset": 38902,
+      "instructions": [18, 42],
+      "rule": "Weapon and PoorWeapon presets use the receiver GameItem name and physical dimensions."
+    },
+    "GunsmithInspectorProcessor4SOL.lua": {
+      "sha256": "e1ee16694a5d5b2a4a07f001eb76223f09efb46ab9c301613c7a12032cb0ef60",
+      "function": "0.5",
+      "offset": 1761,
+      "rule": "SOL selection uses GetPresetID4SOL, bound to RecFunction.DefaultPreset."
+    },
+    "GunsmithInspectorProcessor.lua": {
+      "sha256": "59033f3eb91f05a3e2263a5ade224befc9e4c9e446c0f44da5e37d4193077ca6",
+      "function": "0.55",
+      "offset": 19447,
+      "rule": "IsAllowPreset4Build requires IsBaseWeapon, a nonzero default preset and mode compatibility."
+    },
+    "ShopServer.lua": {
+      "sha256": "4fe3e3b9cfcbc414503a5b2672b93c9b78f07b0837834f12759b1568e4908325",
+      "function": "0.131",
+      "offset": 101597,
+      "callback": "0.131.0",
+      "callback_offset": 104516,
+      "model_only_check": {"function": "0.115", "offset": 89229},
+      "rule": "Count the receiver and recursively each components.prop_data at its dynamic guide price times its actual quantity. Model-only parts have zero price. Loaded ammunition is an optional separate term."
+    }
+  },
+  "local_sale_policy": {
+    "complete_firearms": 67,
+    "receiver_main_type": 18,
+    "receiver_subtypes": [1, 2, 3, 4, 5, 6, 7],
+    "requires_verified_default_component_tree": true,
+    "receiver_aliases_require_same_verified_sale_default": true,
+    "pricing": "Use existing local initial guide prices of the actual default parts; do not use placeholder abstract preset prices.",
+    "deduplication": "One source default preset per actual receiver; equal names or metadata do not collapse distinct firearms.",
+    "excluded_paths": ["non-base special weapons", "fishing presets without source nodes", "unverified gunsmith category for bow"]
+  }
+}
