@@ -17,7 +17,8 @@
 | 防具与容器购买 | 单条护甲、头盔报价改用客户端实际读取的档位；护甲、头盔、背包、胸挂均可购买 | 2026-09-30 用户实测确认；同轮护甲、头盔成交及存档记录 |
 | 子弹与药品重开 | 购买后退出再进入，两页购买选项均正常；原客户端连续购弹与药品请求成功 | 2026-09-30 用户实测确认、同轮客户端及服务日志 |
 | 出售接口 | 两次原客户端测试出售请求成功，服务执行物品删除与货币更新 | 原客户端请求及服务记录 |
-| 门卡购买提示与存取 | 成交响应包含本次实际数量；“东楼经理室”显示数量 1、购买成功并入仓，两张卡成功移入卡包且存档位置一致 | 2026-10-04 10:12 试验的客户端提示、移动请求及 SQLite 重读；监狱分区格子的界面显示仍待核对 |
+| 门卡购买提示与存取 | 成交响应包含本次实际数量；“东楼经理室”显示数量 1、购买成功并入仓，两张卡成功移入卡包且存档位置一致；管理页六个分区完整显示，监狱分区显示三张已存门卡 | 2026-10-04 10:12 试验的客户端提示、移动请求及 SQLite 重读；13:56 用户提供管理页与仓库截图 |
+| 卡包滚动显示 | 取消安全箱固定后，仓库第六分区完整显示；原客户端将 `SafeBoxbFixed=False` 保存到 shadow 的 `LuaConfig.ini` | 2026-10-04 用户实测确认、配置只读核验及原 `WarehouseEquipPanel_HD`／`ConfigManager` 消费链；安全箱固定模式仍保留原客户端布局 |
 | 近战武器 | 近战选择页与装备栏的名称、模型及切换正常；所选刀具持久化 | 2026-09-30 用户实测确认；18:09 原客户端装备请求成功及 SQLite 重读 |
 | 枪械皮肤 | 本地账号提供普通枪械皮肤，列表与装备可用 | 2026-09-30 用户实测确认“皮肤没问题”；客户端真实皮肤目录与装备持久化用例 |
 | 曼德尔十连与购买 | 十连动画、奖励页和购买均正常；八次连续十连记录 80 件奖励与扫描历史 | 2026-10-01 用户实测确认；00:51 至 00:55 原客户端八次扫描成功及动画结束回调、SQLite 重读 |
@@ -31,22 +32,24 @@
 | --- | --- | --- |
 | 本地账号 | 注册、密码登录、会话撤销、SQLite 存档与账号隔离 | `dfserver/core.py`、`tests/test_accounts.py` |
 | 客户端物品目录 | 物品、仓库格子、干员外观、护甲耐久和错误码的提取结果及来源信息已入库 | `protocol/*_catalog.json`、[数据来源](DATA_PROVENANCE.md) |
-| 枪械配置与购买目录 | 恢复 98 套源组件树；按原改枪台的基础枪标记与非零默认预设开放 67 种完整枪械，包含截图中的 4 种机枪；报价使用实际机匣尺寸与组件，购买保存各自 receiver；无默认树的裸 receiver 不作为完整枪售卖 | `weapon_component_catalog.json`、`weapon_preset_catalog.json`、`gunsmith_sale_consumer_evidence.json`、`tests/test_gunsmith_stock.py`；购买及存档用例已覆盖，新增目录的界面回测待确认 |
+| 枪械配置与购买目录 | 恢复 98 套源组件树；按原改枪台的基础枪标记与非零默认预设开放 67 种完整枪械，包含截图中的 4 种机枪；报价使用实际机匣尺寸与组件，购买保存各自 receiver；未核实销售路径的特殊机匣不进入购买目录，已确认商城条目和已有物品回收计价保留 | `weapon_component_catalog.json`、`weapon_preset_catalog.json`、`gunsmith_sale_consumer_evidence.json`、`tests/test_gunsmith_stock.py`；8 项目录回归通过，新增目录的界面回测待确认 |
 | 弹药关联 | 恢复 261 条武器配置、176 条弹药配置与 385 个已知弹匣的容量模式；无覆盖值时读取该枪真实基础容量，枪管附加容量单独累加；67 种销售基础枪中 65 种容量已核实 | `weapon_ammo_catalog.json`、`dfserver/weapon_ammo.py`、`tests/test_weapon_ammo_capacity.py`；`18050000033/18010000049` 缺少原属性，保留未知，未猜填容量 |
 | 装弹与卸弹 | 接入真实装卸弹枚举、口径匹配、容量检查、枪内弹药保存、库存变更响应与通知 | `dfserver/core.py`、`dfserver/handshake_diagnostic.py`、`tests/test_native_inventory.py` |
 | 背包与胸挂 | 恢复 44 项具体容器布局，按客户端配置提供分区格子；销售目录只开放已核实布局，避免列出购买后无法装备的条目，已拥有物品仍保留回收计价 | `container_layout_catalog.json`、`dfserver/container_layouts.py`、`tests/test_container_stock.py`；44 件分别通过报价、装备、分区响应与重读验证 |
 | 卸下容器与内容迁移 | 卸下或替换胸挂、背包时，将其内容按真实旧坐标移回仓库并清除旧容量；原生响应同时更新物品与分区，仓满整批回滚；旧存档孤立内容通过带原模板核对、预览和备份的显式工具恢复 | `dfserver/core.py`、`tests/test_native_carrying_containers.py`、`tests/test_native_carrying_wire.py`、`work/repair_native_orphaned_containers.py`；新响应的界面回测待确认 |
 | 配件购买与装配 | 按原生 GUID 指令恢复插槽路径；已拥有枪械的拍卖配件购买与装配同一事务提交，旧配件保留原 gid 回仓，批量统一扣款；普通装配保留皮肤、挂饰和枪内弹药，容量不足回滚；换位和购买替换响应保留完整枪械状态 | `dfserver/socket_guid.py`、`dfserver/weapon_assembly.py`、`tests/test_weapon_assembly.py`、`tests/test_native_weapon_displacement.py`；商城自动装配、新购整枪绑定和换枪装配尚未接入 |
+| 仓库配件拖拽改装 | 接受原客户端携带原格位置的拖拽请求；真实旧配件放回腾空格，默认模型节点不进入实物库存；缺少 gid 的新模型只接受原表核实的机匣、父模板与插槽绑定，模型父节点下的实物子配件卸下后保留，重复请求和失败回滚有覆盖 | `dfserver/weapon_assembly.py`、`weapon_model_socket_catalog.json`、`tests/test_native_drag_assembly.py`；真实请求回归通过，修正后的客户端拖拽效果待复测 |
 | 枪械挂饰收藏与装备 | 恢复 283 条真实挂饰目录及 PartsData 对应，本地账号提供其中 80 条开放普通挂饰；收藏与枪械／枪种默认装备独立保存，保留枪械皮肤，神秘挂饰仅接受已有真实实例；挂饰资格与组件树恢复分开，未核实的特殊武器挂饰整批回滚，保留纯皮肤装备 | `weapon_pendant_catalog.json`、`dfserver/weapon_pendants.py`、`tests/test_weapon_pendants.py`；16 项回归通过，弓挂点仍未核实 |
 | 通行证购买与奖励 | 当前安装 7 张原表共 502 行、131 个字段通过 C++ 反射与序列化逐列核验；接入会员、升级、等级及礼包购买，扣费、奖励与领取记录原子提交；补发余额和收藏通知，60 级挂饰进入挂饰收藏；重买及失败不重复发货 | `battle_pass_catalog.json`、`dfserver/battle_pass.py`、`tests/test_battle_pass*.py`；开放窗口为本地诊断窗口，未恢复经验卡、线索及档案奖励的物品关联 |
 | 门卡基础数据与耐久 | 从原表逐列核验 334 条门卡的地图与最大耐久；读取已保存的当前耐久，保留耗尽状态，购买新卡不会恢复旧卡耐久；账户与实际 gid 校验、移动、删除和存档重开有回归覆盖 | `native_keycard_catalog.json`、`dfserver/native_keycards.py`、`tests/test_native_keycards.py` |
-| 门禁卡包分区与存取 | 原生只读核验 `Key/KeyBox` 与 `KeyBox` 两表的 109 行、21 个 FName 组；104 行对应 20 个现有模板，按真实 MapID 下发格子；权限装备、卡片移动与交换、切包、身体快照和保存重开有覆盖，堆叠卡及失败操作整批回滚 | `dfserver/native_keychains.py`、`work/bind_native_keybox_catalog.py`、`tests/test_native_keychains.py`；默认模板 `11120000001` 六区共 24 格，槽位解锁及缺失模板未恢复，界面回测待确认 |
+| 门禁卡包分区与存取 | 原生只读核验 `Key/KeyBox` 与 `KeyBox` 两表的 109 行、21 个 FName 组；104 行对应 20 个现有模板，按真实 MapID 下发格子；权限装备、卡片移动与交换、切包、身体快照和保存重开有覆盖，堆叠卡及失败操作整批回滚 | `dfserver/native_keychains.py`、`work/bind_native_keybox_catalog.py`、`tests/test_native_keychains.py`；默认模板 `11120000001` 六区共 24 格，管理页和取消固定后的仓库显示已实测；槽位解锁及缺失模板未恢复 |
 | 安全屋生产与领取 | 492 条配方与 73 条升级配置通过原生反射和序列化核验；确定产物按原设备、时间和材料生产，扣料及领取使用事务；预设产物先核实真实机匣与树，到期交付实际 receiver 和组件，修正配方 `100400900` 的 `118008` | `native_safehouse_catalog.json`、`dfserver/native_safehouse.py`、`tests/test_native_safehouse.py`；蓝图、随机产物及未恢复物理布局仍拒绝 |
 | 普通任务接受与同步 | 恢复 2365 条任务、13 条任务线及 5585 条奖励配置；普通 Mission 接受校验真实等级、任务线、已领奖前置和冷却，保存实际目标并在响应前发送 `CSQuestDataChangeNtf`；重开恢复、失败无写入或通知有覆盖 | `native_quest_catalog.json`、`dfserver/native_quests.py`、`tests/test_native_quests.py`、`tests/test_native_activity_wire.py`；特殊任务类型、完成判定与领奖流程未接入 |
 | 设置保存与本地聊天查询 | 按原 Lua 字段保存设置，按账号和类型读取；8 个原生可选初始化键缺省时下发明确空值，保留客户端默认配置，已有记录优先；本地世界频道、聊天摘要返回真实协议形状的空记录，结束未响应状态 | `dfserver/native_settings.py`、`dfserver/local_chat.py`、`tests/test_native_settings.py`、`tests/test_local_chat.py` |
 | 安全箱来源与存取 | 恢复 38 条真实安全箱 ID、容量和原始尺寸；本地账号提供方向明确的 4 格和 9 格安全箱权限，支持原生无 gid 装备请求、容量更新、物品移动、快照与单件/批量购买；切换保留内容坐标，容量不足整笔回滚，权限物品不能作为普通货物移出 | `safe_box_layout_catalog.json`、`dfserver/safe_boxes.py`、`tests/test_native_safe_box.py`；非方形方向及官方归属未恢复，实机操作待确认 |
 | 主仓库实际整理 | 主仓库页 2 整理返回实际位置和旋转变更，事务保存并保留数量、枪械组件、枪内弹药；接入原生 `CSDepositSetCommonConfigReq` 并保存设置；无效页和无法完整落位的请求返回错误并回滚 | `dfserver/deposit_sort.py`、`tests/test_native_deposit_sort.py`；采用本地确定性落位策略，多扩容页及官方分类对应尚未恢复 |
 | 容器同步 | 接入已观察的胸挂、背包和口袋同步；实现落位检查、堆叠拆分、数量守恒及失败整批回滚 | `dfserver/core.py`、`tests/test_local_commerce.py`、`tests/test_native_inventory.py` |
+| 批量购买空间规划 | 修正真实八件药品购买时有空间却返回 14032 的问题；保留指定容器和已有物品坐标，先规划全批再扣费，必要时旋转和有限回溯；数量拆分、通知顺序、真实空间不足与规划限制耗尽均有回归 | `dfserver/core.py`、`tests/test_native_purchase_packing.py`；5 项新增回归与 117 项关联测试通过，落位搜索属于本地策略 |
 | 容器精确移动与交换 | 修正原生请求省略零坐标后的错误自动落位；按指定格子和旋转落位，处理目标 gid 的原子交换，失败整批回滚；仓库旋转在移动响应及库存重取中保持一致；日志保留移动参数、结果码及具体拒绝原因 | `dfserver/core.py`、`dfserver/local_commerce.py`、`dfserver/handshake_diagnostic.py`、`tests/test_native_inventory.py`、`tests/test_local_commerce.py`；实机回测待确认 |
 | 口袋与重连购买 | 按真实口袋位置支持物品移入；重连购买补发库存变更通知，购买 137 发、装入 17 发、同步口袋及重读存档的回归用例已通过 | `dfserver/core.py`、`dfserver/handshake_diagnostic.py`、`tests/test_local_commerce.py` |
 | 商品时间判断 | 按客户端时钟用法将心跳时间改为 Unix 秒；购买前后商品详情的开放时间与心跳时间兼容的回归用例已通过 | `dfserver/handshake_diagnostic.py`、`tests/test_local_commerce.py`、[数据来源](DATA_PROVENANCE.md) |
@@ -117,6 +120,8 @@
 - 2026-10-04：10:12 启动的 720 秒试验完整结束（720.66 秒），1023 条处理记录、0 条未响应，四类辅助请求均答复；支付令牌与租借券仍分别返回明确的未实现结果 `10010`、`157012`。新买“东楼经理室”的原客户端提示为数量 1、购买成功并入仓；该卡与“典狱长收藏室”分别成功移入真实分区 22、88，SQLite 重读位置一致。原 SDK 恢复并通过实际文件哈希核验；该记录不代表监狱格子或推荐图界面已通过验证。
 - 2026-10-04：11:01 启动的 1800 秒试验完整结束（1800.41 秒），3095 条处理记录。实际失败为租借检查 24 次、支付上下文 9 次、生产 1 次、胸挂购买 2 次；另有 6 次匹配请求未答复，触发 3 次客户端超时。原 SDK 恢复且文件哈希核验通过。后续购买、容器、组件提取、生产与辅助请求的 99 项联合回归通过（85.056 秒）；新增修正的界面效果尚待回测。
 - 2026-10-04：改枪台目录对照、弹匣容量和挂饰资格修正后，全部 611 项自动测试通过（205.522 秒）。逐件购买覆盖 67 种基础枪和 44 件布局已核实容器，含存档重开、真实组件、失败回滚及两套 socket 路由；容量与挂饰边界经独立只读审查。代码测试不代表新增目录、监狱格子或推荐图已通过界面回测。
+- 2026-10-04：13:47 的 1800 秒试验完整结束（1799.8 秒），原 SDK 恢复且哈希核验通过。管理页六区完整，用户确认取消安全箱固定后仓库第六区完整显示；该原生设置已保存为 `SafeBoxbFixed=False`。
+- 2026-10-04：仓库拖拽、模型节点与批量药品落位修正后，全部 627 项自动测试通过（107.454 秒）；23 项改装联合回归含真实请求、实物子配件、旋转回包、重复操作及重开。254 个上传文件审计通过，原日志、账号存档和原始客户端提取物未上传；新修正的界面效果待复测。
 - GitHub 仓库已按用户指示改为公开，源码、测试、静态目录和来源信息已上传；上传文件审计通过。
 
 ## 协作依据

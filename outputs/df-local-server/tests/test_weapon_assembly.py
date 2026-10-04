@@ -8,6 +8,7 @@ from dfserver import weapon_assembly
 from dfserver.candidate_business import CandidateMessage
 from dfserver.handshake_diagnostic import _candidate_codec
 from dfserver.socket_guid import socket_path
+from dfserver.local_commerce import installed_items
 
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -23,8 +24,8 @@ class WeaponAssemblyTests(unittest.TestCase):
         self.backend.set_native_lobby_profile(self.token, level=60, currencies={17020000010: 100000}, props=[
             {'gid': 4001, 'template_id': 18010000006, 'quantity': 1,
              'grid_page_id': 111, 'x': 0, 'y': 0, 'length': 5, 'width': 2},
-            {'gid': 4002, 'template_id': 13030000138, 'quantity': 1,
-             'grid_page_id': 2, 'x': 0, 'y': 0, 'length': 1, 'width': 1},
+            {'gid': 4002, 'template_id': 13020000356, 'quantity': 1,
+             'grid_page_id': 2, 'x': 0, 'y': 0, 'length': 2, 'width': 1},
         ])
 
     def state(self):
@@ -37,8 +38,10 @@ class WeaponAssemblyTests(unittest.TestCase):
     def instance_templates(self, state):
         items = {}
         def visit(part):
-            self.assertNotIn(part['gid'], items)
-            items[part['gid']] = part.get('id', part.get('template_id'))
+            item_id = part.get('id', part.get('template_id'))
+            if not installed_items()[str(item_id)]['is_model_only']:
+                self.assertNotIn(part['gid'], items)
+                items[part['gid']] = item_id
             for child in part.get('components', []):
                 visit(child['prop_data'])
         for prop in state.values():
@@ -70,14 +73,16 @@ class WeaponAssemblyTests(unittest.TestCase):
 
     def test_owned_part_is_installed_and_replaced_part_returned_without_loss(self):
         desired = self.prop()
-        old_gid = desired['components'][0]['prop_data']['gid']
-        desired['components'][0]['prop_data']['gid'] = 4002
+        part = next(part for part in desired['components'] if part['slot'] == 2)
+        old_gid = part['prop_data']['gid']
+        part['prop_data'].update(id=13020000356, gid=4002)
         moves = weapon_assembly.update(self.backend, self.token, {'prop': desired})
         state = self.state()
         self.assertNotIn(4002, state)
-        self.assertEqual(state[old_gid]['grid_page_id'], 2)
-        self.assertEqual(state[4001]['components'][0]['prop_data']['gid'], 4002)
-        self.assertEqual(len(moves), 3)
+        self.assertNotIn(old_gid, state)
+        self.assertEqual(next(part for part in state[4001]['components']
+                              if part['slot'] == 2)['prop_data']['gid'], 4002)
+        self.assertEqual(len(moves), 2)
         self.backend = Backend(self.path, ROOT / 'definitions.json')
         self.assertEqual(self.state(), state)
 
@@ -98,8 +103,14 @@ class WeaponAssemblyTests(unittest.TestCase):
         self.assertEqual(self.state()[4001].get('components', []), [])
 
     def test_failed_detach_when_warehouse_full_keeps_original_weapon(self):
+        desired = self.prop()
+        part = next(part for part in desired['components'] if part['slot'] == 2)
+        part['prop_data'].update(id=13020000356, gid=4002)
+        weapon_assembly.update(self.backend, self.token, {'prop': desired})
         with self.backend.connection() as c:
-            c.execute('UPDATE native_lobby_props SET length=9,width=40 WHERE gid=4002')
+            player_id = c.execute('SELECT player_id FROM native_lobby_props WHERE gid=4001').fetchone()[0]
+            c.execute('INSERT INTO native_lobby_props VALUES (?,?,?,?,?,?,?,?,?)',
+                (4003, player_id, 14020000005, 1, 2, 0, 0, 9, 40))
             c.commit()
         before = self.state()
         desired = self.prop()
@@ -128,7 +139,8 @@ class WeaponAssemblyTests(unittest.TestCase):
     def test_update_response_echoes_context_and_contains_complete_owned_weapon(self):
         codec = _candidate_codec()
         desired = self.prop()
-        desired['components'][0]['prop_data']['gid'] = 4002
+        part = next(part for part in desired['components'] if part['slot'] == 2)
+        part['prop_data'].update(id=13020000356, gid=4002)
         fields = {'prop': desired, 'data_type': 0, 'bag_id': 0,
                   'source': 1, 'pass_through': 'local-review', 'unequip_pos': []}
         request = CandidateMessage('CSWAssemblyDepositPropUpdateReq',
@@ -144,24 +156,26 @@ class WeaponAssemblyTests(unittest.TestCase):
         self.assertEqual(response['changes']['prop_changes'][-1]['prop'], response['local_prop'])
 
     def test_nested_incoming_part_preserves_or_detaches_omitted_children(self):
-        # These parent/child IDs and slots are native defaults for receiver 18010000016.
+        # Native preset 10010000123 has owned barrel/child adapters at sockets 2/6.
         for keep_child in (True, False):
             self.backend.set_native_lobby_profile(self.token, level=60,
                 currencies={17020000010: 100000}, props=[
-                    {'gid': 4001, 'template_id': 18010000016, 'quantity': 1,
+                    {'gid': 4001, 'template_id': 18010000006, 'quantity': 1,
                      'grid_page_id': 111, 'x': 0, 'y': 0, 'length': 5, 'width': 2},
-                    {'gid': 4002, 'template_id': 13020000380, 'quantity': 1,
+                    {'gid': 4002, 'template_id': 13020000356, 'quantity': 1,
                      'grid_page_id': 2, 'x': 0, 'y': 0, 'length': 2, 'width': 1}])
             with self.backend.connection() as connection:
                 connection.execute('INSERT INTO native_lobby_weapon_parts VALUES (?,?,?,?,?)',
-                    (4003, 4002, 4002, 6, 13130000207))
+                    (4003, 4002, 4002, 6, 13130000176))
                 connection.commit()
 
             def owned_instances(state):
                 ids = set()
                 def visit(part):
-                    self.assertNotIn(part['gid'], ids)
-                    ids.add(part['gid'])
+                    item_id = part.get('id', part.get('template_id'))
+                    if not installed_items()[str(item_id)]['is_model_only']:
+                        self.assertNotIn(part['gid'], ids)
+                        ids.add(part['gid'])
                     for child in part.get('components', []):
                         visit(child['prop_data'])
                 for prop in state.values():
@@ -170,23 +184,23 @@ class WeaponAssemblyTests(unittest.TestCase):
 
             before = self.state()
             original_ids = owned_instances(before)
-            desired = {'id': 18010000016, 'gid': 4001, 'num': 1,
+            desired = {'id': 18010000006, 'gid': 4001, 'num': 1,
                        'components': copy.deepcopy(before[4001]['components'])}
             barrel = next(part for part in desired['components'] if part['slot'] == 2)
             previous_gid = barrel['prop_data']['gid']
-            barrel['prop_data'] = {'id': 13020000380, 'gid': 4002, 'num': 1,
+            barrel['prop_data'] = {'id': 13020000356, 'gid': 4002, 'num': 1,
                 'components': copy.deepcopy(before[4002]['components']) if keep_child else []}
             weapon_assembly.update(self.backend, self.token, {'prop': desired})
             after = self.state()
             self.assertEqual(owned_instances(after), original_ids)
-            self.assertIn(previous_gid, after)
+            self.assertNotIn(previous_gid, after)
             self.assertNotIn(4002, after)
             if keep_child:
                 attached = next(part for part in after[4001]['components'] if part['slot'] == 2)
                 self.assertEqual(attached['prop_data']['components'][0]['prop_data']['gid'], 4003)
                 self.assertNotIn(4003, after)
             else:
-                self.assertEqual(after[4003]['template_id'], 13130000207)
+                self.assertEqual(after[4003]['template_id'], 13130000176)
                 self.assertEqual(after[4003]['grid_page_id'], 2)
             self.backend = Backend(self.path, ROOT / 'definitions.json')
             self.assertEqual(self.state(), after)

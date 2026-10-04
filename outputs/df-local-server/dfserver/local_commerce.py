@@ -24,7 +24,7 @@ MANDEL_BRICK_LOCAL_PRICE = 20000
 MANDEL_BRICK_PURCHASE_CURRENCY = 17888808887
 MANDEL_KEY_ID = 32320000001
 MANDEL_KEY_CURRENCY = 17888808888
-VERSION = {'ver': 'local-stock-v2', 'load_time': 2}
+VERSION = {'ver': 'local-stock-v3', 'load_time': 3}
 # The original client rejected 4,325 of 4,326 guessed merchant rows during the
 # first native trial. Keep only the one row it did not reject until Mall table
 # exchange identifiers can be recovered from the installed build.
@@ -147,9 +147,10 @@ def stock_catalog():
     return {item_id: row for item_id, row in priced_inventory_catalog().items()
             if (item_id // 1000000000 != 14 or item_id in medicines)
             and (item_id not in presets or item_id in sale_presets)
+            # WeaponFeature accepts every Receiver before the selection
+            # filter. Special receivers need their own verified sale path.
             and (item_id // 1000000000 != 18
-                 or item_id // 10000000 % 100 not in range(1, 8)
-                 or item_id in sale_receivers)
+                 or item_id in sale_receivers or item_id in CONFIRMED_MALL_IDS)
             and (not str(item_id).startswith('1107') or item_id in CHEST_RIG_LAYOUT)
             and (not str(item_id).startswith('1108') or item_id in BACKPACK_LAYOUT)
             and (not str(item_id).startswith(MANDEL_BRICK_PREFIX)

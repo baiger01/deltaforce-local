@@ -3,6 +3,9 @@
 from .core import fail, integer
 from .weapon_components import ROWS
 from copy import deepcopy
+from functools import lru_cache
+import json
+from pathlib import Path
 
 
 SCHEMA = '''
@@ -11,34 +14,78 @@ CREATE TABLE IF NOT EXISTS native_lobby_assembled_weapons (
 '''
 
 
-def _tree(prop, root_gid):
-    nodes = {}
+@lru_cache(maxsize=1)
+def _model_sockets():
+    catalog = json.loads((Path(__file__).resolve().parent.parent /
+                          'protocol/weapon_model_socket_catalog.json').read_text(encoding='utf-8'))
+    return {(int(row['receiver_id']), int(row['parent_template_id']),
+             int(row['slot']), int(row['model_id'])) for row in catalog['rows']}
 
-    def visit(parent_gid, components, depth):
+
+def _tree(prop, root_gid, current, next_gid, linked_part):
+    from .local_commerce import installed_items
+    items = installed_items()
+    nodes = {}
+    receiver = int(prop['id'])
+
+    def visit(parent_gid, parent_id, components, depth):
         if depth > 5 or len(nodes) > 128:
             fail('INVALID_ARGUMENT', 'Component tree exceeds the native bound')
         slots = set()
         for component in components:
             slot = integer(int(component.get('slot') or 0), 'slot', 0, 65535)
             child = component.get('prop_data') or {}
-            gid = integer(int(child.get('gid') or 0), 'part_gid', 1, 2**63 - 1)
             item_id = integer(int(child.get('id') or 0), 'part_id', 1, 2**63 - 1)
+            metadata = items.get(str(item_id))
+            if metadata is None or not str(item_id).startswith('13'):
+                fail('INVALID_ARGUMENT', 'The requested component is not a native adapter')
+            gid = int(child.get('gid') or 0)
+            model = metadata['is_model_only']
+            if model and gid:
+                saved = current.get(gid) or linked_part(gid)
+                if not saved or (saved['parent_gid'], saved['slot'], saved['template_id']) != (
+                        parent_gid, slot, item_id):
+                    fail('INVALID_ARGUMENT', 'Model identity does not match its saved component socket')
+            if model and not gid:
+                existing = next((part for part in current.values()
+                    if (part['parent_gid'], part['slot'], part['template_id']) ==
+                       (parent_gid, slot, item_id)), None)
+                if existing:
+                    gid = existing['gid']
+                else:
+                    if (receiver, parent_id, slot, item_id) not in _model_sockets():
+                        fail('INVALID_ARGUMENT', 'Model socket has no verified client binding')
+                    # A local tree identity is not an owned, tradable component.
+                    gid = next_gid()
+            gid = integer(gid, 'part_gid', 1, 2**63 - 1)
+            if model and gid in current and current[gid]['template_id'] != item_id:
+                fail('INVALID_ARGUMENT', 'Model identity does not match its saved component')
+            if model and gid not in current and (receiver, parent_id, slot, item_id) not in _model_sockets():
+                fail('INVALID_ARGUMENT', 'Model socket has no verified client binding')
             if gid == root_gid or gid in nodes or slot in slots or int(child.get('num') or 1) != 1:
                 fail('INVALID_ARGUMENT', 'Component instances and sockets must be unique')
             slots.add(slot)
-            nodes[gid] = {'gid': gid, 'parent_gid': parent_gid, 'slot': slot, 'template_id': item_id}
-            visit(gid, child.get('components') or [], depth + 1)
+            nodes[gid] = {'gid': gid, 'parent_gid': parent_gid, 'slot': slot,
+                          'template_id': item_id, 'model_only': model}
+            visit(gid, item_id, child.get('components') or [], depth + 1)
 
-    visit(root_gid, prop.get('components') or [], 1)
+    visit(root_gid, receiver, prop.get('components') or [], 1)
     return nodes
 
 
-def _warehouse_cell(connection, player_id, length, width):
+def _warehouse_cell(connection, player_id, length, width, preferred=None):
     occupied = set()
     for row in connection.execute('SELECT x,y,length,width FROM native_lobby_props '
                                   'WHERE player_id=? AND grid_page_id=2', (player_id,)):
         occupied.update((x, y) for x in range(row['x'], row['x'] + row['length'])
                         for y in range(row['y'], row['y'] + row['width']))
+    if preferred is not None:
+        x, y = preferred
+        if (x < 0 or y < 0 or x + length > 9 or y + width > 40 or
+                {(cx, cy) for cx in range(x, x + length)
+                 for cy in range(y, y + width)} & occupied):
+            fail('WAREHOUSE_FULL', 'The removed component does not fit its requested warehouse cell')
+        return preferred
     cell = next(((x, y) for y in range(41 - width) for x in range(10 - length)
                  if not {(cx, cy) for cx in range(x, x + length)
                          for cy in range(y, y + width)} & occupied), None)
@@ -51,7 +98,7 @@ def update_in_transaction(backend, connection, player_id, fields):
     from .local_commerce import installed_items
     if int(fields.get('data_type') or 0) not in (0, 99):
         fail('INVALID_ARGUMENT', 'This component transaction supports the local SOL inventory only')
-    if fields.get('swapped_peer_gun') or fields.get('unequip_pos'):
+    if fields.get('swapped_peer_gun'):
         fail('INVALID_ARGUMENT', 'Peer-weapon swapping requires a separate verified transaction')
     prop = fields.get('prop') or {}
     gid = integer(int(prop.get('gid') or 0), 'weapon_gid', 1, 2**63 - 1)
@@ -70,10 +117,22 @@ def update_in_transaction(backend, connection, player_id, fields):
             fail('INVALID_EQUIPMENT', 'Unload ammunition before applying an unverified or smaller magazine')
     current = {r['gid']: dict(r) for r in connection.execute(
         'SELECT * FROM native_lobby_weapon_parts WHERE weapon_gid=?', (gid,))}
-    desired = _tree(prop, gid)
+    next_model_gid = backend._next_native_prop_gid(connection)
+    def allocate_model_gid():
+        nonlocal next_model_gid
+        value = next_model_gid
+        next_model_gid += 1
+        return value
+    def linked_part(part_gid):
+        return connection.execute('SELECT part.* FROM native_lobby_weapon_parts part '
+            'JOIN native_lobby_props owner ON owner.gid=part.weapon_gid '
+            'WHERE owner.player_id=? AND part.gid=?', (player_id, part_gid)).fetchone()
+    desired = _tree(prop, gid, current, allocate_model_gid, linked_part)
     incoming = {}
     available = dict(current)
     for part_gid, part in desired.items():
+        if part['model_only']:
+            continue
         if part_gid not in available:
             physical = connection.execute('SELECT p.*,COALESCE(r.rotated,0) AS rotated '
                 'FROM native_lobby_props p LEFT JOIN native_lobby_prop_rotations r ON r.gid=p.gid '
@@ -93,18 +152,67 @@ def update_in_transaction(backend, connection, player_id, fields):
             fail('INVALID_ARGUMENT', 'The requested component is not a single native adapter')
     removed = set(current) - set(desired)
     removed_roots = [r for r in current.values() if r['gid'] in removed and r['parent_gid'] not in removed]
+    from .local_commerce import inventory_location
+    hints = fields.get('unequip_pos') or []
+    if not isinstance(hints, list) or len(hints) > 128:
+        fail('INVALID_ARGUMENT', 'Expected a bounded component return-position list')
+    return_cells = {}
+    unchanged = (set(current) == set(desired) and all(
+        all(part[key] == current[part_gid][key] for key in ('template_id', 'parent_gid', 'slot'))
+        for part_gid, part in desired.items()))
+    for hint in hints:
+        loc = hint.get('loc') or {}
+        if (int(loc.get('pos') or 0) != 2 or int(loc.get('space_id') or 0) not in (0, 1)
+                or any(key not in loc for key in ('start_x', 'start_y', 'x', 'y'))):
+            fail('INVALID_ARGUMENT', 'Component return position is not a warehouse cell')
+        signature = tuple(int(loc[key]) for key in ('start_x', 'start_y', 'x', 'y'))
+        x, y, span_x, span_y = signature
+        if x < 0 or y < 0 or span_x < 1 or span_y < 1 or x + span_x > 9 or y + span_y > 40:
+            fail('INVALID_ARGUMENT', 'Component return position exceeds the warehouse grid')
+        if unchanged:
+            continue
+        source = next((part_gid for part_gid, value in incoming.items()
+            if value['grid_page_id'] == 2 and tuple(inventory_location(value)[key]
+                for key in ('start_x', 'start_y', 'x', 'y')) == signature), None)
+        replacement = desired.get(source)
+        old = next((part for part in removed_roots if replacement and
+            (part['parent_gid'], part['slot']) == (replacement['parent_gid'], replacement['slot'])), None)
+        if old is None or old['gid'] in return_cells:
+            fail('INVALID_ARGUMENT', 'Component return position does not match the dragged replacement')
+        if (int(hint.get('prop_gid') or old['gid']) != old['gid'] or
+                int(hint.get('prop_id') or old['template_id']) != old['template_id']):
+            fail('INVALID_ARGUMENT', 'Component return position identifies a different removed part')
+        return_cells[old['gid']] = loc
     # Validate all incoming instances before modifying ownership or placements.
     moves = [{'before': value, 'after': None} for value in incoming.values()]
     for part_gid in incoming:
         connection.execute('DELETE FROM native_lobby_props WHERE gid=?', (part_gid,))
     connection.execute('DELETE FROM native_lobby_weapon_parts WHERE weapon_gid=?', (gid,))
-    for removed_root in removed_roots:
+    def has_removed_physical_ancestor(part):
+        parent = current.get(part['parent_gid'])
+        while parent and parent['gid'] in removed:
+            if not installed_items()[str(parent['template_id'])]['is_model_only']:
+                return True
+            parent = current.get(parent['parent_gid'])
+        return False
+
+    physical_roots = [part for part in current.values() if part['gid'] in removed
+        and not installed_items()[str(part['template_id'])]['is_model_only']
+        and not has_removed_physical_ancestor(part)]
+    for removed_root in physical_roots:
         metadata = installed_items()[str(removed_root['template_id'])]
         length, width = metadata['length'], metadata['width']
-        x, y = _warehouse_cell(connection, player_id, length, width)
         root_id = removed_root['gid']
+        loc = return_cells.get(root_id)
+        rotated = bool(loc and loc.get('rotate'))
+        if rotated:
+            length, width = width, length
+        x, y = _warehouse_cell(connection, player_id, length, width,
+            (int(loc['start_x']), int(loc['start_y'])) if loc else None)
         connection.execute('INSERT INTO native_lobby_props VALUES (?,?,?,?,?,?,?,?,?)',
             (root_id, player_id, removed_root['template_id'], 1, 2, x, y, length, width))
+        if rotated:
+            connection.execute('INSERT INTO native_lobby_prop_rotations VALUES (?,?)', (root_id, 1))
 
         def retain_children(parent_gid):
             for child in current.values():
@@ -115,7 +223,9 @@ def update_in_transaction(backend, connection, player_id, fields):
 
         retain_children(root_id)
         after = backend._container_prop(connection, player_id, connection.execute(
-            'SELECT * FROM native_lobby_props WHERE gid=?', (root_id,)).fetchone())
+            'SELECT p.*,COALESCE(r.rotated,0) AS rotated FROM native_lobby_props p '
+            'LEFT JOIN native_lobby_prop_rotations r ON r.gid=p.gid WHERE p.gid=?',
+            (root_id,)).fetchone())
         moves.append({'before': None, 'after': after})
     for part in desired.values():
         connection.execute('INSERT INTO native_lobby_weapon_parts VALUES (?,?,?,?,?)',

@@ -20,6 +20,20 @@
       "offset": 19447,
       "rule": "IsAllowPreset4Build requires IsBaseWeapon, a nonzero default preset and mode compatibility."
     },
+    "WeaponFeature.lua": {
+      "sha256": "7da7cb28eb39f31aafc7cee14774108f524d56f789cc59a662741c4461c29f58",
+      "function": "0.15",
+      "offset": 6945,
+      "instructions": [1, 14],
+      "rule": "IsWeapon accepts both Weapon and Receiver main types, including special receiver subtypes."
+    },
+    "AssemblySelectionDataLogic.lua": {
+      "sha256": "9a6661b89f501965de1e8cc94c74d9976eea965eb28fbe922e0bedf7f0e54ff8",
+      "function": "0.10",
+      "offset": 15616,
+      "instructions": [190, 202, 255, 270, 279, 296],
+      "rule": "Selection can read the slot receiver category; GetMapArmedForceGoods constructs the item before CheckItemMatchSOLCondition. Weapon presets are explicitly converted to RecId before goods lookup."
+    },
     "ShopServer.lua": {
       "sha256": "4fe3e3b9cfcbc414503a5b2672b93c9b78f07b0837834f12759b1568e4908325",
       "function": "0.131",
@@ -36,6 +50,8 @@
     "receiver_subtypes": [1, 2, 3, 4, 5, 6, 7],
     "requires_verified_default_component_tree": true,
     "receiver_aliases_require_same_verified_sale_default": true,
+    "special_receiver_sale_policy": "Reject receivers outside the verified firearm defaults, except the previously native-confirmed merchant entry. Keep owned-item recycle pricing separately.",
+    "confirmed_merchant_exception_ids": [18300000004],
     "pricing": "Use existing local initial guide prices of the actual default parts; do not use placeholder abstract preset prices.",
     "deduplication": "One source default preset per actual receiver; equal names or metadata do not collapse distinct firearms.",
     "excluded_paths": ["non-base special weapons", "fishing presets without source nodes", "unverified gunsmith category for bow"]

@@ -160,6 +160,31 @@ class GunsmithStockTests(unittest.TestCase):
         self.assertNotEqual(bought['result'], 0)
         self.assertEqual(self.backend.native_lobby_profile(self.token), before)
 
+    def test_special_receivers_without_a_verified_sale_path_are_not_offered(self):
+        # Native RecFunction gives these special receivers no sale default;
+        # 18100000001 has no matching RecFunction row. WeaponFeature.IsWeapon
+        # nevertheless accepts all Receiver IDs before the selection filter.
+        excluded = (18990000001, 18080000006, 18130000001,
+                    18140000001, 18100000001, 18150000001)
+        before = self.backend.native_lobby_profile(self.token)
+        for receiver in excluded:
+            with self.subTest(receiver=receiver):
+                self.assertIn(receiver, commerce.priced_inventory_catalog())
+                types = self.request('CSAuctionGetTypeListReq', {'prop_ids': [receiver]})
+                self.assertFalse(types.get('type_lists'))
+                quotes = self.request('CSAuctionGetSaleListBatchReq', {
+                    'infos': [{'prop_id': receiver}]})
+                self.assertFalse(quotes.get('sale_lists'))
+                bought = self.request('CSSerialCheapBuyReq', {'scene': 502, 'buy_list': [{
+                    'channel': 2, 'single_auction_prop': {'prop_id': receiver, 'buy_num': 1,
+                    'currency': commerce.CURRENCY_ID,
+                    'price': commerce.priced_inventory_catalog()[receiver]['initial_guide_price'],
+                    'to_pos': 111}}]})
+                self.assertNotEqual(bought['result'], 0)
+                self.assertEqual(self.backend.native_lobby_profile(self.token), before)
+        for confirmed in commerce.CONFIRMED_MALL_IDS:
+            self.assertIn(confirmed, commerce.stock_catalog())
+
     def test_bad_complete_gun_quote_does_not_debit_or_grant(self):
         before = self.backend.native_lobby_profile(self.token)
         result = self.request('CSSerialCheapBuyReq', {'scene': 502, 'buy_list': [{
