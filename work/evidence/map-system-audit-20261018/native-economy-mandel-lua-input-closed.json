@@ -1,0 +1,3765 @@
+{
+  "source_path": "E:\\新建文件夹\\DSH\\deltaforce-local\\work\\evidence\\weapon_lua\\MatchServer.lua",
+  "source_sha256": "4ec5c8287762a75c40be937d8588c03e2e0465e3735a274d86485ead38008be9",
+  "game_lua_executed": false,
+  "process_access": false,
+  "client_launched": false,
+  "opcode_mapping": "Existing client permutation in lua53_reader.py",
+  "functions": [
+    {
+      "function_id": "0.104",
+      "first_line": 2092,
+      "last_line": 2581,
+      "constants": [
+        "_matchCheckTimer",
+        "匹配成功 _matchCheckTimerStop",
+        "Stop",
+        "ClearBlackIpList",
+        "MatchServer:_OnCSPrepareJoinMatchNtf",
+        "selfId",
+        "Server",
+        "AccountServer",
+        "GetPlayerId",
+        "MatchServer:收到了PrepareJoinMatch",
+        "Events",
+        "evtMatchReport",
+        "Invoke",
+        "PointReport",
+        "Match",
+        "PreparePlayerJoinMatch",
+        "logtable",
+        "DSRoomIDForSync",
+        "ds_room_id",
+        "[SyncMapSign] _OnCSPrepareJoinMatchNtf, DSRoomIDForSync=",
+        "time_stamp",
+        "player_id",
+        "team_id",
+        "random_seed",
+        "player_idx",
+        "spawn_point_config_id",
+        "MainMode",
+        "GameModeServer",
+        "GetMainMode",
+        "SubMode",
+        "GetSubMode",
+        "tod_weather_id",
+        "[UDFMTODSubSystem] MatchServer:OnCSPrepareJoinMatchNtf, tod_weather_id=",
+        "[UDFMTODSubSystem] MatchServer:OnCSPrepareJoinMatchNtf tod_weather_id null",
+        "TeamMemberIds",
+        "import",
+        "FontStyleRuntimeManager",
+        "Get",
+        "Body2_24pt",
+        "Body0_20pt",
+        "Body4_28pt",
+        "Header4_32pt",
+        0,
+        "dsPlayerNames",
+        "ipairs",
+        "room_member_infos",
+        "PlayerUin",
+        "TeamId",
+        "PlayerIdx",
+        "Camp",
+        "camp",
+        -1,
+        "spawn_point_team_types",
+        1,
+        "type",
+        "number",
+        "TeamType",
+        "Add",
+        "SetCampId",
+        "evtMatchCampUpdate",
+        "nick_name",
+        "",
+        "WarmupText",
+        "GetOverInt64String",
+        "box_event",
+        "MandelSpawnerIDArray",
+        "match_mode_id",
+        "evtMatchIdUpdate",
+        "SetDsRoomId",
+        "SetDsTeamId",
+        "SetMatchId",
+        "SetBossType",
+        "team_reborn_boss_type",
+        "SetDsTeamNum",
+        "SetPrepareJoinMatchNtf",
+        "SetRoomMemberInfos",
+        "IsInEditor",
+        "Timer",
+        "CancelDelay",
+        "_callNumeralDelayHandle",
+        "DelayCall",
+        180,
+        "ReqMatchRoomCheckCallNumeral",
+        "_prepareJoinMatchNtf",
+        2,
+        "evtPrepareJoinMatch",
+        "MatchServer:OnCSPrepareJoinMatchNtf() 房间号",
+        ",拉起时间:",
+        ",player_id:",
+        ",team_id:",
+        ",random_seed:",
+        ",course_id:",
+        "iris_event_course_id",
+        "slua",
+        "Array",
+        "Str",
+        "UInt64",
+        "iris_event_ids",
+        "GetUInt64String",
+        "MatchServer:OnCSPrepareJoinMatchNtf() iris_event_id:",
+        "EventIds",
+        "GetWorld",
+        "K2_GetWorldSettings",
+        "MatchServer:OnCSPrepareJoinMatchNtf()",
+        "EnableSeamlessTravel",
+        "UseSeamlessTravel",
+        "_bSeamlessEntryPromiseCall",
+        false,
+        "_bSeamlessEntrySquadPickFinish",
+        "MatchServer:OnCSPrepareJoinMatchNtf(), set _bSeamlessEntryPromiseCall:",
+        ", set _bSeamlessEntrySquadPickFinish:",
+        "_matchModeInfo",
+        "game_mode",
+        "MatchGameMode",
+        "BlackHawkDown",
+        "GetMapID",
+        "CurrentEnterMapID",
+        "RequestAcceptedQuests",
+        "RequestAcceptedActivity",
+        "GetAllKeys",
+        "MatchServer",
+        "EndMatching",
+        "MatchServer:_ProcessSeamlessEntry BHD mode return loadLevel，LoadGameplayConfig，UI等操作",
+        "BlastGameMode",
+        "_blastingWaitingData",
+        true,
+        "matchNtf",
+        null,
+        "MatchServer:PrepareJoinmatch ==> ProcessSeamlessEntry set blastingWaitingData ==> true, reset matchNtf ==> nil",
+        "Promise",
+        "NewIns",
+        "Then",
+        "Server",
+        "IsInRoom",
+        "is_observer",
+        "GetMatchModeInfo",
+        "map_id",
+        "GetLevelName",
+        "MusicFest",
+        "MatchServer:OnCSPrepareJoinMatchNtf, 彩蛋关",
+        "LoadTODLevel",
+        "GetWorld",
+        "_fPreEnterGame",
+        "_isFromRoom",
+        "_isExecutePlayVideo",
+        "Facade",
+        "GameFlowManager",
+        "CheckMainFlowSOL",
+        "GetCurrentGameFlow",
+        "CreateCallBack",
+        "CreateCallBack",
+        "Server",
+        "GuideServer",
+        "IsNewPlayerMatchFinished",
+        "ConsumeWantEnterReflowNewPlayerMatch",
+        "_isSOLEventVideoPlayEnd",
+        false,
+        "_isReceivePlayerJoinMatch",
+        "Server",
+        "ArmedForceServer",
+        "ReqGetSolRoomTeam",
+        "ds_room_id",
+        "Events",
+        "evtAssemblyCardDisplayOnShow",
+        "Invoke",
+        "Server",
+        "ds_room_id",
+        "Facade",
+        "UIManager",
+        "CommitTransition",
+        1,
+        "ETransitionChangeReason",
+        "ProtoWaiting",
+        "SetIsJumpRollbackTransition"
+      ],
+      "local_names": [
+        {
+          "name": "self",
+          "start": 0,
+          "end": 523
+        },
+        {
+          "name": "ntf",
+          "start": 0,
+          "end": 523
+        },
+        {
+          "name": "bSkipMatchReadyAnim",
+          "start": 0,
+          "end": 523
+        },
+        {
+          "name": "bSkipPickHeroStage",
+          "start": 0,
+          "end": 523
+        },
+        {
+          "name": "MatchInfo",
+          "start": 40,
+          "end": 523
+        },
+        {
+          "name": "TeamMemberIdArray",
+          "start": 78,
+          "end": 523
+        },
+        {
+          "name": "UFontStyleRuntimeManager",
+          "start": 83,
+          "end": 523
+        },
+        {
+          "name": "nickNamePresetStyle",
+          "start": 89,
+          "end": 523
+        },
+        {
+          "name": "dsTeamNum",
+          "start": 90,
+          "end": 523
+        },
+        {
+          "name": "(for generator)",
+          "start": 95,
+          "end": 176
+        },
+        {
+          "name": "(for state)",
+          "start": 95,
+          "end": 176
+        },
+        {
+          "name": "(for control)",
+          "start": 95,
+          "end": 176
+        },
+        {
+          "name": "index",
+          "start": 96,
+          "end": 174
+        },
+        {
+          "name": "value",
+          "start": 96,
+          "end": 174
+        },
+        {
+          "name": "TeamMemberIndentity",
+          "start": 98,
+          "end": 174
+        },
+        {
+          "name": "teamType",
+          "start": 118,
+          "end": 128
+        },
+        {
+          "name": "(for generator)",
+          "start": 161,
+          "end": 168
+        },
+        {
+          "name": "(for state)",
+          "start": 161,
+          "end": 168
+        },
+        {
+          "name": "(for control)",
+          "start": 161,
+          "end": 168
+        },
+        {
+          "name": "k",
+          "start": 162,
+          "end": 166
+        },
+        {
+          "name": "v",
+          "start": 162,
+          "end": 166
+        },
+        {
+          "name": "(for generator)",
+          "start": 180,
+          "end": 187
+        },
+        {
+          "name": "(for state)",
+          "start": 180,
+          "end": 187
+        },
+        {
+          "name": "(for control)",
+          "start": 180,
+          "end": 187
+        },
+        {
+          "name": "index",
+          "start": 181,
+          "end": 185
+        },
+        {
+          "name": "value",
+          "start": 181,
+          "end": 185
+        },
+        {
+          "name": "EventIds",
+          "start": 258,
+          "end": 523
+        },
+        {
+          "name": "EventIdsUInt64",
+          "start": 262,
+          "end": 523
+        },
+        {
+          "name": "(for generator)",
+          "start": 265,
+          "end": 281
+        },
+        {
+          "name": "(for state)",
+          "start": 265,
+          "end": 281
+        },
+        {
+          "name": "(for control)",
+          "start": 265,
+          "end": 281
+        },
+        {
+          "name": "index",
+          "start": 266,
+          "end": 279
+        },
+        {
+          "name": "value",
+          "start": 266,
+          "end": 279
+        },
+        {
+          "name": "EventIdStr",
+          "start": 269,
+          "end": 279
+        },
+        {
+          "name": "world",
+          "start": 284,
+          "end": 523
+        },
+        {
+          "name": "enableSeamlessTravel",
+          "start": 285,
+          "end": 523
+        },
+        {
+          "name": "worldSettings",
+          "start": 289,
+          "end": 302
+        },
+        {
+          "name": "mapId",
+          "start": 323,
+          "end": 338
+        },
+        {
+          "name": "gameplayConfigLevelLoadPromise",
+          "start": 374,
+          "end": 523
+        },
+        {
+          "name": "fLoadGameplayConfig",
+          "start": 378,
+          "end": 523
+        },
+        {
+          "name": "matchModeInfo",
+          "start": 392,
+          "end": 523
+        },
+        {
+          "name": "mapId",
+          "start": 395,
+          "end": 523
+        },
+        {
+          "name": "needRollbackTransition",
+          "start": 435,
+          "end": 486
+        },
+        {
+          "name": "fPopAllUI",
+          "start": 436,
+          "end": 486
+        },
+        {
+          "name": "fSwitchEnterStage",
+          "start": 437,
+          "end": 486
+        },
+        {
+          "name": "fInternalPreEnterGame",
+          "start": 441,
+          "end": 486
+        },
+        {
+          "name": "fOnAnimEnd",
+          "start": 445,
+          "end": 486
+        },
+        {
+          "name": "fGetSolRoomTeamRes",
+          "start": 464,
+          "end": 486
+        },
+        {
+          "name": "fPopAllUI",
+          "start": 488,
+          "end": 522
+        },
+        {
+          "name": "fSwitchLoading",
+          "start": 489,
+          "end": 522
+        },
+        {
+          "name": "fOnDelayEnd",
+          "start": 493,
+          "end": 522
+        },
+        {
+          "name": "fGetSolRoomTeamRes",
+          "start": 494,
+          "end": 522
+        }
+      ],
+      "matched_terms": [
+        "MandelSpawnerIDArray",
+        "box_event",
+        "iris_event_ids"
+      ],
+      "upvalues": [
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          17
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          28
+        ],
+        [
+          1,
+          29
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          1,
+          30
+        ],
+        [
+          1,
+          22
+        ],
+        [
+          1,
+          25
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "upvalue_names": [
+        "logwarning",
+        "log",
+        "_ENV",
+        "logerror",
+        "FPlayerFrontEndMatchInfo",
+        "FTeamMemberIdentity",
+        "ULuautils",
+        "EPropertyClass",
+        "UDFMIrisEnterSubsystem",
+        "UDFMIrisEnterSeamlessGameplayHelper",
+        "UGPGameplayStatics",
+        "loginfo"
+      ],
+      "instruction_listing": [
+        "0001 GETTABLE   R4 R0 K0='_matchCheckTimer'",
+        "0002 TEST       R4 0 0",
+        "0003 JMP        R0 jump=10",
+        "0004 GETUPVAL   R4 0 0",
+        "0005 LOADK      R5 K1='匹配成功 _matchCheckTimerStop'",
+        "0006 CALL       R4 2 1",
+        "0007 GETTABLE   R4 R0 K0='_matchCheckTimer'",
+        "0008 SELF       R4 R4 K2='Stop'",
+        "0009 CALL       R4 2 1",
+        "0010 SELF       R4 R0 K3='ClearBlackIpList'",
+        "0011 CALL       R4 2 1",
+        "0012 GETUPVAL   R4 1 0",
+        "0013 LOADK      R5 K4='MatchServer:_OnCSPrepareJoinMatchNtf'",
+        "0014 LOADK      R6 K5='selfId'",
+        "0015 GETTABUP   R7 U2 K6='Server'",
+        "0016 GETTABLE   R7 R7 K7='AccountServer'",
+        "0017 SELF       R7 R7 K8='GetPlayerId'",
+        "0018 CALL       R7 2 0",
+        "0019 CALL       R4 0 1",
+        "0020 GETUPVAL   R4 3 0",
+        "0021 LOADK      R5 K9='MatchServer:收到了PrepareJoinMatch'",
+        "0022 CALL       R4 2 1",
+        "0023 GETTABLE   R4 R0 K10='Events'",
+        "0024 GETTABLE   R4 R4 K11='evtMatchReport'",
+        "0025 SELF       R4 R4 K12='Invoke'",
+        "0026 LOADK      R6 K13='PointReport'",
+        "0027 NEWTABLE   R7 0 1",
+        "0028 SETTABLE   R7 K14='Match' K15='PreparePlayerJoinMatch'",
+        "0029 CALL       R4 4 1",
+        "0030 GETTABUP   R4 U2 K16='logtable'",
+        "0031 MOVE       R5 1 0",
+        "0032 CALL       R4 2 1",
+        "0033 GETTABLE   R4 R1 K18='ds_room_id'",
+        "0034 SETTABLE   R0 K17='DSRoomIDForSync' R4",
+        "0035 GETUPVAL   R4 0 0",
+        "0036 LOADK      R5 K19='[SyncMapSign] _OnCSPrepareJoinMatchNtf, DSRoomIDForSync='",
+        "0037 GETTABLE   R6 R0 K17='DSRoomIDForSync'",
+        "0038 CALL       R4 3 1",
+        "0039 GETUPVAL   R4 4 0",
+        "0040 CALL       R4 1 2",
+        "0041 GETTABLE   R5 R1 K18='ds_room_id'",
+        "0042 SETTABLE   R4 K18='ds_room_id' R5",
+        "0043 GETTABLE   R5 R1 K20='time_stamp'",
+        "0044 SETTABLE   R4 K20='time_stamp' R5",
+        "0045 GETTABLE   R5 R1 K21='player_id'",
+        "0046 SETTABLE   R4 K21='player_id' R5",
+        "0047 GETTABLE   R5 R1 K22='team_id'",
+        "0048 SETTABLE   R4 K22='team_id' R5",
+        "0049 GETTABLE   R5 R1 K23='random_seed'",
+        "0050 SETTABLE   R4 K23='random_seed' R5",
+        "0051 GETTABLE   R5 R1 K24='player_idx'",
+        "0052 SETTABLE   R4 K24='player_idx' R5",
+        "0053 GETTABLE   R5 R1 K25='spawn_point_config_id'",
+        "0054 SETTABLE   R4 K25='spawn_point_config_id' R5",
+        "0055 GETTABUP   R5 U2 K6='Server'",
+        "0056 GETTABLE   R5 R5 K27='GameModeServer'",
+        "0057 SELF       R5 R5 K28='GetMainMode'",
+        "0058 CALL       R5 2 2",
+        "0059 SETTABLE   R4 K26='MainMode' R5",
+        "0060 GETTABUP   R5 U2 K6='Server'",
+        "0061 GETTABLE   R5 R5 K27='GameModeServer'",
+        "0062 SELF       R5 R5 K30='GetSubMode'",
+        "0063 CALL       R5 2 2",
+        "0064 SETTABLE   R4 K29='SubMode' R5",
+        "0065 GETTABLE   R5 R1 K31='tod_weather_id'",
+        "0066 TEST       R5 0 0",
+        "0067 JMP        R0 jump=75",
+        "0068 GETTABLE   R5 R1 K31='tod_weather_id'",
+        "0069 SETTABLE   R4 K31='tod_weather_id' R5",
+        "0070 GETUPVAL   R5 0 0",
+        "0071 LOADK      R6 K32='[UDFMTODSubSystem] MatchServer:OnCSPrepareJoinMatchNtf, tod_weather_id='",
+        "0072 GETTABLE   R7 R1 K31='tod_weather_id'",
+        "0073 CALL       R5 3 1",
+        "0074 JMP        R0 jump=78",
+        "0075 GETUPVAL   R5 3 0",
+        "0076 LOADK      R6 K33='[UDFMTODSubSystem] MatchServer:OnCSPrepareJoinMatchNtf tod_weather_id null'",
+        "0077 CALL       R5 2 1",
+        "0078 GETTABLE   R5 R4 K34='TeamMemberIds'",
+        "0079 GETTABUP   R6 U2 K35='import'",
+        "0080 LOADK      R7 K36='FontStyleRuntimeManager'",
+        "0081 CALL       R6 2 2",
+        "0082 GETTABLE   R6 R6 K37='Get'",
+        "0083 CALL       R6 1 2",
+        "0084 NEWTABLE   R7 4 0",
+        "0085 LOADK      R8 K38='Body2_24pt'",
+        "0086 LOADK      R9 K39='Body0_20pt'",
+        "0087 LOADK      R10 K40='Body4_28pt'",
+        "0088 LOADK      R11 K41='Header4_32pt'",
+        "0089 SETLIST    R7 4 1",
+        "0090 LOADK      R8 K42=0",
+        "0091 NEWTABLE   R9 0 0",
+        "0092 SETTABLE   R0 K43='dsPlayerNames' R9",
+        "0093 GETTABUP   R9 U2 K44='ipairs'",
+        "0094 GETTABLE   R10 R1 K45='room_member_infos'",
+        "0095 CALL       R9 2 4",
+        "0096 JMP        R0 jump=175",
+        "0097 GETUPVAL   R14 5 0",
+        "0098 CALL       R14 1 2",
+        "0099 GETTABLE   R15 R13 K21='player_id'",
+        "0100 SETTABLE   R14 K46='PlayerUin' R15",
+        "0101 GETTABLE   R15 R13 K22='team_id'",
+        "0102 SETTABLE   R14 K47='TeamId' R15",
+        "0103 GETTABLE   R15 R13 K24='player_idx'",
+        "0104 SETTABLE   R14 K48='PlayerIdx' R15",
+        "0105 GETTABLE   R15 R13 K50='camp'",
+        "0106 TEST       R15 0 1",
+        "0107 JMP        R0 jump=109",
+        "0108 LOADK      R15 K51=-1",
+        "0109 SETTABLE   R14 K49='Camp' R15",
+        "0110 GETTABLE   R15 R13 K52='spawn_point_team_types'",
+        "0111 TEST       R15 0 0",
+        "0112 JMP        R0 jump=130",
+        "0113 GETTABLE   R15 R13 K52='spawn_point_team_types'",
+        "0114 LEN        R15 15 0",
+        "0115 LT         R0 298 15",
+        "0116 JMP        R0 jump=130",
+        "0117 GETTABLE   R15 R13 K52='spawn_point_team_types'",
+        "0118 GETTABLE   R15 R15 K53=1",
+        "0119 TEST       R15 0 0",
+        "0120 JMP        R0 jump=128",
+        "0121 GETTABUP   R16 U2 K54='type'",
+        "0122 MOVE       R17 15 0",
+        "0123 CALL       R16 2 2",
+        "0124 EQ         R0 16 311",
+        "0125 JMP        R0 jump=128",
+        "0126 SETTABLE   R14 K56='TeamType' R15",
+        "0127 JMP        R0 jump=131",
+        "0128 SETTABLE   R14 K56='TeamType' K51=-1",
+        "0129 JMP        R0 jump=131",
+        "0130 SETTABLE   R14 K56='TeamType' K51=-1",
+        "0131 SELF       R15 R5 K57='Add'",
+        "0132 MOVE       R17 14 0",
+        "0133 CALL       R15 3 1",
+        "0134 GETTABLE   R15 R13 K21='player_id'",
+        "0135 GETTABLE   R16 R1 K21='player_id'",
+        "0136 EQ         R0 15 16",
+        "0137 JMP        R0 jump=146",
+        "0138 SELF       R15 R0 K58='SetCampId'",
+        "0139 GETTABLE   R17 R13 K50='camp'",
+        "0140 CALL       R15 3 1",
+        "0141 GETTABLE   R15 R0 K10='Events'",
+        "0142 GETTABLE   R15 R15 K59='evtMatchCampUpdate'",
+        "0143 SELF       R15 R15 K12='Invoke'",
+        "0144 GETTABLE   R17 R13 K50='camp'",
+        "0145 CALL       R15 3 1",
+        "0146 GETTABLE   R15 R13 K22='team_id'",
+        "0147 GETTABLE   R16 R1 K22='team_id'",
+        "0148 EQ         R0 15 16",
+        "0149 JMP        R0 jump=151",
+        "0150 ADD        R8 8 309",
+        "0151 GETTABLE   R15 R13 K60='nick_name'",
+        "0152 TEST       R15 0 0",
+        "0153 JMP        R0 jump=169",
+        "0154 GETTABLE   R15 R13 K60='nick_name'",
+        "0155 EQ         R1 15 317",
+        "0156 JMP        R0 jump=169",
+        "0157 TEST       R6 0 0",
+        "0158 JMP        R0 jump=169",
+        "0159 GETTABUP   R15 U2 K44='ipairs'",
+        "0160 MOVE       R16 7 0",
+        "0161 CALL       R15 2 4",
+        "0162 JMP        R0 jump=167",
+        "0163 SELF       R20 R6 K62='WarmupText'",
+        "0164 MOVE       R22 19 0",
+        "0165 GETTABLE   R23 R13 K60='nick_name'",
+        "0166 CALL       R20 4 1",
+        "0167 TFORCALL   R15 0 2",
+        "0168 TFORLOOP   R17 jump=163",
+        "0169 GETTABLE   R15 R0 K43='dsPlayerNames'",
+        "0170 GETTABUP   R16 U6 K63='GetOverInt64String'",
+        "0171 GETTABLE   R17 R13 K21='player_id'",
+        "0172 CALL       R16 2 2",
+        "0173 GETTABLE   R17 R13 K60='nick_name'",
+        "0174 SETTABLE   R15 R16 R17",
+        "0175 TFORCALL   R9 0 2",
+        "0176 TFORLOOP   R11 jump=97",
+        "0177 SETTABLE   R4 K34='TeamMemberIds' R5",
+        "0178 GETTABUP   R9 U2 K44='ipairs'",
+        "0179 GETTABLE   R10 R1 K64='box_event'",
+        "0180 CALL       R9 2 4",
+        "0181 JMP        R0 jump=186",
+        "0182 GETTABLE   R14 R4 K65='MandelSpawnerIDArray'",
+        "0183 SELF       R14 R14 K57='Add'",
+        "0184 MOVE       R16 13 0",
+        "0185 CALL       R14 3 1",
+        "0186 TFORCALL   R9 0 2",
+        "0187 TFORLOOP   R11 jump=182",
+        "0188 GETTABLE   R9 R1 K66='match_mode_id'",
+        "0189 TEST       R9 0 0",
+        "0190 JMP        R0 jump=196",
+        "0191 GETTABLE   R9 R0 K10='Events'",
+        "0192 GETTABLE   R9 R9 K67='evtMatchIdUpdate'",
+        "0193 SELF       R9 R9 K12='Invoke'",
+        "0194 MOVE       R11 1 0",
+        "0195 CALL       R9 3 1",
+        "0196 SELF       R9 R0 K68='SetDsRoomId'",
+        "0197 GETTABLE   R11 R1 K18='ds_room_id'",
+        "0198 CALL       R9 3 1",
+        "0199 SELF       R9 R0 K69='SetDsTeamId'",
+        "0200 GETTABLE   R11 R1 K22='team_id'",
+        "0201 CALL       R9 3 1",
+        "0202 SELF       R9 R0 K70='SetMatchId'",
+        "0203 GETTABLE   R11 R1 K66='match_mode_id'",
+        "0204 CALL       R9 3 1",
+        "0205 SELF       R9 R0 K71='SetBossType'",
+        "0206 GETTABLE   R11 R1 K72='team_reborn_boss_type'",
+        "0207 CALL       R9 3 1",
+        "0208 SELF       R9 R0 K73='SetDsTeamNum'",
+        "0209 MOVE       R11 8 0",
+        "0210 CALL       R9 3 1",
+        "0211 SELF       R9 R0 K74='SetPrepareJoinMatchNtf'",
+        "0212 MOVE       R11 1 0",
+        "0213 CALL       R9 3 1",
+        "0214 SELF       R9 R0 K75='SetRoomMemberInfos'",
+        "0215 GETTABLE   R11 R1 K45='room_member_infos'",
+        "0216 CALL       R9 3 1",
+        "0217 GETTABUP   R9 U2 K76='IsInEditor'",
+        "0218 CALL       R9 1 2",
+        "0219 TEST       R9 0 1",
+        "0220 JMP        R0 jump=235",
+        "0221 GETTABUP   R9 U2 K77='Timer'",
+        "0222 GETTABLE   R9 R9 K78='CancelDelay'",
+        "0223 GETTABLE   R10 R0 K79='_callNumeralDelayHandle'",
+        "0224 CALL       R9 2 1",
+        "0225 GETTABUP   R9 U2 K77='Timer'",
+        "0226 GETTABLE   R9 R9 K80='DelayCall'",
+        "0227 LOADK      R10 K81=180",
+        "0228 GETTABLE   R11 R0 K82='ReqMatchRoomCheckCallNumeral'",
+        "0229 MOVE       R12 0 0",
+        "0230 GETTABLE   R13 R0 K83='_prepareJoinMatchNtf'",
+        "0231 GETTABLE   R14 R1 K18='ds_room_id'",
+        "0232 LOADK      R15 K84=2",
+        "0233 CALL       R9 7 2",
+        "0234 SETTABLE   R0 K79='_callNumeralDelayHandle' R9",
+        "0235 GETTABLE   R9 R0 K10='Events'",
+        "0236 GETTABLE   R9 R9 K85='evtPrepareJoinMatch'",
+        "0237 SELF       R9 R9 K12='Invoke'",
+        "0238 GETTABLE   R11 R1 K18='ds_room_id'",
+        "0239 GETTABLE   R12 R1 K22='team_id'",
+        "0240 CALL       R9 4 1",
+        "0241 GETUPVAL   R9 3 0",
+        "0242 LOADK      R10 K86='MatchServer:OnCSPrepareJoinMatchNtf() 房间号'",
+        "0243 GETTABLE   R11 R1 K18='ds_room_id'",
+        "0244 LOADK      R12 K87=',拉起时间:'",
+        "0245 GETTABLE   R13 R1 K20='time_stamp'",
+        "0246 LOADK      R14 K88=',player_id:'",
+        "0247 GETTABLE   R15 R1 K21='player_id'",
+        "0248 LOADK      R16 K89=',team_id:'",
+        "0249 GETTABLE   R17 R1 K22='team_id'",
+        "0250 LOADK      R18 K90=',random_seed:'",
+        "0251 GETTABLE   R19 R1 K23='random_seed'",
+        "0252 LOADK      R20 K91=',course_id:'",
+        "0253 GETTABLE   R21 R1 K92='iris_event_course_id'",
+        "0254 CALL       R9 13 1",
+        "0255 GETTABUP   R9 U2 K93='slua'",
+        "0256 GETTABLE   R9 R9 K94='Array'",
+        "0257 GETTABUP   R10 U7 K95='Str'",
+        "0258 CALL       R9 2 2",
+        "0259 GETTABUP   R10 U2 K93='slua'",
+        "0260 GETTABLE   R10 R10 K94='Array'",
+        "0261 GETTABUP   R11 U7 K96='UInt64'",
+        "0262 CALL       R10 2 2",
+        "0263 GETTABUP   R11 U2 K44='ipairs'",
+        "0264 GETTABLE   R12 R1 K97='iris_event_ids'",
+        "0265 CALL       R11 2 4",
+        "0266 JMP        R0 jump=280",
+        "0267 GETTABUP   R16 U6 K98='GetUInt64String'",
+        "0268 MOVE       R17 15 0",
+        "0269 CALL       R16 2 2",
+        "0270 GETUPVAL   R17 3 0",
+        "0271 LOADK      R18 K99='MatchServer:OnCSPrepareJoinMatchNtf() iris_event_id:'",
+        "0272 MOVE       R19 16 0",
+        "0273 CALL       R17 3 1",
+        "0274 SELF       R17 R9 K57='Add'",
+        "0275 MOVE       R19 16 0",
+        "0276 CALL       R17 3 1",
+        "0277 SELF       R17 R10 K57='Add'",
+        "0278 MOVE       R19 15 0",
+        "0279 CALL       R17 3 1",
+        "0280 TFORCALL   R11 0 2",
+        "0281 TFORLOOP   R13 jump=267",
+        "0282 SETTABLE   R4 K100='EventIds' R10",
+        "0283 GETTABUP   R11 U2 K101='GetWorld'",
+        "0284 CALL       R11 1 2",
+        "0285 LOADBOOL   R12 0 0",
+        "0286 TEST       R11 0 0",
+        "0287 JMP        R0 jump=303",
+        "0288 SELF       R13 R11 K102='K2_GetWorldSettings'",
+        "0289 CALL       R13 2 2",
+        "0290 TEST       R13 0 0",
+        "0291 JMP        R0 jump=303",
+        "0292 GETUPVAL   R14 3 0",
+        "0293 LOADK      R15 K103='MatchServer:OnCSPrepareJoinMatchNtf()'",
+        "0294 LOADK      R16 K104='EnableSeamlessTravel'",
+        "0295 GETTABLE   R17 R13 K104='EnableSeamlessTravel'",
+        "0296 LOADK      R18 K105='UseSeamlessTravel'",
+        "0297 GETTABLE   R19 R0 K105='UseSeamlessTravel'",
+        "0298 CALL       R14 6 1",
+        "0299 GETTABLE   R14 R13 K104='EnableSeamlessTravel'",
+        "0300 TESTSET    R12 14 0",
+        "0301 JMP        R0 jump=303",
+        "0302 GETTABLE   R12 R0 K105='UseSeamlessTravel'",
+        "0303 SETTABLE   R0 K106='_bSeamlessEntryPromiseCall' K107=False",
+        "0304 SETTABLE   R0 K108='_bSeamlessEntrySquadPickFinish' K107=False",
+        "0305 GETUPVAL   R13 3 0",
+        "0306 LOADK      R14 K109='MatchServer:OnCSPrepareJoinMatchNtf(), set _bSeamlessEntryPromiseCall:'",
+        "0307 GETTABLE   R15 R0 K106='_bSeamlessEntryPromiseCall'",
+        "0308 LOADK      R16 K110=', set _bSeamlessEntrySquadPickFinish:'",
+        "0309 GETTABLE   R17 R0 K108='_bSeamlessEntrySquadPickFinish'",
+        "0310 CALL       R13 5 1",
+        "0311 GETTABLE   R13 R0 K111='_matchModeInfo'",
+        "0312 TEST       R13 0 0",
+        "0313 JMP        R0 jump=320",
+        "0314 GETTABLE   R13 R0 K111='_matchModeInfo'",
+        "0315 GETTABLE   R13 R13 K112='game_mode'",
+        "0316 GETTABUP   R14 U2 K113='MatchGameMode'",
+        "0317 GETTABLE   R14 R14 K114='BlackHawkDown'",
+        "0318 EQ         R1 13 14",
+        "0319 JMP        R0 jump=339",
+        "0320 GETTABUP   R13 U2 K6='Server'",
+        "0321 GETTABLE   R13 R13 K27='GameModeServer'",
+        "0322 SELF       R13 R13 K115='GetMapID'",
+        "0323 CALL       R13 2 2",
+        "0324 GETUPVAL   R14 8 0",
+        "0325 SELF       R14 R14 K37='Get'",
+        "0326 GETTABUP   R16 U2 K101='GetWorld'",
+        "0327 CALL       R16 1 0",
+        "0328 CALL       R14 0 2",
+        "0329 TESTSET    R15 13 1",
+        "0330 JMP        R0 jump=332",
+        "0331 LOADK      R15 K42=0",
+        "0332 SETTABLE   R14 K116='CurrentEnterMapID' R15",
+        "0333 SELF       R14 R0 K117='RequestAcceptedQuests'",
+        "0334 CALL       R14 2 1",
+        "0335 SELF       R14 R0 K118='RequestAcceptedActivity'",
+        "0336 CALL       R14 2 1",
+        "0337 SELF       R14 R0 K119='GetAllKeys'",
+        "0338 CALL       R14 2 1",
+        "0339 GETTABUP   R13 U2 K6='Server'",
+        "0340 GETTABLE   R13 R13 K120='MatchServer'",
+        "0341 SELF       R13 R13 K121='EndMatching'",
+        "0342 LOADBOOL   R15 1 0",
+        "0343 CALL       R13 3 1",
+        "0344 GETTABLE   R13 R0 K111='_matchModeInfo'",
+        "0345 TEST       R13 0 0",
+        "0346 JMP        R0 jump=357",
+        "0347 GETTABLE   R13 R0 K111='_matchModeInfo'",
+        "0348 GETTABLE   R13 R13 K112='game_mode'",
+        "0349 GETTABUP   R14 U2 K113='MatchGameMode'",
+        "0350 GETTABLE   R14 R14 K114='BlackHawkDown'",
+        "0351 EQ         R0 13 14",
+        "0352 JMP        R0 jump=357",
+        "0353 GETUPVAL   R13 3 0",
+        "0354 LOADK      R14 K122='MatchServer:_ProcessSeamlessEntry BHD mode return loadLevel，LoadGameplayConfig，UI等操作'",
+        "0355 CALL       R13 2 1",
+        "0356 RETURN     R0 1 0",
+        "0357 GETTABLE   R13 R0 K111='_matchModeInfo'",
+        "0358 TEST       R13 0 0",
+        "0359 JMP        R0 jump=371",
+        "0360 GETTABLE   R13 R0 K111='_matchModeInfo'",
+        "0361 GETTABLE   R13 R13 K112='game_mode'",
+        "0362 GETTABUP   R14 U2 K113='MatchGameMode'",
+        "0363 GETTABLE   R14 R14 K123='BlastGameMode'",
+        "0364 EQ         R0 13 14",
+        "0365 JMP        R0 jump=371",
+        "0366 SETTABLE   R0 K124='_blastingWaitingData' K125=True",
+        "0367 SETTABLE   R0 K126='matchNtf' K127=None",
+        "0368 GETUPVAL   R13 0 0",
+        "0369 LOADK      R14 K128='MatchServer:PrepareJoinmatch ==> ProcessSeamlessEntry set blastingWaitingData ==> true, reset matchNtf ==> nil'",
+        "0370 CALL       R13 2 1",
+        "0371 GETTABUP   R13 U2 K129='Promise'",
+        "0372 SELF       R13 R13 K130='NewIns'",
+        "0373 CLOSURE    R15 child[0]",
+        "0374 CALL       R13 3 2",
+        "0375 SELF       R14 R13 K131='Then'",
+        "0376 CLOSURE    R16 child[1]",
+        "0377 CALL       R14 3 1",
+        "0378 CLOSURE    R14 child[2]",
+        "0379 GETTABUP   R15 U2 K132='Server'",
+        "0380 GETTABLE   R15 R15 K7='AccountServer'",
+        "0381 SELF       R15 R15 K133='IsInRoom'",
+        "0382 CALL       R15 2 2",
+        "0383 TEST       R15 0 0",
+        "0384 JMP        R0 jump=386",
+        "0385 LOADBOOL   R2 1 0",
+        "0386 GETTABLE   R15 R1 K134='is_observer'",
+        "0387 TEST       R15 0 0",
+        "0388 JMP        R0 jump=391",
+        "0389 LOADBOOL   R2 1 0",
+        "0390 LOADBOOL   R3 1 0",
+        "0391 SELF       R15 R0 K135='GetMatchModeInfo'",
+        "0392 CALL       R15 2 2",
+        "0393 TESTSET    R16 15 0",
+        "0394 JMP        R0 jump=396",
+        "0395 GETTABLE   R16 R15 K136='map_id'",
+        "0396 GETTABUP   R17 U2 K132='Server'",
+        "0397 GETTABLE   R17 R17 K27='GameModeServer'",
+        "0398 SELF       R17 R17 K137='GetLevelName'",
+        "0399 MOVE       R19 16 0",
+        "0400 CALL       R17 3 2",
+        "0401 EQ         R0 17 394",
+        "0402 JMP        R0 jump=408",
+        "0403 GETUPVAL   R17 3 0",
+        "0404 LOADK      R18 K139='MatchServer:OnCSPrepareJoinMatchNtf, 彩蛋关'",
+        "0405 CALL       R17 2 1",
+        "0406 LOADBOOL   R2 1 0",
+        "0407 LOADBOOL   R3 1 0",
+        "0408 GETTABUP   R17 U10 K140='LoadTODLevel'",
+        "0409 GETTABUP   R18 U2 K141='GetWorld'",
+        "0410 CALL       R18 1 0",
+        "0411 CALL       R17 0 1",
+        "0412 SETTABLE   R0 K142='_fPreEnterGame' K127=None",
+        "0413 GETTABUP   R17 U2 K132='Server'",
+        "0414 GETTABLE   R17 R17 K7='AccountServer'",
+        "0415 SELF       R17 R17 K133='IsInRoom'",
+        "0416 CALL       R17 2 2",
+        "0417 SETTABLE   R0 K143='_isFromRoom' R17",
+        "0418 SETTABLE   R0 K144='_isExecutePlayVideo' K107=False",
+        "0419 GETTABUP   R17 U2 K132='Server'",
+        "0420 GETTABLE   R17 R17 K7='AccountServer'",
+        "0421 SELF       R17 R17 K133='IsInRoom'",
+        "0422 CALL       R17 2 2",
+        "0423 TEST       R17 0 1",
+        "0424 JMP        R0 jump=488",
+        "0425 GETTABUP   R17 U2 K145='Facade'",
+        "0426 GETTABLE   R17 R17 K146='GameFlowManager'",
+        "0427 SELF       R17 R17 K147='CheckMainFlowSOL'",
+        "0428 GETTABUP   R19 U2 K145='Facade'",
+        "0429 GETTABLE   R19 R19 K146='GameFlowManager'",
+        "0430 SELF       R19 R19 K148='GetCurrentGameFlow'",
+        "0431 CALL       R19 2 0",
+        "0432 CALL       R17 0 2",
+        "0433 TEST       R17 0 0",
+        "0434 JMP        R0 jump=488",
+        "0435 LOADBOOL   R17 0 0",
+        "0436 CLOSURE    R18 child[3]",
+        "0437 CLOSURE    R19 child[4]",
+        "0438 GETTABUP   R20 U2 K149='CreateCallBack'",
+        "0439 CLOSURE    R21 child[5]",
+        "0440 MOVE       R22 0 0",
+        "0441 CALL       R20 3 2",
+        "0442 GETTABUP   R21 U2 K150='CreateCallBack'",
+        "0443 CLOSURE    R22 child[6]",
+        "0444 MOVE       R23 0 0",
+        "0445 CALL       R21 3 2",
+        "0446 GETTABUP   R22 U2 K151='Server'",
+        "0447 GETTABLE   R22 R22 K152='GuideServer'",
+        "0448 SELF       R22 R22 K153='IsNewPlayerMatchFinished'",
+        "0449 CALL       R22 2 2",
+        "0450 TEST       R22 0 1",
+        "0451 JMP        R0 jump=454",
+        "0452 LOADBOOL   R2 1 0",
+        "0453 LOADBOOL   R3 1 0",
+        "0454 GETTABUP   R22 U2 K151='Server'",
+        "0455 GETTABLE   R22 R22 K152='GuideServer'",
+        "0456 SELF       R22 R22 K154='ConsumeWantEnterReflowNewPlayerMatch'",
+        "0457 CALL       R22 2 2",
+        "0458 TEST       R22 0 0",
+        "0459 JMP        R0 jump=462",
+        "0460 LOADBOOL   R2 1 0",
+        "0461 LOADBOOL   R3 1 0",
+        "0462 SETTABLE   R0 K155='_isSOLEventVideoPlayEnd' K156=False",
+        "0463 SETTABLE   R0 K157='_isReceivePlayerJoinMatch' K156=False",
+        "0464 CLOSURE    R22 child[7]",
+        "0465 TEST       R2 0 0",
+        "0466 JMP        R0 jump=469",
+        "0467 TEST       R3 0 1",
+        "0468 JMP        R0 jump=476",
+        "0469 GETTABUP   R23 U2 K158='Server'",
+        "0470 GETTABLE   R23 R23 K159='ArmedForceServer'",
+        "0471 SELF       R23 R23 K160='ReqGetSolRoomTeam'",
+        "0472 GETTABLE   R25 R1 K161='ds_room_id'",
+        "0473 MOVE       R26 22 0",
+        "0474 CALL       R23 4 1",
+        "0475 JMP        R18 jump=523",
+        "0476 MOVE       R23 18 0",
+        "0477 CALL       R23 1 1",
+        "0478 GETTABUP   R23 U2 K158='Server'",
+        "0479 GETTABLE   R23 R23 K159='ArmedForceServer'",
+        "0480 GETTABLE   R23 R23 K162='Events'",
+        "0481 GETTABLE   R23 R23 K163='evtAssemblyCardDisplayOnShow'",
+        "0482 SELF       R23 R23 K164='Invoke'",
+        "0483 CALL       R23 2 1",
+        "0484 MOVE       R23 20 0",
+        "0485 CALL       R23 1 1",
+        "0486 JMP        R18 jump=523",
+        "0487 JMP        R0 jump=523",
+        "0488 CLOSURE    R17 child[8]",
+        "0489 CLOSURE    R18 child[9]",
+        "0490 GETTABUP   R19 U2 K150='CreateCallBack'",
+        "0491 CLOSURE    R20 child[10]",
+        "0492 MOVE       R21 0 0",
+        "0493 CALL       R19 3 2",
+        "0494 CLOSURE    R20 child[11]",
+        "0495 TEST       R2 0 0",
+        "0496 JMP        R0 jump=499",
+        "0497 TEST       R3 0 1",
+        "0498 JMP        R0 jump=506",
+        "0499 GETTABUP   R21 U2 K165='Server'",
+        "0500 GETTABLE   R21 R21 K159='ArmedForceServer'",
+        "0501 SELF       R21 R21 K160='ReqGetSolRoomTeam'",
+        "0502 GETTABLE   R23 R1 K166='ds_room_id'",
+        "0503 MOVE       R24 20 0",
+        "0504 CALL       R21 4 1",
+        "0505 JMP        R18 jump=523",
+        "0506 MOVE       R21 17 0",
+        "0507 CALL       R21 1 1",
+        "0508 GETTABUP   R21 U2 K167='Facade'",
+        "0509 GETTABLE   R21 R21 K168='UIManager'",
+        "0510 SELF       R21 R21 K169='CommitTransition'",
+        "0511 LOADBOOL   R23 1 0",
+        "0512 LOADK      R24 K170=1",
+        "0513 LOADK      R25 K81=180",
+        "0514 GETTABUP   R26 U2 K171='ETransitionChangeReason'",
+        "0515 GETTABLE   R26 R26 K172='ProtoWaiting'",
+        "0516 CALL       R21 6 1",
+        "0517 GETTABUP   R21 U2 K167='Facade'",
+        "0518 GETTABLE   R21 R21 K168='UIManager'",
+        "0519 SELF       R21 R21 K173='SetIsJumpRollbackTransition'",
+        "0520 LOADBOOL   R23 1 0",
+        "0521 CALL       R21 3 1",
+        "0522 JMP        R18 jump=523",
+        "0523 RETURN     R0 1 0"
+      ]
+    },
+    {
+      "function_id": "0.104.0",
+      "first_line": 2248,
+      "last_line": 2248,
+      "constants": [],
+      "local_names": [],
+      "matched_terms": [],
+      "upvalues": [],
+      "upvalue_names": [],
+      "instruction_listing": [
+        "0001 RETURN     R0 1 0"
+      ]
+    },
+    {
+      "function_id": "0.104.1",
+      "first_line": 2249,
+      "last_line": 2312,
+      "constants": [
+        "MatchServer:_OnCSPrepareJoinMatchNtf gameplayConfigLevelLoadPromise",
+        "Promise",
+        "NewIns",
+        "Then",
+        "Timer",
+        "DelayCall",
+        0.01
+      ],
+      "local_names": [
+        {
+          "name": "fCallback",
+          "start": 0,
+          "end": 16
+        },
+        {
+          "name": "seamlessEntryPromise",
+          "start": 7,
+          "end": 16
+        }
+      ],
+      "matched_terms": [],
+      "upvalues": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          1,
+          12
+        ],
+        [
+          0,
+          8
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          0,
+          9
+        ],
+        [
+          0,
+          3
+        ]
+      ],
+      "upvalue_names": [
+        "logwarning",
+        "_ENV",
+        "enableSeamlessTravel",
+        "UDFMIrisEnterSubsystem",
+        "self",
+        "UDFMIrisEnterSeamlessGameplayHelper",
+        "logerror"
+      ],
+      "instruction_listing": [
+        "0001 GETUPVAL   R1 0 0",
+        "0002 LOADK      R2 K0='MatchServer:_OnCSPrepareJoinMatchNtf gameplayConfigLevelLoadPromise'",
+        "0003 CALL       R1 2 1",
+        "0004 GETTABUP   R1 U1 K1='Promise'",
+        "0005 SELF       R1 R1 K2='NewIns'",
+        "0006 CLOSURE    R3 child[0]",
+        "0007 CALL       R1 3 2",
+        "0008 SELF       R2 R1 K3='Then'",
+        "0009 CLOSURE    R4 child[1]",
+        "0010 CALL       R2 3 1",
+        "0011 GETTABUP   R2 U1 K4='Timer'",
+        "0012 GETTABLE   R2 R2 K5='DelayCall'",
+        "0013 LOADK      R3 K6=0.01",
+        "0014 CLOSURE    R4 child[2]",
+        "0015 CALL       R2 3 1",
+        "0016 RETURN     R0 1 0"
+      ]
+    },
+    {
+      "function_id": "0.104.1.0",
+      "first_line": 2251,
+      "last_line": 2251,
+      "constants": [],
+      "local_names": [],
+      "matched_terms": [],
+      "upvalues": [],
+      "upvalue_names": [],
+      "instruction_listing": [
+        "0001 RETURN     R0 1 0"
+      ]
+    },
+    {
+      "function_id": "0.104.1.1",
+      "first_line": 2252,
+      "last_line": 2302,
+      "constants": [
+        "UE",
+        "HUDStateManager",
+        "Get",
+        "GetWorld",
+        "AddState",
+        "GameHUDSate",
+        "GHS_GlobalHideAllHUD",
+        "MatchServer:_OnCSPrepareJoinMatchNtf seamlessEntryPromise",
+        "Server",
+        "GuideServer",
+        "GetMatchCount",
+        "MatchGameRule",
+        "SOLGameRule",
+        "CurrentPlayedMatchNum",
+        "UseSeamlessTravel",
+        "bCanUseSeamlessTravelAfterLoadGameplayConfig",
+        "EnableNewSeamlessTravel",
+        "ReadyToGame",
+        999,
+        "QStage_999_1",
+        3,
+        "RealMatchSucceed",
+        "LogAnalysisTool",
+        "DoSendBeginSeamlessLog",
+        "UKismetSystemLibrary",
+        "ExecuteConsoleCommand",
+        "GetGameInstance",
+        "OpenWorld.PendingUnloadTimeLimit 0.01",
+        "Facade",
+        "LevelLoadManager",
+        "AsyncOperateStreamLevelsBySubStage",
+        "ESubStage",
+        "HallMain",
+        "Timer",
+        "DelayCall",
+        1,
+        4,
+        "_bSeamlessEntryPromiseCall",
+        true,
+        "MatchServer:OnCSPrepareJoinMatchNtf(), set _bSeamlessEntryPromiseCall:",
+        ", _bSeamlessEntrySquadPickFinish:",
+        "_bSeamlessEntrySquadPickFinish",
+        "NotifySeamlessGetOnReady",
+        "MatchServer:OnCSPrepareJoinMatchNtf(), UDFMIrisEnterSubsystem.EnableNewSeamlessTravel() ,gameplayconfig finish, go to next Flow",
+        "TrySwitchNextStage",
+        "MatchServer:OnCSPrepareJoinMatchNtf(), TrySwitchNextStage in gameplayconfig callback, result=",
+        "MatchServer",
+        "Events",
+        "evtRealBoarding",
+        "Invoke"
+      ],
+      "local_names": [
+        {
+          "name": "hudStateManager",
+          "start": 6,
+          "end": 127
+        },
+        {
+          "name": "matchCount",
+          "start": 24,
+          "end": 87
+        },
+        {
+          "name": "SwitchResult",
+          "start": 116,
+          "end": 120
+        }
+      ],
+      "matched_terms": [],
+      "upvalues": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          0,
+          5
+        ],
+        [
+          0,
+          6
+        ]
+      ],
+      "upvalue_names": [
+        "_ENV",
+        "logwarning",
+        "enableSeamlessTravel",
+        "UDFMIrisEnterSubsystem",
+        "self",
+        "UDFMIrisEnterSeamlessGameplayHelper",
+        "logerror"
+      ],
+      "instruction_listing": [
+        "0001 GETTABUP   R0 U0 K0='UE'",
+        "0002 GETTABLE   R0 R0 K1='HUDStateManager'",
+        "0003 GETTABLE   R0 R0 K2='Get'",
+        "0004 GETTABUP   R1 U0 K3='GetWorld'",
+        "0005 CALL       R1 1 0",
+        "0006 CALL       R0 0 2",
+        "0007 SELF       R1 R0 K4='AddState'",
+        "0008 GETTABUP   R3 U0 K0='UE'",
+        "0009 GETTABLE   R3 R3 K5='GameHUDSate'",
+        "0010 GETTABLE   R3 R3 K6='GHS_GlobalHideAllHUD'",
+        "0011 LOADBOOL   R4 0 0",
+        "0012 CALL       R1 4 1",
+        "0013 GETUPVAL   R1 1 0",
+        "0014 LOADK      R2 K7='MatchServer:_OnCSPrepareJoinMatchNtf seamlessEntryPromise'",
+        "0015 CALL       R1 2 1",
+        "0016 GETUPVAL   R1 2 0",
+        "0017 TEST       R1 0 0",
+        "0018 JMP        R0 jump=88",
+        "0019 GETTABUP   R1 U0 K8='Server'",
+        "0020 GETTABLE   R1 R1 K9='GuideServer'",
+        "0021 SELF       R1 R1 K10='GetMatchCount'",
+        "0022 GETTABUP   R3 U0 K11='MatchGameRule'",
+        "0023 GETTABLE   R3 R3 K12='SOLGameRule'",
+        "0024 CALL       R1 3 2",
+        "0025 GETUPVAL   R2 3 0",
+        "0026 SELF       R2 R2 K2='Get'",
+        "0027 GETTABUP   R4 U0 K3='GetWorld'",
+        "0028 CALL       R4 1 0",
+        "0029 CALL       R2 0 2",
+        "0030 SETTABLE   R2 K13='CurrentPlayedMatchNum' R1",
+        "0031 GETUPVAL   R2 3 0",
+        "0032 SELF       R2 R2 K2='Get'",
+        "0033 GETTABUP   R4 U0 K3='GetWorld'",
+        "0034 CALL       R4 1 0",
+        "0035 CALL       R2 0 2",
+        "0036 GETTABLE   R2 R2 K15='bCanUseSeamlessTravelAfterLoadGameplayConfig'",
+        "0037 SETTABUP   U4 K14='UseSeamlessTravel' R2",
+        "0038 GETTABUP   R2 U3 K16='EnableNewSeamlessTravel'",
+        "0039 CALL       R2 1 2",
+        "0040 TEST       R2 0 0",
+        "0041 JMP        R0 jump=50",
+        "0042 GETTABUP   R2 U5 K17='ReadyToGame'",
+        "0043 GETTABUP   R3 U0 K3='GetWorld'",
+        "0044 CALL       R3 1 2",
+        "0045 LOADK      R4 K18=999",
+        "0046 LOADK      R5 K19='QStage_999_1'",
+        "0047 LOADK      R6 K20=3",
+        "0048 CALL       R2 5 1",
+        "0049 JMP        R0 jump=57",
+        "0050 GETTABUP   R2 U5 K21='RealMatchSucceed'",
+        "0051 GETTABUP   R3 U0 K3='GetWorld'",
+        "0052 CALL       R3 1 2",
+        "0053 LOADK      R4 K18=999",
+        "0054 LOADK      R5 K19='QStage_999_1'",
+        "0055 LOADK      R6 K20=3",
+        "0056 CALL       R2 5 1",
+        "0057 GETTABUP   R2 U0 K22='LogAnalysisTool'",
+        "0058 GETTABLE   R2 R2 K23='DoSendBeginSeamlessLog'",
+        "0059 CALL       R2 1 1",
+        "0060 GETTABUP   R2 U4 K14='UseSeamlessTravel'",
+        "0061 TEST       R2 0 0",
+        "0062 JMP        R0 jump=88",
+        "0063 GETTABUP   R2 U0 K24='UKismetSystemLibrary'",
+        "0064 GETTABLE   R2 R2 K25='ExecuteConsoleCommand'",
+        "0065 GETTABUP   R3 U0 K26='GetGameInstance'",
+        "0066 CALL       R3 1 2",
+        "0067 LOADK      R4 K27='OpenWorld.PendingUnloadTimeLimit 0.01'",
+        "0068 VARARG     R5 0 0",
+        "0069 CALL       R2 4 1",
+        "0070 GETTABUP   R2 U0 K28='Facade'",
+        "0071 GETTABLE   R2 R2 K29='LevelLoadManager'",
+        "0072 SELF       R2 R2 K30='AsyncOperateStreamLevelsBySubStage'",
+        "0073 GETTABUP   R4 U0 K31='ESubStage'",
+        "0074 GETTABLE   R4 R4 K32='HallMain'",
+        "0075 LOADBOOL   R5 0 0",
+        "0076 VARARG     R6 1 0",
+        "0077 CALL       R2 6 1",
+        "0078 GETTABUP   R2 U0 K33='Timer'",
+        "0079 GETTABLE   R2 R2 K34='DelayCall'",
+        "0080 LOADK      R3 K35=1",
+        "0081 CLOSURE    R4 child[0]",
+        "0082 CALL       R2 3 1",
+        "0083 GETTABUP   R2 U0 K33='Timer'",
+        "0084 GETTABLE   R2 R2 K34='DelayCall'",
+        "0085 LOADK      R3 K36=4",
+        "0086 CLOSURE    R4 child[1]",
+        "0087 CALL       R2 3 1",
+        "0088 SETTABUP   U4 K37='_bSeamlessEntryPromiseCall' K38=True",
+        "0089 GETUPVAL   R1 6 0",
+        "0090 LOADK      R2 K39='MatchServer:OnCSPrepareJoinMatchNtf(), set _bSeamlessEntryPromiseCall:'",
+        "0091 GETTABUP   R3 U4 K37='_bSeamlessEntryPromiseCall'",
+        "0092 LOADK      R4 K40=', _bSeamlessEntrySquadPickFinish:'",
+        "0093 GETTABUP   R5 U4 K41='_bSeamlessEntrySquadPickFinish'",
+        "0094 CALL       R1 5 1",
+        "0095 GETTABUP   R1 U4 K41='_bSeamlessEntrySquadPickFinish'",
+        "0096 TEST       R1 0 0",
+        "0097 JMP        R0 jump=127",
+        "0098 GETTABUP   R1 U3 K16='EnableNewSeamlessTravel'",
+        "0099 CALL       R1 1 2",
+        "0100 TEST       R1 0 0",
+        "0101 JMP        R0 jump=110",
+        "0102 GETTABUP   R1 U5 K42='NotifySeamlessGetOnReady'",
+        "0103 GETTABUP   R2 U0 K3='GetWorld'",
+        "0104 CALL       R2 1 0",
+        "0105 CALL       R1 0 1",
+        "0106 GETUPVAL   R1 1 0",
+        "0107 LOADK      R2 K43='MatchServer:OnCSPrepareJoinMatchNtf(), UDFMIrisEnterSubsystem.EnableNewSeamlessTravel() ,gameplayconfig finish, go to next Flow'",
+        "0108 CALL       R1 2 1",
+        "0109 JMP        R0 jump=121",
+        "0110 GETUPVAL   R1 3 0",
+        "0111 SELF       R1 R1 K2='Get'",
+        "0112 GETTABUP   R3 U0 K3='GetWorld'",
+        "0113 CALL       R3 1 0",
+        "0114 CALL       R1 0 2",
+        "0115 SELF       R1 R1 K44='TrySwitchNextStage'",
+        "0116 CALL       R1 2 2",
+        "0117 GETUPVAL   R2 1 0",
+        "0118 LOADK      R3 K45='MatchServer:OnCSPrepareJoinMatchNtf(), TrySwitchNextStage in gameplayconfig callback, result='",
+        "0119 MOVE       R4 1 0",
+        "0120 CALL       R2 3 1",
+        "0121 GETTABUP   R1 U0 K8='Server'",
+        "0122 GETTABLE   R1 R1 K46='MatchServer'",
+        "0123 GETTABLE   R1 R1 K47='Events'",
+        "0124 GETTABLE   R1 R1 K48='evtRealBoarding'",
+        "0125 SELF       R1 R1 K49='Invoke'",
+        "0126 CALL       R1 2 1",
+        "0127 RETURN     R0 1 0"
+      ]
+    },
+    {
+      "function_id": "0.104.1.1.0",
+      "first_line": 2280,
+      "last_line": 2282,
+      "constants": [
+        "UKismetSystemLibrary",
+        "ExecuteConsoleCommand",
+        "GetGameInstance",
+        "gc.ForceCollectGarbage"
+      ],
+      "local_names": [],
+      "matched_terms": [],
+      "upvalues": [
+        [
+          0,
+          0
+        ]
+      ],
+      "upvalue_names": [
+        "_ENV"
+      ],
+      "instruction_listing": [
+        "0001 GETTABUP   R0 U0 K0='UKismetSystemLibrary'",
+        "0002 GETTABLE   R0 R0 K1='ExecuteConsoleCommand'",
+        "0003 GETTABUP   R1 U0 K2='GetGameInstance'",
+        "0004 CALL       R1 1 2",
+        "0005 LOADK      R2 K3='gc.ForceCollectGarbage'",
+        "0006 VARARG     R3 0 0",
+        "0007 CALL       R0 4 1",
+        "0008 RETURN     R0 1 0"
+      ]
+    },
+    {
+      "function_id": "0.104.1.1.1",
+      "first_line": 2283,
+      "last_line": 2285,
+      "constants": [
+        "UKismetSystemLibrary",
+        "ExecuteConsoleCommand",
+        "GetGameInstance",
+        "gc.ForceCollectGarbage"
+      ],
+      "local_names": [],
+      "matched_terms": [],
+      "upvalues": [
+        [
+          0,
+          0
+        ]
+      ],
+      "upvalue_names": [
+        "_ENV"
+      ],
+      "instruction_listing": [
+        "0001 GETTABUP   R0 U0 K0='UKismetSystemLibrary'",
+        "0002 GETTABLE   R0 R0 K1='ExecuteConsoleCommand'",
+        "0003 GETTABUP   R1 U0 K2='GetGameInstance'",
+        "0004 CALL       R1 1 2",
+        "0005 LOADK      R2 K3='gc.ForceCollectGarbage'",
+        "0006 VARARG     R3 0 0",
+        "0007 CALL       R0 4 1",
+        "0008 RETURN     R0 1 0"
+      ]
+    },
+    {
+      "function_id": "0.104.1.2",
+      "first_line": 2304,
+      "last_line": 2310,
+      "constants": [
+        "Resolve",
+        "Events",
+        "evtGameplayConfigLoaded",
+        "Invoke"
+      ],
+      "local_names": [],
+      "matched_terms": [],
+      "upvalues": [
+        [
+          1,
+          1
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "upvalue_names": [
+        "seamlessEntryPromise",
+        "self",
+        "fCallback"
+      ],
+      "instruction_listing": [
+        "0001 GETUPVAL   R0 0 0",
+        "0002 SELF       R0 R0 K0='Resolve'",
+        "0003 CALL       R0 2 1",
+        "0004 GETTABUP   R0 U1 K1='Events'",
+        "0005 GETTABLE   R0 R0 K2='evtGameplayConfigLoaded'",
+        "0006 SELF       R0 R0 K3='Invoke'",
+        "0007 CALL       R0 2 1",
+        "0008 GETUPVAL   R0 2 0",
+        "0009 TEST       R0 0 0",
+        "0010 JMP        R0 jump=13",
+        "0011 GETUPVAL   R0 2 0",
+        "0012 CALL       R0 1 1",
+        "0013 RETURN     R0 1 0"
+      ]
+    },
+    {
+      "function_id": "0.104.2",
+      "first_line": 2314,
+      "last_line": 2332,
+      "constants": [
+        "MatchServer:_OnCSPrepareJoinMatchNtf LoadGameplayConfig",
+        "Get",
+        "GetWorld",
+        "bGameplayConfigLoadComplete",
+        "MatchServer:_OnCSPrepareJoinMatchNtf GameplayConfigLoadedCallback",
+        "MatchServer:_OnCSPrepareJoinMatchNtf OnGameplayConfigLoadCompleteEvent",
+        "_gameplayConfigLoadCompleteHandle",
+        "OnGameplayConfigLoadCompleteEvent",
+        "Add"
+      ],
+      "local_names": [
+        {
+          "name": "fCallback",
+          "start": 0,
+          "end": 35
+        },
+        {
+          "name": "GameplayConfigLoadedCallback",
+          "start": 4,
+          "end": 35
+        },
+        {
+          "name": "GameplayConfigLoaded",
+          "start": 10,
+          "end": 35
+        }
+      ],
+      "matched_terms": [],
+      "upvalues": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          0,
+          8
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          1,
+          13
+        ],
+        [
+          1,
+          12
+        ]
+      ],
+      "upvalue_names": [
+        "logwarning",
+        "self",
+        "UDFMIrisEnterSubsystem",
+        "_ENV",
+        "gameplayConfigLevelLoadPromise",
+        "enableSeamlessTravel"
+      ],
+      "instruction_listing": [
+        "0001 GETUPVAL   R1 0 0",
+        "0002 LOADK      R2 K0='MatchServer:_OnCSPrepareJoinMatchNtf LoadGameplayConfig'",
+        "0003 CALL       R1 2 1",
+        "0004 CLOSURE    R1 child[0]",
+        "0005 GETUPVAL   R2 2 0",
+        "0006 SELF       R2 R2 K1='Get'",
+        "0007 GETTABUP   R4 U3 K2='GetWorld'",
+        "0008 CALL       R4 1 0",
+        "0009 CALL       R2 0 2",
+        "0010 GETTABLE   R2 R2 K3='bGameplayConfigLoadComplete'",
+        "0011 TEST       R2 0 1",
+        "0012 JMP        R0 jump=16",
+        "0013 GETUPVAL   R3 5 0",
+        "0014 TEST       R3 0 1",
+        "0015 JMP        R0 jump=22",
+        "0016 GETUPVAL   R3 0 0",
+        "0017 LOADK      R4 K4='MatchServer:_OnCSPrepareJoinMatchNtf GameplayConfigLoadedCallback'",
+        "0018 CALL       R3 2 1",
+        "0019 MOVE       R3 1 0",
+        "0020 CALL       R3 1 1",
+        "0021 JMP        R0 jump=35",
+        "0022 GETUPVAL   R3 0 0",
+        "0023 LOADK      R4 K5='MatchServer:_OnCSPrepareJoinMatchNtf OnGameplayConfigLoadCompleteEvent'",
+        "0024 CALL       R3 2 1",
+        "0025 GETUPVAL   R3 2 0",
+        "0026 SELF       R3 R3 K1='Get'",
+        "0027 GETTABUP   R5 U3 K2='GetWorld'",
+        "0028 CALL       R5 1 0",
+        "0029 CALL       R3 0 2",
+        "0030 GETTABLE   R3 R3 K7='OnGameplayConfigLoadCompleteEvent'",
+        "0031 SELF       R3 R3 K8='Add'",
+        "0032 MOVE       R5 1 0",
+        "0033 CALL       R3 3 2",
+        "0034 SETTABUP   U1 K6='_gameplayConfigLoadCompleteHandle' R3",
+        "0035 RETURN     R0 1 0"
+      ]
+    },
+    {
+      "function_id": "0.104.2.0",
+      "first_line": 2316,
+      "last_line": 2323,
+      "constants": [
+        "MatchServer:_OnCSPrepareJoinMatchNtf Do GameplayConfigLoadedCallback",
+        "_gameplayConfigLoadCompleteHandle",
+        "Get",
+        "GetWorld",
+        "OnGameplayConfigLoadCompleteEvent",
+        "Remove",
+        "type",
+        "function",
+        "Resolve"
+      ],
+      "local_names": [],
+      "matched_terms": [],
+      "upvalues": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          0,
+          4
+        ]
+      ],
+      "upvalue_names": [
+        "logwarning",
+        "self",
+        "UDFMIrisEnterSubsystem",
+        "_ENV",
+        "fCallback",
+        "gameplayConfigLevelLoadPromise"
+      ],
+      "instruction_listing": [
+        "0001 GETUPVAL   R0 0 0",
+        "0002 LOADK      R1 K0='MatchServer:_OnCSPrepareJoinMatchNtf Do GameplayConfigLoadedCallback'",
+        "0003 CALL       R0 2 1",
+        "0004 GETTABUP   R0 U1 K1='_gameplayConfigLoadCompleteHandle'",
+        "0005 TEST       R0 0 0",
+        "0006 JMP        R0 jump=17",
+        "0007 GETUPVAL   R0 2 0",
+        "0008 SELF       R0 R0 K2='Get'",
+        "0009 GETTABUP   R2 U3 K3='GetWorld'",
+        "0010 CALL       R2 1 0",
+        "0011 CALL       R0 0 2",
+        "0012 GETTABLE   R0 R0 K4='OnGameplayConfigLoadCompleteEvent'",
+        "0013 SELF       R0 R0 K5='Remove'",
+        "0014 GETTABUP   R2 U1 K1='_gameplayConfigLoadCompleteHandle'",
+        "0015 CALL       R0 3 2",
+        "0016 SETTABUP   U1 K1='_gameplayConfigLoadCompleteHandle' R0",
+        "0017 GETTABUP   R0 U3 K6='type'",
+        "0018 GETUPVAL   R1 4 0",
+        "0019 CALL       R0 2 2",
+        "0020 EQ         R0 0 263",
+        "0021 JMP        R0 jump=24",
+        "0022 GETUPVAL   R0 4 0",
+        "0023 JMP        R0 jump=26",
+        "0024 LOADBOOL   R0 0 1",
+        "0025 LOADBOOL   R0 1 0",
+        "0026 SETUPVAL   R0 4 0",
+        "0027 GETUPVAL   R0 5 0",
+        "0028 SELF       R0 R0 K8='Resolve'",
+        "0029 GETUPVAL   R2 4 0",
+        "0030 CALL       R0 3 1",
+        "0031 RETURN     R0 1 0"
+      ]
+    },
+    {
+      "function_id": "0.104.3",
+      "first_line": 2356,
+      "last_line": 2361,
+      "constants": [
+        "MatchServer:OnCSPrepareJoinMatchNtf, PopAllUI",
+        "Facade",
+        "UIManager",
+        "PopAllUI",
+        "MapPopAllUIReason2Str",
+        "PrepareJoinMatchNtf",
+        "CloseAllPopUI"
+      ],
+      "local_names": [],
+      "matched_terms": [],
+      "upvalues": [
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          2
+        ]
+      ],
+      "upvalue_names": [
+        "logerror",
+        "_ENV"
+      ],
+      "instruction_listing": [
+        "0001 GETUPVAL   R0 0 0",
+        "0002 LOADK      R1 K0='MatchServer:OnCSPrepareJoinMatchNtf, PopAllUI'",
+        "0003 CALL       R0 2 1",
+        "0004 GETTABUP   R0 U1 K1='Facade'",
+        "0005 GETTABLE   R0 R0 K2='UIManager'",
+        "0006 SELF       R0 R0 K3='PopAllUI'",
+        "0007 LOADBOOL   R2 1 0",
+        "0008 LOADBOOL   R3 1 0",
+        "0009 GETTABUP   R4 U1 K4='MapPopAllUIReason2Str'",
+        "0010 GETTABLE   R4 R4 K5='PrepareJoinMatchNtf'",
+        "0011 CALL       R0 5 1",
+        "0012 GETTABUP   R0 U1 K1='Facade'",
+        "0013 GETTABLE   R0 R0 K2='UIManager'",
+        "0014 SELF       R0 R0 K6='CloseAllPopUI'",
+        "0015 CALL       R0 2 1",
+        "0016 RETURN     R0 1 0"
+      ]
+    },
+    {
+      "function_id": "0.104.4",
+      "first_line": 2362,
+      "last_line": 2385,
+      "constants": [
+        "Facade",
+        "UIManager",
+        "GetIsJumpRollbackTransition",
+        "CommitTransition",
+        "ETransitionChangeReason",
+        "ProtoWaiting",
+        "SetIsJumpRollbackTransition",
+        "Server",
+        "MatchServer",
+        "Events",
+        "evtBeginSeamless",
+        "Invoke",
+        "_bIsSeamlessTravel",
+        true,
+        "_bSeamlessEntrySquadPickFinish",
+        "MatchServer:OnCSPrepareJoinMatchNtf, SquadPick Finish, SeamlessEntryPromiseCall=",
+        "_bSeamlessEntryPromiseCall",
+        "EnableNewSeamlessTravel",
+        "NotifySeamlessGetOnReady",
+        "GetWorld",
+        "MatchServer:OnCSPrepareJoinMatchNtf(), UDFMIrisEnterSubsystem.EnableNewSeamlessTravel() , in squad pick finish, go to next Flow",
+        "Get",
+        "TrySwitchNextStage",
+        "MatchServer:OnCSPrepareJoinMatchNtf(), TrySwitchNextStage, in squad pick finish, result=",
+        "evtRealBoarding",
+        "GameFlowManager",
+        "EnterSubStage",
+        "ESubStage",
+        "None"
+      ],
+      "local_names": [
+        {
+          "name": "SwitchResult",
+          "start": 58,
+          "end": 62
+        }
+      ],
+      "matched_terms": [],
+      "upvalues": [
+        [
+          1,
+          18
+        ],
+        [
+          1,
+          17
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          8
+        ],
+        [
+          0,
+          9
+        ]
+      ],
+      "upvalue_names": [
+        "fPopAllUI",
+        "needRollbackTransition",
+        "_ENV",
+        "self",
+        "logwarning",
+        "UDFMIrisEnterSubsystem",
+        "UDFMIrisEnterSeamlessGameplayHelper"
+      ],
+      "instruction_listing": [
+        "0001 GETUPVAL   R0 0 0",
+        "0002 CALL       R0 1 1",
+        "0003 GETUPVAL   R0 1 0",
+        "0004 TEST       R0 0 0",
+        "0005 JMP        R0 jump=25",
+        "0006 GETTABUP   R0 U2 K0='Facade'",
+        "0007 GETTABLE   R0 R0 K1='UIManager'",
+        "0008 SELF       R0 R0 K2='GetIsJumpRollbackTransition'",
+        "0009 CALL       R0 2 2",
+        "0010 TEST       R0 0 0",
+        "0011 JMP        R0 jump=25",
+        "0012 GETTABUP   R0 U2 K0='Facade'",
+        "0013 GETTABLE   R0 R0 K1='UIManager'",
+        "0014 SELF       R0 R0 K3='CommitTransition'",
+        "0015 LOADBOOL   R2 0 0",
+        "0016 VARARG     R3 1 0",
+        "0017 GETTABUP   R5 U2 K4='ETransitionChangeReason'",
+        "0018 GETTABLE   R5 R5 K5='ProtoWaiting'",
+        "0019 CALL       R0 6 1",
+        "0020 GETTABUP   R0 U2 K0='Facade'",
+        "0021 GETTABLE   R0 R0 K1='UIManager'",
+        "0022 SELF       R0 R0 K6='SetIsJumpRollbackTransition'",
+        "0023 LOADBOOL   R2 0 0",
+        "0024 CALL       R0 3 1",
+        "0025 GETTABUP   R0 U2 K7='Server'",
+        "0026 GETTABLE   R0 R0 K8='MatchServer'",
+        "0027 GETTABLE   R0 R0 K9='Events'",
+        "0028 GETTABLE   R0 R0 K10='evtBeginSeamless'",
+        "0029 SELF       R0 R0 K11='Invoke'",
+        "0030 CALL       R0 2 1",
+        "0031 SETTABUP   U3 K12='_bIsSeamlessTravel' K13=True",
+        "0032 SETTABUP   U3 K14='_bSeamlessEntrySquadPickFinish' K13=True",
+        "0033 GETUPVAL   R0 4 0",
+        "0034 LOADK      R1 K15='MatchServer:OnCSPrepareJoinMatchNtf, SquadPick Finish, SeamlessEntryPromiseCall='",
+        "0035 GETTABUP   R2 U3 K16='_bSeamlessEntryPromiseCall'",
+        "0036 CALL       R0 3 1",
+        "0037 GETTABUP   R0 U3 K16='_bSeamlessEntryPromiseCall'",
+        "0038 TEST       R0 0 0",
+        "0039 JMP        R0 jump=69",
+        "0040 GETTABUP   R0 U5 K17='EnableNewSeamlessTravel'",
+        "0041 CALL       R0 1 2",
+        "0042 TEST       R0 0 0",
+        "0043 JMP        R0 jump=52",
+        "0044 GETTABUP   R0 U6 K18='NotifySeamlessGetOnReady'",
+        "0045 GETTABUP   R1 U2 K19='GetWorld'",
+        "0046 CALL       R1 1 0",
+        "0047 CALL       R0 0 1",
+        "0048 GETUPVAL   R0 4 0",
+        "0049 LOADK      R1 K20='MatchServer:OnCSPrepareJoinMatchNtf(), UDFMIrisEnterSubsystem.EnableNewSeamlessTravel() , in squad pick finish, go to next Flow'",
+        "0050 CALL       R0 2 1",
+        "0051 JMP        R0 jump=63",
+        "0052 GETUPVAL   R0 5 0",
+        "0053 SELF       R0 R0 K21='Get'",
+        "0054 GETTABUP   R2 U2 K19='GetWorld'",
+        "0055 CALL       R2 1 0",
+        "0056 CALL       R0 0 2",
+        "0057 SELF       R0 R0 K22='TrySwitchNextStage'",
+        "0058 CALL       R0 2 2",
+        "0059 GETUPVAL   R1 4 0",
+        "0060 LOADK      R2 K23='MatchServer:OnCSPrepareJoinMatchNtf(), TrySwitchNextStage, in squad pick finish, result='",
+        "0061 MOVE       R3 0 0",
+        "0062 CALL       R1 3 1",
+        "0063 GETTABUP   R0 U2 K7='Server'",
+        "0064 GETTABLE   R0 R0 K8='MatchServer'",
+        "0065 GETTABLE   R0 R0 K9='Events'",
+        "0066 GETTABLE   R0 R0 K24='evtRealBoarding'",
+        "0067 SELF       R0 R0 K11='Invoke'",
+        "0068 CALL       R0 2 1",
+        "0069 GETTABUP   R0 U2 K0='Facade'",
+        "0070 GETTABLE   R0 R0 K25='GameFlowManager'",
+        "0071 SELF       R0 R0 K26='EnterSubStage'",
+        "0072 GETTABUP   R2 U2 K27='ESubStage'",
+        "0073 GETTABLE   R2 R2 K28='None'",
+        "0074 CALL       R0 3 1",
+        "0075 RETURN     R0 1 0"
+      ]
+    },
+    {
+      "function_id": "0.104.5",
+      "first_line": 2386,
+      "last_line": 2422,
+      "constants": [
+        "MatchServer:OnCSPrepareJoinMatchNtf, fInternalPreEnterGame",
+        "IsSeamlessTravelEnabled",
+        "Facade",
+        "GameFlowManager",
+        "EnterSubStage",
+        "ESubStage",
+        "None",
+        "CreateCallBack",
+        "_isPlayEndCalledOnce",
+        false,
+        "_isExecutePlayVideo",
+        true,
+        "Events",
+        "evtShowSOLEventVideoWidget",
+        "Invoke",
+        "iris_event_ids"
+      ],
+      "local_names": [
+        {
+          "name": "self",
+          "start": 0,
+          "end": 38
+        },
+        {
+          "name": "fPlayEndCallback",
+          "start": 21,
+          "end": 37
+        },
+        {
+          "name": "fOnGetTotalTime",
+          "start": 25,
+          "end": 37
+        }
+      ],
+      "matched_terms": [
+        "iris_event_ids"
+      ],
+      "upvalues": [
+        [
+          0,
+          11
+        ],
+        [
+          1,
+          14
+        ],
+        [
+          1,
+          19
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          1,
+          18
+        ],
+        [
+          1,
+          1
+        ]
+      ],
+      "upvalue_names": [
+        "loginfo",
+        "fLoadGameplayConfig",
+        "fSwitchEnterStage",
+        "_ENV",
+        "logerror",
+        "fPopAllUI",
+        "ntf"
+      ],
+      "instruction_listing": [
+        "0001 GETUPVAL   R1 0 0",
+        "0002 LOADK      R2 K0='MatchServer:OnCSPrepareJoinMatchNtf, fInternalPreEnterGame'",
+        "0003 CALL       R1 2 1",
+        "0004 SELF       R1 R0 K1='IsSeamlessTravelEnabled'",
+        "0005 CALL       R1 2 2",
+        "0006 TEST       R1 0 0",
+        "0007 JMP        R0 jump=12",
+        "0008 GETUPVAL   R1 1 0",
+        "0009 GETUPVAL   R2 2 0",
+        "0010 CALL       R1 2 1",
+        "0011 JMP        R0 jump=38",
+        "0012 GETTABUP   R1 U3 K2='Facade'",
+        "0013 GETTABLE   R1 R1 K3='GameFlowManager'",
+        "0014 SELF       R1 R1 K4='EnterSubStage'",
+        "0015 GETTABUP   R3 U3 K5='ESubStage'",
+        "0016 GETTABLE   R3 R3 K6='None'",
+        "0017 CALL       R1 3 1",
+        "0018 GETTABUP   R1 U3 K7='CreateCallBack'",
+        "0019 CLOSURE    R2 child[0]",
+        "0020 MOVE       R3 0 0",
+        "0021 CALL       R1 3 2",
+        "0022 GETTABUP   R2 U3 K7='CreateCallBack'",
+        "0023 CLOSURE    R3 child[1]",
+        "0024 MOVE       R4 0 0",
+        "0025 CALL       R2 3 2",
+        "0026 GETUPVAL   R3 5 0",
+        "0027 CALL       R3 1 1",
+        "0028 SETTABLE   R0 K8='_isPlayEndCalledOnce' K9=False",
+        "0029 SETTABLE   R0 K10='_isExecutePlayVideo' K11=True",
+        "0030 GETTABLE   R3 R0 K12='Events'",
+        "0031 GETTABLE   R3 R3 K13='evtShowSOLEventVideoWidget'",
+        "0032 SELF       R3 R3 K14='Invoke'",
+        "0033 GETTABUP   R5 U6 K15='iris_event_ids'",
+        "0034 MOVE       R6 1 0",
+        "0035 MOVE       R7 2 0",
+        "0036 CALL       R3 5 1",
+        "0037 JMP        R2 jump=38",
+        "0038 RETURN     R0 1 0"
+      ]
+    },
+    {
+      "function_id": "0.104.5.0",
+      "first_line": 2393,
+      "last_line": 2412,
+      "constants": [
+        "Facade",
+        "UIManager",
+        "CommitTransition",
+        "ETransitionChangeReason",
+        "ProtoWaiting",
+        "_isPlayEndCalledOnce",
+        "MatchServer:OnCSPrepareJoinMatchNtf, fPlayEndCallback is called once!!!",
+        true,
+        "MatchServer:OnCSPrepareJoinMatchNtf, fPlayEndCallback",
+        "_isSOLEventVideoPlayEnd",
+        "_isReceivePlayerJoinMatch",
+        "DoStartMatch",
+        "GetStartMatchInfo",
+        "TrySwitchLoadingState",
+        "_fPlayEndDelayHandle",
+        "Timer",
+        "CancelDelay",
+        null
+      ],
+      "local_names": [
+        {
+          "name": "self",
+          "start": 0,
+          "end": 39
+        }
+      ],
+      "matched_terms": [],
+      "upvalues": [
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          4
+        ]
+      ],
+      "upvalue_names": [
+        "_ENV",
+        "logerror"
+      ],
+      "instruction_listing": [
+        "0001 GETTABUP   R1 U0 K0='Facade'",
+        "0002 GETTABLE   R1 R1 K1='UIManager'",
+        "0003 SELF       R1 R1 K2='CommitTransition'",
+        "0004 LOADBOOL   R3 1 0",
+        "0005 VARARG     R4 1 0",
+        "0006 GETTABUP   R6 U0 K3='ETransitionChangeReason'",
+        "0007 GETTABLE   R6 R6 K4='ProtoWaiting'",
+        "0008 CALL       R1 6 1",
+        "0009 GETTABLE   R1 R0 K5='_isPlayEndCalledOnce'",
+        "0010 TEST       R1 0 0",
+        "0011 JMP        R0 jump=16",
+        "0012 GETUPVAL   R1 1 0",
+        "0013 LOADK      R2 K6='MatchServer:OnCSPrepareJoinMatchNtf, fPlayEndCallback is called once!!!'",
+        "0014 CALL       R1 2 1",
+        "0015 RETURN     R0 1 0",
+        "0016 SETTABLE   R0 K5='_isPlayEndCalledOnce' K7=True",
+        "0017 GETUPVAL   R1 1 0",
+        "0018 LOADK      R2 K8='MatchServer:OnCSPrepareJoinMatchNtf, fPlayEndCallback'",
+        "0019 CALL       R1 2 1",
+        "0020 SETTABLE   R0 K9='_isSOLEventVideoPlayEnd' K7=True",
+        "0021 GETTABLE   R1 R0 K10='_isReceivePlayerJoinMatch'",
+        "0022 TEST       R1 0 0",
+        "0023 JMP        R0 jump=29",
+        "0024 SELF       R1 R0 K11='DoStartMatch'",
+        "0025 SELF       R3 R0 K12='GetStartMatchInfo'",
+        "0026 CALL       R3 2 0",
+        "0027 CALL       R1 0 1",
+        "0028 JMP        R0 jump=31",
+        "0029 SELF       R1 R0 K13='TrySwitchLoadingState'",
+        "0030 CALL       R1 2 1",
+        "0031 GETTABLE   R1 R0 K14='_fPlayEndDelayHandle'",
+        "0032 TEST       R1 0 0",
+        "0033 JMP        R0 jump=39",
+        "0034 GETTABUP   R1 U0 K15='Timer'",
+        "0035 GETTABLE   R1 R1 K16='CancelDelay'",
+        "0036 GETTABLE   R2 R0 K14='_fPlayEndDelayHandle'",
+        "0037 CALL       R1 2 1",
+        "0038 SETTABLE   R0 K14='_fPlayEndDelayHandle' K17=None",
+        "0039 RETURN     R0 1 0"
+      ]
+    },
+    {
+      "function_id": "0.104.5.1",
+      "first_line": 2413,
+      "last_line": 2416,
+      "constants": [
+        "MatchServer:OnCSPrepareJoinMatchNtf, fOnGetTotalTime",
+        "_fPlayEndDelayHandle",
+        "Timer",
+        "DelayCall",
+        2
+      ],
+      "local_names": [
+        {
+          "name": "self",
+          "start": 0,
+          "end": 11
+        },
+        {
+          "name": "totalTime",
+          "start": 0,
+          "end": 11
+        }
+      ],
+      "matched_terms": [],
+      "upvalues": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          1,
+          1
+        ]
+      ],
+      "upvalue_names": [
+        "loginfo",
+        "_ENV",
+        "fPlayEndCallback"
+      ],
+      "instruction_listing": [
+        "0001 GETUPVAL   R2 0 0",
+        "0002 LOADK      R3 K0='MatchServer:OnCSPrepareJoinMatchNtf, fOnGetTotalTime'",
+        "0003 MOVE       R4 1 0",
+        "0004 CALL       R2 3 1",
+        "0005 GETTABUP   R2 U1 K2='Timer'",
+        "0006 GETTABLE   R2 R2 K3='DelayCall'",
+        "0007 ADD        R3 1 260",
+        "0008 GETUPVAL   R4 2 0",
+        "0009 CALL       R2 3 2",
+        "0010 SETTABLE   R0 K1='_fPlayEndDelayHandle' R2",
+        "0011 RETURN     R0 1 0"
+      ]
+    },
+    {
+      "function_id": "0.104.6",
+      "first_line": 2424,
+      "last_line": 2440,
+      "constants": [
+        "MatchServer:OnCSPrepareJoinMatchNtf, OnAnimEnd",
+        "_showSquadPickDelayHandle",
+        "MatchServer:OnCSPrepareJoinMatchNtf, On CallBack, showSquadPickFunc is called once!!!",
+        "Timer",
+        "CancelDelay",
+        null,
+        "_StartMatchSucceed",
+        "Facade",
+        "UIManager",
+        "EnableInput",
+        "EInputChangeReason",
+        "BusinessPending",
+        "ResetAutoApplyThemeID",
+        "Events",
+        "evtShowSquadPickWidget",
+        "Invoke",
+        "ds_room_id",
+        "CheckIsEnableSeamless"
+      ],
+      "local_names": [
+        {
+          "name": "self",
+          "start": 0,
+          "end": 45
+        },
+        {
+          "name": "solRoomTeamRes",
+          "start": 0,
+          "end": 45
+        }
+      ],
+      "matched_terms": [],
+      "upvalues": [
+        [
+          0,
+          11
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          1,
+          18
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          1,
+          9
+        ],
+        [
+          1,
+          1
+        ]
+      ],
+      "upvalue_names": [
+        "loginfo",
+        "bSkipMatchReadyAnim",
+        "logerror",
+        "_ENV",
+        "fPopAllUI",
+        "MatchInfo",
+        "EventIds",
+        "ntf"
+      ],
+      "instruction_listing": [
+        "0001 GETUPVAL   R2 0 0",
+        "0002 LOADK      R3 K0='MatchServer:OnCSPrepareJoinMatchNtf, OnAnimEnd'",
+        "0003 CALL       R2 2 1",
+        "0004 GETUPVAL   R2 1 0",
+        "0005 TEST       R2 0 1",
+        "0006 JMP        R0 jump=14",
+        "0007 GETTABLE   R2 R0 K1='_showSquadPickDelayHandle'",
+        "0008 TEST       R2 0 1",
+        "0009 JMP        R0 jump=14",
+        "0010 GETUPVAL   R2 2 0",
+        "0011 LOADK      R3 K2='MatchServer:OnCSPrepareJoinMatchNtf, On CallBack, showSquadPickFunc is called once!!!'",
+        "0012 CALL       R2 2 1",
+        "0013 RETURN     R0 1 0",
+        "0014 GETTABUP   R2 U3 K3='Timer'",
+        "0015 GETTABLE   R2 R2 K4='CancelDelay'",
+        "0016 GETTABLE   R3 R0 K1='_showSquadPickDelayHandle'",
+        "0017 CALL       R2 2 1",
+        "0018 SETTABLE   R0 K1='_showSquadPickDelayHandle' K5=None",
+        "0019 GETUPVAL   R2 4 0",
+        "0020 CALL       R2 1 1",
+        "0021 SELF       R2 R0 K6='_StartMatchSucceed'",
+        "0022 GETUPVAL   R4 5 0",
+        "0023 GETUPVAL   R5 6 0",
+        "0024 GETUPVAL   R6 7 0",
+        "0025 CALL       R2 5 1",
+        "0026 GETTABUP   R2 U3 K7='Facade'",
+        "0027 GETTABLE   R2 R2 K8='UIManager'",
+        "0028 SELF       R2 R2 K9='EnableInput'",
+        "0029 GETTABUP   R4 U3 K10='EInputChangeReason'",
+        "0030 GETTABLE   R4 R4 K11='BusinessPending'",
+        "0031 CALL       R2 3 1",
+        "0032 GETTABUP   R2 U3 K7='Facade'",
+        "0033 GETTABLE   R2 R2 K8='UIManager'",
+        "0034 SELF       R2 R2 K12='ResetAutoApplyThemeID'",
+        "0035 CALL       R2 2 1",
+        "0036 GETTABLE   R2 R0 K13='Events'",
+        "0037 GETTABLE   R2 R2 K14='evtShowSquadPickWidget'",
+        "0038 SELF       R2 R2 K15='Invoke'",
+        "0039 VARARG     R4 1 0",
+        "0040 GETTABUP   R6 U7 K16='ds_room_id'",
+        "0041 MOVE       R7 1 0",
+        "0042 SELF       R8 R0 K17='CheckIsEnableSeamless'",
+        "0043 CALL       R8 2 0",
+        "0044 CALL       R2 0 1",
+        "0045 RETURN     R0 1 0"
+      ]
+    },
+    {
+      "function_id": "0.104.7",
+      "first_line": 2457,
+      "last_line": 2493,
+      "constants": [
+        "result",
+        0,
+        "DoRoomTeamShowInfoNameProcess",
+        "player_info_array",
+        "Events",
+        "evtShowMatchReadyWidget",
+        "Invoke",
+        "_showSquadPickDelayHandle",
+        "Timer",
+        "DelayCall",
+        3,
+        "_fPreEnterGame",
+        "MatchServer:OnCSPrepareJoinMatchNtf, fGetSolRoomTeamRes errorCode",
+        "Server",
+        "ArmedForceServer",
+        "evtAssemblyCardDisplayOnShow",
+        "_StartMatchSucceed"
+      ],
+      "local_names": [
+        {
+          "name": "res",
+          "start": 0,
+          "end": 58
+        },
+        {
+          "name": "fShowMatchReadyCallback",
+          "start": 46,
+          "end": 57
+        }
+      ],
+      "matched_terms": [],
+      "upvalues": [
+        [
+          1,
+          0
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          21
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          11
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          1,
+          20
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          1,
+          9
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          18
+        ],
+        [
+          1,
+          17
+        ]
+      ],
+      "upvalue_names": [
+        "self",
+        "bSkipMatchReadyAnim",
+        "fOnAnimEnd",
+        "_ENV",
+        "loginfo",
+        "logerror",
+        "fInternalPreEnterGame",
+        "MatchInfo",
+        "EventIds",
+        "ntf",
+        "fPopAllUI",
+        "needRollbackTransition"
+      ],
+      "instruction_listing": [
+        "0001 GETTABLE   R1 R0 K0='result'",
+        "0002 EQ         R0 1 257",
+        "0003 JMP        R0 jump=30",
+        "0004 GETUPVAL   R1 0 0",
+        "0005 SELF       R1 R1 K2='DoRoomTeamShowInfoNameProcess'",
+        "0006 GETTABLE   R3 R0 K3='player_info_array'",
+        "0007 CALL       R1 3 1",
+        "0008 GETUPVAL   R1 1 0",
+        "0009 TEST       R1 0 1",
+        "0010 JMP        R0 jump=24",
+        "0011 GETTABUP   R1 U0 K4='Events'",
+        "0012 GETTABLE   R1 R1 K5='evtShowMatchReadyWidget'",
+        "0013 SELF       R1 R1 K6='Invoke'",
+        "0014 GETUPVAL   R3 2 0",
+        "0015 MOVE       R4 0 0",
+        "0016 CALL       R1 4 1",
+        "0017 GETTABUP   R1 U3 K8='Timer'",
+        "0018 GETTABLE   R1 R1 K9='DelayCall'",
+        "0019 LOADK      R2 K10=3",
+        "0020 CLOSURE    R3 child[0]",
+        "0021 CALL       R1 3 2",
+        "0022 SETTABUP   U0 K7='_showSquadPickDelayHandle' R1",
+        "0023 JMP        R0 jump=27",
+        "0024 GETUPVAL   R1 2 0",
+        "0025 MOVE       R2 0 0",
+        "0026 CALL       R1 2 1",
+        "0027 CLOSURE    R1 child[1]",
+        "0028 SETTABUP   U0 K11='_fPreEnterGame' R1",
+        "0029 JMP        R0 jump=58",
+        "0030 GETUPVAL   R1 5 0",
+        "0031 LOADK      R2 K12='MatchServer:OnCSPrepareJoinMatchNtf, fGetSolRoomTeamRes errorCode'",
+        "0032 GETTABLE   R3 R0 K0='result'",
+        "0033 CALL       R1 3 1",
+        "0034 GETTABUP   R1 U3 K13='Server'",
+        "0035 GETTABLE   R1 R1 K14='ArmedForceServer'",
+        "0036 GETTABLE   R1 R1 K4='Events'",
+        "0037 GETTABLE   R1 R1 K15='evtAssemblyCardDisplayOnShow'",
+        "0038 SELF       R1 R1 K6='Invoke'",
+        "0039 CALL       R1 2 1",
+        "0040 GETUPVAL   R1 0 0",
+        "0041 SELF       R1 R1 K16='_StartMatchSucceed'",
+        "0042 GETUPVAL   R3 7 0",
+        "0043 GETUPVAL   R4 8 0",
+        "0044 GETUPVAL   R5 9 0",
+        "0045 CALL       R1 5 1",
+        "0046 CLOSURE    R1 child[2]",
+        "0047 GETUPVAL   R2 1 0",
+        "0048 TEST       R2 0 1",
+        "0049 JMP        R0 jump=56",
+        "0050 GETTABUP   R2 U0 K4='Events'",
+        "0051 GETTABLE   R2 R2 K5='evtShowMatchReadyWidget'",
+        "0052 SELF       R2 R2 K6='Invoke'",
+        "0053 MOVE       R4 1 0",
+        "0054 CALL       R2 3 1",
+        "0055 JMP        R0 jump=58",
+        "0056 MOVE       R2 1 0",
+        "0057 CALL       R2 1 1",
+        "0058 RETURN     R0 1 0"
+      ]
+    },
+    {
+      "function_id": "0.104.7.0",
+      "first_line": 2462,
+      "last_line": 2465,
+      "constants": [
+        "MatchServer:OnCSPrepareJoinMatchNtf, Call DelayFunction fOnAnimEnd"
+      ],
+      "local_names": [],
+      "matched_terms": [],
+      "upvalues": [
+        [
+          0,
+          4
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "upvalue_names": [
+        "loginfo",
+        "fOnAnimEnd",
+        "res"
+      ],
+      "instruction_listing": [
+        "0001 GETUPVAL   R0 0 0",
+        "0002 LOADK      R1 K0='MatchServer:OnCSPrepareJoinMatchNtf, Call DelayFunction fOnAnimEnd'",
+        "0003 CALL       R0 2 1",
+        "0004 GETUPVAL   R0 1 0",
+        "0005 GETUPVAL   R1 2 0",
+        "0006 CALL       R0 2 1",
+        "0007 RETURN     R0 1 0"
+      ]
+    },
+    {
+      "function_id": "0.104.7.1",
+      "first_line": 2469,
+      "last_line": 2472,
+      "constants": [
+        "MatchServer:OnCSPrepareJoinMatchNtf, fPreEnterGame SOL"
+      ],
+      "local_names": [],
+      "matched_terms": [],
+      "upvalues": [
+        [
+          0,
+          5
+        ],
+        [
+          0,
+          6
+        ]
+      ],
+      "upvalue_names": [
+        "logerror",
+        "fInternalPreEnterGame"
+      ],
+      "instruction_listing": [
+        "0001 GETUPVAL   R0 0 0",
+        "0002 LOADK      R1 K0='MatchServer:OnCSPrepareJoinMatchNtf, fPreEnterGame SOL'",
+        "0003 CALL       R0 2 1",
+        "0004 GETUPVAL   R0 1 0",
+        "0005 CALL       R0 1 1",
+        "0006 RETURN     R0 1 0"
+      ]
+    },
+    {
+      "function_id": "0.104.7.2",
+      "first_line": 2480,
+      "last_line": 2486,
+      "constants": [
+        "Facade",
+        "UIManager",
+        "CommitTransition",
+        1,
+        99,
+        "ETransitionChangeReason",
+        "ProtoWaiting",
+        "SetIsJumpRollbackTransition"
+      ],
+      "local_names": [],
+      "matched_terms": [],
+      "upvalues": [
+        [
+          0,
+          10
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          11
+        ],
+        [
+          0,
+          6
+        ]
+      ],
+      "upvalue_names": [
+        "fPopAllUI",
+        "_ENV",
+        "needRollbackTransition",
+        "fInternalPreEnterGame"
+      ],
+      "instruction_listing": [
+        "0001 GETUPVAL   R0 0 0",
+        "0002 CALL       R0 1 1",
+        "0003 GETTABUP   R0 U1 K0='Facade'",
+        "0004 GETTABLE   R0 R0 K1='UIManager'",
+        "0005 SELF       R0 R0 K2='CommitTransition'",
+        "0006 LOADBOOL   R2 1 0",
+        "0007 LOADK      R3 K3=1",
+        "0008 LOADK      R4 K4=99",
+        "0009 GETTABUP   R5 U1 K5='ETransitionChangeReason'",
+        "0010 GETTABLE   R5 R5 K6='ProtoWaiting'",
+        "0011 CALL       R0 6 1",
+        "0012 GETTABUP   R0 U1 K0='Facade'",
+        "0013 GETTABLE   R0 R0 K1='UIManager'",
+        "0014 SELF       R0 R0 K7='SetIsJumpRollbackTransition'",
+        "0015 LOADBOOL   R2 1 0",
+        "0016 CALL       R0 3 1",
+        "0017 LOADBOOL   R0 1 0",
+        "0018 SETUPVAL   R0 2 0",
+        "0019 GETUPVAL   R0 3 0",
+        "0020 CALL       R0 1 1",
+        "0021 RETURN     R0 1 0"
+      ]
+    },
+    {
+      "function_id": "0.104.8",
+      "first_line": 2504,
+      "last_line": 2509,
+      "constants": [
+        "MatchServer:OnCSPrepareJoinMatchNtf, PopAllUI",
+        "Facade",
+        "UIManager",
+        "PopAllUI",
+        "MapPopAllUIReason2Str",
+        "PrepareJoinMatchNtf",
+        "CloseAllPopUI"
+      ],
+      "local_names": [],
+      "matched_terms": [],
+      "upvalues": [
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          2
+        ]
+      ],
+      "upvalue_names": [
+        "logerror",
+        "_ENV"
+      ],
+      "instruction_listing": [
+        "0001 GETUPVAL   R0 0 0",
+        "0002 LOADK      R1 K0='MatchServer:OnCSPrepareJoinMatchNtf, PopAllUI'",
+        "0003 CALL       R0 2 1",
+        "0004 GETTABUP   R0 U1 K1='Facade'",
+        "0005 GETTABLE   R0 R0 K2='UIManager'",
+        "0006 SELF       R0 R0 K3='PopAllUI'",
+        "0007 LOADBOOL   R2 1 0",
+        "0008 LOADBOOL   R3 1 0",
+        "0009 GETTABUP   R4 U1 K4='MapPopAllUIReason2Str'",
+        "0010 GETTABLE   R4 R4 K5='PrepareJoinMatchNtf'",
+        "0011 CALL       R0 5 1",
+        "0012 GETTABUP   R0 U1 K1='Facade'",
+        "0013 GETTABLE   R0 R0 K2='UIManager'",
+        "0014 SELF       R0 R0 K6='CloseAllPopUI'",
+        "0015 CALL       R0 2 1",
+        "0016 RETURN     R0 1 0"
+      ]
+    },
+    {
+      "function_id": "0.104.9",
+      "first_line": 2510,
+      "last_line": 2514,
+      "constants": [
+        "MatchServer:OnCSPrepareJoinMatchNtf, fSwitchLoading",
+        "Server",
+        "MatchServer",
+        "TrySwitchLoadingState"
+      ],
+      "local_names": [],
+      "matched_terms": [],
+      "upvalues": [
+        [
+          0,
+          11
+        ],
+        [
+          0,
+          2
+        ]
+      ],
+      "upvalue_names": [
+        "loginfo",
+        "_ENV"
+      ],
+      "instruction_listing": [
+        "0001 GETUPVAL   R0 0 0",
+        "0002 LOADK      R1 K0='MatchServer:OnCSPrepareJoinMatchNtf, fSwitchLoading'",
+        "0003 CALL       R0 2 1",
+        "0004 GETTABUP   R0 U1 K1='Server'",
+        "0005 GETTABLE   R0 R0 K2='MatchServer'",
+        "0006 SELF       R0 R0 K3='TrySwitchLoadingState'",
+        "0007 CALL       R0 2 1",
+        "0008 RETURN     R0 1 0"
+      ]
+    },
+    {
+      "function_id": "0.104.10",
+      "first_line": 2516,
+      "last_line": 2536,
+      "constants": [
+        "MatchServer:OnCSPrepareJoinMatchNtf, OnDelayEnd",
+        "_showSquadPickDelayHandle",
+        "MatchServer:OnCSPrepareJoinMatchNtf, On CallBack, showSquadPickFunc is called once!!!",
+        "Timer",
+        "CancelDelay",
+        null,
+        "_IsBlastingMode",
+        "DelayCall",
+        1.5
+      ],
+      "local_names": [
+        {
+          "name": "self",
+          "start": 0,
+          "end": 32
+        },
+        {
+          "name": "solRoomTeamRes",
+          "start": 0,
+          "end": 32
+        },
+        {
+          "name": "doPopAllUIAndShowSquadPick",
+          "start": 19,
+          "end": 32
+        }
+      ],
+      "matched_terms": [],
+      "upvalues": [
+        [
+          0,
+          11
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          1,
+          17
+        ],
+        [
+          1,
+          1
+        ]
+      ],
+      "upvalue_names": [
+        "loginfo",
+        "bSkipMatchReadyAnim",
+        "logerror",
+        "_ENV",
+        "fPopAllUI",
+        "ntf"
+      ],
+      "instruction_listing": [
+        "0001 GETUPVAL   R2 0 0",
+        "0002 LOADK      R3 K0='MatchServer:OnCSPrepareJoinMatchNtf, OnDelayEnd'",
+        "0003 CALL       R2 2 1",
+        "0004 GETUPVAL   R2 1 0",
+        "0005 TEST       R2 0 1",
+        "0006 JMP        R0 jump=14",
+        "0007 GETTABLE   R2 R0 K1='_showSquadPickDelayHandle'",
+        "0008 TEST       R2 0 1",
+        "0009 JMP        R0 jump=14",
+        "0010 GETUPVAL   R2 2 0",
+        "0011 LOADK      R3 K2='MatchServer:OnCSPrepareJoinMatchNtf, On CallBack, showSquadPickFunc is called once!!!'",
+        "0012 CALL       R2 2 1",
+        "0013 RETURN     R0 1 0",
+        "0014 GETTABUP   R2 U3 K3='Timer'",
+        "0015 GETTABLE   R2 R2 K4='CancelDelay'",
+        "0016 GETTABLE   R3 R0 K1='_showSquadPickDelayHandle'",
+        "0017 CALL       R2 2 1",
+        "0018 SETTABLE   R0 K1='_showSquadPickDelayHandle' K5=None",
+        "0019 CLOSURE    R2 child[0]",
+        "0020 SELF       R3 R0 K6='_IsBlastingMode'",
+        "0021 CALL       R3 2 2",
+        "0022 TEST       R3 0 0",
+        "0023 JMP        R0 jump=30",
+        "0024 GETTABUP   R3 U3 K3='Timer'",
+        "0025 GETTABLE   R3 R3 K7='DelayCall'",
+        "0026 LOADK      R4 K8=1.5",
+        "0027 MOVE       R5 2 0",
+        "0028 CALL       R3 3 1",
+        "0029 JMP        R0 jump=32",
+        "0030 MOVE       R3 2 0",
+        "0031 CALL       R3 1 1",
+        "0032 RETURN     R0 1 0"
+      ]
+    },
+    {
+      "function_id": "0.104.10.0",
+      "first_line": 2525,
+      "last_line": 2530,
+      "constants": [
+        "Facade",
+        "UIManager",
+        "EnableInput",
+        "EInputChangeReason",
+        "BusinessPending",
+        "ResetAutoApplyThemeID",
+        "Events",
+        "evtShowSquadPickWidget",
+        "Invoke",
+        "ds_room_id"
+      ],
+      "local_names": [],
+      "matched_terms": [],
+      "upvalues": [
+        [
+          0,
+          4
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          0,
+          5
+        ],
+        [
+          1,
+          1
+        ]
+      ],
+      "upvalue_names": [
+        "fPopAllUI",
+        "_ENV",
+        "self",
+        "ntf",
+        "solRoomTeamRes"
+      ],
+      "instruction_listing": [
+        "0001 GETUPVAL   R0 0 0",
+        "0002 CALL       R0 1 1",
+        "0003 GETTABUP   R0 U1 K0='Facade'",
+        "0004 GETTABLE   R0 R0 K1='UIManager'",
+        "0005 SELF       R0 R0 K2='EnableInput'",
+        "0006 GETTABUP   R2 U1 K3='EInputChangeReason'",
+        "0007 GETTABLE   R2 R2 K4='BusinessPending'",
+        "0008 CALL       R0 3 1",
+        "0009 GETTABUP   R0 U1 K0='Facade'",
+        "0010 GETTABLE   R0 R0 K1='UIManager'",
+        "0011 SELF       R0 R0 K5='ResetAutoApplyThemeID'",
+        "0012 CALL       R0 2 1",
+        "0013 GETTABUP   R0 U2 K6='Events'",
+        "0014 GETTABLE   R0 R0 K7='evtShowSquadPickWidget'",
+        "0015 SELF       R0 R0 K8='Invoke'",
+        "0016 VARARG     R2 1 0",
+        "0017 GETTABUP   R4 U3 K9='ds_room_id'",
+        "0018 GETUPVAL   R5 4 0",
+        "0019 CALL       R0 6 1",
+        "0020 RETURN     R0 1 0"
+      ]
+    },
+    {
+      "function_id": "0.104.11",
+      "first_line": 2539,
+      "last_line": 2571,
+      "constants": [
+        "MatchServer:OnCSPrepareJoinMatchNtf, fGetSolRoomTeamRes",
+        "result",
+        0,
+        "DoRoomTeamShowInfoNameProcess",
+        "player_info_array",
+        "Events",
+        "evtShowMatchReadyWidget",
+        "Invoke",
+        "_showSquadPickDelayHandle",
+        "Timer",
+        "DelayCall",
+        3,
+        "MatchServer:OnCSPrepareJoinMatchNtf, fGetSolRoomTeamRes errorCode",
+        "_fPreEnterGame"
+      ],
+      "local_names": [
+        {
+          "name": "res",
+          "start": 0,
+          "end": 50
+        },
+        {
+          "name": "fShowMatchReadyCallback",
+          "start": 36,
+          "end": 47
+        }
+      ],
+      "matched_terms": [],
+      "upvalues": [
+        [
+          0,
+          11
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          19
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          1,
+          17
+        ]
+      ],
+      "upvalue_names": [
+        "loginfo",
+        "self",
+        "bSkipMatchReadyAnim",
+        "fOnDelayEnd",
+        "_ENV",
+        "logerror",
+        "fPopAllUI"
+      ],
+      "instruction_listing": [
+        "0001 GETUPVAL   R1 0 0",
+        "0002 LOADK      R2 K0='MatchServer:OnCSPrepareJoinMatchNtf, fGetSolRoomTeamRes'",
+        "0003 GETTABLE   R3 R0 K1='result'",
+        "0004 CALL       R1 3 1",
+        "0005 GETTABLE   R1 R0 K1='result'",
+        "0006 EQ         R0 1 258",
+        "0007 JMP        R0 jump=32",
+        "0008 GETUPVAL   R1 1 0",
+        "0009 SELF       R1 R1 K3='DoRoomTeamShowInfoNameProcess'",
+        "0010 GETTABLE   R3 R0 K4='player_info_array'",
+        "0011 CALL       R1 3 1",
+        "0012 GETUPVAL   R1 2 0",
+        "0013 TEST       R1 0 1",
+        "0014 JMP        R0 jump=28",
+        "0015 GETTABUP   R1 U1 K5='Events'",
+        "0016 GETTABLE   R1 R1 K6='evtShowMatchReadyWidget'",
+        "0017 SELF       R1 R1 K7='Invoke'",
+        "0018 GETUPVAL   R3 3 0",
+        "0019 MOVE       R4 0 0",
+        "0020 CALL       R1 4 1",
+        "0021 GETTABUP   R1 U4 K9='Timer'",
+        "0022 GETTABLE   R1 R1 K10='DelayCall'",
+        "0023 LOADK      R2 K11=3",
+        "0024 CLOSURE    R3 child[0]",
+        "0025 CALL       R1 3 2",
+        "0026 SETTABUP   U1 K8='_showSquadPickDelayHandle' R1",
+        "0027 JMP        R0 jump=48",
+        "0028 GETUPVAL   R1 3 0",
+        "0029 MOVE       R2 0 0",
+        "0030 CALL       R1 2 1",
+        "0031 JMP        R0 jump=48",
+        "0032 GETUPVAL   R1 5 0",
+        "0033 LOADK      R2 K12='MatchServer:OnCSPrepareJoinMatchNtf, fGetSolRoomTeamRes errorCode'",
+        "0034 GETTABLE   R3 R0 K1='result'",
+        "0035 CALL       R1 3 1",
+        "0036 CLOSURE    R1 child[1]",
+        "0037 GETUPVAL   R2 2 0",
+        "0038 TEST       R2 0 1",
+        "0039 JMP        R0 jump=46",
+        "0040 GETTABUP   R2 U1 K5='Events'",
+        "0041 GETTABLE   R2 R2 K6='evtShowMatchReadyWidget'",
+        "0042 SELF       R2 R2 K7='Invoke'",
+        "0043 MOVE       R4 1 0",
+        "0044 CALL       R2 3 1",
+        "0045 JMP        R0 jump=48",
+        "0046 MOVE       R2 1 0",
+        "0047 CALL       R2 1 1",
+        "0048 CLOSURE    R1 child[2]",
+        "0049 SETTABUP   U1 K13='_fPreEnterGame' R1",
+        "0050 RETURN     R0 1 0"
+      ]
+    },
+    {
+      "function_id": "0.104.11.0",
+      "first_line": 2545,
+      "last_line": 2548,
+      "constants": [
+        "MatchServer:OnCSPrepareJoinMatchNtf, Call DelayFunction fOnDelayEnd"
+      ],
+      "local_names": [],
+      "matched_terms": [],
+      "upvalues": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "upvalue_names": [
+        "loginfo",
+        "fOnDelayEnd",
+        "res"
+      ],
+      "instruction_listing": [
+        "0001 GETUPVAL   R0 0 0",
+        "0002 LOADK      R1 K0='MatchServer:OnCSPrepareJoinMatchNtf, Call DelayFunction fOnDelayEnd'",
+        "0003 CALL       R0 2 1",
+        "0004 GETUPVAL   R0 1 0",
+        "0005 GETUPVAL   R1 2 0",
+        "0006 CALL       R0 2 1",
+        "0007 RETURN     R0 1 0"
+      ]
+    },
+    {
+      "function_id": "0.104.11.1",
+      "first_line": 2555,
+      "last_line": 2559,
+      "constants": [
+        "Facade",
+        "UIManager",
+        "CommitTransition",
+        1,
+        99,
+        "ETransitionChangeReason",
+        "ProtoWaiting",
+        "SetIsJumpRollbackTransition"
+      ],
+      "local_names": [],
+      "matched_terms": [],
+      "upvalues": [
+        [
+          0,
+          6
+        ],
+        [
+          0,
+          4
+        ]
+      ],
+      "upvalue_names": [
+        "fPopAllUI",
+        "_ENV"
+      ],
+      "instruction_listing": [
+        "0001 GETUPVAL   R0 0 0",
+        "0002 CALL       R0 1 1",
+        "0003 GETTABUP   R0 U1 K0='Facade'",
+        "0004 GETTABLE   R0 R0 K1='UIManager'",
+        "0005 SELF       R0 R0 K2='CommitTransition'",
+        "0006 LOADBOOL   R2 1 0",
+        "0007 LOADK      R3 K3=1",
+        "0008 LOADK      R4 K4=99",
+        "0009 GETTABUP   R5 U1 K5='ETransitionChangeReason'",
+        "0010 GETTABLE   R5 R5 K6='ProtoWaiting'",
+        "0011 CALL       R0 6 1",
+        "0012 GETTABUP   R0 U1 K0='Facade'",
+        "0013 GETTABLE   R0 R0 K1='UIManager'",
+        "0014 SELF       R0 R0 K7='SetIsJumpRollbackTransition'",
+        "0015 LOADBOOL   R2 1 0",
+        "0016 CALL       R0 3 1",
+        "0017 RETURN     R0 1 0"
+      ]
+    },
+    {
+      "function_id": "0.104.11.2",
+      "first_line": 2566,
+      "last_line": 2569,
+      "constants": [
+        "MatchServer:OnCSPrepareJoinMatchNtf, fPreEnterGame"
+      ],
+      "local_names": [],
+      "matched_terms": [],
+      "upvalues": [
+        [
+          0,
+          5
+        ],
+        [
+          0,
+          6
+        ]
+      ],
+      "upvalue_names": [
+        "logerror",
+        "fPopAllUI"
+      ],
+      "instruction_listing": [
+        "0001 GETUPVAL   R0 0 0",
+        "0002 LOADK      R1 K0='MatchServer:OnCSPrepareJoinMatchNtf, fPreEnterGame'",
+        "0003 CALL       R0 2 1",
+        "0004 GETUPVAL   R0 1 0",
+        "0005 CALL       R0 1 1",
+        "0006 RETURN     R0 1 0"
+      ]
+    },
+    {
+      "function_id": "0.145",
+      "first_line": 3219,
+      "last_line": 3242,
+      "constants": [
+        "EnableNewSeamlessTravel",
+        "_StartMatchSucceedInFlow",
+        "Timer",
+        "DelayCall",
+        2
+      ],
+      "local_names": [
+        {
+          "name": "self",
+          "start": 0,
+          "end": 16
+        },
+        {
+          "name": "MatchInfo",
+          "start": 0,
+          "end": 16
+        },
+        {
+          "name": "EventIds",
+          "start": 0,
+          "end": 16
+        },
+        {
+          "name": "ntf",
+          "start": 0,
+          "end": 16
+        }
+      ],
+      "matched_terms": [],
+      "upvalues": [
+        [
+          1,
+          30
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          1,
+          22
+        ]
+      ],
+      "upvalue_names": [
+        "UDFMIrisEnterSubsystem",
+        "_ENV",
+        "loginfo",
+        "UDFMIrisEnterSeamlessGameplayHelper"
+      ],
+      "instruction_listing": [
+        "0001 GETTABUP   R4 U0 K0='EnableNewSeamlessTravel'",
+        "0002 CALL       R4 1 2",
+        "0003 TEST       R4 0 0",
+        "0004 JMP        R0 jump=11",
+        "0005 SELF       R4 R0 K1='_StartMatchSucceedInFlow'",
+        "0006 MOVE       R6 1 0",
+        "0007 MOVE       R7 2 0",
+        "0008 MOVE       R8 3 0",
+        "0009 CALL       R4 5 1",
+        "0010 RETURN     R0 1 0",
+        "0011 GETTABUP   R4 U1 K2='Timer'",
+        "0012 GETTABLE   R4 R4 K3='DelayCall'",
+        "0013 LOADK      R5 K4=2",
+        "0014 CLOSURE    R6 child[0]",
+        "0015 CALL       R4 3 1",
+        "0016 RETURN     R0 1 0"
+      ]
+    },
+    {
+      "function_id": "0.145.0",
+      "first_line": 3226,
+      "last_line": 3241,
+      "constants": [
+        "GetMatchModeInfo",
+        "map_id",
+        "GetBossType",
+        "GetEvacuationPointConfigId",
+        "MatchServer:_StartMatchSucceed  EvacuationPointConfigId",
+        0,
+        "FillSOLChallengeData",
+        "game_rule",
+        "MatchGameRule",
+        "SOLChallengeRule",
+        "UseSeamlessTravel",
+        "StartMatchSucceed",
+        "GetWorld",
+        999,
+        "QStage_999_1",
+        1,
+        "Server",
+        "GameModeServer",
+        "GetLevelName",
+        "AccountServer",
+        "IsInRoom",
+        "PrepareIntroEvent",
+        16,
+        "iris_event_course_id"
+      ],
+      "local_names": [
+        {
+          "name": "matchModeInfo",
+          "start": 3,
+          "end": 64
+        },
+        {
+          "name": "mapId",
+          "start": 6,
+          "end": 64
+        },
+        {
+          "name": "bossType",
+          "start": 9,
+          "end": 64
+        },
+        {
+          "name": "EvacuationPointConfigId",
+          "start": 12,
+          "end": 64
+        }
+      ],
+      "matched_terms": [
+        "StartMatchSucceed"
+      ],
+      "upvalues": [
+        [
+          1,
+          0
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          3
+        ]
+      ],
+      "upvalue_names": [
+        "self",
+        "loginfo",
+        "_ENV",
+        "UDFMIrisEnterSeamlessGameplayHelper",
+        "MatchInfo",
+        "EventIds",
+        "ntf"
+      ],
+      "instruction_listing": [
+        "0001 GETUPVAL   R0 0 0",
+        "0002 SELF       R0 R0 K0='GetMatchModeInfo'",
+        "0003 CALL       R0 2 2",
+        "0004 TESTSET    R1 0 0",
+        "0005 JMP        R0 jump=7",
+        "0006 GETTABLE   R1 R0 K1='map_id'",
+        "0007 GETUPVAL   R2 0 0",
+        "0008 SELF       R2 R2 K2='GetBossType'",
+        "0009 CALL       R2 2 2",
+        "0010 GETUPVAL   R3 0 0",
+        "0011 SELF       R3 R3 K3='GetEvacuationPointConfigId'",
+        "0012 CALL       R3 2 2",
+        "0013 GETUPVAL   R4 1 0",
+        "0014 LOADK      R5 K4='MatchServer:_StartMatchSucceed  EvacuationPointConfigId'",
+        "0015 MOVE       R6 3 0",
+        "0016 CALL       R4 3 1",
+        "0017 TEST       R3 0 1",
+        "0018 JMP        R0 jump=20",
+        "0019 LOADK      R3 K5=0",
+        "0020 GETUPVAL   R4 0 0",
+        "0021 SELF       R4 R4 K6='FillSOLChallengeData'",
+        "0022 GETTABLE   R6 R0 K7='game_rule'",
+        "0023 GETTABUP   R7 U2 K8='MatchGameRule'",
+        "0024 GETTABLE   R7 R7 K9='SOLChallengeRule'",
+        "0025 EQ         R1 6 7",
+        "0026 JMP        R0 jump=28",
+        "0027 LOADBOOL   R6 0 1",
+        "0028 LOADBOOL   R6 1 0",
+        "0029 CALL       R4 3 1",
+        "0030 GETTABUP   R4 U3 K11='StartMatchSucceed'",
+        "0031 GETTABUP   R5 U2 K12='GetWorld'",
+        "0032 CALL       R5 1 2",
+        "0033 LOADK      R6 K13=999",
+        "0034 LOADK      R7 K14='QStage_999_1'",
+        "0035 LOADK      R8 K15=1",
+        "0036 GETTABUP   R9 U2 K16='Server'",
+        "0037 GETTABLE   R9 R9 K17='GameModeServer'",
+        "0038 SELF       R9 R9 K18='GetLevelName'",
+        "0039 MOVE       R11 1 0",
+        "0040 CALL       R9 3 2",
+        "0041 GETTABUP   R10 U2 K16='Server'",
+        "0042 GETTABLE   R10 R10 K19='AccountServer'",
+        "0043 SELF       R10 R10 K20='IsInRoom'",
+        "0044 CALL       R10 2 2",
+        "0045 GETUPVAL   R11 4 0",
+        "0046 MOVE       R12 2 0",
+        "0047 MOVE       R13 3 0",
+        "0048 CALL       R4 10 2",
+        "0049 SETTABUP   U0 K10='UseSeamlessTravel' R4",
+        "0050 GETTABUP   R4 U3 K21='PrepareIntroEvent'",
+        "0051 GETTABUP   R5 U2 K12='GetWorld'",
+        "0052 CALL       R5 1 2",
+        "0053 LOADK      R6 K13=999",
+        "0054 LOADK      R7 K14='QStage_999_1'",
+        "0055 LOADK      R8 K22=16",
+        "0056 GETUPVAL   R9 5 0",
+        "0057 GETTABUP   R10 U6 K23='iris_event_course_id'",
+        "0058 GETTABUP   R11 U2 K16='Server'",
+        "0059 GETTABLE   R11 R11 K17='GameModeServer'",
+        "0060 SELF       R11 R11 K18='GetLevelName'",
+        "0061 MOVE       R13 1 0",
+        "0062 CALL       R11 3 0",
+        "0063 CALL       R4 0 1",
+        "0064 RETURN     R0 1 0"
+      ]
+    },
+    {
+      "function_id": "0.146",
+      "first_line": 3244,
+      "last_line": 3283,
+      "constants": [
+        "Timer",
+        "DelayCall",
+        2
+      ],
+      "local_names": [
+        {
+          "name": "self",
+          "start": 0,
+          "end": 6
+        },
+        {
+          "name": "MatchInfo",
+          "start": 0,
+          "end": 6
+        },
+        {
+          "name": "EventIds",
+          "start": 0,
+          "end": 6
+        },
+        {
+          "name": "ntf",
+          "start": 0,
+          "end": 6
+        }
+      ],
+      "matched_terms": [],
+      "upvalues": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          1,
+          16
+        ],
+        [
+          1,
+          22
+        ]
+      ],
+      "upvalue_names": [
+        "_ENV",
+        "loginfo",
+        "FMatchSucceedData",
+        "UDFMIrisEnterSeamlessGameplayHelper"
+      ],
+      "instruction_listing": [
+        "0001 GETTABUP   R4 U0 K0='Timer'",
+        "0002 GETTABLE   R4 R4 K1='DelayCall'",
+        "0003 LOADK      R5 K2=2",
+        "0004 CLOSURE    R6 child[0]",
+        "0005 CALL       R4 3 1",
+        "0006 RETURN     R0 1 0"
+      ]
+    },
+    {
+      "function_id": "0.146.0",
+      "first_line": 3249,
+      "last_line": 3282,
+      "constants": [
+        "GetMatchModeInfo",
+        "map_id",
+        "GetBossType",
+        "GetEvacuationPointConfigId",
+        "MatchServer:_StartMatchSucceedInFlow  EvacuationPointConfigId",
+        0,
+        "FillSOLChallengeData",
+        "game_rule",
+        "MatchGameRule",
+        "SOLChallengeRule",
+        "Server",
+        "GameModeServer",
+        "GetLevelName",
+        "AccountServer",
+        "IsInRoom",
+        "QuestId",
+        999,
+        "StageName",
+        "QStage_999_1",
+        "MatchSucceedObjectiveId",
+        1,
+        "map_name",
+        "isInRoom",
+        "MatchInfo",
+        "RebornPlayerType",
+        "PrepareIntroEventObjectiveId",
+        16,
+        "EventIds",
+        "EventCourseId",
+        "iris_event_course_id",
+        "EvacuationPointConfigId",
+        "StartFlowLoading",
+        "GetWorld",
+        "GetSeamlessTravelFlowName",
+        "UseSeamlessTravel",
+        "CanUseSeamlessTravel"
+      ],
+      "local_names": [
+        {
+          "name": "matchModeInfo",
+          "start": 3,
+          "end": 69
+        },
+        {
+          "name": "mapId",
+          "start": 6,
+          "end": 69
+        },
+        {
+          "name": "bossType",
+          "start": 9,
+          "end": 69
+        },
+        {
+          "name": "EvacuationPointConfigId",
+          "start": 12,
+          "end": 69
+        },
+        {
+          "name": "LevelName",
+          "start": 34,
+          "end": 69
+        },
+        {
+          "name": "IsInRoom",
+          "start": 38,
+          "end": 69
+        },
+        {
+          "name": "MatchSucceedData",
+          "start": 40,
+          "end": 69
+        }
+      ],
+      "matched_terms": [],
+      "upvalues": [
+        [
+          1,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          0,
+          3
+        ]
+      ],
+      "upvalue_names": [
+        "self",
+        "loginfo",
+        "_ENV",
+        "FMatchSucceedData",
+        "MatchInfo",
+        "EventIds",
+        "ntf",
+        "UDFMIrisEnterSeamlessGameplayHelper"
+      ],
+      "instruction_listing": [
+        "0001 GETUPVAL   R0 0 0",
+        "0002 SELF       R0 R0 K0='GetMatchModeInfo'",
+        "0003 CALL       R0 2 2",
+        "0004 TESTSET    R1 0 0",
+        "0005 JMP        R0 jump=7",
+        "0006 GETTABLE   R1 R0 K1='map_id'",
+        "0007 GETUPVAL   R2 0 0",
+        "0008 SELF       R2 R2 K2='GetBossType'",
+        "0009 CALL       R2 2 2",
+        "0010 GETUPVAL   R3 0 0",
+        "0011 SELF       R3 R3 K3='GetEvacuationPointConfigId'",
+        "0012 CALL       R3 2 2",
+        "0013 GETUPVAL   R4 1 0",
+        "0014 LOADK      R5 K4='MatchServer:_StartMatchSucceedInFlow  EvacuationPointConfigId'",
+        "0015 MOVE       R6 3 0",
+        "0016 CALL       R4 3 1",
+        "0017 TEST       R3 0 1",
+        "0018 JMP        R0 jump=20",
+        "0019 LOADK      R3 K5=0",
+        "0020 GETUPVAL   R4 0 0",
+        "0021 SELF       R4 R4 K6='FillSOLChallengeData'",
+        "0022 GETTABLE   R6 R0 K7='game_rule'",
+        "0023 GETTABUP   R7 U2 K8='MatchGameRule'",
+        "0024 GETTABLE   R7 R7 K9='SOLChallengeRule'",
+        "0025 EQ         R1 6 7",
+        "0026 JMP        R0 jump=28",
+        "0027 LOADBOOL   R6 0 1",
+        "0028 LOADBOOL   R6 1 0",
+        "0029 CALL       R4 3 1",
+        "0030 GETTABUP   R4 U2 K10='Server'",
+        "0031 GETTABLE   R4 R4 K11='GameModeServer'",
+        "0032 SELF       R4 R4 K12='GetLevelName'",
+        "0033 MOVE       R6 1 0",
+        "0034 CALL       R4 3 2",
+        "0035 GETTABUP   R5 U2 K10='Server'",
+        "0036 GETTABLE   R5 R5 K13='AccountServer'",
+        "0037 SELF       R5 R5 K14='IsInRoom'",
+        "0038 CALL       R5 2 2",
+        "0039 GETUPVAL   R6 3 0",
+        "0040 CALL       R6 1 2",
+        "0041 SETTABLE   R6 K15='QuestId' K16=999",
+        "0042 SETTABLE   R6 K17='StageName' K18='QStage_999_1'",
+        "0043 SETTABLE   R6 K19='MatchSucceedObjectiveId' K20=1",
+        "0044 SETTABLE   R6 K21='map_name' R4",
+        "0045 SETTABLE   R6 K22='isInRoom' R5",
+        "0046 GETUPVAL   R7 4 0",
+        "0047 SETTABLE   R6 K23='MatchInfo' R7",
+        "0048 SETTABLE   R6 K24='RebornPlayerType' R2",
+        "0049 SETTABLE   R6 K25='PrepareIntroEventObjectiveId' K26=16",
+        "0050 GETUPVAL   R7 5 0",
+        "0051 SETTABLE   R6 K27='EventIds' R7",
+        "0052 GETTABUP   R7 U6 K29='iris_event_course_id'",
+        "0053 SETTABLE   R6 K28='EventCourseId' R7",
+        "0054 SETTABLE   R6 K30='EvacuationPointConfigId' R3",
+        "0055 GETTABUP   R7 U7 K31='StartFlowLoading'",
+        "0056 GETTABUP   R8 U2 K32='GetWorld'",
+        "0057 CALL       R8 1 2",
+        "0058 GETTABUP   R9 U7 K33='GetSeamlessTravelFlowName'",
+        "0059 CALL       R9 1 2",
+        "0060 MOVE       R10 6 0",
+        "0061 CALL       R7 4 1",
+        "0062 GETTABUP   R7 U7 K35='CanUseSeamlessTravel'",
+        "0063 GETTABUP   R8 U2 K32='GetWorld'",
+        "0064 CALL       R8 1 2",
+        "0065 MOVE       R9 4 0",
+        "0066 MOVE       R10 5 0",
+        "0067 CALL       R7 4 2",
+        "0068 SETTABUP   U0 K34='UseSeamlessTravel' R7",
+        "0069 RETURN     R0 1 0"
+      ]
+    },
+    {
+      "function_id": "0.147",
+      "first_line": 3286,
+      "last_line": 3317,
+      "constants": [
+        "UE",
+        "DFMIrisEnterSubsystem",
+        "Get",
+        "GetWorld",
+        "IsTutorial",
+        true,
+        "EnableNewSeamlessTravel",
+        "SeamlessFlow:MatchServer:SeamlessGuide",
+        "Server",
+        "AccountServer",
+        "IsInRoom",
+        "QuestId",
+        999,
+        "StageName",
+        "QStage_999_1",
+        "MatchSucceedObjectiveId",
+        1,
+        "map_name",
+        "Forrest_Tutorial",
+        "isInRoom",
+        "MatchInfo",
+        "RebornPlayerType",
+        0,
+        "EvacuationPointConfigId",
+        "StartFlowLoading",
+        "GetSeamlessTravelFlowName",
+        "UseSeamlessTravel",
+        "CanUseSeamlessTravel",
+        "IrisEnterStage:MatchServer:SeamlessGuide",
+        "MatchServer",
+        "DFMIrisEnterSeamlessGameplayHelper",
+        "StartMatchSucceed"
+      ],
+      "local_names": [
+        {
+          "name": "self",
+          "start": 0,
+          "end": 69
+        },
+        {
+          "name": "MatchInfo",
+          "start": 0,
+          "end": 69
+        },
+        {
+          "name": "IsInRoom",
+          "start": 18,
+          "end": 43
+        },
+        {
+          "name": "MatchSucceedData",
+          "start": 20,
+          "end": 43
+        }
+      ],
+      "matched_terms": [
+        "StartMatchSucceed"
+      ],
+      "upvalues": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          30
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          16
+        ],
+        [
+          1,
+          22
+        ]
+      ],
+      "upvalue_names": [
+        "_ENV",
+        "UDFMIrisEnterSubsystem",
+        "logwarning",
+        "FMatchSucceedData",
+        "UDFMIrisEnterSeamlessGameplayHelper"
+      ],
+      "instruction_listing": [
+        "0001 GETTABUP   R2 U0 K0='UE'",
+        "0002 GETTABLE   R2 R2 K1='DFMIrisEnterSubsystem'",
+        "0003 SELF       R2 R2 K2='Get'",
+        "0004 GETTABUP   R4 U0 K3='GetWorld'",
+        "0005 CALL       R4 1 0",
+        "0006 CALL       R2 0 2",
+        "0007 SETTABLE   R2 K4='IsTutorial' K5=True",
+        "0008 GETTABUP   R2 U1 K6='EnableNewSeamlessTravel'",
+        "0009 CALL       R2 1 2",
+        "0010 TEST       R2 0 0",
+        "0011 JMP        R0 jump=45",
+        "0012 GETUPVAL   R2 2 0",
+        "0013 LOADK      R3 K7='SeamlessFlow:MatchServer:SeamlessGuide'",
+        "0014 CALL       R2 2 1",
+        "0015 GETTABUP   R2 U0 K8='Server'",
+        "0016 GETTABLE   R2 R2 K9='AccountServer'",
+        "0017 SELF       R2 R2 K10='IsInRoom'",
+        "0018 CALL       R2 2 2",
+        "0019 GETUPVAL   R3 3 0",
+        "0020 CALL       R3 1 2",
+        "0021 SETTABLE   R3 K11='QuestId' K12=999",
+        "0022 SETTABLE   R3 K13='StageName' K14='QStage_999_1'",
+        "0023 SETTABLE   R3 K15='MatchSucceedObjectiveId' K16=1",
+        "0024 SETTABLE   R3 K17='map_name' K18='Forrest_Tutorial'",
+        "0025 SETTABLE   R3 K19='isInRoom' R2",
+        "0026 SETTABLE   R3 K20='MatchInfo' R1",
+        "0027 SETTABLE   R3 K21='RebornPlayerType' K22=0",
+        "0028 SETTABLE   R3 K23='EvacuationPointConfigId' K22=0",
+        "0029 GETTABUP   R4 U4 K24='StartFlowLoading'",
+        "0030 GETTABUP   R5 U0 K3='GetWorld'",
+        "0031 CALL       R5 1 2",
+        "0032 GETTABUP   R6 U4 K25='GetSeamlessTravelFlowName'",
+        "0033 CALL       R6 1 2",
+        "0034 MOVE       R7 3 0",
+        "0035 CALL       R4 4 1",
+        "0036 GETTABUP   R4 U4 K27='CanUseSeamlessTravel'",
+        "0037 GETTABUP   R5 U0 K3='GetWorld'",
+        "0038 CALL       R5 1 2",
+        "0039 GETTABLE   R6 R3 K17='map_name'",
+        "0040 MOVE       R7 2 0",
+        "0041 CALL       R4 4 2",
+        "0042 SETTABLE   R0 K26='UseSeamlessTravel' R4",
+        "0043 RETURN     R0 1 0",
+        "0044 JMP        R0 jump=69",
+        "0045 GETUPVAL   R2 2 0",
+        "0046 LOADK      R3 K28='IrisEnterStage:MatchServer:SeamlessGuide'",
+        "0047 CALL       R2 2 1",
+        "0048 GETTABUP   R2 U0 K8='Server'",
+        "0049 GETTABLE   R2 R2 K29='MatchServer'",
+        "0050 GETTABUP   R3 U0 K0='UE'",
+        "0051 GETTABLE   R3 R3 K30='DFMIrisEnterSeamlessGameplayHelper'",
+        "0052 GETTABLE   R3 R3 K31='StartMatchSucceed'",
+        "0053 GETTABUP   R4 U0 K3='GetWorld'",
+        "0054 CALL       R4 1 2",
+        "0055 LOADK      R5 K12=999",
+        "0056 LOADK      R6 K14='QStage_999_1'",
+        "0057 LOADK      R7 K16=1",
+        "0058 LOADK      R8 K18='Forrest_Tutorial'",
+        "0059 GETTABUP   R9 U0 K8='Server'",
+        "0060 GETTABLE   R9 R9 K9='AccountServer'",
+        "0061 SELF       R9 R9 K10='IsInRoom'",
+        "0062 CALL       R9 2 2",
+        "0063 MOVE       R10 1 0",
+        "0064 LOADK      R11 K22=0",
+        "0065 LOADK      R12 K22=0",
+        "0066 CALL       R3 10 2",
+        "0067 SETTABLE   R2 K26='UseSeamlessTravel' R3",
+        "0068 RETURN     R0 1 0",
+        "0069 RETURN     R0 1 0"
+      ]
+    }
+  ]
+}

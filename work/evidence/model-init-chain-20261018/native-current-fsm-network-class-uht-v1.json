@@ -1,0 +1,1369 @@
+{
+  "process_access": false,
+  "client_launched": false,
+  "code_source": "pinned portable cache only",
+  "client_sha256": "4254fbe66585f260f1f9dbfc5e302887842552e7baed8939e023160a5e250be0",
+  "cache_manifest_sha256": "dfd5c279d7db45842cee2bbc485ac8bf3cab03e4249ef5fe36bc9e8d6cd14754",
+  "runtime_class_netcache_indices_claimed": false,
+  "classes": [
+    {
+      "record_rva": "0x14fa8370",
+      "record_sha256": "6850ad546639cfd85efe236b4459742263dcacfa380d56d777499dfd584c10f3",
+      "static_class_getter_rva": "0x1078f50",
+      "dependency_getters": [
+        "0x13295490",
+        "0x1079040"
+      ],
+      "declared_property_records": [
+        {
+          "name": "bCanInstanceNetworkTick",
+          "record_rva": "0x14fa7c40",
+          "record_sha256": "6609f3ed142939521ec2ed4dff69dec2856a9a8af8594a24893d166ee48959a1",
+          "property_flags": "0x20080000002000",
+          "native_gen_flags": "0x4c",
+          "array_dim_or_bool_layout_low32": 1,
+          "bool_setter_rva": "0x1079460",
+          "bool_setter_first_instruction": {
+            "bytes": "c681c101000001",
+            "mnemonic": "mov",
+            "operands": "byte ptr [rcx + 0x1c1], 1"
+          },
+          "native_member_offset": "0x1c1"
+        },
+        {
+          "name": "R_bShuttingDown",
+          "record_rva": "0x14fa7c78",
+          "record_sha256": "bc24f2eb794683a1a626cc55c9f292f074f1660417e30155e94ac27ef2b4eebe",
+          "property_flags": "0x20080100002020",
+          "native_gen_flags": "0x4c",
+          "array_dim_or_bool_layout_low32": 1,
+          "rep_notify": "REP_ShuttingDown",
+          "bool_setter_rva": "0x1079470",
+          "bool_setter_first_instruction": {
+            "bytes": "c681c001000001",
+            "mnemonic": "mov",
+            "operands": "byte ptr [rcx + 0x1c0], 1"
+          },
+          "native_member_offset": "0x1c0"
+        },
+        {
+          "name": "TickInterval",
+          "record_rva": "0x14fa7cb0",
+          "record_sha256": "d11717ff592d85db40caf440937d58c6bc8c4b22e48093aa51d7a59165ddd878",
+          "property_flags": "0x20080020000000",
+          "native_gen_flags": "0xa",
+          "array_dim_or_bool_layout_low32": 1,
+          "native_member_offset": "0x1bc",
+          "extra_pointer_rva": "0x14fa83f0"
+        },
+        {
+          "name": "bOverrideTickInterval",
+          "record_rva": "0x14fa7cd8",
+          "record_sha256": "7b83f1a71db77a83dc5bd9f51b885c7cb91bc02f8f18f75edb12e3c42dea7b4b",
+          "property_flags": "0x20080020000000",
+          "native_gen_flags": "0x4c",
+          "array_dim_or_bool_layout_low32": 1,
+          "bool_setter_rva": "0x1079480",
+          "bool_setter_first_instruction": {
+            "bytes": "c681ba01000001",
+            "mnemonic": "mov",
+            "operands": "byte ptr [rcx + 0x1ba], 1"
+          },
+          "native_member_offset": "0x1ba"
+        },
+        {
+          "name": "bCanEverTick",
+          "record_rva": "0x14fa7d10",
+          "record_sha256": "59e786204cc94ea2ac2b8e8f7d8f7955a002933bfe46a6d9956f48ca0a07aac4",
+          "property_flags": "0x20080020000000",
+          "native_gen_flags": "0x4c",
+          "array_dim_or_bool_layout_low32": 1,
+          "bool_setter_rva": "0x1079490",
+          "bool_setter_first_instruction": {
+            "bytes": "c681b901000001",
+            "mnemonic": "mov",
+            "operands": "byte ptr [rcx + 0x1b9], 1"
+          },
+          "native_member_offset": "0x1b9"
+        },
+        {
+          "name": "bOverrideTick",
+          "record_rva": "0x14fa7d48",
+          "record_sha256": "d5e773ae36c0a2f472d51e9ba9fc9da64a5af0fbbe4c2e1036c31574e19768fc",
+          "property_flags": "0x20080020000000",
+          "native_gen_flags": "0x4c",
+          "array_dim_or_bool_layout_low32": 1,
+          "bool_setter_rva": "0x10794a0",
+          "bool_setter_first_instruction": {
+            "bytes": "c681b801000001",
+            "mnemonic": "mov",
+            "operands": "byte ptr [rcx + 0x1b8], 1"
+          },
+          "native_member_offset": "0x1b8"
+        },
+        {
+          "name": "InstanceTemplate",
+          "record_rva": "0x14fa7d80",
+          "record_sha256": "4a647dde0958366bdeb7511dcd3f04902b48c1e7029917d582e0569f0056e838",
+          "property_flags": "0x220800002b0009",
+          "native_gen_flags": "0x12",
+          "array_dim_or_bool_layout_low32": 1,
+          "native_member_offset": "0x1b0",
+          "extra_pointer_rva": "0x106ff90"
+        },
+        {
+          "name": "R_Instance",
+          "record_rva": "0x14fa7db0",
+          "record_sha256": "50791f1b72d67dae7c96b5e92d1cf32bac1e7284817a8b6cc65e3e8cd38bbf52",
+          "property_flags": "0x20080100002020",
+          "native_gen_flags": "0x12",
+          "array_dim_or_bool_layout_low32": 1,
+          "rep_notify": "REP_OnInstanceLoaded",
+          "native_member_offset": "0x1a8",
+          "extra_pointer_rva": "0x106ff90"
+        },
+        {
+          "name": "PendingTransactions",
+          "record_rva": "0x14fa7de0",
+          "record_sha256": "6e762aab308f8b2f206275c8d85caa15e0777c65f510794839b7264622ed04fd",
+          "property_flags": "0x20080000002000",
+          "native_gen_flags": "0x16",
+          "array_dim_or_bool_layout_low32": 1,
+          "native_member_offset": "0x198",
+          "extra_pointer_rva": "0x14fa8440"
+        },
+        {
+          "name": "PendingTransactions",
+          "record_rva": "0x14fa7e08",
+          "record_sha256": "d526fae764f8e9285db22d398b93e51732af28bcd1d16f9adc77321eb1d3d920",
+          "property_flags": "0x0",
+          "native_gen_flags": "0x19",
+          "array_dim_or_bool_layout_low32": 1,
+          "native_member_offset": "0x0",
+          "extra_pointer_rva": "0x1075300"
+        },
+        {
+          "name": "R_NetworkedTransactions",
+          "record_rva": "0x14fa7e38",
+          "record_sha256": "030079d04601599d5c802dbf983f9909ae3d6964b9e380576262de1566d8e573",
+          "property_flags": "0x20080100002020",
+          "native_gen_flags": "0x16",
+          "array_dim_or_bool_layout_low32": 1,
+          "rep_notify": "REP_NetworkedTransactions",
+          "native_member_offset": "0x188",
+          "extra_pointer_rva": "0x14fa8458"
+        },
+        {
+          "name": "R_NetworkedTransactions",
+          "record_rva": "0x14fa7e60",
+          "record_sha256": "0bcad9f26935e216c0ec05df9c0bef8f300eb19bab0c33e98b09c7f9eb4340a9",
+          "property_flags": "0x0",
+          "native_gen_flags": "0x19",
+          "array_dim_or_bool_layout_low32": 1,
+          "native_member_offset": "0x0",
+          "extra_pointer_rva": "0x1075300"
+        },
+        {
+          "name": "bLetInstanceManageTick",
+          "record_rva": "0x14fa7e90",
+          "record_sha256": "5aa3b9cb7959cb86841a49070a1a081e3fc766a468bfe15bcecdfdb7f1de1bb5",
+          "property_flags": "0x10040000010005",
+          "native_gen_flags": "0x4c",
+          "array_dim_or_bool_layout_low32": 1,
+          "bool_setter_rva": "0x10794b0",
+          "bool_setter_first_instruction": {
+            "bytes": "c6818601000001",
+            "mnemonic": "mov",
+            "operands": "byte ptr [rcx + 0x186], 1"
+          },
+          "native_member_offset": "0x186"
+        },
+        {
+          "name": "bStartOnBeginPlay",
+          "record_rva": "0x14fa7ec8",
+          "record_sha256": "ee314c04c2ac86686075739c628a8e577fd0582be439ba461b11732bcdbbd6ac",
+          "property_flags": "0x11000000000005",
+          "native_gen_flags": "0x4c",
+          "array_dim_or_bool_layout_low32": 1,
+          "bool_setter_rva": "0x10794c0",
+          "bool_setter_first_instruction": {
+            "bytes": "c6818501000001",
+            "mnemonic": "mov",
+            "operands": "byte ptr [rcx + 0x185], 1"
+          },
+          "native_member_offset": "0x185"
+        },
+        {
+          "name": "bInitializeOnBeginPlay",
+          "record_rva": "0x14fa7f00",
+          "record_sha256": "8672ca2bee83d23d4e4933183795e81b1b16666f5a323e7bd84cee17bafcf474",
+          "property_flags": "0x11000000000005",
+          "native_gen_flags": "0x4c",
+          "array_dim_or_bool_layout_low32": 1,
+          "bool_setter_rva": "0x10794d0",
+          "bool_setter_first_instruction": {
+            "bytes": "c6818401000001",
+            "mnemonic": "mov",
+            "operands": "byte ptr [rcx + 0x184], 1"
+          },
+          "native_member_offset": "0x184"
+        },
+        {
+          "name": "MaxTimeToWaitForTransitionUpdate",
+          "record_rva": "0x14fa7f38",
+          "record_sha256": "e69fee90e60a217e74131947b32d574565dc18d598d4e75d11171e59bfea10a6",
+          "property_flags": "0x10040000010005",
+          "native_gen_flags": "0xa",
+          "array_dim_or_bool_layout_low32": 1,
+          "native_member_offset": "0x180",
+          "extra_pointer_rva": "0x14fa84e0"
+        },
+        {
+          "name": "bDiscardTransitionsBeforeInitialize",
+          "record_rva": "0x14fa7f60",
+          "record_sha256": "2895748523433d23f9884ba82fbcf3b42074847fa7df07fdca84a4ffa4049cd2",
+          "property_flags": "0x10040000010005",
+          "native_gen_flags": "0x4c",
+          "array_dim_or_bool_layout_low32": 1,
+          "bool_setter_rva": "0x10794e0",
+          "bool_setter_first_instruction": {
+            "bytes": "c6817d01000001",
+            "mnemonic": "mov",
+            "operands": "byte ptr [rcx + 0x17d], 1"
+          },
+          "native_member_offset": "0x17d"
+        },
+        {
+          "name": "bReplicateStatesOnLoad",
+          "record_rva": "0x14fa7f98",
+          "record_sha256": "1f724844f4fe69d5795036bf636985f5ac2deb9a346635397ba52bc0393a83e5",
+          "property_flags": "0x10040000010005",
+          "native_gen_flags": "0x4c",
+          "array_dim_or_bool_layout_low32": 1,
+          "bool_setter_rva": "0x10794f0",
+          "bool_setter_first_instruction": {
+            "bytes": "c6817c01000001",
+            "mnemonic": "mov",
+            "operands": "byte ptr [rcx + 0x17c], 1"
+          },
+          "native_member_offset": "0x17c"
+        },
+        {
+          "name": "TransitionResetTimeSeconds",
+          "record_rva": "0x14fa7fd0",
+          "record_sha256": "1c307fbaebbd67a4ddd25025fe41161ce38118f7a51354810a03bebc3cc39a59",
+          "property_flags": "0x10040000010005",
+          "native_gen_flags": "0xa",
+          "array_dim_or_bool_layout_low32": 1,
+          "native_member_offset": "0x178",
+          "extra_pointer_rva": "0x14fa8540"
+        },
+        {
+          "name": "bTakeTransitionsFromServerOnly",
+          "record_rva": "0x14fa7ff8",
+          "record_sha256": "22da986422b59e2dfa436fd464cedbdabe56a948c99a755a12987d587eb8a061",
+          "property_flags": "0x10000000010005",
+          "native_gen_flags": "0x4c",
+          "array_dim_or_bool_layout_low32": 1,
+          "bool_setter_rva": "0x1079500",
+          "bool_setter_first_instruction": {
+            "bytes": "c6817401000001",
+            "mnemonic": "mov",
+            "operands": "byte ptr [rcx + 0x174], 1"
+          },
+          "native_member_offset": "0x174"
+        },
+        {
+          "name": "bIncludeSimulatedProxies",
+          "record_rva": "0x14fa8030",
+          "record_sha256": "a6417c9485ff698e5dc9963b1dd02282c6a18760da1dd40de29a9a19c3df5b6e",
+          "property_flags": "0x10000000010005",
+          "native_gen_flags": "0x4c",
+          "array_dim_or_bool_layout_low32": 1,
+          "bool_setter_rva": "0x1079510",
+          "bool_setter_first_instruction": {
+            "bytes": "c6817301000001",
+            "mnemonic": "mov",
+            "operands": "byte ptr [rcx + 0x173], 1"
+          },
+          "native_member_offset": "0x173"
+        },
+        {
+          "name": "NetworkStateConfiguration",
+          "record_rva": "0x14fa8068",
+          "record_sha256": "16087986457cccff0941421f0ea8c71720ceb9875c0b602f01e6e75edebec977",
+          "property_flags": "0x10000000010005",
+          "native_gen_flags": "0x0",
+          "array_dim_or_bool_layout_low32": 1,
+          "native_member_offset": "0x172",
+          "extra_pointer_rva": "0x1071e90"
+        },
+        {
+          "name": "NetworkTransitionConfiguration",
+          "record_rva": "0x14fa8098",
+          "record_sha256": "fb9266fda8080cdcfc14507bac9417c8535fa61d231deb908cdf6954fd511654",
+          "property_flags": "0x10000000010005",
+          "native_gen_flags": "0x0",
+          "array_dim_or_bool_layout_low32": 1,
+          "native_member_offset": "0x171",
+          "extra_pointer_rva": "0x1071e90"
+        },
+        {
+          "name": "NetworkTickConfiguration",
+          "record_rva": "0x14fa80c8",
+          "record_sha256": "d7d8ae017c91876c062846a9f089a561e53f93085a2e5ab9fa56c253abd68a50",
+          "property_flags": "0x10000000010005",
+          "native_gen_flags": "0x0",
+          "array_dim_or_bool_layout_low32": 1,
+          "native_member_offset": "0x170",
+          "extra_pointer_rva": "0x1071e90"
+        },
+        {
+          "name": "StateMachineClass",
+          "record_rva": "0x14fa80f8",
+          "record_sha256": "f30bea82a5df67edac6496b70dedbe3252a222307386729bce96343f37e82bd4",
+          "property_flags": "0x15000000000005",
+          "native_gen_flags": "0x11",
+          "array_dim_or_bool_layout_low32": 1,
+          "native_member_offset": "0x168",
+          "extra_pointer_rva": "0x106ff90"
+        },
+        {
+          "name": "OnStateMachineStateChangedEvent",
+          "record_rva": "0x14fa8130",
+          "record_sha256": "7585d89c3eaaaaee4405dd154e33e809174308fd6e6d92177ce0361028369f79",
+          "property_flags": "0x10000010080000",
+          "native_gen_flags": "0x1b",
+          "array_dim_or_bool_layout_low32": 1,
+          "native_member_offset": "0x158",
+          "extra_pointer_rva": "0x1070490"
+        },
+        {
+          "name": "OnStateMachineTransitionTakenEvent",
+          "record_rva": "0x14fa8160",
+          "record_sha256": "1806d46ff713aee1c3c1669b4f549c136888916dd2da69dbcb9fa1c187d7bc7e",
+          "property_flags": "0x10000010080000",
+          "native_gen_flags": "0x1b",
+          "array_dim_or_bool_layout_low32": 1,
+          "native_member_offset": "0x148",
+          "extra_pointer_rva": "0x10704c0"
+        },
+        {
+          "name": "OnStateMachineStoppedEvent",
+          "record_rva": "0x14fa8190",
+          "record_sha256": "c0596f30073fbe04cf8d4bf270433ef4bd1ef7ae434b56b190d93ddb3c494fc6",
+          "property_flags": "0x10000010080000",
+          "native_gen_flags": "0x1b",
+          "array_dim_or_bool_layout_low32": 1,
+          "native_member_offset": "0x138",
+          "extra_pointer_rva": "0x10704f0"
+        },
+        {
+          "name": "OnStateMachineUpdatedEvent",
+          "record_rva": "0x14fa81c0",
+          "record_sha256": "0d414d55e39e424dfdef1af01b48ae57b691d61734bca834b96f8a7a6165e1eb",
+          "property_flags": "0x10000010080000",
+          "native_gen_flags": "0x1b",
+          "array_dim_or_bool_layout_low32": 1,
+          "native_member_offset": "0x128",
+          "extra_pointer_rva": "0x1070520"
+        },
+        {
+          "name": "OnStateMachineStartedEvent",
+          "record_rva": "0x14fa81f0",
+          "record_sha256": "0166b0325821568eb5d974348f7f67fc10bc1d9eb3abccc8bd39acb96202d22c",
+          "property_flags": "0x10000010080000",
+          "native_gen_flags": "0x1b",
+          "array_dim_or_bool_layout_low32": 1,
+          "native_member_offset": "0x118",
+          "extra_pointer_rva": "0x1070550"
+        },
+        {
+          "name": "OnStateMachineInitializedEvent",
+          "record_rva": "0x14fa8220",
+          "record_sha256": "c57501f5bcab43a568843582faaa0a38872f965d0d2162698b5b30b4415fe92c",
+          "property_flags": "0x10000010080000",
+          "native_gen_flags": "0x1b",
+          "array_dim_or_bool_layout_low32": 1,
+          "native_member_offset": "0x108",
+          "extra_pointer_rva": "0x1070580"
+        }
+      ],
+      "net_property_records": [
+        {
+          "name": "R_bShuttingDown",
+          "record_rva": "0x14fa7c78",
+          "record_sha256": "bc24f2eb794683a1a626cc55c9f292f074f1660417e30155e94ac27ef2b4eebe",
+          "property_flags": "0x20080100002020",
+          "native_gen_flags": "0x4c",
+          "array_dim_or_bool_layout_low32": 1,
+          "rep_notify": "REP_ShuttingDown",
+          "bool_setter_rva": "0x1079470",
+          "bool_setter_first_instruction": {
+            "bytes": "c681c001000001",
+            "mnemonic": "mov",
+            "operands": "byte ptr [rcx + 0x1c0], 1"
+          },
+          "native_member_offset": "0x1c0"
+        },
+        {
+          "name": "R_Instance",
+          "record_rva": "0x14fa7db0",
+          "record_sha256": "50791f1b72d67dae7c96b5e92d1cf32bac1e7284817a8b6cc65e3e8cd38bbf52",
+          "property_flags": "0x20080100002020",
+          "native_gen_flags": "0x12",
+          "array_dim_or_bool_layout_low32": 1,
+          "rep_notify": "REP_OnInstanceLoaded",
+          "native_member_offset": "0x1a8",
+          "extra_pointer_rva": "0x106ff90"
+        },
+        {
+          "name": "R_NetworkedTransactions",
+          "record_rva": "0x14fa7e38",
+          "record_sha256": "030079d04601599d5c802dbf983f9909ae3d6964b9e380576262de1566d8e573",
+          "property_flags": "0x20080100002020",
+          "native_gen_flags": "0x16",
+          "array_dim_or_bool_layout_low32": 1,
+          "rep_notify": "REP_NetworkedTransactions",
+          "native_member_offset": "0x188",
+          "extra_pointer_rva": "0x14fa8458"
+        }
+      ],
+      "function_count": 21,
+      "property_record_count": 31,
+      "function_declarations": [
+        {
+          "name": "GetInstance",
+          "getter_rva": "0x1079070",
+          "getter_probe_sha256": "c8ab47c7e06c12365587a44681d8b4c4de33a1662df43b8c9dbd9ded1b39fdbf",
+          "function_params_rva": "0x1ca192e0",
+          "function_params_sha256": "3892b402dad9b848e5d707ad1a07053bd33dfb9445978263bef919c51d603630",
+          "function_flags": "0x54020401",
+          "native_param_bytes": 8,
+          "property_count": 1,
+          "parameters": [
+            {
+              "name": "ReturnValue",
+              "record_rva": "0x14fa7740",
+              "record_sha256": "ff7629e8ef01bbd5cbbaff0bbd703da4b25d938a33dafc88e85959a3a6f7146d",
+              "property_flags": "0x10000000000580",
+              "native_gen_flags": "0x12",
+              "array_dim_or_bool_layout_low32": 1,
+              "native_member_offset": "0x0",
+              "extra_pointer_rva": "0x106ff90"
+            }
+          ]
+        },
+        {
+          "name": "Initialize",
+          "getter_rva": "0x10790a0",
+          "getter_probe_sha256": "f473a6f809edebe0a6453247b9c2f7aa20adee27b06502fd1cd44da3dabf71e1",
+          "function_params_rva": "0x1ca19330",
+          "function_params_sha256": "f1023ffbbd8fd653aaedd7cffbc51e331a34fc4a9171c83b51e640bb6db48f1b",
+          "function_flags": "0x4020400",
+          "native_param_bytes": 16,
+          "property_count": 2,
+          "parameters": [
+            {
+              "name": "Component",
+              "record_rva": "0x14fa7778",
+              "record_sha256": "c0b6ae208993ce1b640e1e84a1f8029fdd037707482cf6c8dcf167196c68ef1d",
+              "property_flags": "0x10000000080080",
+              "native_gen_flags": "0x12",
+              "array_dim_or_bool_layout_low32": 1,
+              "native_member_offset": "0x8",
+              "extra_pointer_rva": "0x13295420"
+            },
+            {
+              "name": "Context",
+              "record_rva": "0x14fa77a8",
+              "record_sha256": "604a49d7b1a737bddad5beb06341ca97d4b2049cfa89607f4932cf9dd10db6d7",
+              "property_flags": "0x10000000000080",
+              "native_gen_flags": "0x12",
+              "array_dim_or_bool_layout_low32": 1,
+              "native_member_offset": "0x0",
+              "extra_pointer_rva": "0x10ed3c00"
+            }
+          ]
+        },
+        {
+          "name": "Internal_OnStateMachineStarted",
+          "getter_rva": "0x10790d0",
+          "getter_probe_sha256": "219be32ee883a1afb61dc25951d3cc5a75b64bb562c4d3d29ff401e60f660840",
+          "function_params_rva": "0x1ca19380",
+          "function_params_sha256": "7bb952b8d31195a525723e0b5fba91c08b7ed88cfd4a19fcaff7899208194b65",
+          "function_flags": "0x80401",
+          "native_param_bytes": 8,
+          "property_count": 1,
+          "parameters": [
+            {
+              "name": "Instance",
+              "record_rva": "0x14fa77e8",
+              "record_sha256": "a1f673b15e794cccb37ae3e40a50bbc9ecaab696643600271cb74597ca89eab4",
+              "property_flags": "0x10000000000080",
+              "native_gen_flags": "0x12",
+              "array_dim_or_bool_layout_low32": 1,
+              "native_member_offset": "0x0",
+              "extra_pointer_rva": "0x106ff90"
+            }
+          ]
+        },
+        {
+          "name": "Internal_OnStateMachineStateChanged",
+          "getter_rva": "0x1079100",
+          "getter_probe_sha256": "3ab867313c1d825dc3be5baff159f5885bfd0a11a9fbda4c85e6c4fe5151b42f",
+          "function_params_rva": "0x1ca193d0",
+          "function_params_sha256": "73529910ae3c406b58924ba86d5e2bcbc2a9dd316ffafe2902f4af374d242e94",
+          "function_flags": "0x80401",
+          "native_param_bytes": 264,
+          "property_count": 3,
+          "parameters": [
+            {
+              "name": "FromState",
+              "record_rva": "0x14fa7820",
+              "record_sha256": "d29300c0f86f0054bc1c57f507d0a71281aa09d1cbf2a1dc0bc0d18b454df227",
+              "property_flags": "0x10000000000080",
+              "native_gen_flags": "0x19",
+              "array_dim_or_bool_layout_low32": 1,
+              "native_member_offset": "0x88",
+              "extra_pointer_rva": "0x1074270"
+            },
+            {
+              "name": "ToState",
+              "record_rva": "0x14fa7850",
+              "record_sha256": "359b5f06d72a1a81102bc3f3596a6f0404160d1edefe2e8b56c903673cd48e6a",
+              "property_flags": "0x10000000000080",
+              "native_gen_flags": "0x19",
+              "array_dim_or_bool_layout_low32": 1,
+              "native_member_offset": "0x8",
+              "extra_pointer_rva": "0x1074270"
+            },
+            {
+              "name": "Instance",
+              "record_rva": "0x14fa7880",
+              "record_sha256": "6ad3d7222db6e28b6ffa4f83117ad76c46e9c3eec5c8d52e206c2e669bfcbf7b",
+              "property_flags": "0x10000000000080",
+              "native_gen_flags": "0x12",
+              "array_dim_or_bool_layout_low32": 1,
+              "native_member_offset": "0x0",
+              "extra_pointer_rva": "0x106ff90"
+            }
+          ]
+        },
+        {
+          "name": "Internal_OnStateMachineStopped",
+          "getter_rva": "0x1079130",
+          "getter_probe_sha256": "86c33c6b6f9c80eb727343899707b881eb549bbbc149584731e5556864e49ea9",
+          "function_params_rva": "0x1ca19420",
+          "function_params_sha256": "ec91a877bb390b1f07c2d9a908e8f7b3aeee26689b834db34ba9dc60cf8489e3",
+          "function_flags": "0x80401",
+          "native_param_bytes": 8,
+          "property_count": 1,
+          "parameters": [
+            {
+              "name": "Instance",
+              "record_rva": "0x14fa78c8",
+              "record_sha256": "57ac4511677395886b4d3fabad95bedf4d0d17db1e44178f059caae6c8cd5e5d",
+              "property_flags": "0x10000000000080",
+              "native_gen_flags": "0x12",
+              "array_dim_or_bool_layout_low32": 1,
+              "native_member_offset": "0x0",
+              "extra_pointer_rva": "0x106ff90"
+            }
+          ]
+        },
+        {
+          "name": "Internal_OnStateMachineTransitionTaken",
+          "getter_rva": "0x1079160",
+          "getter_probe_sha256": "33c33ee85c06a3bab96568c31c124a2a460e13b2ea61d1dd0d0cfe4725609bb7",
+          "function_params_rva": "0x1ca19470",
+          "function_params_sha256": "4eddac836c81a9eb9dd052f270fb60526a3374861dce2f08ba1b2b6ef21189a1",
+          "function_flags": "0x80401",
+          "native_param_bytes": 152,
+          "property_count": 2,
+          "parameters": [
+            {
+              "name": "Transition",
+              "record_rva": "0x14fa7900",
+              "record_sha256": "32f6ff176c9a53502dd384d69f956086f04131160c4e7992a565c40141a07545",
+              "property_flags": "0x10000000000080",
+              "native_gen_flags": "0x19",
+              "array_dim_or_bool_layout_low32": 1,
+              "native_member_offset": "0x8",
+              "extra_pointer_rva": "0x10742d0"
+            },
+            {
+              "name": "Instance",
+              "record_rva": "0x14fa7930",
+              "record_sha256": "ef28edad3aed140914cd06b62f7fc78e7429a94745cb9b92720af65f1b61f2c7",
+              "property_flags": "0x10000000000080",
+              "native_gen_flags": "0x12",
+              "array_dim_or_bool_layout_low32": 1,
+              "native_member_offset": "0x0",
+              "extra_pointer_rva": "0x106ff90"
+            }
+          ]
+        },
+        {
+          "name": "Internal_OnStateMachineUpdated",
+          "getter_rva": "0x1079190",
+          "getter_probe_sha256": "59467cf68ef2094a6e504320dc9552777d538c57553562b8e02b880fc4cf008f",
+          "function_params_rva": "0x1ca194c0",
+          "function_params_sha256": "bc67105b167726f74f5d724277856401ad14c4bde3f8d03af06f31f85e2cdaf0",
+          "function_flags": "0x80401",
+          "native_param_bytes": 16,
+          "property_count": 2,
+          "parameters": [
+            {
+              "name": "DeltaSeconds",
+              "record_rva": "0x14fa7970",
+              "record_sha256": "9866dc221933530e83eda1cfc47f91c3bd1b994cb426cf736c6c509e543b172f",
+              "property_flags": "0x10000000000080",
+              "native_gen_flags": "0xa",
+              "array_dim_or_bool_layout_low32": 1,
+              "native_member_offset": "0x8",
+              "extra_pointer_rva": "0x14fa1590"
+            },
+            {
+              "name": "Instance",
+              "record_rva": "0x14fa7998",
+              "record_sha256": "c133e0b433f5e15d7a96ae19380f89d5cbefd9fedac975bae7c1065ccbb68d5e",
+              "property_flags": "0x10000000000080",
+              "native_gen_flags": "0x12",
+              "array_dim_or_bool_layout_low32": 1,
+              "native_member_offset": "0x0",
+              "extra_pointer_rva": "0x106ff90"
+            }
+          ]
+        },
+        {
+          "name": "PrintAllStates",
+          "getter_rva": "0x10791c0",
+          "getter_probe_sha256": "8992babef095a0ece6fdb46a15d009461b396591b798d002b3a60a9bea6aa7f1",
+          "function_params_rva": "0x1ca19510",
+          "function_params_sha256": "4304f27699bb512c6f2a8e9077870dbbd47e95cd4ff380181f7bca1e60bd4e27",
+          "function_flags": "0x4020401",
+          "native_param_bytes": 0,
+          "property_count": 0,
+          "parameters": []
+        },
+        {
+          "name": "REP_NetworkedTransactions",
+          "getter_rva": "0x10791f0",
+          "getter_probe_sha256": "60fdaf63797702bd59b95a462ca02b5841cbbadb78e34e8c1ab9a2a7b04851b8",
+          "function_params_rva": "0x1ca19560",
+          "function_params_sha256": "6d9b486c38b05c61b044215e7b79bd9d80ba0d139b1e6a1b862bc1c077a15534",
+          "function_flags": "0x80400",
+          "native_param_bytes": 0,
+          "property_count": 0,
+          "parameters": []
+        },
+        {
+          "name": "REP_OnInstanceLoaded",
+          "getter_rva": "0x1079220",
+          "getter_probe_sha256": "08b1748891a1b8f53c040825e5fa78dfb98b9c179373de488a9eb3eadcf4b3ea",
+          "function_params_rva": "0x1ca195b0",
+          "function_params_sha256": "767dc18bb85e3a172183f0fe8b218619efcc4f9b81092b00b4b90bdf3a37588c",
+          "function_flags": "0x80400",
+          "native_param_bytes": 0,
+          "property_count": 0,
+          "parameters": []
+        },
+        {
+          "name": "REP_ShuttingDown",
+          "getter_rva": "0x1079250",
+          "getter_probe_sha256": "11043dc9be53c7389fbf38f4a23e6d49305aa0c7e3837bf24d7646eef8e0b631",
+          "function_params_rva": "0x1ca19600",
+          "function_params_sha256": "aa5457878f41639eb156ef8271a6808529167a0f4f8adc6b0164ce24af861840",
+          "function_flags": "0x80400",
+          "native_param_bytes": 0,
+          "property_count": 0,
+          "parameters": []
+        },
+        {
+          "name": "SERVER_Initialize",
+          "getter_rva": "0x1079280",
+          "getter_probe_sha256": "658c1649505fe6c2316ae75b2da299181d5e7ac8f857d45c973c4041e2ea01e1",
+          "function_params_rva": "0x1ca19650",
+          "function_params_sha256": "cd87e0e68317fcbe784cc2909c1e9e9d3713f666cc18d419c7a587f52a1d36aa",
+          "function_flags": "0x80280cc0",
+          "native_param_bytes": 8,
+          "property_count": 1,
+          "parameters": [
+            {
+              "name": "Context",
+              "record_rva": "0x14fa79d8",
+              "record_sha256": "2cdd3c25c7c5dd3d23fafa1b72628aeaa7eba553c8c43788dc62b5e3d0621d00",
+              "property_flags": "0x10000000000080",
+              "native_gen_flags": "0x12",
+              "array_dim_or_bool_layout_low32": 1,
+              "native_member_offset": "0x0",
+              "extra_pointer_rva": "0x10ed3c00"
+            }
+          ]
+        },
+        {
+          "name": "SERVER_ProcessTransaction",
+          "getter_rva": "0x10792b0",
+          "getter_probe_sha256": "7b6e81a5d079e69cda17c861a6d2a25eceb7fcb2226b373bed37f8393c792f45",
+          "function_params_rva": "0x1ca196a0",
+          "function_params_sha256": "34d856b72572d0ca749dd4bd6d6e16e45a47b1902635e07864ea06a38c5a2662",
+          "function_flags": "0x80280cc0",
+          "native_param_bytes": 16,
+          "property_count": 2,
+          "parameters": [
+            {
+              "name": "Transactions",
+              "record_rva": "0x14fa7a10",
+              "record_sha256": "2fcaf91edef6631e86e1b8eed2474883e94f30e36bbac26b032a6667c50c2a55",
+              "property_flags": "0x10000008000082",
+              "native_gen_flags": "0x16",
+              "array_dim_or_bool_layout_low32": 1,
+              "native_member_offset": "0x0",
+              "extra_pointer_rva": "0x14f9dd28"
+            },
+            {
+              "name": "Transactions",
+              "record_rva": "0x14fa7a38",
+              "record_sha256": "af7d8ac380a8fa8e1b584ad71ec9cd9a3fc6687b87ca53ca2adae885b139d071",
+              "property_flags": "0x0",
+              "native_gen_flags": "0x19",
+              "array_dim_or_bool_layout_low32": 1,
+              "native_member_offset": "0x0",
+              "extra_pointer_rva": "0x1075300"
+            }
+          ]
+        },
+        {
+          "name": "SERVER_Shutdown",
+          "getter_rva": "0x10792e0",
+          "getter_probe_sha256": "bcad54c746407fb17d13a00e0e5e2b65b3e8ba5eba4db7abfea5b74c9f775f28",
+          "function_params_rva": "0x1ca196f0",
+          "function_params_sha256": "b94bd2c86bef586e7c8e01f0a04cb046f07e2556ffaed79d360917f95cbeab4b",
+          "function_flags": "0x80280cc0",
+          "native_param_bytes": 0,
+          "property_count": 0,
+          "parameters": []
+        },
+        {
+          "name": "SERVER_Start",
+          "getter_rva": "0x1079310",
+          "getter_probe_sha256": "91b1537fec24b6489efe8ac50c2203d00d41eb2b3de447f241ebfb813ec3613a",
+          "function_params_rva": "0x1ca19740",
+          "function_params_sha256": "580e3f96e016a69d783d640bd7a8cb42ed9b7a4a3f676e07b9ac0150e7b93095",
+          "function_flags": "0x80280cc0",
+          "native_param_bytes": 0,
+          "property_count": 0,
+          "parameters": []
+        },
+        {
+          "name": "SERVER_Stop",
+          "getter_rva": "0x1079340",
+          "getter_probe_sha256": "9bc3578f59df10ea2bd0a7f26a3d055d8a5e5799c4979f60498f2e6f37fc9f51",
+          "function_params_rva": "0x1ca19790",
+          "function_params_sha256": "ef5ec61ec23809206bdb671c4ff7e8e7871e1047857562873ee3d0f67bf10e9f",
+          "function_flags": "0x80280cc0",
+          "native_param_bytes": 0,
+          "property_count": 0,
+          "parameters": []
+        },
+        {
+          "name": "SERVER_Update",
+          "getter_rva": "0x1079370",
+          "getter_probe_sha256": "f1423c1c92dd00ea6455548e98d0350d273c6f9f73b517e6b9a5843e35d7d8ed",
+          "function_params_rva": "0x1ca197e0",
+          "function_params_sha256": "1c4e4bd1317e93a4e0918e948acf1ed5ddb306ccbf9531ad6cf43d27811c003c",
+          "function_flags": "0x80280cc0",
+          "native_param_bytes": 4,
+          "property_count": 1,
+          "parameters": [
+            {
+              "name": "DeltaTime",
+              "record_rva": "0x14fa7a78",
+              "record_sha256": "fac4e507371aefe291cc38806104564506707e0d4bbbc182daa850cbe7307662",
+              "property_flags": "0x10000000000080",
+              "native_gen_flags": "0xa",
+              "array_dim_or_bool_layout_low32": 1,
+              "native_member_offset": "0x0",
+              "extra_pointer_rva": "0x14fa7a78"
+            }
+          ]
+        },
+        {
+          "name": "Shutdown",
+          "getter_rva": "0x10793a0",
+          "getter_probe_sha256": "80f942985d6446af4414f4282513ee4f4b33365406200f3c35469af6bff8f093",
+          "function_params_rva": "0x1ca19830",
+          "function_params_sha256": "c9dc9705fe997638f2230a1f674344479687fa919479fab148cc9b0cfc3ccbac",
+          "function_flags": "0x4020400",
+          "native_param_bytes": 0,
+          "property_count": 0,
+          "parameters": []
+        },
+        {
+          "name": "Start",
+          "getter_rva": "0x10793d0",
+          "getter_probe_sha256": "3988babf7ccdad1ee11da8408d8d4ec1a566ef6192e0e1b803b177a91f7f6fde",
+          "function_params_rva": "0x1ca19880",
+          "function_params_sha256": "1aad964eef4946f01c0a06b210d0711a27ae7c5989cd00deb8ca59fae140d6b0",
+          "function_flags": "0x4020400",
+          "native_param_bytes": 0,
+          "property_count": 0,
+          "parameters": []
+        },
+        {
+          "name": "Stop",
+          "getter_rva": "0x1079400",
+          "getter_probe_sha256": "e61adb7729f03ff84ac723f1078651499aec18b9edebaa59640ea14a2f61ca5a",
+          "function_params_rva": "0x1ca198d0",
+          "function_params_sha256": "93a2f5b82c5c65ef913c8c9e7a77e8524262126c406ae085f85bd92c533610d7",
+          "function_flags": "0x4020400",
+          "native_param_bytes": 0,
+          "property_count": 0,
+          "parameters": []
+        },
+        {
+          "name": "Update",
+          "getter_rva": "0x1079430",
+          "getter_probe_sha256": "eef430524e651f6390edbced3c46b2312c6d5b4d037403fbdb4f3b0131628a98",
+          "function_params_rva": "0x1ca19920",
+          "function_params_sha256": "3e0c4c7f04882ffc89a0dec2336d271c8b7854914bcf5059b4a2a1dd23ca7149",
+          "function_flags": "0x4020400",
+          "native_param_bytes": 4,
+          "property_count": 1,
+          "parameters": [
+            {
+              "name": "DeltaSeconds",
+              "record_rva": "0x14fa7aa8",
+              "record_sha256": "597f85121e0915ed1ebab9c78cc25975d3fe9a2609ac108d56a46177ed8fa5a0",
+              "property_flags": "0x10000000000080",
+              "native_gen_flags": "0xa",
+              "array_dim_or_bool_layout_low32": 1,
+              "native_member_offset": "0x0",
+              "extra_pointer_rva": "0x14fa7aa8"
+            }
+          ]
+        }
+      ],
+      "net_function_declarations": [
+        {
+          "name": "SERVER_Initialize",
+          "getter_rva": "0x1079280",
+          "getter_probe_sha256": "658c1649505fe6c2316ae75b2da299181d5e7ac8f857d45c973c4041e2ea01e1",
+          "function_params_rva": "0x1ca19650",
+          "function_params_sha256": "cd87e0e68317fcbe784cc2909c1e9e9d3713f666cc18d419c7a587f52a1d36aa",
+          "function_flags": "0x80280cc0",
+          "native_param_bytes": 8,
+          "property_count": 1,
+          "parameters": [
+            {
+              "name": "Context",
+              "record_rva": "0x14fa79d8",
+              "record_sha256": "2cdd3c25c7c5dd3d23fafa1b72628aeaa7eba553c8c43788dc62b5e3d0621d00",
+              "property_flags": "0x10000000000080",
+              "native_gen_flags": "0x12",
+              "array_dim_or_bool_layout_low32": 1,
+              "native_member_offset": "0x0",
+              "extra_pointer_rva": "0x10ed3c00"
+            }
+          ]
+        },
+        {
+          "name": "SERVER_ProcessTransaction",
+          "getter_rva": "0x10792b0",
+          "getter_probe_sha256": "7b6e81a5d079e69cda17c861a6d2a25eceb7fcb2226b373bed37f8393c792f45",
+          "function_params_rva": "0x1ca196a0",
+          "function_params_sha256": "34d856b72572d0ca749dd4bd6d6e16e45a47b1902635e07864ea06a38c5a2662",
+          "function_flags": "0x80280cc0",
+          "native_param_bytes": 16,
+          "property_count": 2,
+          "parameters": [
+            {
+              "name": "Transactions",
+              "record_rva": "0x14fa7a10",
+              "record_sha256": "2fcaf91edef6631e86e1b8eed2474883e94f30e36bbac26b032a6667c50c2a55",
+              "property_flags": "0x10000008000082",
+              "native_gen_flags": "0x16",
+              "array_dim_or_bool_layout_low32": 1,
+              "native_member_offset": "0x0",
+              "extra_pointer_rva": "0x14f9dd28"
+            },
+            {
+              "name": "Transactions",
+              "record_rva": "0x14fa7a38",
+              "record_sha256": "af7d8ac380a8fa8e1b584ad71ec9cd9a3fc6687b87ca53ca2adae885b139d071",
+              "property_flags": "0x0",
+              "native_gen_flags": "0x19",
+              "array_dim_or_bool_layout_low32": 1,
+              "native_member_offset": "0x0",
+              "extra_pointer_rva": "0x1075300"
+            }
+          ]
+        },
+        {
+          "name": "SERVER_Shutdown",
+          "getter_rva": "0x10792e0",
+          "getter_probe_sha256": "bcad54c746407fb17d13a00e0e5e2b65b3e8ba5eba4db7abfea5b74c9f775f28",
+          "function_params_rva": "0x1ca196f0",
+          "function_params_sha256": "b94bd2c86bef586e7c8e01f0a04cb046f07e2556ffaed79d360917f95cbeab4b",
+          "function_flags": "0x80280cc0",
+          "native_param_bytes": 0,
+          "property_count": 0,
+          "parameters": []
+        },
+        {
+          "name": "SERVER_Start",
+          "getter_rva": "0x1079310",
+          "getter_probe_sha256": "91b1537fec24b6489efe8ac50c2203d00d41eb2b3de447f241ebfb813ec3613a",
+          "function_params_rva": "0x1ca19740",
+          "function_params_sha256": "580e3f96e016a69d783d640bd7a8cb42ed9b7a4a3f676e07b9ac0150e7b93095",
+          "function_flags": "0x80280cc0",
+          "native_param_bytes": 0,
+          "property_count": 0,
+          "parameters": []
+        },
+        {
+          "name": "SERVER_Stop",
+          "getter_rva": "0x1079340",
+          "getter_probe_sha256": "9bc3578f59df10ea2bd0a7f26a3d055d8a5e5799c4979f60498f2e6f37fc9f51",
+          "function_params_rva": "0x1ca19790",
+          "function_params_sha256": "ef5ec61ec23809206bdb671c4ff7e8e7871e1047857562873ee3d0f67bf10e9f",
+          "function_flags": "0x80280cc0",
+          "native_param_bytes": 0,
+          "property_count": 0,
+          "parameters": []
+        },
+        {
+          "name": "SERVER_Update",
+          "getter_rva": "0x1079370",
+          "getter_probe_sha256": "f1423c1c92dd00ea6455548e98d0350d273c6f9f73b517e6b9a5843e35d7d8ed",
+          "function_params_rva": "0x1ca197e0",
+          "function_params_sha256": "1c4e4bd1317e93a4e0918e948acf1ed5ddb306ccbf9531ad6cf43d27811c003c",
+          "function_flags": "0x80280cc0",
+          "native_param_bytes": 4,
+          "property_count": 1,
+          "parameters": [
+            {
+              "name": "DeltaTime",
+              "record_rva": "0x14fa7a78",
+              "record_sha256": "fac4e507371aefe291cc38806104564506707e0d4bbbc182daa850cbe7307662",
+              "property_flags": "0x10000000000080",
+              "native_gen_flags": "0xa",
+              "array_dim_or_bool_layout_low32": 1,
+              "native_member_offset": "0x0",
+              "extra_pointer_rva": "0x14fa7a78"
+            }
+          ]
+        }
+      ],
+      "unresolved_function_params_count": 0
+    },
+    {
+      "record_rva": "0x1669d8d0",
+      "record_sha256": "02ffa1d04a6bfc7cca156efd69e0d28141306a11adf2d112e30e1e0965566998",
+      "static_class_getter_rva": "0x5ff2b80",
+      "dependency_getters": [
+        "0x1079010",
+        "0x5ff7c30"
+      ],
+      "declared_property_records": [
+        {
+          "name": "GPOwner",
+          "record_rva": "0x1669d740",
+          "record_sha256": "7b227e8b0ad70b6dab55226fff42cf57c059c7207b3aa7f4c1ebf326b2a5e430",
+          "property_flags": "0x24080000000000",
+          "native_gen_flags": "0x23",
+          "array_dim_or_bool_layout_low32": 1,
+          "native_member_offset": "0x1e0",
+          "extra_pointer_rva": "0x5fb8810"
+        },
+        {
+          "name": "GPActor",
+          "record_rva": "0x1669d770",
+          "record_sha256": "ce01296c55f492a7aec3cbaab1d8a29e27d4e11938cb504beb155a76c1ef9b2f",
+          "property_flags": "0x20080000000000",
+          "native_gen_flags": "0x12",
+          "array_dim_or_bool_layout_low32": 1,
+          "native_member_offset": "0x1d8",
+          "extra_pointer_rva": "0x1328cbe0"
+        },
+        {
+          "name": "bDisableSimulatedProxyTick",
+          "record_rva": "0x1669d7a0",
+          "record_sha256": "3c80ba782cfef9d30e27685f3a1b2b575a8ce267125dad67fb1581de512d503c",
+          "property_flags": "0x10000000010005",
+          "native_gen_flags": "0x4c",
+          "array_dim_or_bool_layout_low32": 1,
+          "bool_setter_rva": "0x5ff2e70",
+          "bool_setter_first_instruction": {
+            "bytes": "c681d301000001",
+            "mnemonic": "mov",
+            "operands": "byte ptr [rcx + 0x1d3], 1"
+          },
+          "native_member_offset": "0x1d3"
+        },
+        {
+          "name": "bDisableTransitionNetworkTransaction",
+          "record_rva": "0x1669d7d8",
+          "record_sha256": "f7089c9e8410be4a8301d2db1bb4fbc1d2bc9410dc9162c3be9b1d37a66311db",
+          "property_flags": "0x10000000010005",
+          "native_gen_flags": "0x4c",
+          "array_dim_or_bool_layout_low32": 1,
+          "bool_setter_rva": "0x17ed7b0",
+          "bool_setter_first_instruction": {
+            "bytes": "c681d201000001",
+            "mnemonic": "mov",
+            "operands": "byte ptr [rcx + 0x1d2], 1"
+          },
+          "native_member_offset": "0x1d2"
+        },
+        {
+          "name": "bDisableSimulatedProxyLocalTransition",
+          "record_rva": "0x1669d810",
+          "record_sha256": "c1de79cb220974a53a7e70f5c9665c22ed26452c6e187488c3ae06315969e982",
+          "property_flags": "0x10000000010005",
+          "native_gen_flags": "0x4c",
+          "array_dim_or_bool_layout_low32": 1,
+          "bool_setter_rva": "0x17ed7c0",
+          "bool_setter_first_instruction": {
+            "bytes": "c681d101000001",
+            "mnemonic": "mov",
+            "operands": "byte ptr [rcx + 0x1d1], 1"
+          },
+          "native_member_offset": "0x1d1"
+        },
+        {
+          "name": "bIsCharacterMainFSM",
+          "record_rva": "0x1669d848",
+          "record_sha256": "07a719333366785c22a3bda148b79db90f7ff2ae475730e230d6fce4192c8a6a",
+          "property_flags": "0x10000000010005",
+          "native_gen_flags": "0x4c",
+          "array_dim_or_bool_layout_low32": 1,
+          "bool_setter_rva": "0x10c5690",
+          "bool_setter_first_instruction": {
+            "bytes": "c681d001000001",
+            "mnemonic": "mov",
+            "operands": "byte ptr [rcx + 0x1d0], 1"
+          },
+          "native_member_offset": "0x1d0"
+        }
+      ],
+      "net_property_records": [],
+      "function_count": 6,
+      "property_record_count": 6,
+      "function_declarations": [
+        {
+          "name": "OnHeavyTaskFSMInitialize",
+          "getter_rva": "0x5ff2d50",
+          "getter_probe_sha256": "1dcde74b9c8219e74b4d8589c8681d199d86c7f1c58b9e106b3fa400a990f94b",
+          "function_params_rva": "0x1cd14750",
+          "function_params_sha256": "2adf435a90e72102e4316d54022542c2ddf327a1a053f8f298d78bc6f714a600",
+          "function_flags": "0x20401",
+          "native_param_bytes": 0,
+          "property_count": 0,
+          "parameters": []
+        },
+        {
+          "name": "OnHeavyTaskSyncServerStates",
+          "getter_rva": "0x5ff2d80",
+          "getter_probe_sha256": "f4f52a2cb861f417f90f4d84b30cea55b1468045fbb4db63200c9ddba82a8669",
+          "function_params_rva": "0x1cd147a0",
+          "function_params_sha256": "d9bea05e425528a3642ad8471556ddde0e127be2565001c935da0c7969b828a3",
+          "function_flags": "0x20401",
+          "native_param_bytes": 0,
+          "property_count": 0,
+          "parameters": []
+        },
+        {
+          "name": "ServerDoingPredictState",
+          "getter_rva": "0x5ff2db0",
+          "getter_probe_sha256": "085688483e65a9716f4eba33297a2666b10fdb2ee59936f3dafbb8641845773f",
+          "function_params_rva": "0x1cd147f0",
+          "function_params_sha256": "f36976f6e6b751f7a3820c37e884ed3e32ec5da197d94be8790072cd460420a3",
+          "function_flags": "0x220cc0",
+          "native_param_bytes": 64,
+          "property_count": 4,
+          "parameters": [
+            {
+              "name": "bNeedServerCheck",
+              "record_rva": "0x1669d488",
+              "record_sha256": "18a2cc7ac5eefa416b223b931df185ee033e89db50e80bfef8b014dbdb91602d",
+              "property_flags": "0x10000000000080",
+              "native_gen_flags": "0x4c",
+              "array_dim_or_bool_layout_low32": 1,
+              "bool_setter_rva": "0xe2eb60",
+              "bool_setter_first_instruction": {
+                "bytes": "c6413801",
+                "mnemonic": "mov",
+                "operands": "byte ptr [rcx + 0x38], 1"
+              },
+              "native_member_offset": "0x38"
+            },
+            {
+              "name": "transition",
+              "record_rva": "0x1669d4c0",
+              "record_sha256": "45c847ffcddba2e1309c1558f6c2d2e73e3e80efdd8def2311d05edbe3ecd8b2",
+              "property_flags": "0x10000000000080",
+              "native_gen_flags": "0x19",
+              "array_dim_or_bool_layout_low32": 1,
+              "native_member_offset": "0x8",
+              "extra_pointer_rva": "0x5ff7450"
+            },
+            {
+              "name": "clientTickNumber",
+              "record_rva": "0x1669d4f0",
+              "record_sha256": "1451f284158a833c3216f35cf5a4d84f595325eae8a6e8f495c98cc64e554013",
+              "property_flags": "0x10000000000080",
+              "native_gen_flags": "0x3",
+              "array_dim_or_bool_layout_low32": 1,
+              "native_member_offset": "0x4",
+              "extra_pointer_rva": "0x1669d5a8"
+            },
+            {
+              "name": "transitionEvent",
+              "record_rva": "0x1669d518",
+              "record_sha256": "dc65f059adffd6daccc12e840e317b7878ed43d48460e3353cb9737bdb438a79",
+              "property_flags": "0x10000000000080",
+              "native_gen_flags": "0x0",
+              "array_dim_or_bool_layout_low32": 1,
+              "native_member_offset": "0x0",
+              "extra_pointer_rva": "0x5fef550"
+            }
+          ]
+        },
+        {
+          "name": "ServerReceiveFSMGlobalEvent",
+          "getter_rva": "0x5ff2de0",
+          "getter_probe_sha256": "143c21f0c4a07bd36a10ba90acac843aee8722ca7b5bba981914cb4d6da9fdd9",
+          "function_params_rva": "0x1cd14840",
+          "function_params_sha256": "26ae7aba3f4329cc125dd1d310e322cc971d6526c679b9118f4697a22a9510b4",
+          "function_flags": "0x220cc0",
+          "native_param_bytes": 8,
+          "property_count": 1,
+          "parameters": [
+            {
+              "name": "EventTag",
+              "record_rva": "0x1669d5b8",
+              "record_sha256": "44b3fbe01d4580cadc885e5a33ca699d6340d2482617527d6a3d84969ca6d7dc",
+              "property_flags": "0x10000000000080",
+              "native_gen_flags": "0x19",
+              "array_dim_or_bool_layout_low32": 1,
+              "native_member_offset": "0x0",
+              "extra_pointer_rva": "0x1242afd0"
+            }
+          ]
+        },
+        {
+          "name": "ServerReceivePredictState",
+          "getter_rva": "0x5ff2e10",
+          "getter_probe_sha256": "3f598286aeab8792604a62b7219c5478739cdfc763ae138d973793d2086dd360",
+          "function_params_rva": "0x1cd14890",
+          "function_params_sha256": "2cef27b60ffbde77b528d0b81ea09f6721e9c35b6fc848ac1694d6cc850be50b",
+          "function_flags": "0x220cc0",
+          "native_param_bytes": 56,
+          "property_count": 3,
+          "parameters": [
+            {
+              "name": "transition",
+              "record_rva": "0x1669d5f0",
+              "record_sha256": "45c847ffcddba2e1309c1558f6c2d2e73e3e80efdd8def2311d05edbe3ecd8b2",
+              "property_flags": "0x10000000000080",
+              "native_gen_flags": "0x19",
+              "array_dim_or_bool_layout_low32": 1,
+              "native_member_offset": "0x8",
+              "extra_pointer_rva": "0x5ff7450"
+            },
+            {
+              "name": "clientTickNumber",
+              "record_rva": "0x1669d620",
+              "record_sha256": "1451f284158a833c3216f35cf5a4d84f595325eae8a6e8f495c98cc64e554013",
+              "property_flags": "0x10000000000080",
+              "native_gen_flags": "0x3",
+              "array_dim_or_bool_layout_low32": 1,
+              "native_member_offset": "0x4",
+              "extra_pointer_rva": "0x1669d5a8"
+            },
+            {
+              "name": "transitionEvent",
+              "record_rva": "0x1669d648",
+              "record_sha256": "cb4ac17119101b0417d26961d79a222eab9010371069e92bdc7ac8b4eb7ed744",
+              "property_flags": "0x10000000000080",
+              "native_gen_flags": "0x0",
+              "array_dim_or_bool_layout_low32": 1,
+              "native_member_offset": "0x0",
+              "extra_pointer_rva": "0x5fef550"
+            }
+          ]
+        },
+        {
+          "name": "ServerRequestState",
+          "getter_rva": "0x5ff2e40",
+          "getter_probe_sha256": "137091028edba03242df051941d1765f6abf5ea52533fa8f8dbd6257afea476b",
+          "function_params_rva": "0x1cd148e0",
+          "function_params_sha256": "f2c706468c21ac96b2b34ac27a66de14b93c9726f83958401751a95a83e5c58b",
+          "function_flags": "0x220cc0",
+          "native_param_bytes": 1,
+          "property_count": 1,
+          "parameters": [
+            {
+              "name": "transitionEvent",
+              "record_rva": "0x1669d690",
+              "record_sha256": "6bb690f57ab7c69c839bb5ac1bebd277a24e9caf54d681ecdb7ae59c57910cb3",
+              "property_flags": "0x10000000000080",
+              "native_gen_flags": "0x0",
+              "array_dim_or_bool_layout_low32": 1,
+              "native_member_offset": "0x0",
+              "extra_pointer_rva": "0x5fef550"
+            }
+          ]
+        }
+      ],
+      "net_function_declarations": [
+        {
+          "name": "ServerDoingPredictState",
+          "getter_rva": "0x5ff2db0",
+          "getter_probe_sha256": "085688483e65a9716f4eba33297a2666b10fdb2ee59936f3dafbb8641845773f",
+          "function_params_rva": "0x1cd147f0",
+          "function_params_sha256": "f36976f6e6b751f7a3820c37e884ed3e32ec5da197d94be8790072cd460420a3",
+          "function_flags": "0x220cc0",
+          "native_param_bytes": 64,
+          "property_count": 4,
+          "parameters": [
+            {
+              "name": "bNeedServerCheck",
+              "record_rva": "0x1669d488",
+              "record_sha256": "18a2cc7ac5eefa416b223b931df185ee033e89db50e80bfef8b014dbdb91602d",
+              "property_flags": "0x10000000000080",
+              "native_gen_flags": "0x4c",
+              "array_dim_or_bool_layout_low32": 1,
+              "bool_setter_rva": "0xe2eb60",
+              "bool_setter_first_instruction": {
+                "bytes": "c6413801",
+                "mnemonic": "mov",
+                "operands": "byte ptr [rcx + 0x38], 1"
+              },
+              "native_member_offset": "0x38"
+            },
+            {
+              "name": "transition",
+              "record_rva": "0x1669d4c0",
+              "record_sha256": "45c847ffcddba2e1309c1558f6c2d2e73e3e80efdd8def2311d05edbe3ecd8b2",
+              "property_flags": "0x10000000000080",
+              "native_gen_flags": "0x19",
+              "array_dim_or_bool_layout_low32": 1,
+              "native_member_offset": "0x8",
+              "extra_pointer_rva": "0x5ff7450"
+            },
+            {
+              "name": "clientTickNumber",
+              "record_rva": "0x1669d4f0",
+              "record_sha256": "1451f284158a833c3216f35cf5a4d84f595325eae8a6e8f495c98cc64e554013",
+              "property_flags": "0x10000000000080",
+              "native_gen_flags": "0x3",
+              "array_dim_or_bool_layout_low32": 1,
+              "native_member_offset": "0x4",
+              "extra_pointer_rva": "0x1669d5a8"
+            },
+            {
+              "name": "transitionEvent",
+              "record_rva": "0x1669d518",
+              "record_sha256": "dc65f059adffd6daccc12e840e317b7878ed43d48460e3353cb9737bdb438a79",
+              "property_flags": "0x10000000000080",
+              "native_gen_flags": "0x0",
+              "array_dim_or_bool_layout_low32": 1,
+              "native_member_offset": "0x0",
+              "extra_pointer_rva": "0x5fef550"
+            }
+          ]
+        },
+        {
+          "name": "ServerReceiveFSMGlobalEvent",
+          "getter_rva": "0x5ff2de0",
+          "getter_probe_sha256": "143c21f0c4a07bd36a10ba90acac843aee8722ca7b5bba981914cb4d6da9fdd9",
+          "function_params_rva": "0x1cd14840",
+          "function_params_sha256": "26ae7aba3f4329cc125dd1d310e322cc971d6526c679b9118f4697a22a9510b4",
+          "function_flags": "0x220cc0",
+          "native_param_bytes": 8,
+          "property_count": 1,
+          "parameters": [
+            {
+              "name": "EventTag",
+              "record_rva": "0x1669d5b8",
+              "record_sha256": "44b3fbe01d4580cadc885e5a33ca699d6340d2482617527d6a3d84969ca6d7dc",
+              "property_flags": "0x10000000000080",
+              "native_gen_flags": "0x19",
+              "array_dim_or_bool_layout_low32": 1,
+              "native_member_offset": "0x0",
+              "extra_pointer_rva": "0x1242afd0"
+            }
+          ]
+        },
+        {
+          "name": "ServerReceivePredictState",
+          "getter_rva": "0x5ff2e10",
+          "getter_probe_sha256": "3f598286aeab8792604a62b7219c5478739cdfc763ae138d973793d2086dd360",
+          "function_params_rva": "0x1cd14890",
+          "function_params_sha256": "2cef27b60ffbde77b528d0b81ea09f6721e9c35b6fc848ac1694d6cc850be50b",
+          "function_flags": "0x220cc0",
+          "native_param_bytes": 56,
+          "property_count": 3,
+          "parameters": [
+            {
+              "name": "transition",
+              "record_rva": "0x1669d5f0",
+              "record_sha256": "45c847ffcddba2e1309c1558f6c2d2e73e3e80efdd8def2311d05edbe3ecd8b2",
+              "property_flags": "0x10000000000080",
+              "native_gen_flags": "0x19",
+              "array_dim_or_bool_layout_low32": 1,
+              "native_member_offset": "0x8",
+              "extra_pointer_rva": "0x5ff7450"
+            },
+            {
+              "name": "clientTickNumber",
+              "record_rva": "0x1669d620",
+              "record_sha256": "1451f284158a833c3216f35cf5a4d84f595325eae8a6e8f495c98cc64e554013",
+              "property_flags": "0x10000000000080",
+              "native_gen_flags": "0x3",
+              "array_dim_or_bool_layout_low32": 1,
+              "native_member_offset": "0x4",
+              "extra_pointer_rva": "0x1669d5a8"
+            },
+            {
+              "name": "transitionEvent",
+              "record_rva": "0x1669d648",
+              "record_sha256": "cb4ac17119101b0417d26961d79a222eab9010371069e92bdc7ac8b4eb7ed744",
+              "property_flags": "0x10000000000080",
+              "native_gen_flags": "0x0",
+              "array_dim_or_bool_layout_low32": 1,
+              "native_member_offset": "0x0",
+              "extra_pointer_rva": "0x5fef550"
+            }
+          ]
+        },
+        {
+          "name": "ServerRequestState",
+          "getter_rva": "0x5ff2e40",
+          "getter_probe_sha256": "137091028edba03242df051941d1765f6abf5ea52533fa8f8dbd6257afea476b",
+          "function_params_rva": "0x1cd148e0",
+          "function_params_sha256": "f2c706468c21ac96b2b34ac27a66de14b93c9726f83958401751a95a83e5c58b",
+          "function_flags": "0x220cc0",
+          "native_param_bytes": 1,
+          "property_count": 1,
+          "parameters": [
+            {
+              "name": "transitionEvent",
+              "record_rva": "0x1669d690",
+              "record_sha256": "6bb690f57ab7c69c839bb5ac1bebd277a24e9caf54d681ecdb7ae59c57910cb3",
+              "property_flags": "0x10000000000080",
+              "native_gen_flags": "0x0",
+              "array_dim_or_bool_layout_low32": 1,
+              "native_member_offset": "0x0",
+              "extra_pointer_rva": "0x5fef550"
+            }
+          ]
+        }
+      ],
+      "unresolved_function_params_count": 0
+    }
+  ]
+}

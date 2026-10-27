@@ -103,14 +103,16 @@ class WeaponAssemblyTests(unittest.TestCase):
         self.assertEqual(self.state()[4001].get('components', []), [])
 
     def test_failed_detach_when_warehouse_full_keeps_original_weapon(self):
+        from dfserver.native_warehouse_extensions import warehouse_grid
         desired = self.prop()
         part = next(part for part in desired['components'] if part['slot'] == 2)
         part['prop_data'].update(id=13020000356, gid=4002)
         weapon_assembly.update(self.backend, self.token, {'prop': desired})
         with self.backend.connection() as c:
             player_id = c.execute('SELECT player_id FROM native_lobby_props WHERE gid=4001').fetchone()[0]
+            columns, rows = warehouse_grid(c, player_id, 2)
             c.execute('INSERT INTO native_lobby_props VALUES (?,?,?,?,?,?,?,?,?)',
-                (4003, player_id, 14020000005, 1, 2, 0, 0, 9, 40))
+                (4003, player_id, 14020000005, 1, 2, 0, 0, columns, rows))
             c.commit()
         before = self.state()
         desired = self.prop()
@@ -254,8 +256,10 @@ class WeaponAssemblyTests(unittest.TestCase):
             self.assertEqual(self.backend.native_lobby_profile(self.token), before)
 
     def test_full_warehouse_does_not_block_new_socket_but_replacement_rolls_back(self):
+        from dfserver.native_warehouse_extensions import warehouse_grid
         with self.backend.connection() as connection:
-            connection.execute('UPDATE native_lobby_props SET length=9,width=40 WHERE gid=4002')
+            columns, rows = warehouse_grid(connection, self.backend._authorize(connection, self.token), 2)
+            connection.execute('UPDATE native_lobby_props SET length=?,width=? WHERE gid=4002', (columns, rows))
             connection.commit()
         entry = self.buy_entry(13430000001, 281474976710710, 1606)
         self.assertEqual(self.buy([entry])['result'], 0)

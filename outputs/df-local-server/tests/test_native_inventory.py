@@ -219,10 +219,16 @@ class NativeBulletOperationTests(unittest.TestCase):
         self.backend = Backend(self.path, ROOT / 'definitions.json')
         self.assertEqual(self.state(), state)
 
+    def test_multiple_load_commands_saturate_at_verified_capacity(self):
+        self.operate([self.command(count=10), self.command(count=8)])
+        state = self.state()
+        self.assertEqual(state[2002]['quantity'], 43)
+        self.assertEqual([row['num'] for row in state[2001]['weapon']['load_bullets']], [10, 7])
+
     def test_invalid_second_command_rolls_back_the_first_load(self):
         before = self.state()
         with self.assertRaises(DomainError):
-            self.operate([self.command(count=10), self.command(count=8)])
+            self.operate([self.command(count=10), self.command(count=8, bullet_gid=999999)])
         self.assertEqual(self.state(), before)
 
     def test_loading_rejects_incompatible_client_ammo(self):

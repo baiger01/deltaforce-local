@@ -1,0 +1,188 @@
+{
+  "class_path": "/Script/GPGameplay.MultiWeaponManagerComponent",
+  "client_sha256": "4254fbe66585f260f1f9dbfc5e302887842552e7baed8939e023160a5e250be0",
+  "client_to_server_subobject_header": {
+    "actor_selector": false,
+    "dynamic_class_reference": false,
+    "has_rep_layout": false,
+    "packed_guid": true,
+    "stable_name_bit": false
+  },
+  "component_name": "WeaponManager",
+  "current_values_observed": false,
+  "exclusive_index_maximum": 17,
+  "invalid_frame_index": 9,
+  "invalid_frame_parameters": {
+    "presence_bit": true,
+    "signed_frame_bits": 32
+  },
+  "kind": "source_qualified_weapon_switch_owner_rpc_v1",
+  "local_policy": "Authenticated exact equipped identities; native anti-cheat parity is not claimed.",
+  "native_runtime_rpc_acceptance_verified": false,
+  "rpc": {
+    "RPC_ClientNotifyFrameInValid": {
+      "flags": "0x1020cc0",
+      "native_parameter_bytes": 4,
+      "parameters": [
+        {
+          "name": "ClientFrameNo",
+          "native_gen_flags": "0x3",
+          "offset": "0x0"
+        }
+      ],
+      "params_rva": "0x1cd7ce30"
+    },
+    "RPC_ServerVerifyFrame": {
+      "flags": "0x220cc0",
+      "native_parameter_bytes": 64,
+      "parameters": [
+        {
+          "name": "InCheckCode",
+          "native_gen_flags": "0x19",
+          "offset": "0x38"
+        },
+        {
+          "name": "ClientFrame",
+          "native_gen_flags": "0x19",
+          "offset": "0x0"
+        }
+      ],
+      "params_rva": "0x1cd7ce80"
+    },
+    "ServerNotifyWeaponListError": {
+      "flags": "0x220cc0",
+      "native_parameter_bytes": 0,
+      "parameters": [],
+      "params_rva": "0x1cd7ced0"
+    },
+    "ServerRemoveWeapon": {
+      "flags": "0x80220cc0",
+      "native_parameter_bytes": 8,
+      "parameters": [
+        {
+          "name": "TargetWeapon",
+          "native_gen_flags": "0x12",
+          "offset": "0x0"
+        }
+      ],
+      "params_rva": "0x1cd7cf20"
+    },
+    "ServerSwitchToNextWeapon": {
+      "flags": "0x80220cc0",
+      "native_parameter_bytes": 3,
+      "parameters": [
+        {
+          "name": "bCanUseEmptyHand",
+          "native_gen_flags": "0x4c",
+          "offset": "0x2"
+        },
+        {
+          "name": "SwitchType",
+          "native_gen_flags": "0x1e",
+          "offset": "0x1"
+        },
+        {
+          "name": "SWContext",
+          "native_gen_flags": "0x1e",
+          "offset": "0x0"
+        }
+      ],
+      "params_rva": "0x1cd7cf70"
+    },
+    "ServerSwitchToTargetWeapon": {
+      "flags": "0x80280cc0",
+      "native_parameter_bytes": 16,
+      "parameters": [
+        {
+          "name": "SwitchType",
+          "native_gen_flags": "0x1e",
+          "offset": "0x8"
+        },
+        {
+          "name": "TargetWeapon",
+          "native_gen_flags": "0x12",
+          "offset": "0x0"
+        }
+      ],
+      "params_rva": "0x1cd7cfc0"
+    }
+  },
+  "sources": {
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-base-multi-rpc-dispatch-vtables-v1.json": "75d40d4e0dd71b6e84fd8bda1dd4797f2e077925c2c89e9f4790a70dc407ff5b",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-frame-checkcode-cppops-vtables-v1.json": "5a7cd34bf5872e42354b7e461a284cdcd44ab902987c4074d4ab4d3bdc61fc0c",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-frame-checkcode-struct-v1.json": "ddf1c1a257a40f24657b26e5c1e128a2aa4d6a6930b1306bb203cd46a2f96c4d",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-local-current-writer-and-timeline-selector-v1.json": "012477e0e1ded2e6a1c512a8b5ea43f6b5a3699a5383d30e02ca9826ffaff81c",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-manager-switch-rpc-uht-v1.json": "46ef0c697d2b38d5316348107a7633c224f8790c826ce9b016b3423a7da5d40f",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-multi-constructor-active-consumers-v1.json": "1ac853740eb499535e629a38ce9ae979bfc7d54de2f5ae5671892c09bd5af3fe",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-rpc-field-order-and-defaults-v1.json": "3bc1618dd70a6579da47a18e6958de5590ba57a560897be9f4c0d3663fd4d051",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-rpc-layout-and-directional-content-header-v1.json": "87c30714d14d61c187fd47de93d03aaaa6bb9ee00d62481acd860cfd6fe507d4",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-rpc-property-layout-builder-v1.json": "72a6536b721d859290f03747b91253f2d2d2c1e45f27b570529564fcf8e38501",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-rpc-struct-ops-and-command-loop-v1.json": "02560a092cd714b820b93ab6fb60d00277ca5bb413065d2caf6bd53ffbeaefce",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-rpc-struct-receive-and-netserialize-v1.json": "7e1ada98fd63d8b83d5a52f637663e785bd726a001c1dca2d7d9098b6764ef21",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-runtime-timeline-invalidation-vtable-v1.json": "6a482de56adab13180d3e46a8a822061a88fee81d3aded77306c7353e449444a",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-server-verify-and-switch-implementation-v1.json": "39cb29ee56d88cdad7ea47e9cb2d602ef40d25806839bd1e80de6c532fe1be73",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-submit-to-owning-rpc-v1.json": "1508b399e7ed1e60d43f9925cd5d37af74f75d9b3001daf2ac12b27e1d79ff5d",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-switch-frame-base-fields-v1.json": "12345399f34b3b7f4b7b1160ba1bfbd4d328a4321e9d1dd2d8242216aaac57d2",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-switch-frame-fields-v1.json": "c2ca168bdc6f52a14cc3a4da7b46d1a8bf74a1dc9c3513d4a063e3d1539f2cee",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-switch-interface-and-rpc-vtables-v1.json": "faa4a842b65d2541abf79743fa8c0f13bf695368e280add9d56e9478b41950c1",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-switch-rpc-and-multi-slot-static-v1.json": "6b626e235f58d107ddfcfa73e7387caa267061be9c8b9988e11b4e69cda74538",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-validate-invalidate-remove-consumers-v1.json": "e9f426639337a863f36893f1a3d9b9dcb13f913b46f734935431004b0dbf7b9c",
+    "work/native-client-tests/1792337436036819800/owned-gameplay-metadata.json": "467c451055ccb15a5973ab38ac77f276f3cb72ab323d15b274b4582d11e83d5d"
+  },
+  "verify_index": 10,
+  "verify_parameters": {
+    "check_code_bits": 64,
+    "children_have_individual_presence_bits": false,
+    "frame_leaf_bits": 204,
+    "frame_leaves": [
+      {
+        "gen_flags": "0x3",
+        "name": "LocalFrameNo",
+        "offset": 8
+      },
+      {
+        "gen_flags": "0x3",
+        "name": "RemoteFrameNo",
+        "offset": 12
+      },
+      {
+        "gen_flags": "0x3",
+        "name": "DepFrameNo",
+        "offset": 16
+      },
+      {
+        "gen_flags": "0xa",
+        "name": "WorldTime",
+        "offset": 32
+      },
+      {
+        "gen_flags": "0x19",
+        "name": "LastWeaponIdentity",
+        "offset": 40
+      },
+      {
+        "gen_flags": "0x19",
+        "name": "PendingWeaponIdentity",
+        "offset": 44
+      },
+      {
+        "gen_flags": "0x1e",
+        "name": "SwitchType",
+        "offset": 48
+      },
+      {
+        "gen_flags": "0x1e",
+        "name": "Operation",
+        "offset": 49
+      },
+      {
+        "gen_flags": "0x1e",
+        "name": "SwitchWeaponContext",
+        "offset": 50
+      }
+    ],
+    "maximum_bits": 270,
+    "parent_presence_bits": 2,
+    "struct_native_netserialize": false
+  }
+}

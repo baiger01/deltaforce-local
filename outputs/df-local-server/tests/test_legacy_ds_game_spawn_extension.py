@@ -183,7 +183,7 @@ class GameSpawnExtensionTests(unittest.TestCase):
             archetype_guid=UINT32_MAX, level_guid=UINT32_MAX - 2,
             location=large, scale=large, velocity=large,
             game_replication_flags=3, local_player_index=0)
-        self.assertEqual(MAX_ACTOR_OPEN_BITS, 383)
+        self.assertEqual(MAX_ACTOR_OPEN_BITS, 434)
         writer = BitWriter(maximum_bits=383)
         self.assertEqual(write_actor_open(writer, **arguments), 383)
         reader = BitReader(writer.to_bytes(), bit_count=383)

@@ -5,6 +5,7 @@ import argparse
 import contextlib
 import ctypes as C
 from ctypes import wintypes as W
+import faulthandler
 import hashlib
 import json
 import os
@@ -103,10 +104,28 @@ parser.add_argument("--ds-handshake-probe", action="store_true")
 parser.add_argument("--ds-packet-ack-probe", action="store_true")
 parser.add_argument("--ds-control-probe", action="store_true",
                     help="Native Hello/Challenge exchange; no program code collection")
+parser.add_argument("--ds-control-profile", type=Path,
+                    help="Explicit project-local control profile with hash-checked map evidence")
 parser.add_argument("--replication-metadata-export", action="store_true",
                     help="Export bounded class/replication metadata once from the owned shadow lobby client")
+parser.add_argument("--bootstrap-template-observation", action="store_true",
+                    help="Collect fresh five-role template metadata without historical match files")
+parser.add_argument("--portable-map-bootstrap", type=Path,
+                    help="Use an explicit available-source Dam bootstrap diagnostic profile")
 parser.add_argument("--ds-initial-actor-bootstrap", action="store_true",
                     help="Register one source-backed Pawn Actor-open after metadata export; spawn unverified")
+parser.add_argument("--connection-binding-observation", action="store_true",
+                    help="After Actor transport ACK, read typed connection/PlayerController binding pointers once")
+parser.add_argument("--connection-rpc-layouts", action="store_true",
+                    help="In the same post-Actor binding/class-cache observation, read existing scoped PC RPC layouts; no parameter values")
+parser.add_argument("--connection-guid-mappings", action="store_true",
+                    help="In the same post-association binding/class-cache observation, read only existing GUID2/4/6 associations")
+parser.add_argument("--ds-initial-actor-associations", action="store_true",
+                    help="Opt-in source-sealed ordinary PC/Pawn reference content after all Actor opens are ACKed")
+parser.add_argument("--ds-human-player-state-fields", action="store_true",
+                    help="Verified single-trial human PlayerState fields after possession")
+parser.add_argument("--ds-human-player-state-fields-early", action="store_true",
+                    help="Diagnostic: deliver the same verified fields before initial PC/Pawn associations")
 parser.add_argument("--ds-transport-code-probe", action="store_true")
 parser.add_argument("--ds-connection-class-code-probe", action="store_true")
 parser.add_argument("--ds-control-code-probe", action="store_true")
@@ -120,6 +139,14 @@ parser.add_argument("--ds-control-sender-body", action="store_true",
                     help="Read the fixed sender wrapper and source-proved implementations")
 parser.add_argument("--ds-image-code-cache", action="store_true",
                     help="Save private executable-section code for offline protocol analysis")
+parser.add_argument('--updated-client-code-observation', action='store_true',
+                    help='Isolated updated-build lobby code observation; no gameplay or old metadata readers')
+parser.add_argument('--updated-client-metadata-observation', action='store_true',
+                    help='Isolated updated-build class metadata observation; no gameplay or instance payloads')
+parser.add_argument('--updated-client-transport-observation', action='store_true',
+                    help='Updated-build handshake/packet experiment only; no control or Actor bootstrap')
+parser.add_argument('--updated-minimum-actor-bootstrap', action='store_true',
+                    help='Current source-derived minimum Actors with a live receiver check')
 parser.add_argument("--stop-after-code-collection", action="store_true",
                     help="With --ds-control-code-probe, stop and restore after the read attempt")
 parser.add_argument("--entry-code-probe", action="store_true",
@@ -129,6 +156,10 @@ parser.add_argument("--disable-device-seamless", action="store_true",
                     help="Diagnostic trial using the client's own non-seamless entry setting")
 parser.add_argument("--disable-dynamic-address-switch", action="store_true",
                     help="Keep the shipping shadow client's local DS endpoint fixed")
+parser.add_argument("--enable-sol-map-entry-loading", action="store_true",
+                    help="Use the source-backed native subworld-name map lookup")
+parser.add_argument("--use-qualified-subworld", action="store_true",
+                    help="Use the observed Dam subworld name in the native command-line fallback")
 parser.add_argument("--ds-map-id", type=int)
 parser.add_argument("--observation-seconds", type=int, default=1800)
 parser.add_argument("--precreate-game-nick", action="store_true")
@@ -140,7 +171,17 @@ parser.add_argument("--map-board-catalog", type=Path)
 parser.add_argument("--worker", action="store_true")
 parser.add_argument("--request", type=Path)
 args = parser.parse_args()
+if args.ds_control_profile is not None:
+    if not args.ds_control_probe:
+        parser.error("--ds-control-profile requires --ds-control-probe")
+    CONTROL_PROFILE = args.ds_control_profile.resolve()
+    if not CONTROL_PROFILE.is_relative_to(ROOT.resolve()) or not CONTROL_PROFILE.is_file():
+        parser.error("--ds-control-profile must be an existing file inside the project")
 args.source_game, args.shadow_game = game_paths(args.source_game, args.shadow_game)
+if args.portable_map_bootstrap is not None:
+    args.portable_map_bootstrap = args.portable_map_bootstrap.resolve(strict=True)
+    if not (args.ds_control_probe and args.game_server_probe and args.bootstrap_template_observation) or args.ds_initial_actor_bootstrap:
+        parser.error("Portable bootstrap requires control, server and template observation; use it separately from the archived bootstrap")
 if args.game_root is not None:
     args.game_root = project_path(args.game_root, args.source_game)
 if args.map_board_catalog is not None:
@@ -177,6 +218,8 @@ if args.ds_control_probe and not args.ds_join_after_ready:
     parser.error("Native control exchange requires --ds-join-after-ready; otherwise no local match handoff is sent")
 if args.ds_control_probe and not args.disable_device_seamless:
     parser.error("This native control trial requires --disable-device-seamless for the recovered ordinary entry path")
+if args.use_qualified_subworld:
+    parser.error('Startup SUBWORLD override is disabled: it applies before the lobby; use the native map-entry stage')
 if args.ds_transport_code_probe and not args.game_server_probe:
     parser.error("--ds-transport-code-probe requires --game-server-probe")
 if args.ds_connection_class_code_probe and not args.game_server_probe:
@@ -212,6 +255,11 @@ if args.ds_join_after_ready and not args.game_server_probe:
     parser.error("--ds-join-after-ready requires --game-server-probe")
 if args.disable_device_seamless and not args.game_server_probe:
     parser.error("--disable-device-seamless requires --game-server-probe")
+if (args.disable_device_seamless or args.disable_dynamic_address_switch or args.enable_sol_map_entry_loading) and (
+        args.game_root is None or args.game_root.resolve() != args.shadow_game.resolve() or args.entry != "shipping"):
+    parser.error("Physical Engine overrides require the shipping shadow client")
+if args.enable_sol_map_entry_loading and (not args.ds_control_probe or args.ds_map_id != 2201):
+    parser.error("--enable-sol-map-entry-loading currently requires the native Dam control trial")
 if args.disable_dynamic_address_switch and (not args.game_server_probe or args.game_root is None or
         args.game_root.resolve() != args.shadow_game.resolve() or args.entry != "shipping"):
     parser.error("--disable-dynamic-address-switch requires the shipping shadow and local DS probe")
@@ -221,6 +269,10 @@ if args.ds_map_id is not None and (not args.game_server_probe or
 if args.replication_metadata_export and (not args.game_server_probe or args.game_root is None or
         args.game_root.resolve() != args.shadow_game.resolve() or args.entry != "shipping"):
     parser.error("--replication-metadata-export requires the shipping shadow client and local game-server profile")
+if args.bootstrap_template_observation and (not args.replication_metadata_export or
+        args.ds_initial_actor_bootstrap or args.connection_binding_observation or
+        args.connection_rpc_layouts or args.connection_guid_mappings):
+    parser.error("--bootstrap-template-observation requires isolated replication metadata export")
 if args.replication_metadata_export and (args.ds_transport_code_probe or args.ds_connection_class_code_probe or
         args.ds_control_code_probe or args.ds_control_candidate_interval or args.ds_control_field_helpers or
         args.ds_control_followup_code or args.ds_control_sender_body or args.ds_image_code_cache or
@@ -235,6 +287,22 @@ if args.ds_initial_actor_bootstrap and (args.ds_transport_code_probe or args.ds_
         args.ds_control_followup_code or args.ds_control_sender_body or args.ds_image_code_cache or
         args.entry_code_probe or args.stop_after_code_collection):
     parser.error("Initial Actor bootstrap must run separately from program code collection")
+if args.connection_binding_observation and not args.ds_initial_actor_bootstrap:
+    parser.error("--connection-binding-observation requires --ds-initial-actor-bootstrap")
+if args.connection_rpc_layouts and not (args.ds_initial_actor_bootstrap and args.connection_binding_observation):
+    parser.error("--connection-rpc-layouts requires initial Actor bootstrap and binding/class-cache observation")
+if args.connection_guid_mappings and not (
+        args.ds_initial_actor_bootstrap and args.connection_binding_observation and args.ds_initial_actor_associations):
+    parser.error("--connection-guid-mappings requires initial Actor bootstrap, associations and binding/class-cache observation")
+if getattr(args, 'ds_initial_actor_associations', False) and not (
+        args.ds_initial_actor_bootstrap and args.connection_binding_observation):
+    parser.error("--ds-initial-actor-associations requires initial Actor bootstrap and binding observation")
+if args.ds_human_player_state_fields and not args.ds_initial_actor_associations:
+    parser.error("--ds-human-player-state-fields requires initial Actor associations")
+if args.ds_human_player_state_fields_early and not args.ds_initial_actor_associations:
+    parser.error("--ds-human-player-state-fields-early requires initial Actor associations")
+if args.ds_human_player_state_fields and args.ds_human_player_state_fields_early:
+    parser.error("Early and late human PlayerState diagnostics are mutually exclusive")
 selected_game = args.game_root or args.source_game
 if selected_game not in (args.source_game, args.shadow_game):
     parser.error("--game-root must match --source-game or --shadow-game before authorization")
@@ -251,11 +319,24 @@ def digest(path):
         return hashlib.file_digest(stream, "sha256").hexdigest()
 
 
-def replication_metadata_source_pins(root):
+from updated_minimum_launch import qualify_launch as qualify_updated_launch
+updated_code_observation = qualify_updated_launch(args, selected_game, args.shadow_game)
+ENTRY_SHA = (updated_code_observation['client_sha256'] if updated_code_observation is not None else
+    '4254fbe66585f260f1f9dbfc5e302887842552e7baed8939e023160a5e250be0'
+    if args.entry == 'shipping' else
+    '6d5f71f958dee483e126337d183849059ef904938e45dfdd0f3cda73e1eeb40b')
+
+
+def replication_metadata_source_pins(root, *, connection_binding=False, connection_rpc_layouts=False,
+                                     connection_guid_mappings=False):
     """Seal only the metadata collector's explicit source modules before staging."""
     files = ("work/native_metadata_objects.py", "work/native_metadata_names.py", "work/native_metadata_paths.py",
              "work/native_replication_metadata_core.py", "work/export_native_replication_metadata.py",
-             "outputs/df-local-server/dfserver/legacy_ds_class_net_cache.py")
+             "outputs/df-local-server/dfserver/legacy_ds_class_net_cache.py", "work/native_post_actor_retry.py")
+    if getattr(globals().get('args'), 'bootstrap_template_observation', False) is True:
+        files += ("work/native_actor_interface_metadata.py", "work/native_actor_bootstrap.py")
+    from server_source_layout import expand_server_sources
+    files = expand_server_sources(root, files)
     result = {}
     try:
         for relative in files:
@@ -263,6 +344,25 @@ def replication_metadata_source_pins(root):
                 result[relative] = hashlib.file_digest(stream, "sha256").hexdigest()
     except OSError as error:
         raise ValueError("Replication metadata collector sources are missing or unreadable") from error
+    if connection_binding:
+        from native_connection_binding import qualified_connection_binding_source_pins
+        result.update(qualified_connection_binding_source_pins(root))
+    if connection_rpc_layouts:
+        relative = "work/evidence/map-entry-next-20261005/scoped-pc-rpc-layout-export-source.json"
+        expected = "fbb9029fda3f4f6038aa83aaa0ce33593bda7e4b9a91ae9e2f7e9805de7245a3"
+        try:
+            with (Path(root) / relative).open("rb") as stream:
+                actual = hashlib.file_digest(stream, "sha256").hexdigest()
+        except OSError as error:
+            raise ValueError("Scoped RPC layout source evidence is missing or unreadable") from error
+        if actual != expected:
+            raise ValueError("Scoped RPC layout source evidence identity changed")
+        result[relative] = actual
+    if connection_guid_mappings:
+        from native_guid_object_metadata import guid_mapping_source_pins
+        result.update(guid_mapping_source_pins(root))
+        from native_loading_subworld_context import qualified_subworld_context_source_pins
+        result.update(qualified_subworld_context_source_pins(root))
     return result
 
 
@@ -279,7 +379,12 @@ def initial_actor_bootstrap_source_pins(root):
         "outputs/df-local-server/dfserver/legacy_ds_game_spawn_flags.py",
         "outputs/df-local-server/dfserver/legacy_ds_actor_manifest.py",
         "outputs/df-local-server/dfserver/game_server_probe.py",
+        "outputs/df-local-server/dfserver/handshake_diagnostic.py",
         "outputs/df-local-server/dfserver/legacy_ds_control_connection.py",
+        "outputs/df-local-server/dfserver/legacy_ds_pc_receipt.py",
+        "outputs/df-local-server/dfserver/legacy_ds_owned_actor_transport.py",
+        "outputs/df-local-server/dfserver/legacy_ds_owned_pawn_receipt.py",
+        "outputs/df-local-server/protocol/decoded_bunch_receiver_evidence.json",
         "outputs/df-local-server/dfserver/legacy_ds_match_admission.py",
         "outputs/df-local-server/dfserver/legacy_ds_actor_bunch.py",
         "outputs/df-local-server/dfserver/legacy_ds_actor_open.py",
@@ -299,7 +404,14 @@ def initial_actor_bootstrap_source_pins(root):
         "work/evidence/native-player-class-and-iris-level-path-review.json",
         "work/evidence/native-engine-network-protocol-version-source-summary.json",
         "work/evidence/native-player-controller-base-tail-profile.json")
+    from server_source_layout import expand_server_sources
+    if getattr(globals().get('args'), 'ds_human_player_state_fields', False) is True:
+        files += ('outputs/df-local-server/dfserver/legacy_ds_late_player_state_human_appearance.py',)
+    if getattr(globals().get('args'), 'ds_human_player_state_fields_early', False) is True:
+        files += ('outputs/df-local-server/dfserver/legacy_ds_early_player_state_human_appearance.py',
+                  'outputs/df-local-server/dfserver/legacy_ds_late_player_state_human_appearance.py')
     root = Path(root).resolve()
+    files = expand_server_sources(root, files)
     result = {}
     try:
         for relative in files:
@@ -310,6 +422,8 @@ def initial_actor_bootstrap_source_pins(root):
                 result[relative] = hashlib.file_digest(stream, "sha256").hexdigest()
     except OSError as error:
         raise ValueError("Initial Actor bootstrap sources are missing or unreadable") from error
+    from native_static_world_settings import qualified_static_world_settings_source_pins
+    result.update(qualified_static_world_settings_source_pins(root))
     return result
 
 
@@ -434,7 +548,9 @@ def forward_initial_actor_bootstrap_progress(report, log_path, report_path):
     """Relay a prepared/rejected summary, never raw class metadata or identity."""
     try:
         with log_path.open("r", encoding="utf-8") as stream:
-            lines = stream.read(64 * 1024).splitlines()
+            # Source seals now put preparation beyond the old 64 KiB prefix.
+            # Keep a fixed read bound while retaining the actual stage event.
+            lines = stream.read(1024 * 1024).splitlines()
     except OSError:
         return
     for line in lines:
@@ -460,24 +576,46 @@ def forward_initial_actor_bootstrap_progress(report, log_path, report_path):
 metadata_source_pins = None
 if args.replication_metadata_export:
     try:
-        metadata_source_pins = replication_metadata_source_pins(ROOT)
+        metadata_source_pins = replication_metadata_source_pins(
+            ROOT, connection_binding=args.connection_binding_observation,
+            **({"connection_rpc_layouts": True}
+               if getattr(args, 'connection_rpc_layouts', False) else {}),
+            **({"connection_guid_mappings": True}
+               if getattr(args, 'connection_guid_mappings', False) else {}))
     except ValueError as error:
         parser.error(str(error))
 
 control_profile = None
+portable_plan = None
+if args.portable_map_bootstrap is not None:
+    from portable_map_bootstrap import load_plan
+    portable_plan = load_plan(ROOT, args.portable_map_bootstrap)
 if args.ds_control_probe:
     selected_ds_map_id = (args.ds_map_id if args.ds_map_id is not None
                           else os.environ.get("DF_LOCAL_DS_MAP_ID"))
     try:
-        control_profile = load_control_trial_profile(
-            CONTROL_PROFILE, ROOT,
-            "4254fbe66585f260f1f9dbfc5e302887842552e7baed8939e023160a5e250be0",
+        control_profile = portable_plan.control if portable_plan is not None else load_control_trial_profile(
+            CONTROL_PROFILE, ROOT, ENTRY_SHA,
             selected_ds_map_id)
     except ValueError as error:
         parser.error(str(error))
     # Seal and forward the effective map even when it came from the environment;
     # the elevated worker must not depend on inherited environment variables.
     args.ds_map_id = int(selected_ds_map_id)
+
+association_source_pins = None
+human_ps_summary = None
+if args.ds_human_player_state_fields or args.ds_human_player_state_fields_early:
+    if args.ds_map_id != 2201:
+        parser.error("--ds-human-player-state-fields is limited to the verified Dam trial")
+    from native_player_state_human_trial_profile import load_trial_content
+    _, human_ps_summary = load_trial_content(ROOT, enabled=True)
+if getattr(args, 'ds_initial_actor_associations', False):
+    try:
+        from native_initial_associations import qualified_initial_association_source_pins
+        association_source_pins = qualified_initial_association_source_pins(ROOT)
+    except ValueError as error:
+        parser.error(str(error))
 
 bootstrap_source_pins = None
 bootstrap_sources = None
@@ -486,6 +624,27 @@ if args.ds_initial_actor_bootstrap:
         bootstrap_source_pins = initial_actor_bootstrap_source_pins(ROOT)
         bootstrap_sources = load_initial_actor_bootstrap_sources(ROOT, bootstrap_source_pins, args.ds_map_id)
     except ValueError as error:
+        parser.error(str(error))
+
+shadow_engine_ini_precondition = None
+shadow_engine_ini_source_sha256 = None
+native_subworld_override = None
+if args.use_qualified_subworld:
+    from native_map_subworld_argument import qualified_subworld_argument
+    native_subworld_override = qualified_subworld_argument(ROOT, args.ds_map_id)
+if args.disable_device_seamless or args.disable_dynamic_address_switch or args.enable_sol_map_entry_loading:
+    try:
+        helper_path = ROOT / "work/native_engine_ini_override.py"
+        shadow_engine_ini_source_sha256 = digest(helper_path)
+        from native_engine_ini_override import capture_engine_ini_precondition
+        shadow_engine_ini_precondition = capture_engine_ini_precondition(
+            args.source_game, args.shadow_game,
+            disable_device_seamless=args.disable_device_seamless,
+            disable_dynamic_address_switch=args.disable_dynamic_address_switch,
+            enable_sol_map_entry_loading=args.enable_sol_map_entry_loading)
+        if digest(helper_path) != shadow_engine_ini_source_sha256:
+            raise ValueError("Shadow Engine override source changed during preflight")
+    except (OSError, ValueError) as error:
         parser.error(str(error))
 
 if args.worker:
@@ -507,11 +666,29 @@ if args.worker:
     assert type(request["replication_metadata_export"]) is bool
     assert request["replication_metadata_export"] == args.replication_metadata_export
     assert request["replication_metadata_source_pins"] == metadata_source_pins
+    assert request.get("bootstrap_template_observation", False) is args.bootstrap_template_observation
+    assert request.get("portable_map_bootstrap") == (str(args.portable_map_bootstrap) if args.portable_map_bootstrap else None)
+    assert request.get("portable_map_source_pins") == (portable_plan.sources if portable_plan else None)
+    assert type(request["connection_binding_observation"]) is bool
+    assert request["connection_binding_observation"] == args.connection_binding_observation
+    assert type(request["connection_rpc_layouts"]) is bool
+    assert request["connection_rpc_layouts"] == args.connection_rpc_layouts
+    assert type(request["connection_guid_mappings"]) is bool
+    assert request["connection_guid_mappings"] == args.connection_guid_mappings
+    assert type(request["ds_initial_actor_associations"]) is bool
+    assert request["ds_initial_actor_associations"] == args.ds_initial_actor_associations
+    assert request["initial_actor_association_source_pins"] == association_source_pins
+    assert type(request.get('ds_human_player_state_fields', False)) is bool
+    assert request.get('ds_human_player_state_fields', False) == args.ds_human_player_state_fields
+    assert type(request.get('ds_human_player_state_fields_early', False)) is bool
+    assert request.get('ds_human_player_state_fields_early', False) == args.ds_human_player_state_fields_early
+    assert request.get('human_ps_source_pins') == (human_ps_summary['source_pins'] if human_ps_summary else None)
     assert type(request["ds_initial_actor_bootstrap"]) is bool
     assert request["ds_initial_actor_bootstrap"] == args.ds_initial_actor_bootstrap
     assert request["initial_actor_bootstrap_source_pins"] == bootstrap_source_pins
     assert request["initial_actor_bootstrap_sources"] == bootstrap_sources
     if args.ds_control_probe:
+        assert request["control_profile_path"] == str(CONTROL_PROFILE)
         assert request["control_profile_sha256"] == digest(CONTROL_PROFILE)
     assert request["ds_transport_code_probe"] == args.ds_transport_code_probe
     assert request["ds_connection_class_code_probe"] == args.ds_connection_class_code_probe
@@ -526,12 +703,30 @@ if args.worker:
     assert request["ds_control_sender_body"] == args.ds_control_sender_body
     assert type(request["ds_image_code_cache"]) is bool
     assert request["ds_image_code_cache"] == args.ds_image_code_cache
+    assert type(request.get('updated_client_code_observation', False)) is bool
+    assert request.get('updated_client_code_observation', False) == args.updated_client_code_observation
+    assert type(request.get('updated_client_metadata_observation', False)) is bool
+    assert request.get('updated_client_metadata_observation', False) == args.updated_client_metadata_observation
+    assert type(request.get('updated_client_transport_observation', False)) is bool
+    assert request.get('updated_client_transport_observation', False) == args.updated_client_transport_observation
+    assert type(request.get('updated_minimum_actor_bootstrap', False)) is bool
+    assert request.get('updated_minimum_actor_bootstrap', False) == args.updated_minimum_actor_bootstrap
+    assert request.get('updated_code_observation') == updated_code_observation
     assert type(request["stop_after_code_collection"]) is bool
     assert request["stop_after_code_collection"] == args.stop_after_code_collection
     assert request["entry_code_probe"] == args.entry_code_probe
     assert request["ds_join_after_ready"] == args.ds_join_after_ready
+    assert type(request["disable_device_seamless"]) is bool
     assert request["disable_device_seamless"] == args.disable_device_seamless
+    assert type(request["disable_dynamic_address_switch"]) is bool
     assert request["disable_dynamic_address_switch"] == args.disable_dynamic_address_switch
+    assert type(request["enable_sol_map_entry_loading"]) is bool
+    assert request["enable_sol_map_entry_loading"] == args.enable_sol_map_entry_loading
+    assert type(request['use_qualified_subworld']) is bool
+    assert request['use_qualified_subworld'] == args.use_qualified_subworld
+    assert request['native_subworld_override'] == native_subworld_override
+    assert request["shadow_engine_ini_precondition"] == shadow_engine_ini_precondition
+    assert request["shadow_engine_ini_override_source_sha256"] == shadow_engine_ini_source_sha256
     assert request["ds_map_id"] == args.ds_map_id
     assert request["observation_seconds"] == args.observation_seconds
     assert request["precreate_game_nick"] == args.precreate_game_nick
@@ -541,6 +736,7 @@ if args.worker:
     assert request["game_root"] == str((args.game_root or args.source_game).resolve())
     assert request["map_board_catalog"] == (str(args.map_board_catalog) if args.map_board_catalog else None)
     assert request["runner_sha256"] == digest(RUNNER)
+    assert request["resource_sampler_sha256"] == digest(ROOT / "work/client_resource_sampling.py")
     assert request["wrapper_sha256"] == digest(Path(__file__))
     assert type(request["socket_helper_readonly_evidence"]) is bool
     assert type(request["resource_helper_readonly_evidence"]) is bool
@@ -563,6 +759,12 @@ if args.worker:
     log = args.request.with_suffix(".log")
     os.environ["DF_LOCAL_SOURCE_GAME"] = request["source_game"]
     os.environ["DF_LOCAL_SHADOW_GAME"] = request["shadow_game"]
+    if shadow_engine_ini_precondition is not None:
+        os.environ["DF_LOCAL_SHADOW_ENGINE_INI_PRECONDITION"] = json.dumps(shadow_engine_ini_precondition)
+        os.environ["DF_LOCAL_SHADOW_ENGINE_INI_SOURCE_SHA256"] = shadow_engine_ini_source_sha256
+    else:
+        os.environ.pop("DF_LOCAL_SHADOW_ENGINE_INI_PRECONDITION", None)
+        os.environ.pop("DF_LOCAL_SHADOW_ENGINE_INI_SOURCE_SHA256", None)
     if request["socket_helper_readonly_evidence"]:
         os.environ["DF_LOCAL_SOCKET_EVIDENCE"] = "1"
     else:
@@ -607,10 +809,27 @@ if args.worker:
         sys.argv.append("--ds-packet-ack-probe")
     if args.ds_control_probe:
         sys.argv.append("--ds-control-probe")
+        sys.argv.extend(("--ds-control-profile", str(CONTROL_PROFILE)))
     if args.replication_metadata_export:
         sys.argv.append("--replication-metadata-export")
+    if args.bootstrap_template_observation:
+        sys.argv.append("--bootstrap-template-observation")
+    if args.portable_map_bootstrap is not None:
+        sys.argv.extend(("--portable-map-bootstrap", str(args.portable_map_bootstrap)))
     if args.ds_initial_actor_bootstrap:
         sys.argv.append("--ds-initial-actor-bootstrap")
+    if args.connection_binding_observation:
+        sys.argv.append("--connection-binding-observation")
+    if args.connection_rpc_layouts:
+        sys.argv.append("--connection-rpc-layouts")
+    if args.connection_guid_mappings:
+        sys.argv.append("--connection-guid-mappings")
+    if args.ds_initial_actor_associations:
+        sys.argv.append("--ds-initial-actor-associations")
+    if args.ds_human_player_state_fields:
+        sys.argv.append("--ds-human-player-state-fields")
+    if args.ds_human_player_state_fields_early:
+        sys.argv.append("--ds-human-player-state-fields-early")
     if args.ds_transport_code_probe:
         sys.argv.append("--ds-transport-code-probe")
     if args.ds_connection_class_code_probe:
@@ -627,6 +846,14 @@ if args.worker:
         sys.argv.append("--ds-control-sender-body")
     if args.ds_image_code_cache:
         sys.argv.append("--ds-image-code-cache")
+    if args.updated_client_code_observation:
+        sys.argv.append('--updated-client-code-observation')
+    if args.updated_client_metadata_observation:
+        sys.argv.append('--updated-client-metadata-observation')
+    if args.updated_client_transport_observation:
+        sys.argv.append('--updated-client-transport-observation')
+    if args.updated_minimum_actor_bootstrap:
+        sys.argv.append('--updated-minimum-actor-bootstrap')
     if args.stop_after_code_collection:
         sys.argv.append("--stop-after-code-collection")
     if args.entry_code_probe:
@@ -635,12 +862,19 @@ if args.worker:
         sys.argv.append("--disable-device-seamless")
     if args.disable_dynamic_address_switch:
         sys.argv.append("--disable-dynamic-address-switch")
+    if args.enable_sol_map_entry_loading:
+        sys.argv.append("--enable-sol-map-entry-loading")
+    if args.use_qualified_subworld:
+        sys.argv.append('--use-qualified-subworld')
     if args.precreate_game_nick:
         sys.argv.append("--precreate-game-nick")
     if args.native_username:
         sys.argv.extend(("--native-username", args.native_username))
     with log.open("w", encoding="utf-8", buffering=1) as stream:
+        faulthandler.enable(file=stream, all_threads=True)
         with contextlib.redirect_stdout(stream), contextlib.redirect_stderr(stream):
+            import faulthandler
+            faulthandler.enable(file=stream, all_threads=True)
             try:
                 runpy.run_path(str(RUNNER), run_name="__main__")
             except BaseException:
@@ -650,12 +884,19 @@ if args.worker:
                 traceback.print_exc(file=stream)
                 stream.flush()
                 raise
+            finally:
+                faulthandler.disable()
     raise SystemExit(0)
 
 folder = ROOT / "work/elevated-native-trials"
 folder.mkdir(exist_ok=True)
 request_path = folder / (str(time.time_ns()) + ".json")
 request = {"requested_at_utc":datetime.now(timezone.utc).isoformat(), "entry":args.entry,
+           "updated_client_code_observation":args.updated_client_code_observation,
+           "updated_client_metadata_observation":args.updated_client_metadata_observation,
+           "updated_client_transport_observation":args.updated_client_transport_observation,
+           "updated_minimum_actor_bootstrap":args.updated_minimum_actor_bootstrap,
+           "updated_code_observation":updated_code_observation,
            "wire_identity_probe":args.wire_identity_probe,
            "wire_auth_response_probe":args.wire_auth_response_probe,
            "wire_auth_identity_probe":args.wire_auth_identity_probe,
@@ -669,10 +910,22 @@ request = {"requested_at_utc":datetime.now(timezone.utc).isoformat(), "entry":ar
            "ds_control_probe":args.ds_control_probe,
            "replication_metadata_export":args.replication_metadata_export,
            "replication_metadata_source_pins":metadata_source_pins,
+           "bootstrap_template_observation":args.bootstrap_template_observation,
+           "portable_map_bootstrap":str(args.portable_map_bootstrap) if args.portable_map_bootstrap else None,
+           "portable_map_source_pins":portable_plan.sources if portable_plan else None,
+           "connection_binding_observation":args.connection_binding_observation,
+           "connection_rpc_layouts":args.connection_rpc_layouts,
+           "connection_guid_mappings":args.connection_guid_mappings,
+           "ds_initial_actor_associations":args.ds_initial_actor_associations,
+           "initial_actor_association_source_pins":association_source_pins,
+           "ds_human_player_state_fields":args.ds_human_player_state_fields,
+           "ds_human_player_state_fields_early":args.ds_human_player_state_fields_early,
+           "human_ps_source_pins":human_ps_summary['source_pins'] if human_ps_summary else None,
            "ds_initial_actor_bootstrap":args.ds_initial_actor_bootstrap,
            "initial_actor_bootstrap_source_pins":bootstrap_source_pins,
            "initial_actor_bootstrap_sources":bootstrap_sources,
            "control_profile_sha256":digest(CONTROL_PROFILE) if args.ds_control_probe else None,
+           "control_profile_path":str(CONTROL_PROFILE) if args.ds_control_probe else None,
            "ds_transport_code_probe":args.ds_transport_code_probe,
            "ds_connection_class_code_probe":args.ds_connection_class_code_probe,
            "ds_control_code_probe":args.ds_control_code_probe,
@@ -686,6 +939,9 @@ request = {"requested_at_utc":datetime.now(timezone.utc).isoformat(), "entry":ar
            "ds_join_after_ready":args.ds_join_after_ready,
            "disable_device_seamless":args.disable_device_seamless,
            "disable_dynamic_address_switch":args.disable_dynamic_address_switch,
+           "enable_sol_map_entry_loading":args.enable_sol_map_entry_loading,
+           "use_qualified_subworld":args.use_qualified_subworld,
+           "native_subworld_override":native_subworld_override,
            "ds_map_id":args.ds_map_id,
            "observation_seconds":args.observation_seconds,
            "precreate_game_nick":args.precreate_game_nick,
@@ -693,8 +949,11 @@ request = {"requested_at_utc":datetime.now(timezone.utc).isoformat(), "entry":ar
            "source_game":str(args.source_game.resolve()),
            "shadow_game":str(args.shadow_game.resolve()),
            "game_root":str((args.game_root or args.source_game).resolve()),
+           "shadow_engine_ini_precondition":shadow_engine_ini_precondition,
+           "shadow_engine_ini_override_source_sha256":shadow_engine_ini_source_sha256,
            "map_board_catalog":str(args.map_board_catalog) if args.map_board_catalog else None,
            "runner_sha256":digest(RUNNER), "wrapper_sha256":digest(Path(__file__)),
+           "resource_sampler_sha256":digest(ROOT / "work/client_resource_sampling.py"),
            "class_reader_sha256":digest(ROOT / "work/read_ds_connection_class_code.py")
                if args.ds_connection_class_code_probe else None,
            "control_reader_sha256":digest(ROOT / "work/read_native_control_code.py")
@@ -773,10 +1032,27 @@ if args.ds_packet_ack_probe:
     parameters.append("--ds-packet-ack-probe")
 if args.ds_control_probe:
     parameters.append("--ds-control-probe")
+    parameters.extend(("--ds-control-profile", str(CONTROL_PROFILE)))
 if args.replication_metadata_export:
     parameters.append("--replication-metadata-export")
+if args.bootstrap_template_observation:
+    parameters.append("--bootstrap-template-observation")
+if args.portable_map_bootstrap is not None:
+    parameters.extend(("--portable-map-bootstrap", str(args.portable_map_bootstrap)))
 if args.ds_initial_actor_bootstrap:
     parameters.append("--ds-initial-actor-bootstrap")
+if args.connection_binding_observation:
+    parameters.append("--connection-binding-observation")
+if args.connection_rpc_layouts:
+    parameters.append("--connection-rpc-layouts")
+if args.connection_guid_mappings:
+    parameters.append("--connection-guid-mappings")
+if args.ds_initial_actor_associations:
+    parameters.append("--ds-initial-actor-associations")
+if args.ds_human_player_state_fields:
+    parameters.append("--ds-human-player-state-fields")
+if args.ds_human_player_state_fields_early:
+    parameters.append("--ds-human-player-state-fields-early")
 if args.ds_transport_code_probe:
     parameters.append("--ds-transport-code-probe")
 if args.ds_connection_class_code_probe:
@@ -793,6 +1069,14 @@ if args.ds_control_sender_body:
     parameters.append("--ds-control-sender-body")
 if args.ds_image_code_cache:
     parameters.append("--ds-image-code-cache")
+if args.updated_client_code_observation:
+    parameters.append('--updated-client-code-observation')
+if args.updated_client_metadata_observation:
+    parameters.append('--updated-client-metadata-observation')
+if args.updated_client_transport_observation:
+    parameters.append('--updated-client-transport-observation')
+if args.updated_minimum_actor_bootstrap:
+    parameters.append('--updated-minimum-actor-bootstrap')
 if args.stop_after_code_collection:
     parameters.append("--stop-after-code-collection")
 if args.entry_code_probe:
@@ -803,6 +1087,10 @@ if args.disable_device_seamless:
     parameters.append("--disable-device-seamless")
 if args.disable_dynamic_address_switch:
     parameters.append("--disable-dynamic-address-switch")
+if args.enable_sol_map_entry_loading:
+    parameters.append("--enable-sol-map-entry-loading")
+if args.use_qualified_subworld:
+    parameters.append('--use-qualified-subworld')
 if args.ds_map_id is not None:
     parameters.extend(("--ds-map-id", str(args.ds_map_id)))
 if args.precreate_game_nick:

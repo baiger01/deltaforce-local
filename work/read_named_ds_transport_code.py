@@ -70,6 +70,11 @@ def direct_implementation_span(executable, prefix_rva, code):
     if len(code) != 32 or code[0] != 0xe9:
         raise ValueError('Named prefix is not a direct E9 jump')
     target = prefix_rva + 5 + struct.unpack_from('<i', code, 1)[0]
+    return bounded_image_function_span(executable, target)
+
+
+def bounded_image_function_span(executable, target):
+    """Bound a named image entry by its original root and chained unwind data."""
     with executable.open('rb') as stream, mmap.mmap(stream.fileno(), 0, access=mmap.ACCESS_READ) as raw:
         pe = pefile.PE(data=raw, fast_load=True)
         directory = pe.OPTIONAL_HEADER.DATA_DIRECTORY[3]
@@ -93,6 +98,7 @@ def direct_implementation_span(executable, prefix_rva, code):
             raise ValueError('Direct target is an unwind continuation rather than a root')
         end = root[1]
         fragments = [root[:2]]
+        verified_entries = {root}
         for index in range(low + 1, min(count, low + 32)):
             entry = struct.unpack_from('<III', raw, offset + index * 12)
             if entry[0] != end:
@@ -102,12 +108,13 @@ def direct_implementation_span(executable, prefix_rva, code):
             if version_flags & 7 != 1 or version_flags >> 3 != 4:
                 break
             chain = unwind + 4 + 4 * ((code_count + 1) // 2)
-            if struct.unpack_from('<III', raw, chain) != root:
+            if struct.unpack_from('<III', raw, chain) not in verified_entries:
                 break
             if not entry[0] < entry[1] <= target + MAX_DRIVER_FUNCTION_BYTES:
                 raise ValueError('Direct implementation exceeds the declared code budget')
             end = entry[1]
             fragments.append(entry[:2])
+            verified_entries.add(entry)
         if not any(s.Characteristics & 0x20000000 and s.VirtualAddress <= target < end <=
                    s.VirtualAddress + s.Misc_VirtualSize for s in pe.sections):
             raise ValueError('Direct implementation is outside executable image bounds')

@@ -122,11 +122,12 @@ class RestrictedActorOpenTests(unittest.TestCase):
             with self.subTest(value=value):
                 self.assert_atomic_rejection({'local_player_index': value})
 
-    def test_raw_float_vectors_and_unverified_rotation_export_modes_are_unrepresentable(self):
+    def test_raw_vectors_rotations_and_unverified_export_modes_are_rejected(self):
         for field in ('location', 'scale', 'velocity'):
             for value in ((0, 0, 0), (0.0, 1.0, 2.0), [0, 0, 0], True):
                 self.assert_atomic_rejection({field: value})
-        for field in ('rotation_present', 'rotation', 'export_mode', 'guid_flags'):
+        self.assert_atomic_rejection({'rotation': True})
+        for field in ('rotation_present', 'export_mode', 'guid_flags'):
             self.assert_atomic_rejection({field: True}, TypeError)
 
     def test_late_helper_failure_does_not_commit_partial_guids_or_vectors(self):
@@ -162,7 +163,7 @@ class RestrictedActorOpenTests(unittest.TestCase):
         self.assertEqual((writer.to_bytes(), writer.bit_count), (b'', 0))
 
     def test_local_subset_bound_is_derived_from_known_field_maxima(self):
-        self.assertEqual(MAX_ACTOR_OPEN_BITS, 383)
+        self.assertEqual(MAX_ACTOR_OPEN_BITS, 434)
         large = QuantizedVector10((-(1 << 24), 0, (1 << 24)-1))
         data, bits = self.encode(actor_guid=UINT32_MAX-1,
             archetype_guid=UINT32_MAX, level_guid=UINT32_MAX-2,

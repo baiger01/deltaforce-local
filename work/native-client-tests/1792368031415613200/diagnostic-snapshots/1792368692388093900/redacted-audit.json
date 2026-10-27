@@ -1,0 +1,972 @@
+{
+  "captured_at_utc": "2026-10-19T00:11:34.566755+00:00",
+  "client_launched": false,
+  "groups": {
+    "ability_component": {
+      "matching_lines": 1,
+      "samples": [
+        {
+          "line_number": 17774,
+          "text": "[2026.10.19-08.01.01:008][261]LogWeaponDataSystem                       Error         "
+        }
+      ]
+    },
+    "entry_failure": {
+      "matching_lines": 26,
+      "samples": [
+        {
+          "line_number": 42758,
+          "text": "[2026.10.19-08.02.58:774][751]GameCoreDataTable: Display: [DataTableSystemManagerLite AsyncLoadDataTable] begin async table [Loading/LoadingTravelFailureConfig], game mode [1], path [/Game/DataTables/Loading/LoadingTravelFailureConfig.LoadingTravelFailureConfig], LoadedNum [750-911], BatchID [6]."
+        },
+        {
+          "line_number": 45067,
+          "text": "[2026.10.19-08.02.59:408][754]GameCoreDataTable: Display: [DataTableSystemManagerLite OnPostProcessDataTableLoadFinish] [Callback] table [Loading/LoadingTravelFailureConfig] loaded, progress [0.920], num [838-911], batchID [6-6]."
+        },
+        {
+          "line_number": 45219,
+          "text": "[2026.10.19-08.02.59:424][756]LogSeamlessTravel: Display:  Modify ConnectionTimeout to 60.00"
+        },
+        {
+          "line_number": 49407,
+          "text": "[2026.10.19-08.03.16:813][155]LogSeamlessTravel: Display:  Modify ConnectionTimeout to 10.00"
+        },
+        {
+          "line_number": 67241,
+          "text": "[2026.10.19-08.05.40:814][808]LogNet: Error: UEngine::BroadcastNetworkFailure: FailureType = ConnectionLost, ErrorString = Your connection to the host has been lost., Driver = GameNetDriver GPNetDriver_2147465498"
+        },
+        {
+          "line_number": 67244,
+          "text": "[2026.10.19-08.05.40:814][808]LogGameLoading: Error: [HandleNetWorkFailure] NetworkFailure: ConnectionLost, Error: 'Your connection to the host has been lost.'"
+        },
+        {
+          "line_number": 67246,
+          "text": "[2026.10.19-08.05.40:814][808]LogReconnect: Display: UGPOnlineSession::PreHandleNetWorkFailure  FailureType:=ConnectionLost ErrorString=Your connection to the host has been lost."
+        },
+        {
+          "line_number": 67249,
+          "text": "[2026.10.19-08.05.40:814][808]LogReconnect: Display: UGPOnlineSession::ProcessConnectionTimeout  FailureType:=ConnectionLost"
+        },
+        {
+          "line_number": 67250,
+          "text": "[2026.10.19-08.05.40:814][808]LogReconnect: Display: UGPOnlineSession::ProcessConnectionTimeout OpenChannels.Num() > 0"
+        },
+        {
+          "line_number": 67251,
+          "text": "[2026.10.19-08.05.40:814][808]LogReconnect: Display: UGPOnlineSession::ProcessConnectionTimeout CacheNetObject!"
+        },
+        {
+          "line_number": 67264,
+          "text": "[2026.10.19-08.05.40:815][808]LogReconnect: Display: UGPOnlineSession::HandleNetworkFailureNextFrame FailureType:ConnectionLost "
+        },
+        {
+          "line_number": 67282,
+          "text": "[2026.10.19-08.05.40:945][809]LuaSMatch: Error: [OnLuaNetworkFailure] curgameflow = %s, 10"
+        },
+        {
+          "line_number": 67283,
+          "text": "[2026.10.19-08.05.40:945][809]LuaSMatch: Error: [OnLuaNetworkFailure] self.bGameStateChanged = true"
+        },
+        {
+          "line_number": 69359,
+          "text": "[2026.10.19-08.05.44:223][988]GameCoreDataTable: Display: [DataTableSystemManagerLite RemoveTableContent] Remove table [Loading/LoadingTravelFailureConfig], index [59]."
+        },
+        {
+          "line_number": 77334,
+          "text": "[2026.10.19-08.10.20:403][698]LuaSMatch: Error: MatchServer:OnJoinMatchFailed, CSMatchRoomCheckCallNumeralRes, 1, nil, nil"
+        },
+        {
+          "line_number": 77335,
+          "text": "[2026.10.19-08.10.20:403][698]LuaSMatch: Warning: MatchServer:OnJoinMatchFailed reset blastingWaitingData ==> false"
+        },
+        {
+          "line_number": 77360,
+          "text": "[2026.10.19-08.10.23:329][873]LuaSMatch: Error: MatchServer:OnJoinMatchFailed , IsenableSeamlessTravel, true, CurrentGameFlow, 14"
+        },
+        {
+          "line_number": 77361,
+          "text": "[2026.10.19-08.10.23:329][873]LogGPGameLoading: Error: UGPGameLoadingManager::BreakLoading() Reason: MatchServer:OnJoinMatchFailed --> EMainFlowStageType.SOL"
+        },
+        {
+          "line_number": 77362,
+          "text": "[2026.10.19-08.10.23:329][873]LogDFLoading: Warning: UDFLoadingFlowManager::BreakRunningFlow() Reason: MatchServer:OnJoinMatchFailed --> EMainFlowStageType.SOL"
+        },
+        {
+          "line_number": 77363,
+          "text": "[2026.10.19-08.10.23:329][873]LogDFLoading: Warning: [BreakFlowsInternal] Reason: MatchServer:OnJoinMatchFailed --> EMainFlowStageType.SOL"
+        },
+        {
+          "line_number": 77365,
+          "text": "[2026.10.19-08.10.23:329][873]LogDFLoading: Warning: <0000000379B87F60>[SeamlessFlow_WaitReadyToGame] UDFLoadingFlowBase::Finished() FlowID: [EDFLFS_PreLoading][SeamlessFlow_WaitReadyToGame][0], Result: EDFLFR_Break, ExtraMsg: MatchServer:OnJoinMatchFailed --> EMainFlowStageType.SOL"
+        },
+        {
+          "line_number": 77367,
+          "text": "[2026.10.19-08.10.23:329][873]LogSeamlessEnter: Display: UDFMIrisEnterSubsystem::OnLoadingFlowFinished: 3 ,MatchServer:OnJoinMatchFailed --> EMainFlowStageType.SOL"
+        },
+        {
+          "line_number": 77368,
+          "text": "[2026.10.19-08.10.23:329][873]LogSeamlessEnter: Error: OnLoadingFlowFinished: Break - MatchServer:OnJoinMatchFailed --> EMainFlowStageType.SOL ,Pending Reset 0"
+        },
+        {
+          "line_number": 77450,
+          "text": "[2026.10.19-08.10.23:331][873]LogGPGameLoading: Warning: UGPGameLoadingManager::OnLoadingFlowFinished() Result: EDFLFR_Break, Reason: MatchServer:OnJoinMatchFailed --> EMainFlowStageType.SOL"
+        },
+        {
+          "line_number": 77452,
+          "text": "[2026.10.19-08.10.23:331][873]LuaMTransition: Error: TransitionLogic._OnGPGameLoadingFinished, 3, MatchServer:OnJoinMatchFailed --> EMainFlowStageType.SOL"
+        },
+        {
+          "line_number": 77454,
+          "text": "[2026.10.19-08.10.23:331][873]LuaMTransition: Error: TransitionLogic._OnGPGameLoadingFinished, 14, MatchServer:OnJoinMatchFailed --> EMainFlowStageType.SOL"
+        }
+      ]
+    },
+    "game_flow": {
+      "matching_lines": 66,
+      "samples": [
+        {
+          "line_number": 10827,
+          "text": "[2026.10.19-08.00.53:292][  0]LogSeamlessTravel: Display: OnPostEnterGameFlow: EGameFlowStageType::LaunchToLogin"
+        },
+        {
+          "line_number": 10828,
+          "text": "[2026.10.19-08.00.53:292][  0]LogSeamlessEnter: Display: OnPostEnterGameFlow: EGameFlowStageType::LaunchToLogin"
+        },
+        {
+          "line_number": 27435,
+          "text": "[2026.10.19-08.01.02:344][292]LogSeamlessTravel: Display: OnPostEnterGameFlow: EGameFlowStageType::LaunchToLogin"
+        },
+        {
+          "line_number": 27528,
+          "text": "[2026.10.19-08.01.02:374][292]LogSeamlessTravel: Display: OnPostEnterGameFlow: EGameFlowStageType::PostLaunch"
+        },
+        {
+          "line_number": 27529,
+          "text": "[2026.10.19-08.01.02:374][292]LogSeamlessEnter: Display: OnPostEnterGameFlow: EGameFlowStageType::PostLaunch"
+        },
+        {
+          "line_number": 27546,
+          "text": "[2026.10.19-08.01.02:381][293]LogSeamlessTravel: Display: OnPostEnterGameFlow: EGameFlowStageType::PostLaunch"
+        },
+        {
+          "line_number": 27611,
+          "text": "[2026.10.19-08.01.02:875][293]LogSeamlessTravel: Display: OnPostEnterGameFlow: EGameFlowStageType::Login"
+        },
+        {
+          "line_number": 27612,
+          "text": "[2026.10.19-08.01.02:875][293]LogSeamlessEnter: Display: OnPostEnterGameFlow: EGameFlowStageType::Login"
+        },
+        {
+          "line_number": 29849,
+          "text": "[2026.10.19-08.01.04:964][371]LogSeamlessTravel: Display: OnPostEnterGameFlow: EGameFlowStageType::Login"
+        },
+        {
+          "line_number": 31007,
+          "text": "[2026.10.19-08.01.05:015][371]LogSeamlessTravel: Display: OnPostEnterGameFlow: EGameFlowStageType::LoginToModeHall"
+        },
+        {
+          "line_number": 31008,
+          "text": "[2026.10.19-08.01.05:015][371]LogSeamlessEnter: Display: OnPostEnterGameFlow: EGameFlowStageType::LoginToModeHall"
+        },
+        {
+          "line_number": 34586,
+          "text": "[2026.10.19-08.01.09:685][476]LogSeamlessTravel: Display: OnPostEnterGameFlow: EGameFlowStageType::LoginToModeHall"
+        },
+        {
+          "line_number": 34729,
+          "text": "[2026.10.19-08.01.09:759][476]LogSeamlessTravel: Display: OnPostEnterGameFlow: EGameFlowStageType::ModeHall"
+        },
+        {
+          "line_number": 34730,
+          "text": "[2026.10.19-08.01.09:759][476]LogSeamlessEnter: Display: OnPostEnterGameFlow: EGameFlowStageType::ModeHall"
+        },
+        {
+          "line_number": 34823,
+          "text": "[2026.10.19-08.01.10:169][499]LogGPGameLoading: Warning: UGPGameLoadingManager::OnLoadingFlowFinished() Result: EDFLFR_Success, Reason: "
+        },
+        {
+          "line_number": 34925,
+          "text": "[2026.10.19-08.01.56:044][233]LogSeamlessTravel: Display: OnPostEnterGameFlow: EGameFlowStageType::ModeHall"
+        },
+        {
+          "line_number": 35012,
+          "text": "[2026.10.19-08.01.56:077][233]LogSeamlessTravel: Display: OnPostEnterGameFlow: EGameFlowStageType::ModeHallToSafeHouse"
+        },
+        {
+          "line_number": 35013,
+          "text": "[2026.10.19-08.01.56:077][233]LogSeamlessEnter: Display: OnPostEnterGameFlow: EGameFlowStageType::ModeHallToSafeHouse"
+        },
+        {
+          "line_number": 35336,
+          "text": "[2026.10.19-08.01.57:902][329]LogSeamlessTravel: Display: OnPostEnterGameFlow: EGameFlowStageType::ModeHallToSafeHouse"
+        },
+        {
+          "line_number": 35602,
+          "text": "[2026.10.19-08.01.58:031][329]LogSeamlessTravel: Display: OnPostEnterGameFlow: EGameFlowStageType::SafeHouse"
+        },
+        {
+          "line_number": 35603,
+          "text": "[2026.10.19-08.01.58:031][329]LogSeamlessEnter: Display: OnPostEnterGameFlow: EGameFlowStageType::SafeHouse"
+        },
+        {
+          "line_number": 35606,
+          "text": "[2026.10.19-08.01.58:031][329]LogGPGameLoading: Warning: UGPGameLoadingManager::OnLoadingFlowFinished() Result: EDFLFR_Success, Reason: "
+        },
+        {
+          "line_number": 42241,
+          "text": "[2026.10.19-08.02.58:710][751]LogSeamlessTravel: Display: OnPostEnterGameFlow: EGameFlowStageType::SafeHouse"
+        },
+        {
+          "line_number": 43774,
+          "text": "[2026.10.19-08.02.58:964][751]LogSeamlessTravel: Display: OnPostEnterGameFlow: EGameFlowStageType::LobbyToGame"
+        },
+        {
+          "line_number": 43775,
+          "text": "[2026.10.19-08.02.58:964][751]LogSeamlessEnter: Display: OnPostEnterGameFlow: EGameFlowStageType::LobbyToGame"
+        },
+        {
+          "line_number": 48836,
+          "text": "[2026.10.19-08.03.04:005][945]LogSeamlessTravel: Display: OnPostEnterGameFlow: EGameFlowStageType::LobbyToGame"
+        },
+        {
+          "line_number": 48984,
+          "text": "[2026.10.19-08.03.04:037][945]LogSeamlessTravel: Display: OnPostEnterGameFlow: EGameFlowStageType::Game"
+        },
+        {
+          "line_number": 48985,
+          "text": "[2026.10.19-08.03.04:037][945]LogSeamlessTravel: Display: OnPostEnterGameFlow: Enter Flow[Game]"
+        },
+        {
+          "line_number": 48986,
+          "text": "[2026.10.19-08.03.04:037][945]LogSeamlessEnter: Display: OnPostEnterGameFlow: EGameFlowStageType::Game"
+        },
+        {
+          "line_number": 49133,
+          "text": "[2026.10.19-08.03.04:498][975]LogSeamlessTravel: Display: OnPostEnterGameFlow: Begin APM Exclude: SeamlessTravel"
+        },
+        {
+          "line_number": 49256,
+          "text": "[2026.10.19-08.03.16:801][155]LogSeamlessEnter: Display: UDFMIrisEnterSubsystem::OnLoadingFlowFinished: 0 ,"
+        },
+        {
+          "line_number": 49257,
+          "text": "[2026.10.19-08.03.16:801][155]LogSeamlessEnter: Display: OnLoadingFlowFinished: Success"
+        },
+        {
+          "line_number": 49258,
+          "text": "[2026.10.19-08.03.16:801][155]LogSeamlessEnter: Display: UDFMIrisEnterSubsystem::HandleSeamlessSucceedInFlow, Begin!"
+        },
+        {
+          "line_number": 49289,
+          "text": "[2026.10.19-08.03.16:802][155]LogSeamlessEnter: Display: UDFMIrisEnterSubsystem::HandleSeamlessSucceedInFlow, SetEnableWorldRendering 1"
+        },
+        {
+          "line_number": 49290,
+          "text": "[2026.10.19-08.03.16:802][155]LogSeamlessEnter: Display: UDFMIrisEnterSubsystem::HandleSeamlessSucceedInFlow:: Enable ReconnectSystem"
+        },
+        {
+          "line_number": 49465,
+          "text": "[2026.10.19-08.03.16:814][155]LogSeamlessEnter: Display: UDFMIrisEnterSubsystem::HandleSeamlessSucceedInFlow, SetClientRealInGame"
+        },
+        {
+          "line_number": 49466,
+          "text": "[2026.10.19-08.03.16:814][155]LogSeamlessEnter: Display: UDFMIrisEnterSubsystem::HandleSeamlessSucceedInFlow, ServerNotifySeamlessFinish!"
+        },
+        {
+          "line_number": 49467,
+          "text": "[2026.10.19-08.03.16:814][155]LogSeamlessEnter: Error: UDFMIrisEnterSubsystem::HandleSeamlessSucceedInFlow, Hide TargetHelicopter"
+        },
+        {
+          "line_number": 49468,
+          "text": "[2026.10.19-08.03.16:814][155]LogSeamlessEnter: Display: UDFMIrisEnterSubsystem::HandleSeamlessSucceedInFlow, ReleasePlayerLocation"
+        },
+        {
+          "line_number": 49505,
+          "text": "[2026.10.19-08.03.16:824][155]LogSeamlessEnter: Display: [SyncMapSign] UDFMIrisEnterSubsystem::HandleSeamlessSucceedInFlow, ClearAllTeamMateSignIcon"
+        },
+        {
+          "line_number": 49506,
+          "text": "[2026.10.19-08.03.16:824][155]LogSeamlessEnter: Display: [SyncMapSign] UDFMIrisEnterSubsystem::HandleSeamlessSucceedInFlow, LocalMapSignInfo.bEnable=0"
+        },
+        {
+          "line_number": 49521,
+          "text": "[2026.10.19-08.03.16:824][155]LogGPGameLoading: Warning: UGPGameLoadingManager::OnLoadingFlowFinished() Result: EDFLFR_Success, Reason: "
+        },
+        {
+          "line_number": 67672,
+          "text": "[2026.10.19-08.05.42:579][981]LogSeamlessTravel: Display: OnPostEnterGameFlow: EGameFlowStageType::Game"
+        },
+        {
+          "line_number": 67763,
+          "text": "[2026.10.19-08.05.42:599][981]LogSeamlessTravel: Display: OnPostEnterGameFlow: EGameFlowStageType::GameToSafeHouse"
+        },
+        {
+          "line_number": 67764,
+          "text": "[2026.10.19-08.05.42:599][981]LogSeamlessEnter: Display: OnPostEnterGameFlow: EGameFlowStageType::GameToSafeHouse"
+        },
+        {
+          "line_number": 71599,
+          "text": "[2026.10.19-08.05.49:037][290]LogSeamlessTravel: Display: OnPostEnterGameFlow: EGameFlowStageType::GameToSafeHouse"
+        },
+        {
+          "line_number": 71740,
+          "text": "[2026.10.19-08.05.49:079][290]LogSeamlessTravel: Display: OnPostEnterGameFlow: EGameFlowStageType::SafeHouse"
+        },
+        {
+          "line_number": 71741,
+          "text": "[2026.10.19-08.05.49:079][290]LogSeamlessEnter: Display: OnPostEnterGameFlow: EGameFlowStageType::SafeHouse"
+        },
+        {
+          "line_number": 73020,
+          "text": "[2026.10.19-08.05.49:543][293]LogGPGameLoading: Warning: UGPGameLoadingManager::OnLoadingFlowFinished() Result: EDFLFR_Success, Reason: "
+        },
+        {
+          "line_number": 77367,
+          "text": "[2026.10.19-08.10.23:329][873]LogSeamlessEnter: Display: UDFMIrisEnterSubsystem::OnLoadingFlowFinished: 3 ,MatchServer:OnJoinMatchFailed --> EMainFlowStageType.SOL"
+        },
+        {
+          "line_number": 77368,
+          "text": "[2026.10.19-08.10.23:329][873]LogSeamlessEnter: Error: OnLoadingFlowFinished: Break - MatchServer:OnJoinMatchFailed --> EMainFlowStageType.SOL ,Pending Reset 0"
+        },
+        {
+          "line_number": 77369,
+          "text": "[2026.10.19-08.10.23:329][873]LogSeamlessEnter: Display: UDFMIrisEnterSubsystem::HandleSeamlessFailedInFlow, Begin!"
+        },
+        {
+          "line_number": 77423,
+          "text": "[2026.10.19-08.10.23:330][873]LogSeamlessEnter: Display: UDFMIrisEnterSubsystem::HandleSeamlessFailedInFlow, SetEnableWorldRendering 1"
+        },
+        {
+          "line_number": 77424,
+          "text": "[2026.10.19-08.10.23:330][873]LogSeamlessEnter: Display: UDFMIrisEnterSubsystem::HandleSeamlessFailedInFlow:: Enable ReconnectSystem"
+        },
+        {
+          "line_number": 77427,
+          "text": "[2026.10.19-08.10.23:330][873]LogSeamlessEnter: Error: UDFMIrisEnterSubsystem::HandleSeamlessFailedInFlow PlayFastEquipAnim"
+        },
+        {
+          "line_number": 77433,
+          "text": "[2026.10.19-08.10.23:331][873]LogSeamlessEnter: Display: UDFMIrisEnterSubsystem::HandleSeamlessFailedInFlow, ReleasePlayerLocation"
+        },
+        {
+          "line_number": 77436,
+          "text": "[2026.10.19-08.10.23:331][873]LogSeamlessEnter: Display: UDFMIrisEnterSubsystem::HandleSeamlessFailedInFlow, Hide TargetHelicopter"
+        },
+        {
+          "line_number": 77444,
+          "text": "[2026.10.19-08.10.23:331][873]LogSeamlessEnter: Error: UDFMIrisEnterSubsystem::HandleSeamlessFailedInFlow, LoadingEnter!"
+        },
+        {
+          "line_number": 77450,
+          "text": "[2026.10.19-08.10.23:331][873]LogGPGameLoading: Warning: UGPGameLoadingManager::OnLoadingFlowFinished() Result: EDFLFR_Break, Reason: MatchServer:OnJoinMatchFailed --> EMainFlowStageType.SOL"
+        },
+        {
+          "line_number": 77600,
+          "text": "[2026.10.19-08.10.23:431][877]LogSeamlessTravel: Display: OnPostEnterGameFlow: EGameFlowStageType::SafeHouse"
+        },
+        {
+          "line_number": 77730,
+          "text": "[2026.10.19-08.10.23:445][877]LogSeamlessTravel: Display: OnPostEnterGameFlow: EGameFlowStageType::GameToSafeHouse"
+        },
+        {
+          "line_number": 77731,
+          "text": "[2026.10.19-08.10.23:445][877]LogSeamlessEnter: Display: OnPostEnterGameFlow: EGameFlowStageType::GameToSafeHouse"
+        },
+        {
+          "line_number": 81455,
+          "text": "[2026.10.19-08.10.26:682][ 73]LogSeamlessTravel: Display: OnPostEnterGameFlow: EGameFlowStageType::GameToSafeHouse"
+        },
+        {
+          "line_number": 81609,
+          "text": "[2026.10.19-08.10.26:709][ 73]LogSeamlessTravel: Display: OnPostEnterGameFlow: EGameFlowStageType::SafeHouse"
+        },
+        {
+          "line_number": 81610,
+          "text": "[2026.10.19-08.10.26:709][ 73]LogSeamlessEnter: Display: OnPostEnterGameFlow: EGameFlowStageType::SafeHouse"
+        },
+        {
+          "line_number": 82875,
+          "text": "[2026.10.19-08.10.27:079][ 84]LogGPGameLoading: Warning: UGPGameLoadingManager::OnLoadingFlowFinished() Result: EDFLFR_Success, Reason: "
+        }
+      ]
+    },
+    "skill_rejection": {
+      "matching_lines": 20,
+      "samples": [
+        {
+          "line_number": 53232,
+          "text": "[2026.10.19-08.03.47:226][608]LogGPCharacter: Error: [11609][6311504805269387056][2] UGPSkillComponent::CanEnterFSM failed bIsCheckingSkill = 0 GetbCanUseSkill = 1 1 Reason=bCanUseSkill_TBA1,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1"
+        },
+        {
+          "line_number": 53235,
+          "text": "[2026.10.19-08.03.47:226][608]LogGPCharacter: Error: [11609][6311504805269387056][2] CanActivateSkill CanEnterFSM Failed:1009005"
+        },
+        {
+          "line_number": 53241,
+          "text": "[2026.10.19-08.03.47:244][610]LogGPCharacter: Error: [11611][6311504805269387056][2] UGPSkillComponent::CanEnterFSM failed bIsCheckingSkill = 0 GetbCanUseSkill = 1 1 Reason=bCanUseSkill_TBA1,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1"
+        },
+        {
+          "line_number": 53244,
+          "text": "[2026.10.19-08.03.47:244][610]LogGPCharacter: Error: [11611][6311504805269387056][2] CanActivateSkill CanEnterFSM Failed:1009005"
+        },
+        {
+          "line_number": 53250,
+          "text": "[2026.10.19-08.03.47:280][614]LogGPCharacter: Error: [11615][6311504805269387056][2] UGPSkillComponent::CanEnterFSM failed bIsCheckingSkill = 0 GetbCanUseSkill = 1 1 Reason=bCanUseSkill_TBA1,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1"
+        },
+        {
+          "line_number": 53253,
+          "text": "[2026.10.19-08.03.47:280][614]LogGPCharacter: Error: [11615][6311504805269387056][2] CanActivateSkill CanEnterFSM Failed:1009005"
+        },
+        {
+          "line_number": 53260,
+          "text": "[2026.10.19-08.03.47:334][620]LogGPCharacter: Error: [11621][6311504805269387056][2] UGPSkillComponent::CanEnterFSM failed bIsCheckingSkill = 0 GetbCanUseSkill = 1 1 Reason=bCanUseSkill_TBA1,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1"
+        },
+        {
+          "line_number": 53263,
+          "text": "[2026.10.19-08.03.47:334][620]LogGPCharacter: Error: [11621][6311504805269387056][2] CanActivateSkill CanEnterFSM Failed:1009005"
+        },
+        {
+          "line_number": 53269,
+          "text": "[2026.10.19-08.03.47:378][625]LogGPCharacter: Error: [11626][6311504805269387056][2] UGPSkillComponent::CanEnterFSM failed bIsCheckingSkill = 0 GetbCanUseSkill = 1 1 Reason=bCanUseSkill_TBA1,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1"
+        },
+        {
+          "line_number": 53272,
+          "text": "[2026.10.19-08.03.47:378][625]LogGPCharacter: Error: [11626][6311504805269387056][2] CanActivateSkill CanEnterFSM Failed:1009005"
+        },
+        {
+          "line_number": 53279,
+          "text": "[2026.10.19-08.03.47:431][631]LogGPCharacter: Error: [11632][6311504805269387056][2] UGPSkillComponent::CanEnterFSM failed bIsCheckingSkill = 0 GetbCanUseSkill = 1 1 Reason=bCanUseSkill_TBA1,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1"
+        },
+        {
+          "line_number": 53282,
+          "text": "[2026.10.19-08.03.47:431][631]LogGPCharacter: Error: [11632][6311504805269387056][2] CanActivateSkill CanEnterFSM Failed:1009005"
+        },
+        {
+          "line_number": 53289,
+          "text": "[2026.10.19-08.03.47:485][637]LogGPCharacter: Error: [11638][6311504805269387056][2] UGPSkillComponent::CanEnterFSM failed bIsCheckingSkill = 0 GetbCanUseSkill = 1 1 Reason=bCanUseSkill_TBA1,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1"
+        },
+        {
+          "line_number": 53292,
+          "text": "[2026.10.19-08.03.47:485][637]LogGPCharacter: Error: [11638][6311504805269387056][2] CanActivateSkill CanEnterFSM Failed:1009005"
+        },
+        {
+          "line_number": 53298,
+          "text": "[2026.10.19-08.03.47:530][642]LogGPCharacter: Error: [11643][6311504805269387056][2] UGPSkillComponent::CanEnterFSM failed bIsCheckingSkill = 0 GetbCanUseSkill = 1 1 Reason=bCanUseSkill_TBA1,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1"
+        },
+        {
+          "line_number": 53301,
+          "text": "[2026.10.19-08.03.47:530][642]LogGPCharacter: Error: [11643][6311504805269387056][2] CanActivateSkill CanEnterFSM Failed:1009005"
+        },
+        {
+          "line_number": 53308,
+          "text": "[2026.10.19-08.03.47:584][648]LogGPCharacter: Error: [11649][6311504805269387056][2] UGPSkillComponent::CanEnterFSM failed bIsCheckingSkill = 0 GetbCanUseSkill = 1 1 Reason=bCanUseSkill_TBA1,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1"
+        },
+        {
+          "line_number": 53311,
+          "text": "[2026.10.19-08.03.47:584][648]LogGPCharacter: Error: [11649][6311504805269387056][2] CanActivateSkill CanEnterFSM Failed:1009005"
+        },
+        {
+          "line_number": 53317,
+          "text": "[2026.10.19-08.03.47:628][653]LogGPCharacter: Error: [11654][6311504805269387056][2] UGPSkillComponent::CanEnterFSM failed bIsCheckingSkill = 0 GetbCanUseSkill = 1 1 Reason=bCanUseSkill_TBA1,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1"
+        },
+        {
+          "line_number": 53320,
+          "text": "[2026.10.19-08.03.47:628][653]LogGPCharacter: Error: [11654][6311504805269387056][2] CanActivateSkill CanEnterFSM Failed:1009005"
+        }
+      ]
+    },
+    "weapon_lifecycle": {
+      "matching_lines": 117,
+      "samples": [
+        {
+          "line_number": 35086,
+          "text": "[2026.10.19-08.01.56:215][237]LogWeaponManager: [UWeaponManagerComponent::Init] "
+        },
+        {
+          "line_number": 35087,
+          "text": "[2026.10.19-08.01.56:215][237]LogWeaponManager: [UWeaponManagerComponent::InitDefaultWeapons] "
+        },
+        {
+          "line_number": 35090,
+          "text": "[2026.10.19-08.01.56:217][237]LogWeaponManager:  [OnAddWeapon] [Standalone|0|190301|Fpp] {Guid: 18110000001, Id: 18110000001,Skin: 0 Slot: 0, EquipPos: 0, SkillId: 0, WeaponName: BP_EmptyHand_C_2147477236, BP: BP_EmptyHand_C}"
+        },
+        {
+          "line_number": 35091,
+          "text": "[2026.10.19-08.01.56:217][237]LogWeaponManager: Warning:  [IsClient: 1][ESwitchWeaponContext::Init]Start SwitchToTargetWeaponInner TargetWeapon: [Standalone|0|190301|Fpp] {Guid: 18110000001, Id: 18110000001,Skin: 0 Slot: 0, EquipPos: 0, SkillId: 0, WeaponName: BP_EmptyHand_C_2147477236, BP: BP_EmptyHand_C}, CurWeapon: , PendingWeapon: "
+        },
+        {
+          "line_number": 35092,
+          "text": "[2026.10.19-08.01.56:217][237]LogWeaponManager:  Switch to Weapon: [Standalone|0|190301|Fpp] {Guid: 18110000001, Id: 18110000001,Skin: 0 Slot: 0, EquipPos: 0, SkillId: 0, WeaponName: BP_EmptyHand_C_2147477236, BP: BP_EmptyHand_C}"
+        },
+        {
+          "line_number": 35093,
+          "text": "[2026.10.19-08.01.56:217][237]LogWeaponManager: Warning:  [IsClient: 1]Active Weapon: [Standalone|0|190301|Fpp] {Guid: 18110000001, Id: 18110000001,Skin: 0 Slot: 0, EquipPos: 0, SkillId: 0, WeaponName: BP_EmptyHand_C_2147477236, BP: BP_EmptyHand_C}, WeaponManager"
+        },
+        {
+          "line_number": 35094,
+          "text": "[2026.10.19-08.01.56:217][237]LogWeaponManager: Warning:  [IsClient: 1][ESwitchWeaponContext::InventoryManager]Start SwitchToTargetWeaponInner TargetWeapon: [Standalone|0|190301|Fpp] {Guid: 18110000001, Id: 18110000001,Skin: 0 Slot: 0, EquipPos: 0, SkillId: 0, WeaponName: BP_EmptyHand_C_2147477236, BP: BP_EmptyHand_C}, CurWeapon: [Standalone|0|190301|Fpp] {Guid: 18110000001, Id: 18110000001,Skin: 0 Slot: 0, EquipPos: 0, SkillId: 0, WeaponName: BP_EmptyHand_C_2147477236, BP: BP_EmptyHand_C}, PendingWeapon: "
+        },
+        {
+          "line_number": 35095,
+          "text": "[2026.10.19-08.01.56:217][237]LogWeaponManager:  Switch to Weapon: [Standalone|0|190301|Fpp] {Guid: 18110000001, Id: 18110000001,Skin: 0 Slot: 0, EquipPos: 0, SkillId: 0, WeaponName: BP_EmptyHand_C_2147477236, BP: BP_EmptyHand_C}"
+        },
+        {
+          "line_number": 35103,
+          "text": "[2026.10.19-08.01.56:219][237]LogWeaponManager: Warning: [Standalone|5]|0 [IsClient: 1][ESwitchWeaponContext::InventoryManager]Start SwitchToTargetWeaponInner TargetWeapon: [Standalone|0|190301|Fpp] {Guid: 18110000001, Id: 18110000001,Skin: 0 Slot: 0, EquipPos: 0, SkillId: 0, WeaponName: BP_EmptyHand_C_2147477236, BP: BP_EmptyHand_C}, CurWeapon: [Standalone|0|190301|Fpp] {Guid: 18110000001, Id: 18110000001,Skin: 0 Slot: 0, EquipPos: 0, SkillId: 0, WeaponName: BP_EmptyHand_C_2147477236, BP: BP_EmptyHand_C}, PendingWeapon: "
+        },
+        {
+          "line_number": 35104,
+          "text": "[2026.10.19-08.01.56:219][237]LogWeaponManager: [Standalone|5]|0 Switch to Weapon: [Standalone|0|190301|Fpp] {Guid: 18110000001, Id: 18110000001,Skin: 0 Slot: 0, EquipPos: 0, SkillId: 0, WeaponName: BP_EmptyHand_C_2147477236, BP: BP_EmptyHand_C}"
+        },
+        {
+          "line_number": 35618,
+          "text": "[2026.10.19-08.01.58:039][330]LogWeaponManager: [Standalone|5]|0[UWeaponManagerComponent::RemoveAllWeapon] bAutoSwitchNext: 1, clear AddWeaponContextQueue num: 0."
+        },
+        {
+          "line_number": 35619,
+          "text": "[2026.10.19-08.01.58:040][330]LogWeaponManager: [Standalone|5]|0[UWeaponManagerComponent::AddWeaponDesc] Guid: 0, EquipPosition: 111, RecGUID: 6400000000000000060, RecId: 18010000043"
+        },
+        {
+          "line_number": 35644,
+          "text": "[2026.10.19-08.01.58:111][330]LogWeaponManager: [Standalone|5]|0 [OnAddWeapon] [Standalone|5|236098|Fpp] {Guid: 6400000000000000060, Id: 18010000043,Skin: 11841 Slot: 0, EquipPos: 111, SkillId: 0, WeaponName: BP_WeaponModular_C_2147476282, BP: BP_WeaponModular_C}"
+        },
+        {
+          "line_number": 35645,
+          "text": "[2026.10.19-08.01.58:111][330]LogWeaponManager: Warning: [Standalone|5]|0 [IsClient: 1][ESwitchWeaponContext::SafeHouse]Start SwitchToTargetWeaponInner TargetWeapon: [Standalone|5|236098|Fpp] {Guid: 6400000000000000060, Id: 18010000043,Skin: 11841 Slot: 0, EquipPos: 111, SkillId: 0, WeaponName: BP_WeaponModular_C_2147476282, BP: BP_WeaponModular_C}, CurWeapon: [Standalone|0|190301|Fpp] {Guid: 18110000001, Id: 18110000001,Skin: 0 Slot: 0, EquipPos: 0, SkillId: 0, WeaponName: BP_EmptyHand_C_2147477236, BP: BP_EmptyHand_C}, PendingWeapon: "
+        },
+        {
+          "line_number": 35646,
+          "text": "[2026.10.19-08.01.58:111][330]LogWeaponManager: [Standalone|5]|0 Switch to Weapon: [Standalone|5|236098|Fpp] {Guid: 6400000000000000060, Id: 18010000043,Skin: 11841 Slot: 0, EquipPos: 111, SkillId: 0, WeaponName: BP_WeaponModular_C_2147476282, BP: BP_WeaponModular_C}"
+        },
+        {
+          "line_number": 35647,
+          "text": "[2026.10.19-08.01.58:111][330]LogWeaponManager: Warning: [Standalone|5]|0 [IsClient: 1]Active Weapon: [Standalone|5|236098|Fpp] {Guid: 6400000000000000060, Id: 18010000043,Skin: 11841 Slot: 0, EquipPos: 111, SkillId: 0, WeaponName: BP_WeaponModular_C_2147476282, BP: BP_WeaponModular_C}, WeaponManager"
+        },
+        {
+          "line_number": 39841,
+          "text": "[2026.10.19-08.02.44:541][995]LogWeaponManager: Warning: [Standalone|5]|0 [IsClient: 1][ESwitchWeaponContext::OnHelicopterAction]Start SwitchToTargetWeaponInner TargetWeapon: [Standalone|0|190301|Fpp] {Guid: 18110000001, Id: 18110000001,Skin: 0 Slot: 0, EquipPos: 0, SkillId: 0, WeaponName: BP_EmptyHand_C_2147477236, BP: BP_EmptyHand_C}, CurWeapon: [Standalone|5|236098|Fpp] {Guid: 6400000000000000060, Id: 18010000043,Skin: 11841 Slot: 0, EquipPos: 111, SkillId: 0, WeaponName: BP_WeaponModular_C_2147476282, BP: BP_WeaponModular_C}, PendingWeapon: "
+        },
+        {
+          "line_number": 39842,
+          "text": "[2026.10.19-08.02.44:541][995]LogWeaponManager: [Standalone|5]|0 Switch to Weapon: [Standalone|0|190301|Fpp] {Guid: 18110000001, Id: 18110000001,Skin: 0 Slot: 0, EquipPos: 0, SkillId: 0, WeaponName: BP_EmptyHand_C_2147477236, BP: BP_EmptyHand_C}"
+        },
+        {
+          "line_number": 39844,
+          "text": "[2026.10.19-08.02.44:542][995]LogWeaponManager: Warning: [Standalone|5]|0 [IsClient: 1][ESwitchWeaponContext::OnHelicopterAction]Start SwitchToTargetWeaponInner TargetWeapon: [Standalone|0|190301|Fpp] {Guid: 18110000001, Id: 18110000001,Skin: 0 Slot: 0, EquipPos: 0, SkillId: 0, WeaponName: BP_EmptyHand_C_2147477236, BP: BP_EmptyHand_C}, CurWeapon: [Standalone|5|236098|Fpp] {Guid: 6400000000000000060, Id: 18010000043,Skin: 11841 Slot: 0, EquipPos: 111, SkillId: 0, WeaponName: BP_WeaponModular_C_2147476282, BP: BP_WeaponModular_C}, PendingWeapon: [Standalone|0|190301|Fpp] {Guid: 18110000001, Id: 18110000001,Skin: 0 Slot: 0, EquipPos: 0, SkillId: 0, WeaponName: BP_EmptyHand_C_2147477236, BP: BP_EmptyHand_C}"
+        },
+        {
+          "line_number": 39845,
+          "text": "[2026.10.19-08.02.44:542][995]LogWeaponManager: Warning: [Standalone|5]|0 [IsClient: 1][SwitchToTargetWeaponInner] Failed! As can switch weapon check failed. TargetWeapon: [Standalone|0|190301|Fpp] {Guid: 18110000001, Id: 18110000001,Skin: 0 Slot: 0, EquipPos: 0, SkillId: 0, WeaponName: BP_EmptyHand_C_2147477236, BP: BP_EmptyHand_C}, CurWeapon: [Standalone|5|236098|Fpp] {Guid: 6400000000000000060, Id: 18010000043,Skin: 11841 Slot: 0, EquipPos: 111, SkillId: 0, WeaponName: BP_WeaponModular_C_2147476282, BP: BP_WeaponModular_C}, PendingWeapon: [Standalone|0|190301|Fpp] {Guid: 18110000001, Id: 18110000001,Skin: 0 Slot: 0, EquipPos: 0, SkillId: 0, WeaponName: BP_EmptyHand_C_2147477236, BP: BP_EmptyHand_C} Reason=bCanSwitchWeapon_TBA1,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1011,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1111,1"
+        },
+        {
+          "line_number": 40069,
+          "text": "[2026.10.19-08.02.44:941][  8]LogWeaponManager: Warning: [Standalone|5]|0 [IsClient: 1]Active Weapon: [Standalone|0|190301|Fpp] {Guid: 18110000001, Id: 18110000001,Skin: 0 Slot: 0, EquipPos: 0, SkillId: 0, WeaponName: BP_EmptyHand_C_2147477236, BP: BP_EmptyHand_C}, WeaponManager"
+        },
+        {
+          "line_number": 45903,
+          "text": "[2026.10.19-08.02.59:495][757]LogWeaponManager: [UWeaponManagerComponent::Init] "
+        },
+        {
+          "line_number": 45904,
+          "text": "[2026.10.19-08.02.59:495][757]LogWeaponManager: [UWeaponManagerComponent::OnPostNetInit] clear preview frames"
+        },
+        {
+          "line_number": 48277,
+          "text": "[2026.10.19-08.03.01:032][819]LogWeaponManager: [Client|6311504805269387056]|0[UWeaponManagerComponent::RecordFppClientWeapon] add fpp client weapon: {583463410: [Client|6311504805269387056|583463410|Fpp] {Guid: 6400000000000000060, Id: 18010000043,Skin: 11841 Slot: 0, EquipPos: 0, SkillId: 0, WeaponName: BP_WeaponModular_C_2147465216, BP: BP_WeaponModular_C}}"
+        },
+        {
+          "line_number": 48278,
+          "text": "[2026.10.19-08.03.01:032][819]LogWeaponManager: Warning: [Client|6311504805269387056]|0[UWeaponManagerComponent::RecordFppClientWeapon] WeaponIdentity[583463410] not in WeaponIdentityList "
+        },
+        {
+          "line_number": 48310,
+          "text": "[2026.10.19-08.03.01:085][824]LogWeaponManager: [Client|6311504805269387056]|0[UWeaponManagerComponent::RecordFppClientWeapon] add fpp client weapon: {824523319: [Client|6311504805269387056|824523319|Fpp] {Guid: 6400000000000000059, Id: 18010000006,Skin: 12235 Slot: 0, EquipPos: 0, SkillId: 0, WeaponName: BP_WeaponModular_C_2147465213, BP: BP_WeaponModular_C}}"
+        },
+        {
+          "line_number": 48311,
+          "text": "[2026.10.19-08.03.01:085][824]LogWeaponManager: Warning: [Client|6311504805269387056]|0[UWeaponManagerComponent::RecordFppClientWeapon] WeaponIdentity[824523319] not in WeaponIdentityList "
+        },
+        {
+          "line_number": 48319,
+          "text": "[2026.10.19-08.03.01:124][828]LogWeaponManager: [Client|6311504805269387056]|0[UWeaponManagerComponent::OnRepWeaponList] GDelayCallRepWeaponListCount = 100"
+        },
+        {
+          "line_number": 48320,
+          "text": "[2026.10.19-08.03.01:124][828]LogWeaponManager: [Client|6311504805269387056]|0[UWeaponManagerComponent::DoRepWeaponList] "
+        },
+        {
+          "line_number": 48321,
+          "text": "[2026.10.19-08.03.01:124][828]LogWeaponManager: [Client|6311504805269387056]|0[UWeaponManagerComponent::DoRepWeaponList] Add Weapon to List: [Client|6311504805269387056|2136660055|None]"
+        },
+        {
+          "line_number": 48322,
+          "text": "[2026.10.19-08.03.01:124][828]LogWeaponManager: [Client|6311504805269387056]|0[UWeaponManagerComponent::DoRepWeaponList] Add Weapon to List: [Client|6311504805269387056|583463410|Fpp]"
+        },
+        {
+          "line_number": 48323,
+          "text": "[2026.10.19-08.03.01:124][828]LogWeaponManager: [Client|6311504805269387056]|0[UWeaponManagerComponent::DoRepWeaponList] Add Weapon to List: [Client|6311504805269387056|824523319|Fpp]"
+        },
+        {
+          "line_number": 48324,
+          "text": "[2026.10.19-08.03.01:124][828]LogWeaponManager: [Client|6311504805269387056]|0 rep 3 weapons"
+        },
+        {
+          "line_number": 48353,
+          "text": "[2026.10.19-08.03.01:504][835]LogWeaponManager: Warning: [Client|6311504805269387056]|0 [IsClient: 1][ESwitchWeaponContext::Preview]Start SwitchToTargetWeaponInner TargetWeapon: [Client|6311504805269387056|583463410|Fpp] {Guid: 6400000000000000060, Id: 18010000043,Skin: 11841 Slot: 0, EquipPos: 0, SkillId: 0, WeaponName: BP_WeaponModular_C_2147465216, BP: BP_WeaponModular_C}, CurWeapon: , PendingWeapon: "
+        },
+        {
+          "line_number": 48354,
+          "text": "[2026.10.19-08.03.01:504][835]LogWeaponManager: [Client|6311504805269387056]|0 Switch to Weapon: [Client|6311504805269387056|583463410|Fpp] {Guid: 6400000000000000060, Id: 18010000043,Skin: 11841 Slot: 0, EquipPos: 0, SkillId: 0, WeaponName: BP_WeaponModular_C_2147465216, BP: BP_WeaponModular_C}"
+        },
+        {
+          "line_number": 48355,
+          "text": "[2026.10.19-08.03.01:504][835]LogWeaponManager: Warning: [Client|6311504805269387056]|0 [IsClient: 1]Active Weapon: [Client|6311504805269387056|583463410|Fpp] {Guid: 6400000000000000060, Id: 18010000043,Skin: 11841 Slot: 0, EquipPos: 0, SkillId: 0, WeaponName: BP_WeaponModular_C_2147465216, BP: BP_WeaponModular_C}, WeaponManager"
+        },
+        {
+          "line_number": 49388,
+          "text": "[2026.10.19-08.03.16:811][155]LogWeaponManager: [Standalone|5]|0[UWeaponManagerComponent::UnInit] "
+        },
+        {
+          "line_number": 49389,
+          "text": "[2026.10.19-08.03.16:811][155]LogWeaponManager: [Standalone|5]|0[UWeaponManagerComponent::RecordFppClientWeapon] remove fpp client weapon: 236098"
+        },
+        {
+          "line_number": 49390,
+          "text": "[2026.10.19-08.03.16:812][155]LogWeaponManager: [Standalone|5]|0[UWeaponManagerComponent::RecordFppClientWeapon] remove fpp client weapon: 236098"
+        },
+        {
+          "line_number": 49391,
+          "text": "[2026.10.19-08.03.16:812][155]LogWeaponManager: [Standalone|5]|0[UWeaponManagerComponent::RecordFppClientWeapon] remove fpp client weapon: 190301"
+        },
+        {
+          "line_number": 49392,
+          "text": "[2026.10.19-08.03.16:812][155]LogWeaponManager: [Standalone|5]|0[UWeaponManagerComponent::RecordFppClientWeapon] remove fpp client weapon: 190301"
+        },
+        {
+          "line_number": 49393,
+          "text": "[2026.10.19-08.03.16:812][155]LogWeaponManager: Warning: [Standalone|5]|0 Skip Remove Weapon as Weapon is EmptyHand"
+        },
+        {
+          "line_number": 49394,
+          "text": "[2026.10.19-08.03.16:812][155]LogWeaponManager: [Standalone|5]|0[UWeaponManagerComponent::UnInit] "
+        },
+        {
+          "line_number": 49395,
+          "text": "[2026.10.19-08.03.16:812][155]LogWeaponManager: [Standalone|5]|0[UWeaponManagerComponent::UnInit] "
+        },
+        {
+          "line_number": 53234,
+          "text": "[2026.10.19-08.03.47:226][608]LogWeaponManager: Error: [Client|6311504805269387056]|0[UMultiWeaponManagerComponent::GetOrCreateWeaponManagerBySlot] has authority is false and weapon manager[2] is not found"
+        },
+        {
+          "line_number": 53243,
+          "text": "[2026.10.19-08.03.47:244][610]LogWeaponManager: Error: [Client|6311504805269387056]|0[UMultiWeaponManagerComponent::GetOrCreateWeaponManagerBySlot] has authority is false and weapon manager[2] is not found"
+        },
+        {
+          "line_number": 53252,
+          "text": "[2026.10.19-08.03.47:280][614]LogWeaponManager: Error: [Client|6311504805269387056]|0[UMultiWeaponManagerComponent::GetOrCreateWeaponManagerBySlot] has authority is false and weapon manager[2] is not found"
+        },
+        {
+          "line_number": 53262,
+          "text": "[2026.10.19-08.03.47:334][620]LogWeaponManager: Error: [Client|6311504805269387056]|0[UMultiWeaponManagerComponent::GetOrCreateWeaponManagerBySlot] has authority is false and weapon manager[2] is not found"
+        },
+        {
+          "line_number": 53271,
+          "text": "[2026.10.19-08.03.47:378][625]LogWeaponManager: Error: [Client|6311504805269387056]|0[UMultiWeaponManagerComponent::GetOrCreateWeaponManagerBySlot] has authority is false and weapon manager[2] is not found"
+        },
+        {
+          "line_number": 53281,
+          "text": "[2026.10.19-08.03.47:431][631]LogWeaponManager: Error: [Client|6311504805269387056]|0[UMultiWeaponManagerComponent::GetOrCreateWeaponManagerBySlot] has authority is false and weapon manager[2] is not found"
+        },
+        {
+          "line_number": 53291,
+          "text": "[2026.10.19-08.03.47:485][637]LogWeaponManager: Error: [Client|6311504805269387056]|0[UMultiWeaponManagerComponent::GetOrCreateWeaponManagerBySlot] has authority is false and weapon manager[2] is not found"
+        },
+        {
+          "line_number": 53300,
+          "text": "[2026.10.19-08.03.47:530][642]LogWeaponManager: Error: [Client|6311504805269387056]|0[UMultiWeaponManagerComponent::GetOrCreateWeaponManagerBySlot] has authority is false and weapon manager[2] is not found"
+        },
+        {
+          "line_number": 53310,
+          "text": "[2026.10.19-08.03.47:584][648]LogWeaponManager: Error: [Client|6311504805269387056]|0[UMultiWeaponManagerComponent::GetOrCreateWeaponManagerBySlot] has authority is false and weapon manager[2] is not found"
+        },
+        {
+          "line_number": 53319,
+          "text": "[2026.10.19-08.03.47:628][653]LogWeaponManager: Error: [Client|6311504805269387056]|0[UMultiWeaponManagerComponent::GetOrCreateWeaponManagerBySlot] has authority is false and weapon manager[2] is not found"
+        },
+        {
+          "line_number": 67816,
+          "text": "[2026.10.19-08.05.42:631][985]LogWeaponManager: [Client|6311504805269387056]|0[UWeaponManagerComponent::UnInit] "
+        },
+        {
+          "line_number": 67817,
+          "text": "[2026.10.19-08.05.42:631][985]LogWeaponManager: [Client|6311504805269387056]|0[UWeaponManagerComponent::UnInit] "
+        },
+        {
+          "line_number": 67818,
+          "text": "[2026.10.19-08.05.42:631][985]LogWeaponManager: [Client|6311504805269387056]|0[UWeaponManagerComponent::UnInit] "
+        },
+        {
+          "line_number": 69636,
+          "text": "[2026.10.19-08.05.45:055][988]LogWeaponCharacter: Error: [Standalone|10] Empty Hand Weapon is invalid"
+        },
+        {
+          "line_number": 69637,
+          "text": "[2026.10.19-08.05.45:055][988]LogWeaponManager: [Standalone|10]|0[UWeaponManagerComponent::Init] "
+        },
+        {
+          "line_number": 69638,
+          "text": "[2026.10.19-08.05.45:055][988]LogWeaponManager: [Standalone|10]|0[UWeaponManagerComponent::InitDefaultWeapons] "
+        },
+        {
+          "line_number": 69643,
+          "text": "[2026.10.19-08.05.45:057][988]LogWeaponManager: [Standalone|10]|0 [OnAddWeapon] [Standalone|10|142749|Fpp] {Guid: 18110000001, Id: 18110000001,Skin: 0 Slot: 0, EquipPos: 0, SkillId: 0, WeaponName: BP_EmptyHand_C_2147456870, BP: BP_EmptyHand_C}"
+        },
+        {
+          "line_number": 69644,
+          "text": "[2026.10.19-08.05.45:057][988]LogWeaponManager: Warning: [Standalone|10]|0 [IsClient: 1][ESwitchWeaponContext::Init]Start SwitchToTargetWeaponInner TargetWeapon: [Standalone|10|142749|Fpp] {Guid: 18110000001, Id: 18110000001,Skin: 0 Slot: 0, EquipPos: 0, SkillId: 0, WeaponName: BP_EmptyHand_C_2147456870, BP: BP_EmptyHand_C}, CurWeapon: , PendingWeapon: "
+        },
+        {
+          "line_number": 69645,
+          "text": "[2026.10.19-08.05.45:057][988]LogWeaponManager: [Standalone|10]|0 Switch to Weapon: [Standalone|10|142749|Fpp] {Guid: 18110000001, Id: 18110000001,Skin: 0 Slot: 0, EquipPos: 0, SkillId: 0, WeaponName: BP_EmptyHand_C_2147456870, BP: BP_EmptyHand_C}"
+        },
+        {
+          "line_number": 69646,
+          "text": "[2026.10.19-08.05.45:057][988]LogWeaponManager: Warning: [Standalone|10]|0 [IsClient: 1]Active Weapon: [Standalone|10|142749|Fpp] {Guid: 18110000001, Id: 18110000001,Skin: 0 Slot: 0, EquipPos: 0, SkillId: 0, WeaponName: BP_EmptyHand_C_2147456870, BP: BP_EmptyHand_C}, WeaponManager"
+        },
+        {
+          "line_number": 69647,
+          "text": "[2026.10.19-08.05.45:057][988]LogWeaponManager: Warning: [Standalone|10]|0 [IsClient: 1][ESwitchWeaponContext::InventoryManager]Start SwitchToTargetWeaponInner TargetWeapon: [Standalone|10|142749|Fpp] {Guid: 18110000001, Id: 18110000001,Skin: 0 Slot: 0, EquipPos: 0, SkillId: 0, WeaponName: BP_EmptyHand_C_2147456870, BP: BP_EmptyHand_C}, CurWeapon: [Standalone|10|142749|Fpp] {Guid: 18110000001, Id: 18110000001,Skin: 0 Slot: 0, EquipPos: 0, SkillId: 0, WeaponName: BP_EmptyHand_C_2147456870, BP: BP_EmptyHand_C}, PendingWeapon: "
+        },
+        {
+          "line_number": 69648,
+          "text": "[2026.10.19-08.05.45:057][988]LogWeaponManager: [Standalone|10]|0 Switch to Weapon: [Standalone|10|142749|Fpp] {Guid: 18110000001, Id: 18110000001,Skin: 0 Slot: 0, EquipPos: 0, SkillId: 0, WeaponName: BP_EmptyHand_C_2147456870, BP: BP_EmptyHand_C}"
+        },
+        {
+          "line_number": 69654,
+          "text": "[2026.10.19-08.05.45:057][988]LogWeaponManager: Warning: [Standalone|10]|0 [IsClient: 1][ESwitchWeaponContext::InventoryManager]Start SwitchToTargetWeaponInner TargetWeapon: [Standalone|10|142749|Fpp] {Guid: 18110000001, Id: 18110000001,Skin: 0 Slot: 0, EquipPos: 0, SkillId: 0, WeaponName: BP_EmptyHand_C_2147456870, BP: BP_EmptyHand_C}, CurWeapon: [Standalone|10|142749|Fpp] {Guid: 18110000001, Id: 18110000001,Skin: 0 Slot: 0, EquipPos: 0, SkillId: 0, WeaponName: BP_EmptyHand_C_2147456870, BP: BP_EmptyHand_C}, PendingWeapon: "
+        },
+        {
+          "line_number": 69655,
+          "text": "[2026.10.19-08.05.45:057][988]LogWeaponManager: [Standalone|10]|0 Switch to Weapon: [Standalone|10|142749|Fpp] {Guid: 18110000001, Id: 18110000001,Skin: 0 Slot: 0, EquipPos: 0, SkillId: 0, WeaponName: BP_EmptyHand_C_2147456870, BP: BP_EmptyHand_C}"
+        },
+        {
+          "line_number": 73168,
+          "text": "[2026.10.19-08.05.50:037][313]LogWeaponManager: [Standalone|10]|0[UWeaponManagerComponent::RemoveAllWeapon] bAutoSwitchNext: 1, clear AddWeaponContextQueue num: 0."
+        },
+        {
+          "line_number": 73169,
+          "text": "[2026.10.19-08.05.50:038][313]LogWeaponManager: [Standalone|10]|0[UWeaponManagerComponent::AddWeaponDesc] Guid: 0, EquipPosition: 111, RecGUID: 6400000000000000060, RecId: 18010000043"
+        },
+        {
+          "line_number": 73194,
+          "text": "[2026.10.19-08.05.50:046][313]LogWeaponManager: [Standalone|10]|0 [OnAddWeapon] [Standalone|10|346420|Fpp] {Guid: 6400000000000000060, Id: 18010000043,Skin: 11841 Slot: 0, EquipPos: 111, SkillId: 0, WeaponName: BP_WeaponModular_C_2147452491, BP: BP_WeaponModular_C}"
+        },
+        {
+          "line_number": 73195,
+          "text": "[2026.10.19-08.05.50:046][313]LogWeaponManager: Warning: [Standalone|10]|0 [IsClient: 1][ESwitchWeaponContext::SafeHouse]Start SwitchToTargetWeaponInner TargetWeapon: [Standalone|10|346420|Fpp] {Guid: 6400000000000000060, Id: 18010000043,Skin: 11841 Slot: 0, EquipPos: 111, SkillId: 0, WeaponName: BP_WeaponModular_C_2147452491, BP: BP_WeaponModular_C}, CurWeapon: [Standalone|10|142749|Fpp] {Guid: 18110000001, Id: 18110000001,Skin: 0 Slot: 0, EquipPos: 0, SkillId: 0, WeaponName: BP_EmptyHand_C_2147456870, BP: BP_EmptyHand_C}, PendingWeapon: "
+        },
+        {
+          "line_number": 73196,
+          "text": "[2026.10.19-08.05.50:046][313]LogWeaponManager: [Standalone|10]|0 Switch to Weapon: [Standalone|10|346420|Fpp] {Guid: 6400000000000000060, Id: 18010000043,Skin: 11841 Slot: 0, EquipPos: 111, SkillId: 0, WeaponName: BP_WeaponModular_C_2147452491, BP: BP_WeaponModular_C}"
+        },
+        {
+          "line_number": 73197,
+          "text": "[2026.10.19-08.05.50:046][313]LogWeaponManager: Warning: [Standalone|10]|0 [IsClient: 1]Active Weapon: [Standalone|10|346420|Fpp] {Guid: 6400000000000000060, Id: 18010000043,Skin: 11841 Slot: 0, EquipPos: 111, SkillId: 0, WeaponName: BP_WeaponModular_C_2147452491, BP: BP_WeaponModular_C}, WeaponManager"
+        },
+        {
+          "line_number": 73491,
+          "text": "[2026.10.19-08.06.53:462][ 96]LogWeaponManager: [Standalone|10]|0[UWeaponManagerComponent::RemoveAllWeapon] bAutoSwitchNext: 1, clear AddWeaponContextQueue num: 0."
+        },
+        {
+          "line_number": 73492,
+          "text": "[2026.10.19-08.06.53:462][ 96]LogWeaponManager: [Standalone|10]|0 Start Remove Weapon [Standalone|10|346420|Fpp] {Guid: 6400000000000000060, Id: 18010000043,Skin: 11841 Slot: 0, EquipPos: 111, SkillId: 0, WeaponName: BP_WeaponModular_C_2147452491, BP: BP_WeaponModular_C}"
+        },
+        {
+          "line_number": 73493,
+          "text": "[2026.10.19-08.06.53:462][ 96]LogWeaponManager: [Standalone|10]|0[UWeaponManagerComponent::DoRemoveWeapon] Current Weapon [Standalone|10|346420|Fpp] {Guid: 6400000000000000060, Id: 18010000043,Skin: 11841 Slot: 0, EquipPos: 111, SkillId: 0, WeaponName: BP_WeaponModular_C_2147452491, BP: BP_WeaponModular_C} is removed"
+        },
+        {
+          "line_number": 73494,
+          "text": "[2026.10.19-08.06.53:462][ 96]LogWeaponManager: <GetNextWeapon>[Game:29097] { Any } FSwitchWeaponLogGuard::~FSwitchWeaponLogGuard() TargetWeapon: {0: 18110000001}, "
+        },
+        {
+          "line_number": 73498,
+          "text": "[2026.10.19-08.06.53:462][ 96]LogWeaponManager: Warning: [Standalone|10]|0 [IsClient: 1][ESwitchWeaponContext::RemoveWeapon]Start SwitchToTargetWeaponInner TargetWeapon: [Standalone|10|142749|Fpp] {Guid: 18110000001, Id: 18110000001,Skin: 0 Slot: 0, EquipPos: 0, SkillId: 0, WeaponName: BP_EmptyHand_C_2147456870, BP: BP_EmptyHand_C}, CurWeapon: [Standalone|10|346420|Fpp] {Guid: 6400000000000000060, Id: 18010000043,Skin: 11841 Slot: 0, EquipPos: 111, SkillId: 0, WeaponName: BP_WeaponModular_C_2147452491, BP: BP_WeaponModular_C}, PendingWeapon: "
+        },
+        {
+          "line_number": 73499,
+          "text": "[2026.10.19-08.06.53:462][ 96]LogWeaponManager: [Standalone|10]|0 Switch to Weapon: [Standalone|10|142749|Fpp] {Guid: 18110000001, Id: 18110000001,Skin: 0 Slot: 0, EquipPos: 0, SkillId: 0, WeaponName: BP_EmptyHand_C_2147456870, BP: BP_EmptyHand_C}"
+        },
+        {
+          "line_number": 73501,
+          "text": "[2026.10.19-08.06.53:463][ 96]LogWeaponManager: [Standalone|10]|0[UWeaponManagerComponent::AddWeaponDesc] Guid: 0, EquipPosition: 111, RecGUID: 6400000000000000060, RecId: 18010000043"
+        },
+        {
+          "line_number": 73530,
+          "text": "[2026.10.19-08.06.53:467][ 96]LogWeaponManager: [Standalone|10]|0 [OnAddWeapon] [Standalone|10|306400|Fpp] {Guid: 6400000000000000060, Id: 18010000043,Skin: 11841 Slot: 0, EquipPos: 111, SkillId: 0, WeaponName: BP_WeaponModular_C_2147451806, BP: BP_WeaponModular_C}"
+        },
+        {
+          "line_number": 73531,
+          "text": "[2026.10.19-08.06.53:467][ 96]LogWeaponManager: Warning: [Standalone|10]|0 [IsClient: 1][ESwitchWeaponContext::SafeHouse]Start SwitchToTargetWeaponInner TargetWeapon: [Standalone|10|306400|Fpp] {Guid: 6400000000000000060, Id: 18010000043,Skin: 11841 Slot: 0, EquipPos: 111, SkillId: 0, WeaponName: BP_WeaponModular_C_2147451806, BP: BP_WeaponModular_C}, CurWeapon: [Standalone|10|346420|Fpp] {Guid: 6400000000000000060, Id: 18010000043,Skin: 11841 Slot: 0, EquipPos: 111, SkillId: 0, WeaponName: BP_WeaponModular_C_2147452491, BP: BP_WeaponModular_C}, PendingWeapon: [Standalone|10|142749|Fpp] {Guid: 18110000001, Id: 18110000001,Skin: 0 Slot: 0, EquipPos: 0, SkillId: 0, WeaponName: BP_EmptyHand_C_2147456870, BP: BP_EmptyHand_C}"
+        },
+        {
+          "line_number": 73532,
+          "text": "[2026.10.19-08.06.53:467][ 96]LogWeaponManager: [Standalone|10]|0 Switch to Weapon: [Standalone|10|306400|Fpp] {Guid: 6400000000000000060, Id: 18010000043,Skin: 11841 Slot: 0, EquipPos: 111, SkillId: 0, WeaponName: BP_WeaponModular_C_2147451806, BP: BP_WeaponModular_C}"
+        },
+        {
+          "line_number": 73533,
+          "text": "[2026.10.19-08.06.53:467][ 96]LogWeaponManager: Warning: [Standalone|10]|0 [IsClient: 1]Active Weapon: [Standalone|10|306400|Fpp] {Guid: 6400000000000000060, Id: 18010000043,Skin: 11841 Slot: 0, EquipPos: 111, SkillId: 0, WeaponName: BP_WeaponModular_C_2147451806, BP: BP_WeaponModular_C}, WeaponManager"
+        },
+        {
+          "line_number": 74861,
+          "text": "[2026.10.19-08.06.54:426][138]LogWeaponManager: [Standalone|10]|0[UWeaponManagerComponent::RemoveAllWeapon] bAutoSwitchNext: 1, clear AddWeaponContextQueue num: 0."
+        },
+        {
+          "line_number": 74862,
+          "text": "[2026.10.19-08.06.54:426][138]LogWeaponManager: [Standalone|10]|0 Start Remove Weapon [Standalone|10|306400|Fpp] {Guid: 6400000000000000060, Id: 18010000043,Skin: 11841 Slot: 0, EquipPos: 111, SkillId: 0, WeaponName: BP_WeaponModular_C_2147451806, BP: BP_WeaponModular_C}"
+        },
+        {
+          "line_number": 74863,
+          "text": "[2026.10.19-08.06.54:426][138]LogWeaponManager: [Standalone|10]|0[UWeaponManagerComponent::DoRemoveWeapon] Current Weapon [Standalone|10|306400|Fpp] {Guid: 6400000000000000060, Id: 18010000043,Skin: 11841 Slot: 0, EquipPos: 111, SkillId: 0, WeaponName: BP_WeaponModular_C_2147451806, BP: BP_WeaponModular_C} is removed"
+        },
+        {
+          "line_number": 74864,
+          "text": "[2026.10.19-08.06.54:426][138]LogWeaponManager: <GetNextWeapon>[Game:29139] { Any } FSwitchWeaponLogGuard::~FSwitchWeaponLogGuard() TargetWeapon: {0: 18110000001}, "
+        },
+        {
+          "line_number": 74868,
+          "text": "[2026.10.19-08.06.54:426][138]LogWeaponManager: Warning: [Standalone|10]|0 [IsClient: 1][ESwitchWeaponContext::RemoveWeapon]Start SwitchToTargetWeaponInner TargetWeapon: [Standalone|10|142749|Fpp] {Guid: 18110000001, Id: 18110000001,Skin: 0 Slot: 0, EquipPos: 0, SkillId: 0, WeaponName: BP_EmptyHand_C_2147456870, BP: BP_EmptyHand_C}, CurWeapon: [Standalone|10|306400|Fpp] {Guid: 6400000000000000060, Id: 18010000043,Skin: 11841 Slot: 0, EquipPos: 111, SkillId: 0, WeaponName: BP_WeaponModular_C_2147451806, BP: BP_WeaponModular_C}, PendingWeapon: "
+        },
+        {
+          "line_number": 74869,
+          "text": "[2026.10.19-08.06.54:426][138]LogWeaponManager: [Standalone|10]|0 Switch to Weapon: [Standalone|10|142749|Fpp] {Guid: 18110000001, Id: 18110000001,Skin: 0 Slot: 0, EquipPos: 0, SkillId: 0, WeaponName: BP_EmptyHand_C_2147456870, BP: BP_EmptyHand_C}"
+        },
+        {
+          "line_number": 74871,
+          "text": "[2026.10.19-08.06.54:427][138]LogWeaponManager: [Standalone|10]|0[UWeaponManagerComponent::AddWeaponDesc] Guid: 0, EquipPosition: 111, RecGUID: 6400000000000000060, RecId: 18010000043"
+        },
+        {
+          "line_number": 74900,
+          "text": "[2026.10.19-08.06.54:431][138]LogWeaponManager: [Standalone|10]|0 [OnAddWeapon] [Standalone|10|263609|Fpp] {Guid: 6400000000000000060, Id: 18010000043,Skin: 11841 Slot: 0, EquipPos: 111, SkillId: 0, WeaponName: BP_WeaponModular_C_2147449851, BP: BP_WeaponModular_C}"
+        },
+        {
+          "line_number": 74901,
+          "text": "[2026.10.19-08.06.54:431][138]LogWeaponManager: Warning: [Standalone|10]|0 [IsClient: 1][ESwitchWeaponContext::SafeHouse]Start SwitchToTargetWeaponInner TargetWeapon: [Standalone|10|263609|Fpp] {Guid: 6400000000000000060, Id: 18010000043,Skin: 11841 Slot: 0, EquipPos: 111, SkillId: 0, WeaponName: BP_WeaponModular_C_2147449851, BP: BP_WeaponModular_C}, CurWeapon: [Standalone|10|306400|Fpp] {Guid: 6400000000000000060, Id: 18010000043,Skin: 11841 Slot: 0, EquipPos: 111, SkillId: 0, WeaponName: BP_WeaponModular_C_2147451806, BP: BP_WeaponModular_C}, PendingWeapon: [Standalone|10|142749|Fpp] {Guid: 18110000001, Id: 18110000001,Skin: 0 Slot: 0, EquipPos: 0, SkillId: 0, WeaponName: BP_EmptyHand_C_2147456870, BP: BP_EmptyHand_C}"
+        },
+        {
+          "line_number": 74902,
+          "text": "[2026.10.19-08.06.54:431][138]LogWeaponManager: [Standalone|10]|0 Switch to Weapon: [Standalone|10|263609|Fpp] {Guid: 6400000000000000060, Id: 18010000043,Skin: 11841 Slot: 0, EquipPos: 111, SkillId: 0, WeaponName: BP_WeaponModular_C_2147449851, BP: BP_WeaponModular_C}"
+        },
+        {
+          "line_number": 74903,
+          "text": "[2026.10.19-08.06.54:431][138]LogWeaponManager: Warning: [Standalone|10]|0 [IsClient: 1]Active Weapon: [Standalone|10|263609|Fpp] {Guid: 6400000000000000060, Id: 18010000043,Skin: 11841 Slot: 0, EquipPos: 111, SkillId: 0, WeaponName: BP_WeaponModular_C_2147449851, BP: BP_WeaponModular_C}, WeaponManager"
+        },
+        {
+          "line_number": 78929,
+          "text": "[2026.10.19-08.10.23:491][881]LogWeaponManager: [Standalone|10]|0[UWeaponManagerComponent::UnInit] "
+        },
+        {
+          "line_number": 78930,
+          "text": "[2026.10.19-08.10.23:491][881]LogWeaponManager: Warning: [Standalone|10]|0 Skip Remove Weapon as Weapon is EmptyHand"
+        },
+        {
+          "line_number": 78931,
+          "text": "[2026.10.19-08.10.23:491][881]LogWeaponManager: [Standalone|10]|0[UWeaponManagerComponent::UnInit] "
+        },
+        {
+          "line_number": 78932,
+          "text": "[2026.10.19-08.10.23:491][881]LogWeaponManager: [Standalone|10]|0[UWeaponManagerComponent::UnInit] "
+        },
+        {
+          "line_number": 81142,
+          "text": "[2026.10.19-08.10.24:919][884]LogWeaponCharacter: Error: [Standalone|15] Empty Hand Weapon is invalid"
+        },
+        {
+          "line_number": 81143,
+          "text": "[2026.10.19-08.10.24:919][884]LogWeaponManager: [Standalone|15]|0[UWeaponManagerComponent::Init] "
+        },
+        {
+          "line_number": 81144,
+          "text": "[2026.10.19-08.10.24:919][884]LogWeaponManager: [Standalone|15]|0[UWeaponManagerComponent::InitDefaultWeapons] "
+        },
+        {
+          "line_number": 81149,
+          "text": "[2026.10.19-08.10.24:920][884]LogWeaponManager: [Standalone|15]|0 [OnAddWeapon] [Standalone|15|248580|Fpp] {Guid: 18110000001, Id: 18110000001,Skin: 0 Slot: 0, EquipPos: 0, SkillId: 0, WeaponName: BP_EmptyHand_C_2147443503, BP: BP_EmptyHand_C}"
+        },
+        {
+          "line_number": 81150,
+          "text": "[2026.10.19-08.10.24:920][884]LogWeaponManager: Warning: [Standalone|15]|0 [IsClient: 1][ESwitchWeaponContext::Init]Start SwitchToTargetWeaponInner TargetWeapon: [Standalone|15|248580|Fpp] {Guid: 18110000001, Id: 18110000001,Skin: 0 Slot: 0, EquipPos: 0, SkillId: 0, WeaponName: BP_EmptyHand_C_2147443503, BP: BP_EmptyHand_C}, CurWeapon: , PendingWeapon: "
+        },
+        {
+          "line_number": 81151,
+          "text": "[2026.10.19-08.10.24:920][884]LogWeaponManager: [Standalone|15]|0 Switch to Weapon: [Standalone|15|248580|Fpp] {Guid: 18110000001, Id: 18110000001,Skin: 0 Slot: 0, EquipPos: 0, SkillId: 0, WeaponName: BP_EmptyHand_C_2147443503, BP: BP_EmptyHand_C}"
+        },
+        {
+          "line_number": 81152,
+          "text": "[2026.10.19-08.10.24:920][884]LogWeaponManager: Warning: [Standalone|15]|0 [IsClient: 1]Active Weapon: [Standalone|15|248580|Fpp] {Guid: 18110000001, Id: 18110000001,Skin: 0 Slot: 0, EquipPos: 0, SkillId: 0, WeaponName: BP_EmptyHand_C_2147443503, BP: BP_EmptyHand_C}, WeaponManager"
+        },
+        {
+          "line_number": 81153,
+          "text": "[2026.10.19-08.10.24:920][884]LogWeaponManager: Warning: [Standalone|15]|0 [IsClient: 1][ESwitchWeaponContext::InventoryManager]Start SwitchToTargetWeaponInner TargetWeapon: [Standalone|15|248580|Fpp] {Guid: 18110000001, Id: 18110000001,Skin: 0 Slot: 0, EquipPos: 0, SkillId: 0, WeaponName: BP_EmptyHand_C_2147443503, BP: BP_EmptyHand_C}, CurWeapon: [Standalone|15|248580|Fpp] {Guid: 18110000001, Id: 18110000001,Skin: 0 Slot: 0, EquipPos: 0, SkillId: 0, WeaponName: BP_EmptyHand_C_2147443503, BP: BP_EmptyHand_C}, PendingWeapon: "
+        },
+        {
+          "line_number": 81154,
+          "text": "[2026.10.19-08.10.24:920][884]LogWeaponManager: [Standalone|15]|0 Switch to Weapon: [Standalone|15|248580|Fpp] {Guid: 18110000001, Id: 18110000001,Skin: 0 Slot: 0, EquipPos: 0, SkillId: 0, WeaponName: BP_EmptyHand_C_2147443503, BP: BP_EmptyHand_C}"
+        },
+        {
+          "line_number": 81160,
+          "text": "[2026.10.19-08.10.24:921][884]LogWeaponManager: Warning: [Standalone|15]|0 [IsClient: 1][ESwitchWeaponContext::InventoryManager]Start SwitchToTargetWeaponInner TargetWeapon: [Standalone|15|248580|Fpp] {Guid: 18110000001, Id: 18110000001,Skin: 0 Slot: 0, EquipPos: 0, SkillId: 0, WeaponName: BP_EmptyHand_C_2147443503, BP: BP_EmptyHand_C}, CurWeapon: [Standalone|15|248580|Fpp] {Guid: 18110000001, Id: 18110000001,Skin: 0 Slot: 0, EquipPos: 0, SkillId: 0, WeaponName: BP_EmptyHand_C_2147443503, BP: BP_EmptyHand_C}, PendingWeapon: "
+        },
+        {
+          "line_number": 81161,
+          "text": "[2026.10.19-08.10.24:921][884]LogWeaponManager: [Standalone|15]|0 Switch to Weapon: [Standalone|15|248580|Fpp] {Guid: 18110000001, Id: 18110000001,Skin: 0 Slot: 0, EquipPos: 0, SkillId: 0, WeaponName: BP_EmptyHand_C_2147443503, BP: BP_EmptyHand_C}"
+        },
+        {
+          "line_number": 82942,
+          "text": "[2026.10.19-08.10.27:214][ 90]LogWeaponManager: [Standalone|15]|0[UWeaponManagerComponent::RemoveAllWeapon] bAutoSwitchNext: 1, clear AddWeaponContextQueue num: 0."
+        },
+        {
+          "line_number": 82943,
+          "text": "[2026.10.19-08.10.27:215][ 90]LogWeaponManager: [Standalone|15]|0[UWeaponManagerComponent::AddWeaponDesc] Guid: 0, EquipPosition: 111, RecGUID: 6400000000000000060, RecId: 18010000043"
+        },
+        {
+          "line_number": 82968,
+          "text": "[2026.10.19-08.10.27:220][ 90]LogWeaponManager: [Standalone|15]|0 [OnAddWeapon] [Standalone|15|283561|Fpp] {Guid: 6400000000000000060, Id: 18010000043,Skin: 11841 Slot: 0, EquipPos: 111, SkillId: 0, WeaponName: BP_WeaponModular_C_2147441447, BP: BP_WeaponModular_C}"
+        },
+        {
+          "line_number": 82969,
+          "text": "[2026.10.19-08.10.27:220][ 90]LogWeaponManager: Warning: [Standalone|15]|0 [IsClient: 1][ESwitchWeaponContext::SafeHouse]Start SwitchToTargetWeaponInner TargetWeapon: [Standalone|15|283561|Fpp] {Guid: 6400000000000000060, Id: 18010000043,Skin: 11841 Slot: 0, EquipPos: 111, SkillId: 0, WeaponName: BP_WeaponModular_C_2147441447, BP: BP_WeaponModular_C}, CurWeapon: [Standalone|15|248580|Fpp] {Guid: 18110000001, Id: 18110000001,Skin: 0 Slot: 0, EquipPos: 0, SkillId: 0, WeaponName: BP_EmptyHand_C_2147443503, BP: BP_EmptyHand_C}, PendingWeapon: "
+        },
+        {
+          "line_number": 82970,
+          "text": "[2026.10.19-08.10.27:220][ 90]LogWeaponManager: [Standalone|15]|0 Switch to Weapon: [Standalone|15|283561|Fpp] {Guid: 6400000000000000060, Id: 18010000043,Skin: 11841 Slot: 0, EquipPos: 111, SkillId: 0, WeaponName: BP_WeaponModular_C_2147441447, BP: BP_WeaponModular_C}"
+        },
+        {
+          "line_number": 82971,
+          "text": "[2026.10.19-08.10.27:220][ 90]LogWeaponManager: Warning: [Standalone|15]|0 [IsClient: 1]Active Weapon: [Standalone|15|283561|Fpp] {Guid: 6400000000000000060, Id: 18010000043,Skin: 11841 Slot: 0, EquipPos: 111, SkillId: 0, WeaponName: BP_WeaponModular_C_2147441447, BP: BP_WeaponModular_C}, WeaponManager"
+        }
+      ]
+    }
+  },
+  "kind": "owned_playable_trial_redacted_diagnostic_snapshot",
+  "live_trial_sources_modified": false,
+  "opaque_configuration_and_authentication_lines_omitted": true,
+  "owned_client_running": true,
+  "process_access": false,
+  "source_installation_written": false,
+  "source_log_lines": 83232,
+  "source_pins": {
+    "private-client-log.bin": {
+      "bytes": 11950525,
+      "sha256": "2ad80296109ea6caa9fd7db5746f57c448eddeaf9fdcce5de72c9e7868ce229f"
+    },
+    "private-provider-observation.json": {
+      "bytes": 852221,
+      "sha256": "1699ca0aa8c0a4ba807134b3728165e628199789ba271d97638028a88126be46"
+    },
+    "private-server-report.json": {
+      "bytes": 229758,
+      "sha256": "cf3fca255c7146c9ac5bf2fc8afb5f155eb2bb118504c43bede5c1db602aadc9"
+    }
+  }
+}

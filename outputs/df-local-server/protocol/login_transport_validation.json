@@ -1,0 +1,79 @@
+{
+  "capture_sha256": "70d8af6469185f4d3e97e3659a44506bfd15fd0a95f250f04e5ee4e083944439",
+  "packet_records": 3355,
+  "verification_scope": "Only complete prefixes of contiguous GCP regions; seven-byte reads and exact re-encoding",
+  "whole_capture_streams_verified": false,
+  "gaps_joined": false,
+  "payload_values_exported": false,
+  "key_material_exported": false,
+  "original_client_connected_to_local_server": false,
+  "handshake": {
+    "version": 11,
+    "hello_command": "0x1001",
+    "ack_command": "0x1002",
+    "key_mode": 3,
+    "key_exchange": "Diffie-Hellman",
+    "generator": 2,
+    "dh_modulus_known": false,
+    "opaque_dh_context_bytes": 64,
+    "opaque_dh_context_is_all_zero": true,
+    "client_public_bytes": 64,
+    "server_public_bytes": 64,
+    "encryption_method": 3,
+    "session_key_derivation": "MD5 of minimally encoded big-endian DH shared value",
+    "body_cipher": "AES-128-CBC",
+    "footer": "tsf4g plus one padding length byte",
+    "hello_remaining_header_bytes": 54,
+    "compression_method": 1,
+    "compression_threshold": 500,
+    "compression_maximum": 0,
+    "ack_header_round_trip": "passed",
+    "captured_session_decrypted": false,
+    "account_authentication_implemented": false,
+    "full_ack_body_semantics_implemented": false
+  },
+  "directions": [
+    {
+      "source_port": 55442,
+      "destination_port": 65010,
+      "contiguous_regions": 46,
+      "fully_verified_regions": 46,
+      "complete_frames_verified": 388,
+      "round_trip_verified_bytes": 92974,
+      "incomplete_region_tails": 0,
+      "invalid_region_boundaries": 0,
+      "duplicate_segments": 1502,
+      "conflicting_overlaps": 0,
+      "command_counts": {
+        "0x1001": 1,
+        "0x2001": 1,
+        "0x4013": 370,
+        "0x9001": 15,
+        "0x5001": 1
+      },
+      "nonempty_bodies_with_encryption_flag": 0,
+      "nonempty_bodies_without_encryption_flag": 372
+    },
+    {
+      "source_port": 65010,
+      "destination_port": 55442,
+      "contiguous_regions": 57,
+      "fully_verified_regions": 25,
+      "complete_frames_verified": 106,
+      "round_trip_verified_bytes": 93854,
+      "incomplete_region_tails": 12,
+      "invalid_region_boundaries": 20,
+      "duplicate_segments": 212,
+      "conflicting_overlaps": 0,
+      "command_counts": {
+        "0x1002": 1,
+        "0x2002": 1,
+        "0x6002": 1,
+        "0x4013": 98,
+        "0x9001": 5
+      },
+      "nonempty_bodies_with_encryption_flag": 101,
+      "nonempty_bodies_without_encryption_flag": 0
+    }
+  ]
+}

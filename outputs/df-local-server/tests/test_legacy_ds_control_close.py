@@ -221,7 +221,7 @@ class ControlCloseBootstrapTests(unittest.TestCase):
         fixture.setUp()
         self.addCleanup(fixture.doCleanups)
         connection, server = fixture.connection, fixture.server
-        server._started_at = time.monotonic() - 1
+        server._started_at = time.perf_counter() - 1
         state = connection.control_peers[PEER]
         connection._queue(state, 1, state.welcome_payload)
         template = decode_observed_application(HELLO_BODIES[0],

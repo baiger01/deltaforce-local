@@ -1,0 +1,302 @@
+{
+  "kind": "source_qualified_fsm_update_progress_observation_manifest_v1",
+  "client_sha256": "4254fbe66585f260f1f9dbfc5e302887842552e7baed8939e023160a5e250be0",
+  "cache_manifest_sha256": "dfd5c279d7db45842cee2bbc485ac8bf3cab03e4249ef5fe36bc9e8d6cd14754",
+  "process_access": false,
+  "client_launched": false,
+  "process_memory_written": false,
+  "native_methods_invoked": false,
+  "fields": [
+    {
+      "scope": "instance",
+      "offset": 1616,
+      "bytes": 4,
+      "type": "float32",
+      "label": "TimeSinceAllowedTick",
+      "consumer_rva": "0x106ce73",
+      "consumer_bytes": "f30f588b50060000",
+      "consumer_operands": "xmm1, dword ptr [rbx + 0x650]",
+      "source_path": "work/evidence/skill-flow-research-20261020-v1/native-fsm-tick-component-candidates-v1.json",
+      "this_adjustment": "rbx is instance",
+      "anchor_access": "read"
+    },
+    {
+      "scope": "instance",
+      "offset": 1624,
+      "bytes": 4,
+      "type": "float32",
+      "label": "LastSampledWorldTime",
+      "consumer_rva": "0x106e949",
+      "consumer_bytes": "f30f5c8358060000",
+      "consumer_operands": "xmm0, dword ptr [rbx + 0x658]",
+      "source_path": "work/evidence/skill-flow-research-20261020-v1/native-fsm-instance-update-gates-v1.json",
+      "this_adjustment": "rbx is instance",
+      "anchor_access": "read",
+      "field_name_claimed": false
+    },
+    {
+      "scope": "instance",
+      "offset": 1628,
+      "bytes": 4,
+      "type": "float32",
+      "label": "WorldTimeDelta",
+      "consumer_rva": "0x106e951",
+      "consumer_bytes": "f30f11835c060000",
+      "consumer_operands": "dword ptr [rbx + 0x65c], xmm0",
+      "source_path": "work/evidence/skill-flow-research-20261020-v1/native-fsm-instance-update-gates-v1.json",
+      "this_adjustment": "rbx is instance",
+      "anchor_access": "write"
+    },
+    {
+      "scope": "instance",
+      "offset": 1633,
+      "bytes": 1,
+      "type": "raw_bool",
+      "label": "bIsTicking",
+      "consumer_rva": "0x106ce67",
+      "consumer_bytes": "80bb6106000000",
+      "consumer_operands": "byte ptr [rbx + 0x661], 0",
+      "source_path": "work/evidence/skill-flow-research-20261020-v1/native-fsm-tick-component-candidates-v1.json",
+      "this_adjustment": "rbx is instance",
+      "anchor_access": "read"
+    },
+    {
+      "scope": "instance",
+      "offset": 1634,
+      "bytes": 1,
+      "type": "raw_bool",
+      "label": "bIsUpdating",
+      "consumer_rva": "0x106df86",
+      "consumer_bytes": "80b93206000000",
+      "consumer_operands": "byte ptr [rcx + 0x632], 0",
+      "source_path": "work/evidence/skill-flow-research-20261020-v1/native-fsm-instance-is-tickable-update-v1.json",
+      "this_adjustment": "rcx is instance + 0x30; effective offset 0x30 + 0x632",
+      "anchor_access": "read"
+    },
+    {
+      "scope": "root",
+      "offset": 40,
+      "bytes": 4,
+      "type": "float32",
+      "label": "TimeInState",
+      "consumer_rva": "0x106e85d",
+      "consumer_bytes": "f30f584128",
+      "consumer_operands": "xmm0, dword ptr [rcx + 0x28]",
+      "source_path": "work/evidence/skill-flow-research-20261020-v1/native-fsm-tick-transition-gates-v1.json",
+      "this_adjustment": "rcx is exact inline SMState_Base address",
+      "anchor_access": "read"
+    },
+    {
+      "scope": "root",
+      "offset": 45,
+      "bytes": 1,
+      "type": "raw_bool",
+      "label": "bHasUpdated",
+      "consumer_rva": "0x106e8fa",
+      "consumer_bytes": "c6432d01",
+      "consumer_operands": "byte ptr [rbx + 0x2d], 1",
+      "source_path": "work/evidence/skill-flow-research-20261020-v1/native-fsm-tick-transition-gates-v1.json",
+      "this_adjustment": "rbx is exact inline SMState_Base address",
+      "anchor_access": "write"
+    },
+    {
+      "scope": "main_init",
+      "offset": 40,
+      "bytes": 4,
+      "type": "float32",
+      "label": "TimeInState",
+      "consumer_rva": "0x106e85d",
+      "consumer_bytes": "f30f584128",
+      "consumer_operands": "xmm0, dword ptr [rcx + 0x28]",
+      "source_path": "work/evidence/skill-flow-research-20261020-v1/native-fsm-tick-transition-gates-v1.json",
+      "this_adjustment": "rcx is exact inline SMState_Base address",
+      "anchor_access": "read"
+    },
+    {
+      "scope": "main_init",
+      "offset": 45,
+      "bytes": 1,
+      "type": "raw_bool",
+      "label": "bHasUpdated",
+      "consumer_rva": "0x106e8fa",
+      "consumer_bytes": "c6432d01",
+      "consumer_operands": "byte ptr [rbx + 0x2d], 1",
+      "source_path": "work/evidence/skill-flow-research-20261020-v1/native-fsm-tick-transition-gates-v1.json",
+      "this_adjustment": "rbx is exact inline SMState_Base address",
+      "anchor_access": "write"
+    },
+    {
+      "scope": "root",
+      "offset": 848,
+      "bytes": 1,
+      "type": "raw_bool",
+      "label": "NetworkTransitionWaitGate",
+      "consumer_rva": "0x1067a41",
+      "consumer_bytes": "4180bd5003000000",
+      "consumer_operands": "byte ptr [r13 + 0x350], 0",
+      "source_path": "work/evidence/skill-flow-research-20261020-v1/native-fsm-tick-transition-gates-v1.json",
+      "this_adjustment": "r13 is inline root SMStateMachine",
+      "anchor_access": "read",
+      "field_name_claimed": false
+    },
+    {
+      "scope": "root",
+      "offset": 849,
+      "bytes": 1,
+      "type": "raw_bool",
+      "label": "CanEvaluateTransitionsLocally",
+      "consumer_rva": "0x1067a4f",
+      "consumer_bytes": "4180bd5103000000",
+      "consumer_operands": "byte ptr [r13 + 0x351], 0",
+      "source_path": "work/evidence/skill-flow-research-20261020-v1/native-fsm-tick-transition-gates-v1.json",
+      "this_adjustment": "r13 is inline root SMStateMachine",
+      "anchor_access": "read",
+      "propagated_from": "instance + 0x664 bit 0 by 0x106e3f0"
+    },
+    {
+      "scope": "root",
+      "offset": 850,
+      "bytes": 1,
+      "type": "raw_bool",
+      "label": "CanTakeTransitionsLocally",
+      "consumer_rva": "0x10680ff",
+      "consumer_bytes": "4438ab52030000",
+      "consumer_operands": "byte ptr [rbx + 0x352], r13b",
+      "source_path": "work/evidence/skill-flow-research-20261020-v1/native-fsm-transition-taking-gate-v1.json",
+      "this_adjustment": "rbx is inline root SMStateMachine, optionally after referenced-instance descent",
+      "anchor_access": "read",
+      "propagated_from": "instance + 0x664 bit 1 by 0x106e3d7"
+    },
+    {
+      "scope": "main_init",
+      "offset": 325,
+      "bytes": 1,
+      "type": "raw_bool",
+      "label": "StateStartEvaluationGate",
+      "consumer_rva": "0x1067a17",
+      "consumer_bytes": "80bf4501000000",
+      "consumer_operands": "byte ptr [rdi + 0x145], 0",
+      "source_path": "work/evidence/skill-flow-research-20261020-v1/native-fsm-tick-transition-gates-v1.json",
+      "this_adjustment": "rdi is active inline SMState",
+      "anchor_access": "read",
+      "field_name_claimed": false
+    },
+    {
+      "scope": "main_init",
+      "offset": 326,
+      "bytes": 1,
+      "type": "raw_bool",
+      "label": "StateTickEvaluationGate",
+      "consumer_rva": "0x1067a62",
+      "consumer_bytes": "4438bf46010000",
+      "consumer_operands": "byte ptr [rdi + 0x146], r15b",
+      "source_path": "work/evidence/skill-flow-research-20261020-v1/native-fsm-tick-transition-gates-v1.json",
+      "this_adjustment": "rdi is active inline SMState",
+      "anchor_access": "read",
+      "field_name_claimed": false
+    },
+    {
+      "scope": "component",
+      "offset": 203,
+      "bytes": 1,
+      "type": "raw_bool",
+      "label": "bIsActive",
+      "consumer_rva": "0x13295d50",
+      "consumer_bytes": "8089cb00000020",
+      "consumer_operands": "byte ptr [rcx + 0xcb], 0x20",
+      "source_path": "work/evidence/skill-flow-research-20261020-v1/native-actorcomponent-active-bool-mask-v1.json",
+      "this_adjustment": "rcx is ActorComponent",
+      "anchor_access": "bool_layout_setter",
+      "bool_mask": 32
+    },
+    {
+      "scope": "component",
+      "offset": 48,
+      "bytes": 104,
+      "type": "raw_bytes",
+      "label": "PrimaryComponentTick",
+      "consumer_rva": "0x1052cf5",
+      "consumer_bytes": "488d4b30",
+      "consumer_operands": "rcx, [rbx + 0x30]",
+      "source_path": "work/evidence/skill-flow-research-20261020-v1/native-fsm-tick-base-constructor-v1.json",
+      "this_adjustment": "rbx is SMStateMachineComponent; rcx passed as component + 0x30",
+      "anchor_access": "typed_field_address",
+      "masks_or_tick_enums_claimed": false
+    }
+  ],
+  "source_pins": [
+    {
+      "path": "work/evidence/skill-flow-research-20261020-v1/native-fsm-tick-component-candidates-v1.json",
+      "sha256": "10751214f2eb1ac818e54df2dc242ed17fe7ffef79d6cd3c09dec14e1a8c6d9e"
+    },
+    {
+      "path": "work/evidence/skill-flow-research-20261020-v1/native-fsm-instance-is-tickable-update-v1.json",
+      "sha256": "1afade54417db104d7df5647ef055b946f9c127f4e4ef178f16c6679cb574496"
+    },
+    {
+      "path": "work/evidence/skill-flow-research-20261020-v1/native-fsm-instance-update-gates-v1.json",
+      "sha256": "e7506eeb46025818a16bb310b9c18c907aed80c2b912f444f99abe066fd94ec7"
+    },
+    {
+      "path": "work/evidence/skill-flow-research-20261020-v1/native-fsm-root-update-transition-path-v1.json",
+      "sha256": "c43f2be95b10fe8b2216da58975bc83e120c99b9c4bd2c73a63bb94f58c15601"
+    },
+    {
+      "path": "work/evidence/skill-flow-research-20261020-v1/native-fsm-tick-transition-gates-v1.json",
+      "sha256": "aea1d2906e1488cd2bff6a8f25be63f8de509e8e521a0c37379d39bf56df4366"
+    },
+    {
+      "path": "work/evidence/skill-flow-research-20261020-v1/native-fsm-pre-update-policy-propagation-v1.json",
+      "sha256": "01a968efced9300e913737ade8c099cc29edde1e571f9feda4f18dd68101f6d4"
+    },
+    {
+      "path": "work/evidence/skill-flow-research-20261020-v1/native-fsm-transition-taking-gate-v1.json",
+      "sha256": "35dfa59ff0774f158812a1dcf97c515376766503ca34fd9f9e9718502c73158c"
+    },
+    {
+      "path": "work/evidence/skill-flow-research-20261020-v1/native-fsm-tick-base-constructor-v1.json",
+      "sha256": "98e40045cc761b1290b49143e7aed88c965da62a8fb8e57c13d34c33d5c73e52"
+    },
+    {
+      "path": "work/evidence/skill-flow-research-20261020-v1/native-actorcomponent-active-bool-mask-v1.json",
+      "sha256": "5684f25a9ec2f6ec81f7d204c26452e3d338c2b879471b35fc338a1e3280037e"
+    },
+    {
+      "path": "work/evidence/skill-flow-research-20261020-v1/native-fsm-state-constructor-tick-callback-v1.json",
+      "sha256": "1b34631f365e4b8008524bb2cdd92d3bfd1c9e3ea933dde5d24adfee71631ab3"
+    },
+    {
+      "path": "work/evidence/skill-flow-research-20261020-v1/native-actorcomponent-class-construction-getter-v1.json",
+      "sha256": "dc68a96f10fad569f6cab29dd54b0d05755e12ebc6b123e11fd5d11e083a185b"
+    },
+    {
+      "path": "work/evidence/skill-flow-research-20261020-v1/native-actorcomponent-active-declaration-v2.json",
+      "sha256": "fba462f95c3dbf52c3b6a96c8f7f675521bad82d93440a944e61d8799eb24153"
+    },
+    {
+      "path": "work/native-client-tests/1792548525430131600/owned-fsm-tick-followup.json",
+      "sha256": "33e1684b5350270df6ec99d982b0327dde902160e2d140b2d0415ad84e469beb"
+    },
+    {
+      "path": "work/evidence/model-init-chain-20261018/native-current-base-fsm-instance-uht-v1.json",
+      "sha256": "0dc857d471478d93967ca6d9d52a6ab85ffe124d2298de92b3182f8a1fc956c9"
+    },
+    {
+      "path": "work/evidence/skill-flow-research-20261020-v1/authored-main-fsm-graph.json",
+      "sha256": "2e2b74ec1c122deebabff271984caba88316220f43cd21fbb03953c6e7691e85"
+    }
+  ],
+  "scope_identity_requirements": [
+    "Resolve current instance from current owned component R_Instance, not historical pointer",
+    "Use exact current typed RootStateMachine inline field and exact MainInit named inline field",
+    "Validate node OwningInstance against current instance and active root membership",
+    "Dynamic field bytes are observations; do not require cross-time equality or include them in invariant Facts"
+  ],
+  "interpretation": [
+    "MainInit bEvalTransitionsOnStart=false and bDisableTickTransitionEvaluation=false in pinned cooked graph",
+    "bTickRegistered is not a predicate in component-driven manual update path",
+    "root/main_init TimeInState is float32; movss/addss source, never double",
+    "bIsActive source is a native bitfield setter proving offset0xcb mask0x20; other PrimaryComponentTick masks are not qualified",
+    "If root time increases but MainInit does not leave, inspect transition/root per-state gates and GraphEvaluator binding; do not force flags"
+  ]
+}

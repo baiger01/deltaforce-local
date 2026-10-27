@@ -4,6 +4,7 @@ import contextlib
 import io
 from pathlib import Path
 import sys
+import tempfile
 import unittest
 from unittest.mock import patch
 
@@ -61,6 +62,37 @@ class NativeControlProfileTests(unittest.TestCase):
         self.assertTrue(scope["args"].disable_device_seamless)
         self.assertNotIn("request_path", scope)
         self.assertNotIn("shell", scope)
+
+    def test_explicit_profile_is_resolved_inside_project_before_authorization(self):
+        with tempfile.TemporaryDirectory(dir=SOURCE.parent) as folder:
+            profile = Path(folder) / 'new-observation.json'
+            profile.write_bytes(b'{}')
+            code, error, scope = self.preflight([
+                '--ds-join-after-ready', '--disable-device-seamless',
+                '--ds-control-profile', str(profile)])
+            self.assertEqual((code, error), (0, ''))
+            self.assertEqual(scope['CONTROL_PROFILE'], profile.resolve())
+            self.assertNotIn('request_path', scope)
+
+    def test_explicit_profile_outside_project_is_rejected(self):
+        with tempfile.TemporaryDirectory() as folder:
+            profile = Path(folder) / 'outside.json'
+            profile.write_bytes(b'{}')
+            code, error, scope = self.preflight([
+                '--ds-join-after-ready', '--disable-device-seamless',
+                '--ds-control-profile', str(profile)])
+            self.assertEqual(code, 2)
+            self.assertIn('inside the project', error)
+            self.assertNotIn('request_path', scope)
+
+    def test_profile_override_requires_control_exchange(self):
+        with patch(__name__ + '.BASE_ARGS', [arg for arg in BASE_ARGS
+                if arg != '--ds-control-probe']):
+            code, error, scope = self.preflight([
+                '--ds-control-profile', str(SOURCE)])
+        self.assertEqual(code, 2)
+        self.assertIn('requires --ds-control-probe', error)
+        self.assertNotIn('request_path', scope)
 
 
 if __name__ == "__main__":

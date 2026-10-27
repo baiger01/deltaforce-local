@@ -1,0 +1,841 @@
+{
+  "kind": "server_domain_module_layout_v1",
+  "created_at_utc": "2026-10-20T08:23:40.380104+00:00",
+  "groups": {
+    "app": "业务事务与共享编排",
+    "entry": "服务入口、HTTP与区服发现",
+    "account": "账号、身份、设置与会话",
+    "inventory": "库存、容器、仓库、安全箱与卡包",
+    "weapons": "枪械、配件、弹药、近战与插槽",
+    "commerce": "交易、商城礼包与曼德尔扫描",
+    "cosmetics": "干员、枪械、账户外观与收藏",
+    "progression": "任务、声望、设施、通行证与赛季",
+    "match": "战局准入与局内服务编排",
+    "transport/gcp": "大厅分帧、认证、握手与加密",
+    "transport/native": "原生战局连接、控制消息与可靠交付",
+    "replication": "Actor、NetGUID、复制字段与序列化",
+    "gateway": "大厅业务协议与原客户端请求分发",
+    "diagnostics": "连接与业务消息诊断"
+  },
+  "modules": {
+    "core": {
+      "canonical": "dfserver.app.core",
+      "source": "dfserver/app/core.py",
+      "before_sha256": "9d6689501269dd707d17ba706d1592790b698ba9545e7ecdbc043ddb73052a45",
+      "after_sha256": "73e2a5fed7b38ef387a64d9bd4931aef3c3bfde7213e4001a73f6feffa69f8c1"
+    },
+    "http_api": {
+      "canonical": "dfserver.entry.http_api",
+      "source": "dfserver/entry/http_api.py",
+      "before_sha256": "1a71af27c94339d24e9fae3fe549456450a9174ac59ce825931f36bf8d13cb58",
+      "after_sha256": "108e0d6b9df4787dc4393968e9a35261bb39cf08c86ce921de1601ef6bb3cebf"
+    },
+    "entrance": {
+      "canonical": "dfserver.entry.entrance",
+      "source": "dfserver/entry/entrance.py",
+      "before_sha256": "b58b53093dde102e276b509726a08817ef24635cd11156d0506b1930e7772183",
+      "after_sha256": "0d34f97b9eb195de49a0278646c6ca8519549de18cda7a84d96d50875a878506"
+    },
+    "zone_discovery": {
+      "canonical": "dfserver.entry.zone_discovery",
+      "source": "dfserver/entry/zone_discovery.py",
+      "before_sha256": "234af103e27626656f5c82e8f26308fb198d12d49536876fe41cd755b870fbee",
+      "after_sha256": "02127fdba5a348b8e98388640c4f40dbfdb53d0ae38deb8a24ed5fa16885f132"
+    },
+    "accounts": {
+      "canonical": "dfserver.account.accounts",
+      "source": "dfserver/account/accounts.py",
+      "before_sha256": "32d58f6109a159443b23ef199e832e41616ddc87efcb274c02f0a358ab727f4d",
+      "after_sha256": "32d58f6109a159443b23ef199e832e41616ddc87efcb274c02f0a358ab727f4d"
+    },
+    "native_identity": {
+      "canonical": "dfserver.account.native_identity",
+      "source": "dfserver/account/native_identity.py",
+      "before_sha256": "030ba06bc62e6a0d29516d70e883e48dedb62bcf3189546d3939329c1ecc42e8",
+      "after_sha256": "030ba06bc62e6a0d29516d70e883e48dedb62bcf3189546d3939329c1ecc42e8"
+    },
+    "native_settings": {
+      "canonical": "dfserver.account.native_settings",
+      "source": "dfserver/account/native_settings.py",
+      "before_sha256": "b88d89bcd76b4db05998e2459d49e7d2e7b54daa428b980eb39bebe7db1a4aa9",
+      "after_sha256": "0a1cf71aa412f205c33054bdb3bc08c7fbe4dad1463a0ad2c60351f6f690ad35"
+    },
+    "native_session_auxiliary": {
+      "canonical": "dfserver.account.native_session_auxiliary",
+      "source": "dfserver/account/native_session_auxiliary.py",
+      "before_sha256": "53bd9a0e31244c4f247b5e071e15a1e7c87c812a1e2a00f5c97dc13df16090a0",
+      "after_sha256": "794d45f0fb8a8fff0b63e172cf18df127ecd302ad828cfffafe7a1823f28b9b2"
+    },
+    "local_chat": {
+      "canonical": "dfserver.account.local_chat",
+      "source": "dfserver/account/local_chat.py",
+      "before_sha256": "9f0e0b9f6f4d22c4b2ba2bd6c2861b6183bb283132173257a0725dfbcfc743af",
+      "after_sha256": "74b12b6364d9579e50c1f44b3597c172f802b4913a69a3ce3c73a99737a253b5"
+    },
+    "container_layouts": {
+      "canonical": "dfserver.inventory.container_layouts",
+      "source": "dfserver/inventory/container_layouts.py",
+      "before_sha256": "3379c583f84a920bfdbc8f1fe06dc4d4a9c39d7ee638d1cc3735614203d45c80",
+      "after_sha256": "09c20188cd01dfd73dc3832223c8ffca58f39ef66e26e6342d8571b69b313ea3"
+    },
+    "deposit_sort": {
+      "canonical": "dfserver.inventory.deposit_sort",
+      "source": "dfserver/inventory/deposit_sort.py",
+      "before_sha256": "f2c28d44193793e0aa4240720699d5b1c765ab0907f5a005ea01f53fab56a11a",
+      "after_sha256": "c0abbf8481d573996a4887f12e83432a5872b66f61d359d92f17dcd0ceb264a6"
+    },
+    "native_keycards": {
+      "canonical": "dfserver.inventory.native_keycards",
+      "source": "dfserver/inventory/native_keycards.py",
+      "before_sha256": "e836d5b2c3480817c876f1662d1e4e6cc664c1d289c445c0e8a4a65d35497d06",
+      "after_sha256": "2c185c74cfdd952270444d0b51acc83b36bc0ed0f687c1844a60a7e008c9853e"
+    },
+    "native_keychains": {
+      "canonical": "dfserver.inventory.native_keychains",
+      "source": "dfserver/inventory/native_keychains.py",
+      "before_sha256": "62e23e24ad9dfd21d6b247d3ad2de2bd2e83929bd75baacb754c7c2d72f5f72c",
+      "after_sha256": "1dfa02fdd404a87a79d0ba488b55f3b006dd056affbe034a3ed1a85d61e5b458"
+    },
+    "native_prop_bindings": {
+      "canonical": "dfserver.inventory.native_prop_bindings",
+      "source": "dfserver/inventory/native_prop_bindings.py",
+      "before_sha256": "bfe3cb54330b2af02f9a11aaa3ff5243ab4d2afdbbdcaaf21fbb25158e8d3f38",
+      "after_sha256": "be3ec9c927ecc50d81bdd4e194d25d9a6726a7978c6c473dab954446f2749ab2"
+    },
+    "native_warehouse_extensions": {
+      "canonical": "dfserver.inventory.native_warehouse_extensions",
+      "source": "dfserver/inventory/native_warehouse_extensions.py",
+      "before_sha256": "767965c16f987b47ca2bfedb0ee3c140de966de84280ecb1243ba3a474ae6093",
+      "after_sha256": "8542cbdfdb11adfcf6989e356b7c8f9d0848c7f5f5be3977511dfd75a74af9be"
+    },
+    "native_warehouse_growth": {
+      "canonical": "dfserver.inventory.native_warehouse_growth",
+      "source": "dfserver/inventory/native_warehouse_growth.py",
+      "before_sha256": "04a836c7235e382159a56432d69f9b0b86490f10e939a1e893e4896bfddb52eb",
+      "after_sha256": "5057037265a101d43c709f5543b05ffdf1bd033d0b08fcb988d8a76fc2ec0214"
+    },
+    "native_warehouse_wire": {
+      "canonical": "dfserver.inventory.native_warehouse_wire",
+      "source": "dfserver/inventory/native_warehouse_wire.py",
+      "before_sha256": "ee638757816bc4d59a2862f5b7f6095c41d10745b9cbbf6d4a1f0f6ffb4a9619",
+      "after_sha256": "e3dd317670012226292e56fe4b8ba67eb8ba15a3e4231ed0659abc8a8e2fb083"
+    },
+    "safe_boxes": {
+      "canonical": "dfserver.inventory.safe_boxes",
+      "source": "dfserver/inventory/safe_boxes.py",
+      "before_sha256": "fed4c8840a319dd63bdca6921501185b203b152f6858eba97a7d963e9282efc2",
+      "after_sha256": "01ede2267ffca7d4c742eec1964841293b6e0f84bf011214857205529b394a60"
+    },
+    "weapon_ammo": {
+      "canonical": "dfserver.weapons.weapon_ammo",
+      "source": "dfserver/weapons/weapon_ammo.py",
+      "before_sha256": "0691f3363b1ab763d8c88907c2f5a6ec2c97cba903fb44321f2d85207687a400",
+      "after_sha256": "443d281caa6e654c58972c281a0f94d29ddc6e333cdcdefc5ac34feb9a2ac671"
+    },
+    "weapon_assembly": {
+      "canonical": "dfserver.weapons.weapon_assembly",
+      "source": "dfserver/weapons/weapon_assembly.py",
+      "before_sha256": "8e259d3d8e68a47e0d7c490567095bd5801ce5b0f1df89f4719a116c7a785f2f",
+      "after_sha256": "73fbfcee8c6235b24f3adfd8e146e1489a5da15689537a3032c14dfc65190ad0"
+    },
+    "weapon_components": {
+      "canonical": "dfserver.weapons.weapon_components",
+      "source": "dfserver/weapons/weapon_components.py",
+      "before_sha256": "7139daaf17f171b736cbb9601e25637d11cacf18635b27261e87447a25ae2653",
+      "after_sha256": "e51ca0945972b2ba617d329352b425e612c686abce480b29a4c28dcc87d11a32"
+    },
+    "melee_weapons": {
+      "canonical": "dfserver.weapons.melee_weapons",
+      "source": "dfserver/weapons/melee_weapons.py",
+      "before_sha256": "c8a0920eec5c3fdd6064a6752048d4a41934e834b23d5727beb31072ea14d70e",
+      "after_sha256": "a4a9c64868643bbd4626b1f82fbdaee56540944e7f93c612f82ae1b31567df65"
+    },
+    "socket_guid": {
+      "canonical": "dfserver.weapons.socket_guid",
+      "source": "dfserver/weapons/socket_guid.py",
+      "before_sha256": "842c5d7722e0cf12c7a3027b12bd5fabf9c79834e9027d7fdd16eab1c29c2a6d",
+      "after_sha256": "842c5d7722e0cf12c7a3027b12bd5fabf9c79834e9027d7fdd16eab1c29c2a6d"
+    },
+    "local_commerce": {
+      "canonical": "dfserver.commerce.local_commerce",
+      "source": "dfserver/commerce/local_commerce.py",
+      "before_sha256": "25b80b42962492d4dc39a9288de8cdb01c11dffaf6ee0f60e97ac6601dc8462e",
+      "after_sha256": "be61c1e11e9516ae1ea709d57670d503dbef299fc55b926cd7cf35603cfc8a55"
+    },
+    "premium_shop": {
+      "canonical": "dfserver.commerce.premium_shop",
+      "source": "dfserver/commerce/premium_shop.py",
+      "before_sha256": "8cc041373f5ad1bd3288ec6a2546989405906a2d29a003559d2cfe54f06de55c",
+      "after_sha256": "a84f546ecadba5881587de42c80b19d6fe812af083d913a3dbdc544bf97b2015"
+    },
+    "mandel": {
+      "canonical": "dfserver.commerce.mandel",
+      "source": "dfserver/commerce/mandel.py",
+      "before_sha256": "e0f506806c1080f582446ef61b1e570253775e37097f7414d219947e147e041e",
+      "after_sha256": "3dd7a60eaf382d710cd5984eb9894c3b93800a7962a5bcbc572ef3a848f8a160"
+    },
+    "gun_skins": {
+      "canonical": "dfserver.cosmetics.gun_skins",
+      "source": "dfserver/cosmetics/gun_skins.py",
+      "before_sha256": "d8727714d043fad8e2dfde2e544b9555b1858a51677772bf6efdf207e25f2542",
+      "after_sha256": "3050fa206a68563c7e5e73025a572845dd0a536f8669a916418d15ebb8bfcbd1"
+    },
+    "hero_customization": {
+      "canonical": "dfserver.cosmetics.hero_customization",
+      "source": "dfserver/cosmetics/hero_customization.py",
+      "before_sha256": "a0309642eee9bfc4dd54f660bf497a72929b9985316e66a39bcaeb4058698247",
+      "after_sha256": "a7a7bc08396bd4b168bbfe0374a8cef7805840fa596294e1baa8dc7b19b6a8a3"
+    },
+    "profile_cosmetics": {
+      "canonical": "dfserver.cosmetics.profile_cosmetics",
+      "source": "dfserver/cosmetics/profile_cosmetics.py",
+      "before_sha256": "f54d45040dfa78ca034ff52144a65c8286f9c7edbf0c979727a33b67180d73a4",
+      "after_sha256": "207da15390642f757a230a03cf7935e82d87b0b87126a62c503d81b1f8eca030"
+    },
+    "weapon_pendants": {
+      "canonical": "dfserver.cosmetics.weapon_pendants",
+      "source": "dfserver/cosmetics/weapon_pendants.py",
+      "before_sha256": "441da12f15586486aab22e1a35a3415e3a212336016dea238b80e7ae9438a77e",
+      "after_sha256": "38d3b1943e78f5eff492dc75bdbed7b06a765c902af1ae42d1eb8cc7ece368ab"
+    },
+    "native_collection": {
+      "canonical": "dfserver.cosmetics.native_collection",
+      "source": "dfserver/cosmetics/native_collection.py",
+      "before_sha256": "4ad5a4a55fc27a8e1edf1a9253323fd5e2d246b179994dc89f7c93f7bc3f3946",
+      "after_sha256": "12d64f4fe6462a9b673cd6ceb4b49fbac18cebc8f04fb6482eea1a591dc68c7a"
+    },
+    "battle_pass": {
+      "canonical": "dfserver.progression.battle_pass",
+      "source": "dfserver/progression/battle_pass.py",
+      "before_sha256": "8defcbb295818e72b685470814c9947135ba7ae3403bd695447a170115c49a56",
+      "after_sha256": "42c31b5ba6d4ece3d2f4b50dca800c7f4a34614d0c77dbd6020b3012546a372b"
+    },
+    "native_action_progress": {
+      "canonical": "dfserver.progression.native_action_progress",
+      "source": "dfserver/progression/native_action_progress.py",
+      "before_sha256": "d16fe69c42cd3fbf5349e8027d784a09043c6877d1c1b7eb36c9a4cb7384a9ea",
+      "after_sha256": "dc81c2c9151bd59251cc5fe74ffa17ae1fde1ffcb260e3e15a2376a618416802"
+    },
+    "native_department_queries": {
+      "canonical": "dfserver.progression.native_department_queries",
+      "source": "dfserver/progression/native_department_queries.py",
+      "before_sha256": "8085c430da62d5d5f90dedb208fc1a37405b163e07554be790ac481ffe99d9a3",
+      "after_sha256": "cf29020fcac30506d736430b44e716a9145da056192a1a0ddd50cc87bbf096ce"
+    },
+    "native_departments": {
+      "canonical": "dfserver.progression.native_departments",
+      "source": "dfserver/progression/native_departments.py",
+      "before_sha256": "5e5be511c8411dfc528f62a9fd972961d873f2eb28e501b0115339f3bba5c613",
+      "after_sha256": "bc46c8c61fc770ebaf8d515541743dab93f48751f55de81017ef916c3c035055"
+    },
+    "native_quest_abandon": {
+      "canonical": "dfserver.progression.native_quest_abandon",
+      "source": "dfserver/progression/native_quest_abandon.py",
+      "before_sha256": "56b48cbfb64fa07430184b19cfe7cd277ea35f87669a1ff8c924c8e1692a3398",
+      "after_sha256": "7de84762972810d6f1a39236fd3e6554350f9494c10288a42462281bae175350"
+    },
+    "native_quest_conditions": {
+      "canonical": "dfserver.progression.native_quest_conditions",
+      "source": "dfserver/progression/native_quest_conditions.py",
+      "before_sha256": "c7b7967d11572ce19ceec5fa1024ddfdf69376127be4c85252cb3fc2c9b34237",
+      "after_sha256": "d3aa463ad2b81221469543e9120a9c80077b3e817d01f09057adf0499f949a37"
+    },
+    "native_quest_rewards": {
+      "canonical": "dfserver.progression.native_quest_rewards",
+      "source": "dfserver/progression/native_quest_rewards.py",
+      "before_sha256": "ed8a763a7b6c96978b5ed654dd1b1d8df8e63cc2ac6fe1afb9db1fabb4cfb0c8",
+      "after_sha256": "8a6e17f443b9d265d3d57e9648f3a631cf7443042636e0eb2dd723f5dd5253e4"
+    },
+    "native_quest_wallet": {
+      "canonical": "dfserver.progression.native_quest_wallet",
+      "source": "dfserver/progression/native_quest_wallet.py",
+      "before_sha256": "230e3129ce0e78259e55bf5645cb0dfe24a5d0f05e2ebd9da1948cca9ff013e3",
+      "after_sha256": "a5b35f7704fa20f00b822bd94954aa172aae19662f09b64c319a46e2e6222b24"
+    },
+    "native_quests": {
+      "canonical": "dfserver.progression.native_quests",
+      "source": "dfserver/progression/native_quests.py",
+      "before_sha256": "fd62e9ba394cf0e8768e827014235e9d030ad770e31d4fabe7024261ff88c8e9",
+      "after_sha256": "598ba8f13313f46b8e5c2f8c9a5f8b2f08a63e904ae1cb2b9bfb7239f14cd88c"
+    },
+    "native_safehouse": {
+      "canonical": "dfserver.progression.native_safehouse",
+      "source": "dfserver/progression/native_safehouse.py",
+      "before_sha256": "022f9773d0cd8fb334d055ba79e57322c29687a04a8a2609990eccc2599b712a",
+      "after_sha256": "3b5e46aff6ed281093388fbed623ac95e1c1ea39337cfdd0e707f692035182bb"
+    },
+    "native_safehouse_progress": {
+      "canonical": "dfserver.progression.native_safehouse_progress",
+      "source": "dfserver/progression/native_safehouse_progress.py",
+      "before_sha256": "22548091df70c7ad8902b8e62301256c0764042d558720dad048305c292cd721",
+      "after_sha256": "4c50b0444f075b5f2998fd8ffef964f400a6127804d1c6b1f7617e8843891512"
+    },
+    "native_season": {
+      "canonical": "dfserver.progression.native_season",
+      "source": "dfserver/progression/native_season.py",
+      "before_sha256": "528c6974b3950159e114e8774c00b6169987e941cd089c6d4a5dbdf8e48e2088",
+      "after_sha256": "3e00449209ed4559a9d0e91f5dccdae51fb5bfd1c954954b117c7fdac7a2fce1"
+    },
+    "game_server_probe": {
+      "canonical": "dfserver.match.game_server_probe",
+      "source": "dfserver/match/game_server_probe.py",
+      "before_sha256": "351162be26f6b8870fcf699649fd7bcbb0cdd0c82aad091eb61de38110e94fc0",
+      "after_sha256": "0f43d522b5bf774a0d2aa7c92e269f284f2bd3e59e1a7daa08d0d504c3665ad2"
+    },
+    "legacy_ds_match_admission": {
+      "canonical": "dfserver.match.legacy_ds_match_admission",
+      "source": "dfserver/match/legacy_ds_match_admission.py",
+      "before_sha256": "ed5dfe22cdd4041e0b2a4ce7f85ffa5dc06259264782cddfd510e8b29174da73",
+      "after_sha256": "ed5dfe22cdd4041e0b2a4ce7f85ffa5dc06259264782cddfd510e8b29174da73"
+    },
+    "native_match_unavailable": {
+      "canonical": "dfserver.match.native_match_unavailable",
+      "source": "dfserver/match/native_match_unavailable.py",
+      "before_sha256": "d785873da42a0fddb83fe290f2312e5677f3678bed8fe08d11f5a4eb8b178fd3",
+      "after_sha256": "40f1fa6e517733cb83baab95fe94fef4b1a6c67e0504e367c8688e2fc3a7cb95"
+    },
+    "gcp_control": {
+      "canonical": "dfserver.transport.gcp.gcp_control",
+      "source": "dfserver/transport/gcp/gcp_control.py",
+      "before_sha256": "b67689416f2a5a4b48da5aa8a62806137ba298a8820535627034a56bac19d7d7",
+      "after_sha256": "b67689416f2a5a4b48da5aa8a62806137ba298a8820535627034a56bac19d7d7"
+    },
+    "gcp_crypto": {
+      "canonical": "dfserver.transport.gcp.gcp_crypto",
+      "source": "dfserver/transport/gcp/gcp_crypto.py",
+      "before_sha256": "f48db6173d7ea05da5a8e15951ccaba19d0b44337beb883e8fbb0e58bfe70892",
+      "after_sha256": "e8a84fbd6c2134950369638e3c6ccac46fd0ebe049667f77d4ac05090fe6ef83"
+    },
+    "gcp_data": {
+      "canonical": "dfserver.transport.gcp.gcp_data",
+      "source": "dfserver/transport/gcp/gcp_data.py",
+      "before_sha256": "4a762c47286fb48ab59c5f6e6e9ef68e1842b15dabd13282fbb5c55bfc285377",
+      "after_sha256": "09d2d7743ac9c8c5808318f5edb87ec396b069435dff96cd623f0ebe947f9064"
+    },
+    "gcp_framing": {
+      "canonical": "dfserver.transport.gcp.gcp_framing",
+      "source": "dfserver/transport/gcp/gcp_framing.py",
+      "before_sha256": "c9212faebded72084b46c66d033a77a41a340416c4a3030e8d965a067de92aab",
+      "after_sha256": "c9212faebded72084b46c66d033a77a41a340416c4a3030e8d965a067de92aab"
+    },
+    "gcp_handshake": {
+      "canonical": "dfserver.transport.gcp.gcp_handshake",
+      "source": "dfserver/transport/gcp/gcp_handshake.py",
+      "before_sha256": "354dae374eaa1e2892bf82d2961e8b6de8af0768dc32f95b1f5d39e9e50b3000",
+      "after_sha256": "1c7643c17d4a814b49b56e63060996a270d7aefe033f5c4749af38ebae61ab24"
+    },
+    "legacy_ds_bit_archive": {
+      "canonical": "dfserver.transport.native.legacy_ds_bit_archive",
+      "source": "dfserver/transport/native/legacy_ds_bit_archive.py",
+      "before_sha256": "ab64dd2d3e3853b9c78de25d39d9cc1f4d8df004d8ddde3241365197524ab17e",
+      "after_sha256": "ab64dd2d3e3853b9c78de25d39d9cc1f4d8df004d8ddde3241365197524ab17e"
+    },
+    "legacy_ds_control_connection": {
+      "canonical": "dfserver.transport.native.legacy_ds_control_connection",
+      "source": "dfserver/transport/native/legacy_ds_control_connection.py",
+      "before_sha256": "651efaeb4fbc4a7da5299833ddf5b54fd54304e3493c3a0dc8a49da144fd09ab",
+      "after_sha256": "0ce5c969ed48d0b690e8134cb3e3d81850cf97352b9ace88030e5c335401e173"
+    },
+    "legacy_ds_control_fields": {
+      "canonical": "dfserver.transport.native.legacy_ds_control_fields",
+      "source": "dfserver/transport/native/legacy_ds_control_fields.py",
+      "before_sha256": "6fa15f9f026dde7f1e2714a353a0cba7de3efb70bdd149b01568b57b1ac474c0",
+      "after_sha256": "6fa15f9f026dde7f1e2714a353a0cba7de3efb70bdd149b01568b57b1ac474c0"
+    },
+    "legacy_ds_control_probe": {
+      "canonical": "dfserver.transport.native.legacy_ds_control_probe",
+      "source": "dfserver/transport/native/legacy_ds_control_probe.py",
+      "before_sha256": "eb2f046a4ad9d004fec9d9c6b935be55eb1a4ac350e9bd98c1ddb2f7ec03f601",
+      "after_sha256": "e7a98c5595d2f35f914a579cd1edcfb6f3d0a5d02862de09f782c840ea65efb1"
+    },
+    "legacy_ds_decoded_bunch": {
+      "canonical": "dfserver.transport.native.legacy_ds_decoded_bunch",
+      "source": "dfserver/transport/native/legacy_ds_decoded_bunch.py",
+      "before_sha256": "315fe54a0e421cae6b5d3f2de09a3a371b35732e6d02762dd8fc24ac8329fe65",
+      "after_sha256": "315fe54a0e421cae6b5d3f2de09a3a371b35732e6d02762dd8fc24ac8329fe65"
+    },
+    "legacy_ds_handshake_probe": {
+      "canonical": "dfserver.transport.native.legacy_ds_handshake_probe",
+      "source": "dfserver/transport/native/legacy_ds_handshake_probe.py",
+      "before_sha256": "79162445f00e1f191fe0ce282d135589ae62de2fda01eb76737a2eb93174e3da",
+      "after_sha256": "cbe2a9224d06caa1f390957aeb5db8d21809eddc59f67af11169bfd15a71ec94"
+    },
+    "legacy_ds_identity_field": {
+      "canonical": "dfserver.transport.native.legacy_ds_identity_field",
+      "source": "dfserver/transport/native/legacy_ds_identity_field.py",
+      "before_sha256": "ca707c0e6150c49632ffb879980c51d149032c11b3510e5b3207ca004c12219d",
+      "after_sha256": "e1c5881dc92bca1fda9c4bb5b0a0fc3f2fff6d23965cf165a7af4438867f93ce"
+    },
+    "legacy_ds_login_fields": {
+      "canonical": "dfserver.transport.native.legacy_ds_login_fields",
+      "source": "dfserver/transport/native/legacy_ds_login_fields.py",
+      "before_sha256": "fe7d73e9c940cd5bde04e4c665a97ca0b7455a3f0ee9dc343ae193ab742ea802",
+      "after_sha256": "0db6ec8d0211ac8f891535451b9d868d29532586007086ac83c370ae4127bbbc"
+    },
+    "legacy_ds_packet_ack_probe": {
+      "canonical": "dfserver.transport.native.legacy_ds_packet_ack_probe",
+      "source": "dfserver/transport/native/legacy_ds_packet_ack_probe.py",
+      "before_sha256": "29631f2f73531f5af7f2c2817b437463dc1d1d279b34b4d74a3b5465bb17e804",
+      "after_sha256": "29631f2f73531f5af7f2c2817b437463dc1d1d279b34b4d74a3b5465bb17e804"
+    },
+    "legacy_ds_wire_codec": {
+      "canonical": "dfserver.transport.native.legacy_ds_wire_codec",
+      "source": "dfserver/transport/native/legacy_ds_wire_codec.py",
+      "before_sha256": "556afbca7ac3e515e575f63535ebbb00d6275030bf459cb609aee97a731eecbf",
+      "after_sha256": "0811b29a786bf3c23c087e950105b85b16277680e7ecf2c19cc8342137a49a0c"
+    },
+    "unreal_handshake_payload": {
+      "canonical": "dfserver.transport.native.unreal_handshake_payload",
+      "source": "dfserver/transport/native/unreal_handshake_payload.py",
+      "before_sha256": "03e55029883a3ad69edeb77f9252ddf6ec0152cd155de89da5d7301929fc1b2b",
+      "after_sha256": "03e55029883a3ad69edeb77f9252ddf6ec0152cd155de89da5d7301929fc1b2b"
+    },
+    "legacy_ds_actor_bunch": {
+      "canonical": "dfserver.replication.legacy_ds_actor_bunch",
+      "source": "dfserver/replication/legacy_ds_actor_bunch.py",
+      "before_sha256": "d3be59ce28d101bf14df2eae3efdc165f281c566b9c2770c69f13b9d214b8b48",
+      "after_sha256": "b30c74ad693ec07b8357f8d33b5c10466cc502ed65d06cfbdd24a38ab9a45cbb"
+    },
+    "legacy_ds_actor_content": {
+      "canonical": "dfserver.replication.legacy_ds_actor_content",
+      "source": "dfserver/replication/legacy_ds_actor_content.py",
+      "before_sha256": "5909c3c429ef388995b89724dcb7b018c7ffb5abd01a8fc06263f2ef07e569ce",
+      "after_sha256": "f18799c0d2776c620a7987e97aeae4a1c9c619a52de568c0b6986bd7a2b63f70"
+    },
+    "legacy_ds_actor_fields": {
+      "canonical": "dfserver.replication.legacy_ds_actor_fields",
+      "source": "dfserver/replication/legacy_ds_actor_fields.py",
+      "before_sha256": "28d5cedf3ccc6c7a1957eb05cb0388a51f6a580e41640aff07e15211e90c3d46",
+      "after_sha256": "8e476c0cf59a495f708fc76d12e6953ceac1eaad9a6470b32edbfc5091fb05cb"
+    },
+    "legacy_ds_actor_manifest": {
+      "canonical": "dfserver.replication.legacy_ds_actor_manifest",
+      "source": "dfserver/replication/legacy_ds_actor_manifest.py",
+      "before_sha256": "c747c695f120611470bf8acd8ee44483655c0be56de082555905d5e4ef80b70e",
+      "after_sha256": "60481de650f1a2fffcade5208963b33eb83a34d094aab53235ed493594728d90"
+    },
+    "legacy_ds_actor_open": {
+      "canonical": "dfserver.replication.legacy_ds_actor_open",
+      "source": "dfserver/replication/legacy_ds_actor_open.py",
+      "before_sha256": "23151a0f839c549d33d3f0570df68d33e0e538b387156eb797cafee9ab5b5fcd",
+      "after_sha256": "7d782da902bd380f6e88126f1afd729f7afe7d41c8e92b53d80992a4a408c332"
+    },
+    "legacy_ds_class_net_cache": {
+      "canonical": "dfserver.replication.legacy_ds_class_net_cache",
+      "source": "dfserver/replication/legacy_ds_class_net_cache.py",
+      "before_sha256": "b72b5d60301e037cdcd570fc0ce83ce3c6cbfcff4b74e523bde54948f8129f4b",
+      "after_sha256": "6484470b738b7200f3635636d62f7c7e4c41432afa9e8a6c899263fe3960d55c"
+    },
+    "legacy_ds_game_spawn_flags": {
+      "canonical": "dfserver.replication.legacy_ds_game_spawn_flags",
+      "source": "dfserver/replication/legacy_ds_game_spawn_flags.py",
+      "before_sha256": "a02f59f2432d94617a39573443ea051436a6895269830f79870677d39f55fd09",
+      "after_sha256": "a02f59f2432d94617a39573443ea051436a6895269830f79870677d39f55fd09"
+    },
+    "legacy_ds_guid_exports": {
+      "canonical": "dfserver.replication.legacy_ds_guid_exports",
+      "source": "dfserver/replication/legacy_ds_guid_exports.py",
+      "before_sha256": "d75cfcfdcdb386b8ba61fcd2ebb50b727a814f2fc3d8ea707c7a947f770f0310",
+      "after_sha256": "96d72ffd3bf9bbc95182d9737a9b56a4c3f4ac63343ca87cae770b722a2bd581"
+    },
+    "legacy_ds_quantized_vector": {
+      "canonical": "dfserver.replication.legacy_ds_quantized_vector",
+      "source": "dfserver/replication/legacy_ds_quantized_vector.py",
+      "before_sha256": "bc350666b9be16061635fa4ef8637ba7df25c923cb499e74e0da440259c339dd",
+      "after_sha256": "5d6d3ccbf552780f987b0dcadfc7facd4043dbd9efa85737155b8b730c14a915"
+    },
+    "legacy_ds_scalar_serializers": {
+      "canonical": "dfserver.replication.legacy_ds_scalar_serializers",
+      "source": "dfserver/replication/legacy_ds_scalar_serializers.py",
+      "before_sha256": "65d47c5b89f9a168d01d7c45264ec0b889c6f3848f18a9e737607d252f9e50fd",
+      "after_sha256": "7620054118f16de6b9fa871c137aa85e3deea3a70cc78fbaa004f91f97c3aa51"
+    },
+    "handshake_diagnostic": {
+      "canonical": "dfserver.gateway.handshake_diagnostic",
+      "source": "dfserver/gateway/handshake_diagnostic.py",
+      "before_sha256": "03dc741297f81e547a35dc2ced1d3f595fd04ecdfd711aa902d814a3e5b29078",
+      "after_sha256": "d8359d386bb9ba7a5c97914d2f80fafa7786a3b297f293147fd5eecaeef82856"
+    },
+    "business_envelope": {
+      "canonical": "dfserver.gateway.business_envelope",
+      "source": "dfserver/gateway/business_envelope.py",
+      "before_sha256": "996f50f2498a4c8c69f2ec2257028b40e79687948a67506856f6ebb056334ed6",
+      "after_sha256": "befcc0bc268a7c044a44cb88af28f6346baec1d3be685920fca46bd4a9c66907"
+    },
+    "candidate_business": {
+      "canonical": "dfserver.gateway.candidate_business",
+      "source": "dfserver/gateway/candidate_business.py",
+      "before_sha256": "05d4db32821dc68d9cc671904a8896ac4636c0fceefabb9b49d0b69fa7cacda8",
+      "after_sha256": "dce38189f558f88dbdb0770a41af98dfc40d18977c3a12ae4db15d195bf93ae1"
+    },
+    "candidate_schema": {
+      "canonical": "dfserver.gateway.candidate_schema",
+      "source": "dfserver/gateway/candidate_schema.py",
+      "before_sha256": "d54562c4afd36c3ac247d42515f12be8ee39dd6ca7e1cecb647f579b112cf965",
+      "after_sha256": "b1edc0fa13b9fa2895200bda1c937610f8db45faadb1b6fad473ebd8388b7995"
+    },
+    "protobuf_codec": {
+      "canonical": "dfserver.gateway.protobuf_codec",
+      "source": "dfserver/gateway/protobuf_codec.py",
+      "before_sha256": "33464c57a3291b7b00f51d3be35cd98ac166c464e6bca148100663100d6b963b",
+      "after_sha256": "519fe6d3e64274ae74586ac5dc363cc03c4fe20ad9ea5a83396502698ea554e3"
+    },
+    "client_errors": {
+      "canonical": "dfserver.gateway.client_errors",
+      "source": "dfserver/gateway/client_errors.py",
+      "before_sha256": "4edb0b39604e44f55bb894093b9409bd20a3fac3e0547b34a4d1a24e31a20b39",
+      "after_sha256": "b10d8c47bde5404ba4d0303c9b84a3bc3bdfefa3cc8ba975840c7011e2f416f2"
+    },
+    "business_probe": {
+      "canonical": "dfserver.diagnostics.business_probe",
+      "source": "dfserver/diagnostics/business_probe.py",
+      "before_sha256": "a91f212b215f23b03651b975793446a61e68f7a3b0ddaf54e455a1e83845723f",
+      "after_sha256": "fdcdfd2f7859037f3c4fefd344b986e8fc80ce2076f55c0e075a1b8d130a102b"
+    },
+    "connection_probe": {
+      "canonical": "dfserver.diagnostics.connection_probe",
+      "source": "dfserver/diagnostics/connection_probe.py",
+      "before_sha256": "62ce7cad1510bea0bf7e42a4f04bf45539da8472e5d140ac6de437d3d8c4d13b",
+      "after_sha256": "9e32b0f81a26e82886888e4301cbea6b7042d80321996d3cc7d639546937583d"
+    },
+    "__main__": {
+      "canonical": "dfserver.entry.cli",
+      "source": "dfserver/entry/cli.py",
+      "before_sha256": "54b892f32f67898c341d6679ae4a530e3e523126740ed2f06cca2008f6f09718",
+      "after_sha256": "3a4f5408c5cbdbea9c51c8f519871c6a681202cc3a126f1ba8f39491a2363fab"
+    },
+    "legacy_ds_ability_component_creation": {
+      "canonical": "dfserver.replication.legacy_ds_ability_component_creation",
+      "source": "dfserver/replication/legacy_ds_ability_component_creation.py",
+      "before_sha256": "0ebd1491ee85092618983217d80c1a327ef0e8f9ccf6dd8fc945bdc89c0c2e26",
+      "after_sha256": "8ff4476f49b2e3b20cc46ad8d8853cf933dce2eadb2bbe29791677ab3d4d9094"
+    },
+    "legacy_ds_byte_scalar": {
+      "canonical": "dfserver.replication.legacy_ds_byte_scalar",
+      "source": "dfserver/replication/legacy_ds_byte_scalar.py",
+      "before_sha256": "9f3f4e45f745533a80aa986ec7d0c800f7645c16a112a4ae64cfcad9786b7511",
+      "after_sha256": "e1070c657e89c89d84915f46f2d15dac2fdb4ef08d954916e93b26cd369fd1d8"
+    },
+    "legacy_ds_default_subobject": {
+      "canonical": "dfserver.replication.legacy_ds_default_subobject",
+      "source": "dfserver/replication/legacy_ds_default_subobject.py",
+      "before_sha256": "a67b71a2b99fcb7ee7b256479ace5eca4f36550f23545cc16bf3d7b7c2bba369",
+      "after_sha256": "1b6cc73eb708532dc6491e29fded2faf47107aa135a1eebfc95676eccbe89b69"
+    },
+    "legacy_ds_dynamic_object_creation": {
+      "canonical": "dfserver.replication.legacy_ds_dynamic_object_creation",
+      "source": "dfserver/replication/legacy_ds_dynamic_object_creation.py",
+      "before_sha256": "3435a2978da47bf8962673ef5a2bc60c5fc92717d1b8443036d71459dcd08f8e",
+      "after_sha256": "56e11475156584e017d27c5ecaf8b1bd151c9e9a7fd14130acf040ec7359b8a3"
+    },
+    "legacy_ds_dynamic_object_update": {
+      "canonical": "dfserver.replication.legacy_ds_dynamic_object_update",
+      "source": "dfserver/replication/legacy_ds_dynamic_object_update.py",
+      "before_sha256": "619834520afe3f968c4c0242bc175f4512df3fea266ccd0713ad06a94d9ca6fb",
+      "after_sha256": "69f7b403b236e3453ae5f2c6ce767364aa1c5186229195f81ee9fdfde5ed18f8"
+    },
+    "legacy_ds_early_player_state_human_appearance": {
+      "canonical": "dfserver.replication.legacy_ds_early_player_state_human_appearance",
+      "source": "dfserver/replication/legacy_ds_early_player_state_human_appearance.py",
+      "before_sha256": "dcdf6546267788cb83f27a94ef0b2f45f4e3937efbb2add733fafdf96ec09c5d",
+      "after_sha256": "1c00fb4c786d288cc7f9694ddd539e3642c8e2bb36cf0d65db9a194e027b096a"
+    },
+    "legacy_ds_enum_property": {
+      "canonical": "dfserver.replication.legacy_ds_enum_property",
+      "source": "dfserver/replication/legacy_ds_enum_property.py",
+      "before_sha256": "fc90a1a21901acc8d7abee62e71bc4bebbe09255a7183f1a375c4b268bf4d51f",
+      "after_sha256": "28a71d663e6451537a3f89055763c636cf0bfddeab339983ef57fd3d10ea30af"
+    },
+    "legacy_ds_even_component_guid_exports": {
+      "canonical": "dfserver.replication.legacy_ds_even_component_guid_exports",
+      "source": "dfserver/replication/legacy_ds_even_component_guid_exports.py",
+      "before_sha256": "5d0ad3a6f5479111fc56e87b43758625d8a543fba1759f9ddd67b668e038098b",
+      "after_sha256": "5d0ad3a6f5479111fc56e87b43758625d8a543fba1759f9ddd67b668e038098b"
+    },
+    "legacy_ds_fashion_async_bridge": {
+      "canonical": "dfserver.replication.legacy_ds_fashion_async_bridge",
+      "source": "dfserver/replication/legacy_ds_fashion_async_bridge.py",
+      "before_sha256": "ac6096a76ad6c5530b37fe685750f6bfaa81cd8e8db3b0ee5bd9f09f34d50e54",
+      "after_sha256": "5412fa710dc46272babeef1cb3c6c6de30a599ba15dcdc576925ed0fce488461"
+    },
+    "legacy_ds_fashion_async_permit": {
+      "canonical": "dfserver.replication.legacy_ds_fashion_async_permit",
+      "source": "dfserver/replication/legacy_ds_fashion_async_permit.py",
+      "before_sha256": "8dbfe40185b486d74ccb52164672736d588d1c3e9f4c96e66d5f27a0021b436c",
+      "after_sha256": "8dbfe40185b486d74ccb52164672736d588d1c3e9f4c96e66d5f27a0021b436c"
+    },
+    "legacy_ds_fashion_owned_phase": {
+      "canonical": "dfserver.replication.legacy_ds_fashion_owned_phase",
+      "source": "dfserver/replication/legacy_ds_fashion_owned_phase.py",
+      "before_sha256": "dcb0a931c7f26e7c4dee0ac69e473a217e20d21e706b45b2ed1d2ab57e66dca7",
+      "after_sha256": "bf4421da841b94bd7f2ef0830712cffcb739502fd8d5b458efc3e0cd29d0869e"
+    },
+    "legacy_ds_fashion_retained_protocol": {
+      "canonical": "dfserver.replication.legacy_ds_fashion_retained_protocol",
+      "source": "dfserver/replication/legacy_ds_fashion_retained_protocol.py",
+      "before_sha256": "5d09ebe00d87f326645686894a9a9854d965e04783b84e49412a15418da192b3",
+      "after_sha256": "259bd32042280f02ddd461e158eaf58230784f6d3b0df74c018bbf101ce9f04f"
+    },
+    "legacy_ds_fashion_retained_trial": {
+      "canonical": "dfserver.replication.legacy_ds_fashion_retained_trial",
+      "source": "dfserver/replication/legacy_ds_fashion_retained_trial.py",
+      "before_sha256": "ec4053c49fad3b82288b8b6b090d1bc91845c2d65baa8eec2b7a528e559a4a62",
+      "after_sha256": "260e51c9d18341ac100fd0ae9633546d8876d8b21a8d0aa68872a24a7e9f2b81"
+    },
+    "legacy_ds_fashion_runtime": {
+      "canonical": "dfserver.replication.legacy_ds_fashion_runtime",
+      "source": "dfserver/replication/legacy_ds_fashion_runtime.py",
+      "before_sha256": "4e7451f78edd78f4f11069223ebb2eb07fb1538039ebb2957e630c5067d29087",
+      "after_sha256": "a744099b3fb786ba5f23bb42475b37e1ec2f990fd78ebafb6fd01c34885fa2d1"
+    },
+    "legacy_ds_fashion_subobject_outbox": {
+      "canonical": "dfserver.replication.legacy_ds_fashion_subobject_outbox",
+      "source": "dfserver/replication/legacy_ds_fashion_subobject_outbox.py",
+      "before_sha256": "305a819f80aae2798b0a3f4627353da918dc5521961d2456c39ceff5d43b6436",
+      "after_sha256": "305a819f80aae2798b0a3f4627353da918dc5521961d2456c39ceff5d43b6436"
+    },
+    "legacy_ds_game_state_start": {
+      "canonical": "dfserver.replication.legacy_ds_game_state_start",
+      "source": "dfserver/replication/legacy_ds_game_state_start.py",
+      "before_sha256": "5762476755c2ae0b5bf3e5407e04852d807e87262b5bfa15c78f269382f466e6",
+      "after_sha256": "05879a565de7ab67907750809ae507d466e7c90888e66f107683928b1e6abe95"
+    },
+    "legacy_ds_int64_value": {
+      "canonical": "dfserver.replication.legacy_ds_int64_value",
+      "source": "dfserver/replication/legacy_ds_int64_value.py",
+      "before_sha256": "30ca93d11f2a4ea256d0e5450aa305415b3b8d86d88594fd24bf2199c1a73592",
+      "after_sha256": "3a2da63bea628b4eb7f19a784e7c7f03ec5f949bcc15a1ec2625c0be9e286c06"
+    },
+    "legacy_ds_inventory_condition": {
+      "canonical": "dfserver.replication.legacy_ds_inventory_condition",
+      "source": "dfserver/replication/legacy_ds_inventory_condition.py",
+      "before_sha256": "9c4ec64ce8cd92756004d54ba4e0b1caeeb7cfaef7dbebbdb5b212d2c2414bf1",
+      "after_sha256": "d89e4b0d5074176715f1a75317ff8530d234acd1ab8887fafb7f657059a34484"
+    },
+    "legacy_ds_inventory_geometry": {
+      "canonical": "dfserver.replication.legacy_ds_inventory_geometry",
+      "source": "dfserver/replication/legacy_ds_inventory_geometry.py",
+      "before_sha256": "cc528925224b1366e0e1c6055e4942b5bb60c19eed38b783e830f3bb5e201ff6",
+      "after_sha256": "e122a79a59729b0db48134a502ca104ae1fe45b011884ca50c80ffc1fbf7c89c"
+    },
+    "legacy_ds_inventory_gun": {
+      "canonical": "dfserver.replication.legacy_ds_inventory_gun",
+      "source": "dfserver/replication/legacy_ds_inventory_gun.py",
+      "before_sha256": "91621647b2c2e45ebe0d575d91e2db9c1868c9a8e27a0435b1759a81ffcd63ec",
+      "after_sha256": "c79acc8302dda28705f60bd52e875798ba4d6868995eb556104636ba3b5acc01"
+    },
+    "legacy_ds_inventory_gun_desc": {
+      "canonical": "dfserver.replication.legacy_ds_inventory_gun_desc",
+      "source": "dfserver/replication/legacy_ds_inventory_gun_desc.py",
+      "before_sha256": "98865ebd7a931eef6a5d5d7f708bcfb839990f71779695ce09fd87df8628799c",
+      "after_sha256": "630c2204895e0edf07b526f9a6800098fe27c16edad7922acdc5929194c633ec"
+    },
+    "legacy_ds_inventory_items": {
+      "canonical": "dfserver.replication.legacy_ds_inventory_items",
+      "source": "dfserver/replication/legacy_ds_inventory_items.py",
+      "before_sha256": "1a3e7de23f0842d436f9410ec84ab1ca405dbf875aca59987c38c3426bee4429",
+      "after_sha256": "599f22a72aa54dfd768ba371776945ea89b01d5fc169a9c129f56dfb8b385e28"
+    },
+    "legacy_ds_inventory_keychain": {
+      "canonical": "dfserver.replication.legacy_ds_inventory_keychain",
+      "source": "dfserver/replication/legacy_ds_inventory_keychain.py",
+      "before_sha256": "da80f0674ef6830a9ca5f5d4aa7bd57493ce24953bbbf756a6dcd0d5aa4920bc",
+      "after_sha256": "0fbd5af1d845cff94808352e6ecc022a6732441bfc9521cb7752fa408fb041bb"
+    },
+    "legacy_ds_inventory_refresh": {
+      "canonical": "dfserver.replication.legacy_ds_inventory_refresh",
+      "source": "dfserver/replication/legacy_ds_inventory_refresh.py",
+      "before_sha256": "e2b9c31d2cc38f7f6af4a1af1cf49a5802d51c2338ada7274f53a3ef7a58ed65",
+      "after_sha256": "e2b9c31d2cc38f7f6af4a1af1cf49a5802d51c2338ada7274f53a3ef7a58ed65"
+    },
+    "legacy_ds_inventory_stack": {
+      "canonical": "dfserver.replication.legacy_ds_inventory_stack",
+      "source": "dfserver/replication/legacy_ds_inventory_stack.py",
+      "before_sha256": "6ac206926fbed1f0eb9dcf8d65e64eeebe946e97bd9dfa9ead3c65ceeaa0fb8c",
+      "after_sha256": "544f278c8b1f97f365568d32b9b7f4797daa40c92bacf93d38a4347de56b0f07"
+    },
+    "legacy_ds_inventory_state": {
+      "canonical": "dfserver.replication.legacy_ds_inventory_state",
+      "source": "dfserver/replication/legacy_ds_inventory_state.py",
+      "before_sha256": "f95a305437d4009063ad4768f09bff6c18eb15e21e46d90eb843eb56e6cc0f66",
+      "after_sha256": "84257a718289aa8d66920d69fb4fc0beec350d9c946a94a123516e756ea8bbdb"
+    },
+    "legacy_ds_late_player_state_human_appearance": {
+      "canonical": "dfserver.replication.legacy_ds_late_player_state_human_appearance",
+      "source": "dfserver/replication/legacy_ds_late_player_state_human_appearance.py",
+      "before_sha256": "1be965a0f101a49b6ec46f014b449b9ae6cf48210c82db352dfd82f50c7022d7",
+      "after_sha256": "c21821c76f1f1b9a984e7c2ff1b3cd46a8791de3acd00ae6fd2e8cece5ae54ac"
+    },
+    "legacy_ds_level_visibility": {
+      "canonical": "dfserver.transport.native.legacy_ds_level_visibility",
+      "source": "dfserver/transport/native/legacy_ds_level_visibility.py",
+      "before_sha256": "d371f52a6ba070635be036c38b6301a46855b8240bfdbb139022224567991141",
+      "after_sha256": "d371f52a6ba070635be036c38b6301a46855b8240bfdbb139022224567991141"
+    },
+    "legacy_ds_level_visibility_state": {
+      "canonical": "dfserver.transport.native.legacy_ds_level_visibility_state",
+      "source": "dfserver/transport/native/legacy_ds_level_visibility_state.py",
+      "before_sha256": "6b4a73809419fb15c603aba31e1ddb8bc16aa67beef953bab1f7866ecbd77f1c",
+      "after_sha256": "398731523529bae5e25d9dd470773037a23e87fb01ffc070446609a98512e23f"
+    },
+    "legacy_ds_local_map_rules": {
+      "canonical": "dfserver.match.legacy_ds_local_map_rules",
+      "source": "dfserver/match/legacy_ds_local_map_rules.py",
+      "before_sha256": "47d0637f756a67aefc676ac92bf701e2c1e9d81692aa5220b6c0e5ad825667d2",
+      "after_sha256": "47d0637f756a67aefc676ac92bf701e2c1e9d81692aa5220b6c0e5ad825667d2"
+    },
+    "legacy_ds_movement": {
+      "canonical": "dfserver.transport.native.legacy_ds_movement",
+      "source": "dfserver/transport/native/legacy_ds_movement.py",
+      "before_sha256": "b14518ba1ef60d4deb4181ea0d8c257a294cf184e7f088067a75b3261c36ec8b",
+      "after_sha256": "e61d17ef6268f6d40458af1c894847c2339d124d6b89b49c236f18394631bdad"
+    },
+    "legacy_ds_ms23_spawn": {
+      "canonical": "dfserver.replication.legacy_ds_ms23_spawn",
+      "source": "dfserver/replication/legacy_ds_ms23_spawn.py",
+      "before_sha256": "1db281e97df6ef0bcbd938912464e3db9092848eef1d52329cf8270836348d4e",
+      "after_sha256": "1db281e97df6ef0bcbd938912464e3db9092848eef1d52329cf8270836348d4e"
+    },
+    "legacy_ds_owned_actor_transport": {
+      "canonical": "dfserver.transport.native.legacy_ds_owned_actor_transport",
+      "source": "dfserver/transport/native/legacy_ds_owned_actor_transport.py",
+      "before_sha256": "17b1a672cf5205a7c6b2a8526e08ffb1dd14cfedef424e598e10a00250cc1331",
+      "after_sha256": "70c323bb6c438b8c9dd69d644e580c735bc61c8f071e2503403d137f35d5f338"
+    },
+    "legacy_ds_owned_pawn_receipt": {
+      "canonical": "dfserver.transport.native.legacy_ds_owned_pawn_receipt",
+      "source": "dfserver/transport/native/legacy_ds_owned_pawn_receipt.py",
+      "before_sha256": "21f48654d261d13da892f9575c961b88c9b4830c569110a4c93a0fc0fb5c5c2a",
+      "after_sha256": "1267979db4384e886af0f8f09794447c7fdf10fd3b28dbcf226680a4afa21eb0"
+    },
+    "legacy_ds_owner_switch": {
+      "canonical": "dfserver.transport.native.legacy_ds_owner_switch",
+      "source": "dfserver/transport/native/legacy_ds_owner_switch.py",
+      "before_sha256": "8bcb9256a1d2d74ec65af8c87e61e97004bc99c60ec23eb3f6a5f2173a287dee",
+      "after_sha256": "b5efd082da1d8757f90ef5df061ff248d8f07802e8786b124df8c972dfb2025d"
+    },
+    "legacy_ds_pc_hud_rpc": {
+      "canonical": "dfserver.transport.native.legacy_ds_pc_hud_rpc",
+      "source": "dfserver/transport/native/legacy_ds_pc_hud_rpc.py",
+      "before_sha256": "3050020bf62172fc74a48d9f7e277e3e4704e93977ce94c9ae0a8590d399414a",
+      "after_sha256": "1b7de89b873c276ac2c58b97e7b8e79453169a52f0972ae0d0ec117a9d20f8df"
+    },
+    "legacy_ds_pc_ping_receiver": {
+      "canonical": "dfserver.transport.native.legacy_ds_pc_ping_receiver",
+      "source": "dfserver/transport/native/legacy_ds_pc_ping_receiver.py",
+      "before_sha256": "d2a6d164427bb808772a8d8e448f6fe745b417f66c8244f9ac4e981b0d17a3bc",
+      "after_sha256": "50293a37f54e619a5bf80210c0c2b6a952a5b6a461a221a1cb53049b9847b8ec"
+    },
+    "legacy_ds_pc_receipt": {
+      "canonical": "dfserver.transport.native.legacy_ds_pc_receipt",
+      "source": "dfserver/transport/native/legacy_ds_pc_receipt.py",
+      "before_sha256": "362430b72aa83886530d1208f862bce93e8ede4ebec152f8c917de1dda74ad04",
+      "after_sha256": "6055efe0d16203d18d0e84a4aa8a3a9d54fc513926ebca38d81d56bc3b330916"
+    },
+    "legacy_ds_pc_restart_rpc": {
+      "canonical": "dfserver.transport.native.legacy_ds_pc_restart_rpc",
+      "source": "dfserver/transport/native/legacy_ds_pc_restart_rpc.py",
+      "before_sha256": "6d2936c37fb075cbbc093af55121c3f6aec12d56fba22133d4da635ce40561b7",
+      "after_sha256": "17e56804a46ac4f125f03137c19191a4cf3dfb04b0efc526bfd54d0e72544b3a"
+    },
+    "legacy_ds_pc_rotation_rpc": {
+      "canonical": "dfserver.transport.native.legacy_ds_pc_rotation_rpc",
+      "source": "dfserver/transport/native/legacy_ds_pc_rotation_rpc.py",
+      "before_sha256": "7467e669437c8100bfa0a4422678ae42d6b168b86be11a5443dbf3f0a668268c",
+      "after_sha256": "083f730fd0659f251ac19ef8e5f9f0ac7ef94b3618af43d4789de198ca54035d"
+    },
+    "legacy_ds_pc_rpc_fields": {
+      "canonical": "dfserver.transport.native.legacy_ds_pc_rpc_fields",
+      "source": "dfserver/transport/native/legacy_ds_pc_rpc_fields.py",
+      "before_sha256": "074883efe35d656769a896bf52c433bb995b92d7febf67866711bfde564d6fd0",
+      "after_sha256": "36b59c6554b62d5c2327c9875b763839c34c96eebbf8f4a14fb0354d39b9440a"
+    },
+    "legacy_ds_pc_startup_rpc": {
+      "canonical": "dfserver.transport.native.legacy_ds_pc_startup_rpc",
+      "source": "dfserver/transport/native/legacy_ds_pc_startup_rpc.py",
+      "before_sha256": "4eb9e3163f55f241fda6844147d6cc63d27c8a11a7ab7a544dba0c63183c828f",
+      "after_sha256": "7a45cfd0fe9a307bdb27c125593970bb7bad6a23a68c7361842e0866c812d12a"
+    },
+    "legacy_ds_pc_view_target_rpc": {
+      "canonical": "dfserver.transport.native.legacy_ds_pc_view_target_rpc",
+      "source": "dfserver/transport/native/legacy_ds_pc_view_target_rpc.py",
+      "before_sha256": "fcd9dd88fc7fa79277ce5a0cc15507194e80d28cb64be1dcc0f450c4146d4a23",
+      "after_sha256": "f6ede1b90afdabec09ac441703475cf3114839f2c7f736b20fe1484641c069ea"
+    },
+    "legacy_ds_player_state_human_appearance_content": {
+      "canonical": "dfserver.replication.legacy_ds_player_state_human_appearance_content",
+      "source": "dfserver/replication/legacy_ds_player_state_human_appearance_content.py",
+      "before_sha256": "f3e2cb4e41b255a82e9f4fa001798ee4644148d0d349d8701a5331aa0088fde8",
+      "after_sha256": "a863c96566f800f163d046d1be1848d955cc175002fafbaf51c267ba4ad0e0f7"
+    },
+    "legacy_ds_rep_layout_refs": {
+      "canonical": "dfserver.replication.legacy_ds_rep_layout_refs",
+      "source": "dfserver/replication/legacy_ds_rep_layout_refs.py",
+      "before_sha256": "c34d498757a15e6c91e993a899150dcc5049714da3c2a557897ddb277c3ee5bb",
+      "after_sha256": "b82a8be8076e3ca43807bb6c6c2b396c87c2986667f03841f4d211d91e6c52e0"
+    },
+    "legacy_ds_rotator": {
+      "canonical": "dfserver.replication.legacy_ds_rotator",
+      "source": "dfserver/replication/legacy_ds_rotator.py",
+      "before_sha256": "8b4d0b0096f875fcfa346173f062a8ec347ddace642123df9b22f7e6fb9908ff",
+      "after_sha256": "f70ae46c7583d9c2f4a496cf3b01861fd20cdc4ad2aa3c65bd79b17dd3d15b71"
+    },
+    "legacy_ds_skill_template": {
+      "canonical": "dfserver.replication.legacy_ds_skill_template",
+      "source": "dfserver/replication/legacy_ds_skill_template.py",
+      "before_sha256": "e69b33dc9dfc79c5359ff6f34fe6f557ecc6be55de4f4792e83f9a1597e088bd",
+      "after_sha256": "e69b33dc9dfc79c5359ff6f34fe6f557ecc6be55de4f4792e83f9a1597e088bd"
+    },
+    "legacy_ds_static_actor_manifest": {
+      "canonical": "dfserver.replication.legacy_ds_static_actor_manifest",
+      "source": "dfserver/replication/legacy_ds_static_actor_manifest.py",
+      "before_sha256": "189f3f54320d038d690cb86e4e7b0ef2011be9723b230fd0c6123705b1b75b45",
+      "after_sha256": "7fb30f7ffd5de99ec9b3708cdba6f0dd61f61a6540b78f2308ab7f143268f8a0"
+    },
+    "legacy_ds_world_delivery": {
+      "canonical": "dfserver.replication.legacy_ds_world_delivery",
+      "source": "dfserver/replication/legacy_ds_world_delivery.py",
+      "before_sha256": "46d8e20a1bcd8cc5b3b2f6346e0b881747936b4d288eeac9d85669b680f18ae6",
+      "after_sha256": "46d8e20a1bcd8cc5b3b2f6346e0b881747936b4d288eeac9d85669b680f18ae6"
+    },
+    "native_match_loadout": {
+      "canonical": "dfserver.match.native_match_loadout",
+      "source": "dfserver/match/native_match_loadout.py",
+      "before_sha256": "e8f1dd2dfe8f8321c64d84b1c20954a07d7678a8d782eaaff0544496bfb51ed6",
+      "after_sha256": "20e8a0ab2a8ec92c84acc5aaf89d5d7b4f282fe49f95afba65d33310232a130a"
+    },
+    "native_match_materializer": {
+      "canonical": "dfserver.match.native_match_materializer",
+      "source": "dfserver/match/native_match_materializer.py",
+      "before_sha256": "d75e062f06ffa48f62682b3a9ffc7b5e8b7a990b8a63a879a8a3605960c84e05",
+      "after_sha256": "7d1cc18a548e99e31c61e53ef82a2cfed65b1665cc61c1dba8f4453222631cc2"
+    },
+    "legacy_ds_actor_receive": {
+      "canonical": "dfserver.replication.legacy_ds_actor_receive",
+      "source": "dfserver/replication/legacy_ds_actor_receive.py",
+      "before_sha256": "c3c6dc264f5401d7ad885f8d793140b03c3e942d2e586141381a162e1a86a9fd",
+      "after_sha256": "1358be0ada2a6da7627bf130bf701599c2dccc12c1bd694f88dc1c970e0fb4ac"
+    },
+    "legacy_ds_fname_string": {
+      "canonical": "dfserver.replication.legacy_ds_fname_string",
+      "source": "dfserver/replication/legacy_ds_fname_string.py",
+      "before_sha256": "552cfc188c5a58faadc82994825f5edaa6debcfff8e28fac0dafb8a26a727ae2",
+      "after_sha256": "14950f792ec6136584769f1493fd5c85511802e4e170c90e11e0b00c492f208e"
+    },
+    "legacy_ds_late_fashion_name": {
+      "canonical": "dfserver.replication.legacy_ds_late_fashion_name",
+      "source": "dfserver/replication/legacy_ds_late_fashion_name.py",
+      "before_sha256": "a72b8ffb111be68c0141f1d4eb82261fba5b0ca1b186761d3ea32ccc8b59b0b5",
+      "after_sha256": "f1cd808d07ab35473ea99960cda6a2851be2bd95e3daee7f961e8a79361b2a02"
+    },
+    "legacy_ds_pc_ping": {
+      "canonical": "dfserver.replication.legacy_ds_pc_ping",
+      "source": "dfserver/replication/legacy_ds_pc_ping.py",
+      "before_sha256": "bd4c831bb09d1d0fd02c702daf1d2c0e75f45894f0ae6a79a4fa28fa70f7cc84",
+      "after_sha256": "0bf74dd3562f10a1c4eeccae2471aca2afc3e9229f5f411d39f07a75ac9985ef"
+    }
+  },
+  "resource_root_unchanged": true,
+  "account_database_accessed": false,
+  "backup": "work/evidence/server-layout-20261020-before.zip"
+}

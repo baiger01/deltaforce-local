@@ -1,0 +1,33 @@
+{
+  "all_native_inventory_base_gids_and_quantities_preserved": true,
+  "before_selector": [
+    "632 bits mandatory prefix",
+    "stack present bit and its optional raw count/max/arrays",
+    "durability present bit and optional pair of float32",
+    "armor health present bit and optional pair of float32"
+  ],
+  "client_launched": false,
+  "default_component_has_rep_layout": false,
+  "description_payload_does_not_spawn_or_equip_weapon_actor": true,
+  "fast_array_header": "raw int32 ArrayKey, BaseKey, NumDeletes, NumChanges",
+  "generic_custom_delta_network_version": 13,
+  "generic_legacy_prefix": false,
+  "kind": "native_inventory_gun_desc_splice_subset_contract_v1",
+  "minimal_selector_offset_bits": 635,
+  "native_gun_desc_count_compare_rva": "0xc0606f6",
+  "native_gun_desc_value_call_rva": "0xc060727",
+  "native_gun_desc_value_serializer_rva": "0x5079450",
+  "native_item_netserialize_rva": "0xc05fda0",
+  "ordinary_rep_layout_handle_is_not_class_cache_index": true,
+  "owning_inventory_class_cache_exclusive_maximum": 53,
+  "owning_inventory_class_cache_index": 7,
+  "payload_alignment": "Archive raw bytes at current bit cursor; no padding",
+  "process_access": false,
+  "root_identity_must_equal_enclosing_inventory_item": true,
+  "source_pins": {
+    "outputs/df-local-server/protocol/portable-map-spawn/inventory-schema.json": "c0ff0436a36ee6e1c0e66c7a69039a4f3375eabe9308353116dcc23a41e63ad7",
+    "work/evidence/map-system-audit-20261018/native-economy-inventory-item-netserialize-and-id-conversion.json": "a98229290deef047142826df9e6e0a79a4387dc9b9452217af7948192b592be8"
+  },
+  "initial_state_policy": "Each local match starts ArrayKey=1, BaseKey=-1; later chunks require previous real ACK and use the previous key as BaseKey",
+  "gun_chunk_policy": "Each GunInventoryItem is isolated; other items use at most four original GIDs per stage"
+}

@@ -204,6 +204,7 @@ class WelcomeProfileTests(unittest.TestCase):
                          'load_control_trial_profile': validator,
                          'CONTROL_PROFILE': self.profile_path, 'ROOT': self.root,
                          'ENTRY_SHA': CLIENT_SHA, 'parser': argparse.ArgumentParser(),
+                         'portable_plan': None,
                          'os': SimpleNamespace(environ={'DF_LOCAL_DS_MAP_ID': '2201'})}
                 # Runner's fixed profile filename is reproduced in this temp ROOT.
                 destination = self.root / 'outputs/df-local-server/protocol/native_ds_wire_profile.json'
@@ -227,11 +228,12 @@ class WelcomeProfileTests(unittest.TestCase):
                                             for target in node.targets))
                 self.assertLess(gate.lineno, boundary.lineno)
 
-    def test_real_project_profile_passes_offline(self):
+    def test_current_project_profile_passes_offline(self):
         root = WORK.parent
-        path = root / 'outputs/df-local-server/protocol/native_ds_wire_profile.json'
+        path = root / 'outputs/df-local-server/protocol/native_ds_control_profile_79fb7b10.json'
+        client_sha = '79fb7b105170141ed863331d36833a73062e66bf5291b2364fe3a64c18336203'
         for entry in self.code.values():
-            profile = entry[3](path, root, CLIENT_SHA, 2201)
+            profile = entry[3](path, root, client_sha, 2201)
             self.assertEqual(profile['control_welcome_maps']['2201']['level'], 'Iris_Entry')
 
     def test_wrapper_seals_environment_map_before_request_hops(self):
@@ -240,11 +242,34 @@ class WelcomeProfileTests(unittest.TestCase):
         scope = {'args': SimpleNamespace(ds_control_probe=True, ds_map_id=None),
                  'load_control_trial_profile': entry[3], 'CONTROL_PROFILE': self.profile_path,
                  'ROOT': self.root, 'parser': argparse.ArgumentParser(),
+                 'ENTRY_SHA': CLIENT_SHA, 'portable_plan': None,
                  'os': SimpleNamespace(environ={'DF_LOCAL_DS_MAP_ID': '2201'})}
         exec(entry[4], scope)
         self.assertEqual(scope['args'].ds_map_id, 2201)
         self.assertNotIn('request_path', scope)
         self.assertNotIn('shell', scope)
+
+    def test_real_profile_loading_gate_uses_the_qualified_build_identity(self):
+        current_sha = '79fb7b105170141ed863331d36833a73062e66bf5291b2364fe3a64c18336203'
+        current = dict(self.profile, client_sha256=current_sha)
+        self.profile_path.write_text(json.dumps(current), encoding='utf-8')
+        for name, entry in self.code.items():
+            with self.subTest(launcher=name):
+                errors = io.StringIO()
+                scope = {'args': SimpleNamespace(ds_control_probe=True, ds_map_id=2201),
+                    'load_control_trial_profile': entry[3], 'CONTROL_PROFILE': self.profile_path,
+                    'ROOT': self.root, 'ENTRY_SHA': current_sha, 'portable_plan': None,
+                    'parser': argparse.ArgumentParser(),
+                    'os': SimpleNamespace(environ={'DF_LOCAL_DS_MAP_ID': '2201'})}
+                code = 0
+                with contextlib.redirect_stderr(errors):
+                    try:
+                        exec(entry[4], scope)
+                    except SystemExit as error:
+                        code = error.code
+                self.assertEqual(code, 0, errors.getvalue())
+                self.assertEqual(scope['control_profile']['client_sha256'], current_sha)
+                self.assertNotIn('request_path', scope)
 
 
 if __name__ == '__main__':

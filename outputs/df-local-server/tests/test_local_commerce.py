@@ -47,6 +47,16 @@ class LocalCommerceTests(unittest.TestCase):
     def request(self, name, fields):
         return CandidateMessage(name, self.codec.services[name], 17, fields)
 
+    def test_department_merchants_match_all_source_ids_without_fabricated_vip_levels(self):
+        from dfserver import native_departments
+        request = self.request('CSMallGetMerchantsReq', {})
+        fields = response_fields(request, self.backend, self.token)
+        self.assertEqual(fields['result'], 0)
+        expected = sorted(row['merchant_id'] for row in native_departments.DEPARTMENTS.values())
+        self.assertEqual([row['id'] for row in fields['merchants']], expected)
+        self.assertTrue(all(set(row) == {'id'} for row in fields['merchants']))
+        self.codec.decode(self.codec.response(request, fields))
+
     def test_catalogue_and_offer_are_encoded_for_original_client(self):
         item_id = 15080010001
         self.assertIn(item_id, stock_catalog())

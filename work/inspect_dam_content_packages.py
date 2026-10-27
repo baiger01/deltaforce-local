@@ -4,6 +4,7 @@ No encrypted payload/index is decoded. Package names, typed scalar tags and
 references are evidence; the scanner does not invent spawn/drop rules.
 """
 import ast
+import argparse
 from collections import Counter
 import hashlib
 import json
@@ -14,7 +15,9 @@ import zlib
 
 import lz4.block
 import zstandard
+import oodle_payload_reader
 from oodle_payload_reader import decode as decode_oodle
+from local_game_paths import game_paths
 
 HERE = Path(__file__).resolve().parent
 OUT = HERE / 'evidence/dam_content_packages'
@@ -82,12 +85,19 @@ def name_maps(data):
 
 
 def main():
-    paths = [Path(p) for p in json.loads((HERE / 'pak_paths.json').read_text(encoding='utf-8'))
-             if Path(p).name == ARCHIVE and Path(p).exists()]
-    if len(paths) != 1:
-        raise ValueError('Expected one previously recorded Dam archive')
-    path = paths[0]
-    OUT.mkdir(parents=True, exist_ok=True)
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--source-game', type=Path)
+    parser.add_argument('--output', type=Path, default=OUT)
+    args = parser.parse_args()
+    source, _shadow = game_paths(args.source_game)
+    oodle_payload_reader.PATH = source / 'DeltaForce/Binaries/Win64/oo2core_8_win64.dll'
+    path = source / 'DeltaForce/Content/Paks' / ARCHIVE
+    if not path.is_file():
+        raise ValueError('The installed game does not contain the Dam archive')
+    output = args.output.resolve()
+    if output == source or output.is_relative_to(source):
+        raise ValueError('Extraction output must be outside the installed game')
+    output.mkdir(parents=True, exist_ok=True)
     result = {'kind': 'bounded_clear_dam_package_inspection', 'archive': path.name,
               'archive_relative_path': 'DeltaForce/Content/Paks/' + path.name,
               'archive_size': path.stat().st_size, 'entry_ranges': RANGES,
@@ -126,7 +136,7 @@ def main():
                         is_header = data.startswith(b'\xc1\x83\x2a\x9e')
                         row['kind'] = 'uasset' if is_header else 'companion_candidate'
                         filename = f'entry-{number}.' + ('uasset' if is_header else 'uexp')
-                        (OUT / filename).write_bytes(data)
+                        (output / filename).write_bytes(data)
                         row['evidence_file'] = filename
                         row['package_references'] = sorted(set(x.decode('ascii') for x in re.findall(rb'/Game/[A-Za-z0-9_/]+', data)))
                         if is_header:
@@ -136,7 +146,7 @@ def main():
                                 row['name_map_summary_offset'] = field
                                 row['name_count'] = len(names)
                                 row['content_names'] = [name for name in names if TERMS.search(name)]
-                                (OUT / f'entry-{number}.names.json').write_text(json.dumps(names, ensure_ascii=False, indent=2), encoding='utf-8')
+                                (output / f'entry-{number}.names.json').write_text(json.dumps(names, ensure_ascii=False, indent=2), encoding='utf-8')
                             except ValueError as exc:
                                 row['name_map_error'] = str(exc)
                                 prior_names = None
@@ -147,7 +157,7 @@ def main():
                 print(json.dumps({key: row[key] for key in ('entry', 'kind', 'encrypted', 'uncompressed_bytes') if key in row}), flush=True)
             offset = entry['next_pos']
         result.update(entries_traversed=number, counts=dict(counts), clear_bytes_inspected=copied)
-    (OUT / 'manifest.json').write_text(json.dumps(result, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+    (output / 'manifest.json').write_text(json.dumps(result, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
     print(json.dumps({'entries_traversed': number, 'records': len(result['records']), 'clear_bytes_inspected': copied}), flush=True)
 
 

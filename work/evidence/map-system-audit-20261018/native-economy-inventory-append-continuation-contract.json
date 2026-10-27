@@ -1,0 +1,31 @@
+{
+  "client_launched": false,
+  "client_sha256": "4254fbe66585f260f1f9dbfc5e302887842552e7baed8939e023160a5e250be0",
+  "kind": "native_inventory_monotonic_append_continuation_contract",
+  "local_sequence_policy": {
+    "deleted_ids": [],
+    "each_batch_adds_distinct_element_ids": true,
+    "first_array_key": 1,
+    "first_base_key": -1,
+    "subsequent_array_key": "previous acknowledged array key + 1",
+    "subsequent_base_key": "previous acknowledged array key"
+  },
+  "policy_is_original_server_sequence_claim": false,
+  "process_access": false,
+  "receive_condition_rvas": [
+    "0xcacab4c",
+    "0xcacab51",
+    "0xcacab54",
+    "0xcacab5a",
+    "0xcacab5d"
+  ],
+  "receive_implicit_delete_condition": "BaseReplicationKey < item.MostRecentArrayReplicationKey < ArrayReplicationKey",
+  "required_transport_gate": "next continuation only after actual ACK of the previous continuation",
+  "sender_absent_anchor": "0xcac1d4f",
+  "sender_existing_state_anchor": "0xcac1d5c",
+  "sender_old_state_absent_base_key": -1,
+  "source_reports": {
+    "native-economy-inventory-continuation-receive-and-implicit-deletes.json": "7641fdb40569c97f7deb491f020c454a7234d73eb5f2178bb9d15f77824cc34a",
+    "native-economy-inventory-fastarray-delta-and-item-ops.json": "4523398814ffbf1ae66de39d0c2cd30ec3852e4a458ef4977372042a77048c80"
+  }
+}

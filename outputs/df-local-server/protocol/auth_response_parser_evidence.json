@@ -1,0 +1,45 @@
+{
+  "checked_at_utc": "2026-09-28T04:37:42+00:00",
+  "source": "read-only static analysis of the installed GCloud.dll, cross-checked against bounded original-client loopback trials",
+  "source_rvas": {
+    "observed_0x3366_auth_response_receive": "0x1a214c",
+    "observed_0x3366_control_dispatch": "0x187f10",
+    "observed_0x3366_auth_response_reader": "0x187960",
+    "observed_0x3366_ready_response_reader": "0x187d80",
+    "different_0x4366_receive_path": "0x0e3430",
+    "different_0x4366_inner_envelope_decoder": "0x0c64b0"
+  },
+  "protocol_distinction": "The original client sends outer magic 0x3366. The previously examined 0xaa/0x99 envelope belongs to a separate 0x4366 receive path and does not define this exchange.",
+  "client_error_203_symbol": "kErrorGcpError; the recovered client enum separately names kErrorAuthFailed as 212. The 203 observation does not identify which GCP check failed.",
+  "observed_0x3366_auth_response_layout": "The native 0x2002 reader uses a fixed ordered structure: common response, 16-bit word, up-to-4096-byte blob, 32-bit word, up-to-1024-byte blob, 32-bit word, 16-bit word, up-to-1024-byte blob. The existing AuthResponse encoder matches this sequence.",
+  "observed_0x3366_ready_response_layout_v11": "The native 0x6002 reader reads a 4-byte word, a 16-byte field, an 8-byte word, a byte, then a 4-byte word for protocol version 11.",
+  "isolated_native_decoder_checks": {
+    "auth_2002": {"return_code": 0, "body_bytes": 29, "consumed_bytes": 29},
+    "ready_6002": {"return_code": 0, "body_bytes": 33, "consumed_bytes": 33},
+    "control_dispatch_2002_and_6002": "Both returned 0 and consumed their complete synthetic bodies through the version-11 dispatcher at RVA 0x188070.",
+    "frame_header_2002_and_6002": "Both returned 0 through the 0x3366 frame-header reader at RVA 0x1887a0, each consuming the 21-byte header. The ciphertext bodies were not processed by this reader.",
+    "scope": "Synthetic zero-valued bodies and test frames passed to the installed GCloud.dll readers in a separate helper process. This proves structural decoding only, not account approval, decryption in a live connection, or state acceptance."
+  },
+  "official_capture_timing": {
+    "metadata": "protocol/login_control_timing_metadata.json",
+    "auth_0x2002_relative_ms": 185.448,
+    "ready_0x6002_relative_ms": 266.483,
+    "first_client_0x4013_relative_ms": 334.637,
+    "first_server_0x4013_relative_ms": 423.49,
+    "interpretation": "The official server sends 0x6002 about 81 ms after 0x2002. The client sends the first 0x4013 about 68 ms after 0x6002; only then does the server send a 0x4013. Thus the missing client 0x4013 in local trials precedes any required server business response."
+  },
+  "original_client_trials": {
+    "old_0x4366_empty_envelope_probe": "0x2002 sent; original client reported connection error 203. A probe without 0x2002 did not show this error in its bounded run.",
+    "fixed_0x3366_auth_only_zero_valued_probe": "Original client retried four connections after approximately 12 seconds each and reported connection error 3; it did not send a further command. This is a parser probe, not a successful authentication response.",
+    "fixed_0x3366_auth_and_ready_zero_valued_probe": "Both responses were sent back-to-back. The original client reported GCP error 203 almost immediately after the responses and did not send a further command. The isolated native decoder accepted each body, so the failure is in decryption in the live state, sequencing, timing, or field semantics.",
+    "delayed_ready_probe": "Ran the original client with a 350 ms gap between the schema-shaped zero-valued 0x2002 and 0x6002 responses. The client sent 0x2001 with the local session token, but sent no subsequent command. The diagnostic socket timed out after the responses and the client log reported GCP error 203 and connection-timeout dialog code 28. The gap did not establish that either response was semantically accepted; the original SDK was restored after the bounded trial."
+  },
+  "unknown": [
+    "Which 0x2002 response fields prove that the local account was authorized",
+    "Which fields are copied from the request versus issued by the server",
+    "What 0x6002 values and subsequent game login/bootstrap messages the client requires"
+  ],
+  "original_game_files_modified_in_static_analysis": false,
+  "production_authorization_implemented": false,
+  "original_lobby_verified": false
+}

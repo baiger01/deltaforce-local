@@ -1,0 +1,200 @@
+{
+  "schema_version": 1,
+  "mapping_status": "native_observations_and_primary_report_inference",
+  "created_at_utc": "2026-10-20T02:20:00Z",
+  "max_level": 4,
+  "terminal_score_unrecovered": true,
+  "official_server_response_recovered": false,
+  "score_semantics": "Each nonterminal score is the reputation increment required to advance from that level. quality_value is cumulative; the installed client subtracts the sum of earlier level scores to display current progress.",
+  "provenance_summary": "Qualified operational curve assembled from native client progress recordings for levels 2 and 3, recorded native MAX screens for level 4, and a primary service provider's explicit required-progress report for level 1. The provider directly lists 20/30/30 required points; price arithmetic and an indexed original creator report independently corroborate those values. No level-1 native progress popup was observed. The provider's platform and exact game build are uncertain. This is not a recovered official server response or serialized RepLevelConfig array.",
+  "levels": [
+    {
+      "level": 1,
+      "score": 20,
+      "evidence": {
+        "kind": "primary_service_provider_report",
+        "method": "explicit_required_progress_column",
+        "reported_required_points": 20,
+        "source_ids": ["k4_explicit_provider_report"],
+        "supplementary_source_ids": ["provider_rate_card", "indexed_primary_creator_report"],
+        "native_progress_popup_observed": false,
+        "limitation": "The provider explicitly reports 20 required progress points using the term experience points. No native level-1 progress popup or official server response was observed. The provider's platform and exact game build are not established."
+      }
+    },
+    {
+      "level": 2,
+      "score": 30,
+      "evidence": {
+        "kind": "recorded_native_client_progress",
+        "method": "visually_reviewed_video_frame",
+        "readout": "LV2, 2/30",
+        "source_ids": ["taptap_native_lv2"]
+      }
+    },
+    {
+      "level": 3,
+      "score": 30,
+      "evidence": {
+        "kind": "recorded_native_client_progress",
+        "method": "visually_reviewed_video_frames",
+        "readouts": ["Logistics LV3, 14/30", "Combat LV3, 12/30"],
+        "source_ids": ["youtube_native_lv3"]
+      }
+    },
+    {
+      "level": 4,
+      "score": null,
+      "evidence": {
+        "kind": "recorded_native_client_max",
+        "method": "visually_reviewed_original_player_screenshots",
+        "readout": "LV4, MAX, all five departments",
+        "source_ids": ["note_native_max"],
+        "limitation": "MAX screens establish the terminal level but do not reveal the final RepLevelConfig.score. No numeric terminal score was invented."
+      }
+    }
+  ],
+  "sources": {
+    "k4_explicit_provider_report": {
+      "url": "https://k4dianjing.com/sanjiaozhou/dailian/bumen/",
+      "publisher": "K4电竞 / King's Services For",
+      "individual_author": null,
+      "publication_date": null,
+      "observed_at_utc": "2026-10-20T02:33:17Z",
+      "kind": "primary_service_provider_report",
+      "method": "Explicit required-progress column on the provider's own service catalog",
+      "reported_interval_scores": [20, 30, 30],
+      "reported_total_progress": 80,
+      "reported_scope": "The table states that these values apply to any of the five departments.",
+      "source_terminology": "The provider calls department progress experience points.",
+      "capture": {
+        "path": "work/evidence/department-primary-provider-k4-20261020.json",
+        "sha256": "3a444538fa1fac1bebf7c0352d404610820e802ff6f8cff1ddf760f16a73f6c2"
+      },
+      "screenshot": {
+        "path": "work/evidence/department-primary-provider-k4-20261020.png",
+        "sha256": "812d06b77cafc571db51423f17b958c7982d63e77c262738b58bce440acd9532"
+      },
+      "frames": [
+        {
+          "path": "work/evidence/department-primary-provider-k4-table-20261020.png",
+          "sha256": "a8ce1a0488b17b42c46360862ba125b62af0b67ee7ae542e2eb5747950599e22"
+        },
+        {
+          "kind": "observed_table_dom",
+          "path": "work/evidence/department-primary-provider-k4-table-dom-20261020.html",
+          "sha256": "58b34784aef70a12853ad6a654900a11d6998123e3a19c4e9e11a90fd7ee5669"
+        }
+      ],
+      "platform_and_build": "Not established",
+      "limitation": "This is the provider's own explicit statement, with no first-hand play-test recording, native level-1 popup or official config response. Some unrelated facility descriptions are imprecise. It supports a qualified operational reconstruction."
+    },
+    "indexed_primary_creator_report": {
+      "url": "https://www.bilibili.com/read/cv40714094/",
+      "author": "成都Epoch",
+      "edited_at_displayed": "2026-01-05 09:30",
+      "kind": "primary_creator_report",
+      "retrieval_method": "Public web search index copy; original page currently redirects to read/error",
+      "reported_interval_scores": [20, 30, 30],
+      "reported_total_progress": 80,
+      "author_report": "The creator explicitly describes clicking the native department progress bar to inspect numeric progress.",
+      "direct_page_content_verified": false,
+      "capture": {
+        "path": "work/evidence/department-primary-creator-report-indexed-20261020.json",
+        "sha256": "e4c88c9ef288b5804484e4946aeccf47f68bd1abfc37712ecd7ebc7522841cef"
+      },
+      "limitation": "Supplementary indexed creator report, not an independently observed native progress popup or recovered server response."
+    },
+    "provider_rate_card": {
+      "url": "https://www.sina.cn/news/detail/5308361094464225.html",
+      "title": "三角洲行动任务价格表",
+      "author": "是小余瑾吖",
+      "author_label": "微博认证：游戏博主",
+      "author_profile_url": "https://weibo.com/u/6790109539",
+      "published_at_page_metadata": "2026-06-10 20:42",
+      "published_time_timezone": "Not specified by page metadata",
+      "observed_at_utc": "2026-10-20T02:18:15Z",
+      "original_weibo_status_url": null,
+      "platform_scope": "Provider describes mobile Delta Force services (KH手游三角洲).",
+      "reported_prices": [
+        {"from_level": 1, "to_level": 2, "total_price": 30, "per_point_price": 1.5},
+        {"from_level": 2, "to_level": 3, "total_price": 75, "per_point_price": 2.5},
+        {"from_level": 3, "to_level": 4, "total_price": 105, "per_point_price": 3.5}
+      ],
+      "corroboration": "The latter two price ratios yield 30, matching independently observed native progress denominators.",
+      "capture": {
+        "path": "work/evidence/department-primary-service-rate-card-capture-20261020.json",
+        "sha256": "a072ea3f5ee13e33ec3e7db5c42ecaaeccef4a87624129f2f3006bd3e7b754bb"
+      },
+      "screenshot": {
+        "path": "work/evidence/department-primary-service-rate-card-20261020.png",
+        "sha256": "1a07c68dfbbdc73343c77573b3fc4886999030b9a52cb5ca3e9711df279e20c8"
+      }
+    },
+    "taptap_native_lv2": {
+      "url": "https://www.taptap.cn/moment/633848456032554940",
+      "author": "Original TapTap player feedback publisher; not the game publisher",
+      "published_date": "2025-01-29",
+      "video_timestamp_seconds": 18.0,
+      "region_language": "Mainland Chinese native client",
+      "readout": {"level": 2, "progress": 2, "denominator": 30},
+      "screenshot": {
+        "path": "work/evidence/department-public-observations-20261019/department-primary-taptap-feedback-18.png",
+        "sha256": "af117ec42bcd9b8ffbcdac7b04c02a23680761256c2e865c1ac0c85552aabc36"
+      }
+    },
+    "youtube_native_lv3": {
+      "url": "https://www.youtube.com/watch?v=fnAzODg7Jho",
+      "author": "三角洲部门任务拯救者",
+      "author_handle": "@RRRRanzi",
+      "published_date": "2025-10-10",
+      "region_language": "Mainland Chinese native client",
+      "frames": [
+        {
+          "video_timestamp_seconds": 12.0,
+          "readout": {"department": "logistics", "level": 3, "progress": 14, "denominator": 30},
+          "path": "work/evidence/department-primary-frame-research-20261019-rpf-youtube-cn-12.png",
+          "sha256": "484f686a4a1459806fbdc9b7fb2339ef909d9fe9a94609a2f86421c1d7a53d84"
+        },
+        {
+          "video_timestamp_seconds": 22.0,
+          "readout": {"department": "combat", "level": 3, "progress": 12, "denominator": 30},
+          "path": "work/evidence/department-primary-frame-research-20261019-rpf-youtube-cn-22.png",
+          "sha256": "9de84eefa46e768191bda5114d0827d828eebf34c9811ce3d8c94b4ab558651e"
+        }
+      ]
+    },
+    "note_native_max": {
+      "author": "Low / nothope_nar_2low",
+      "region_language": "Japanese international native client",
+      "report_path": "work/evidence/department-public-observations-20261019/report.json",
+      "observations": [
+        {"department": "tactical", "url": "https://note.com/nothope_nar_2low/n/nb19d75e51c33", "published_date": "2025-10-31", "path": "work/evidence/department-public-observations-20261019/note-tactical-max-candidate.png", "sha256": "4e218da0b6a3a3102ee9128f7a5dd012521ae190336aa7ad0f9b2e933f10b42d"},
+        {"department": "combat", "url": "https://note.com/nothope_nar_2low/n/n57db690467b5", "published_date": "2025-11-03", "path": "work/evidence/department-public-observations-20261019/note-combat-max-candidate.png", "sha256": "251c06a813371dcb816737026572b305cc9c52b560b47b723b5f8393c01769e9"},
+        {"department": "medical", "url": "https://note.com/nothope_nar_2low/n/neb8ec91bc1fb", "published_date": "2025-11-03", "path": "work/evidence/department-public-observations-20261019/note-medical-max-candidate.png", "sha256": "4a112d7c4f30dd2b6daf9e90681303ee75852c2626354542223244f8b636573c"},
+        {"department": "logistics", "url": "https://note.com/nothope_nar_2low/n/n7331fcaf45f0", "published_date": "2025-11-30", "path": "work/evidence/department-public-observations-20261019/note-logistics-max-candidate.png", "sha256": "fd771233fe53a84043b98a95615bd2f17800514ef54d20a82464bd67c102c4e9"},
+        {"department": "research", "url": "https://note.com/nothope_nar_2low/n/nf8a9f133a6c5", "published_date": "2025-11-04", "path": "work/evidence/department-public-observations-20261019/note-research-max-candidate.png", "sha256": "c641de950373b943782106ef08c2ed78a6b064f04ada737aaeb627335167e5b8"}
+      ],
+      "date_limit": "Publication dates are page dates; individual screenshot capture dates are not established."
+    },
+    "installed_client_semantics": {
+      "source": "RoleInfoServer.lua",
+      "pak": "pak-0-0-pakchunk1-WindowsClient.pak",
+      "entry": 6929,
+      "sha256": "a6221ddd4f16c4c77be62be552b78eb275f06f9710aed57c3ec529e543eb7503",
+      "report_path": "work/evidence/department-public-observations-20261019/report.json",
+      "functions": {
+        "0.68": "Subtract sum(score for earlier levels) from cumulative quality_value for current progress.",
+        "0.69": "Maximum reputation level is the count of repLevelConfigs.",
+        "0.70": "Sum score values for levels less than or equal to the supplied level."
+      },
+      "numeric_curve_scope": "These client functions establish semantics, not the missing server-supplied numeric scores."
+    }
+  },
+  "limitations": [
+    "Level 1 is based on a primary service provider's explicit required-progress report, not a directly observed native progress denominator.",
+    "The primary provider's platform and exact game build are uncertain; the mobile rate card and indexed creator report are corroboration only.",
+    "The historical recordings and mobile service post do not establish the current installed server configuration.",
+    "No serialized official CSAttributeGetConfigRes.rep_level_configs response was recovered.",
+    "The terminal score remains null because MAX presentation does not disclose it."
+  ]
+}

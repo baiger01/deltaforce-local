@@ -43,7 +43,6 @@ from dfserver.handshake_diagnostic import (_derived_ready_body, _session_bound_a
                                            _candidate_local_deposit_response,
                                            _candidate_local_deposit_sort_response,
                                            _candidate_local_safehouse_response,
-                                           _candidate_local_safehouse_unlock_response,
                                            _candidate_local_safehouse_config_response,
                                            _candidate_local_module_status_response,
                                            _candidate_local_lottery_purchase_summary,
@@ -101,12 +100,10 @@ class HandshakeDiagnosticTests(unittest.TestCase):
             'slippage': 0, 'currency_type_substitute': 0,
             'price_substitute': 0}])
 
-    def test_safehouse_unlock_and_mall_refresh_have_usable_values(self):
+    def test_safehouse_config_and_mall_refresh_have_usable_values(self):
         codec = _candidate_codec()
         key = b'0123456789abcdef'
         requests = (
-            ('CSSafehouseFuncIsUnlockReq', {'unlock_id': 321},
-             _candidate_local_safehouse_unlock_response),
             ('CSSafehouseGetConfigReq', {'formula_sign': 'A1B2', 'upgrade_sign': 'C3D4'},
              _candidate_local_safehouse_config_response),
             ('CSMallGetLabelNo1ConfigReq', {}, _candidate_read_only_empty_response),
@@ -121,9 +118,7 @@ class HandshakeDiagnosticTests(unittest.TestCase):
                 reply = codec.decode(decoded.messages[0])
                 self.assertEqual((reply.name, reply.sequence, reply.fields['result']),
                                  (name[:-3] + 'Res', sequence, 0))
-                if name == 'CSSafehouseFuncIsUnlockReq':
-                    self.assertEqual(reply.fields['params'][0]['unlock_id'], '321')
-                elif name == 'CSSafehouseGetConfigReq':
+                if name == 'CSSafehouseGetConfigReq':
                     self.assertEqual(reply.fields['new_formula_sign'], 'A1B2')
                     self.assertEqual(reply.fields['new_upgrade_sign'], 'C3D4')
                     self.assertEqual(reply.fields.get('upgrade_cfg', []), [])
@@ -211,7 +206,7 @@ class HandshakeDiagnosticTests(unittest.TestCase):
         main_grid = replies['CSDepositGetPropsReq']['grid_pages']
         self.assertEqual(len(main_grid), 1)
         self.assertEqual((main_grid[0]['grid_page_id'], main_grid[0]['grid_length'],
-                          main_grid[0]['grid_width']), (2, 9, 40))
+                          main_grid[0]['grid_width']), (2, 9, 35))
 
     def test_prepare_boards_acknowledged_and_hero_selection_persists(self):
         root = Path(__file__).resolve().parent.parent
@@ -233,8 +228,9 @@ class HandshakeDiagnosticTests(unittest.TestCase):
                                  (name[:-3] + 'Res', sequence, 0))
                 if name == 'CSPrepareMapBoardReq':
                     board = reply.fields.get('board_info_array', [])
-                    self.assertEqual(len(board), 2)
-                    self.assertEqual({int(row['point_id']) for row in board}, {1})
+                    self.assertEqual(len(board), 28)
+                    self.assertEqual({int(row['point_id']) for row in board},
+                                     {1, 2, 12, 13, 14, 21})
                     self.assertEqual({int(row['match_mode_type']) for row in board}, {1, 3})
             with patch.dict('os.environ', {'DF_LOCAL_MAP_ID_PROBE': '10:12'}):
                 _candidate_local_map_board_catalog.cache_clear()
@@ -508,7 +504,7 @@ class HandshakeDiagnosticTests(unittest.TestCase):
         self.assertTrue(reply.fields['finish'])
         self.assertEqual(reply.fields.get('price_list', []), [])
 
-    def test_local_guide_bootstrap_marks_all_client_stages_finished(self):
+    def test_local_guide_bootstrap_has_no_pending_client_stages(self):
         codec = _candidate_codec()
         key = b'0123456789abcdef'
         request = codec.encode('CSGuideGetPlayerGuideReq', {}, sequence=22)
@@ -518,7 +514,7 @@ class HandshakeDiagnosticTests(unittest.TestCase):
             frame, key, direction='server_to_client', compression_method=1).messages[0])
         self.assertEqual(reply.fields['result'], 0)
         self.assertTrue(reply.fields['skip_all'])
-        self.assertEqual(set(reply.fields['guide_stage_id']), {1, 2, 3, 5, 6, 7, 34})
+        self.assertEqual(reply.fields.get('guide_stage_id', []), [])
 
     def test_local_guide_stage_requests_receive_finished_state(self):
         codec = _candidate_codec()
@@ -536,8 +532,7 @@ class HandshakeDiagnosticTests(unittest.TestCase):
                 self.assertEqual((reply.name, reply.sequence, reply.fields['result']),
                                  (name[:-3] + 'Res', sequence, 0))
                 if name == 'CSGuidePassedReq':
-                    self.assertEqual(set(reply.fields['guide_stage_id']),
-                                     {1, 2, 3, 5, 6, 7, 34})
+                    self.assertEqual(reply.fields.get('guide_stage_id', []), [])
 
     def test_empty_mall_pages_are_marked_complete(self):
         root = Path(__file__).resolve().parent.parent
@@ -1075,7 +1070,7 @@ class MapHandshakeDiagnosticTests(unittest.TestCase):
                 modes = reply.fields.get('mode_info_list', [])
                 self.assertEqual(modes, [])
 
-    def test_local_match_prepare_probe_declares_bots_without_a_fake_ds_endpoint(self):
+    def test_local_match_prepare_probe_declares_only_the_actual_solo_member(self):
         codec = _candidate_codec()
         key = b'0123456789abcdef'
         root = Path(__file__).resolve().parent.parent
@@ -1091,9 +1086,8 @@ class MapHandshakeDiagnosticTests(unittest.TestCase):
             self.assertEqual((notice.name, notice.sequence),
                              ('CSPrepareJoinMatchNtf', 0))
             members = notice.fields['room_member_infos']
-            self.assertEqual(len(members), 4)
+            self.assertEqual(len(members), 1)
             self.assertFalse(members[0]['is_robot'])
-            self.assertTrue(all(member['is_robot'] for member in members[1:]))
             self.assertEqual(notice.fields['player_id'],
                              str(backend.native_identity(token)['native_id']))
 
@@ -1128,7 +1122,8 @@ class MapHandshakeDiagnosticTests(unittest.TestCase):
         codec = _candidate_codec()
         key = b'0123456789abcdef'
         root = Path(__file__).resolve().parent.parent
-        mode = {'game_mode': 1, 'map_id': 2201, 'match_mode_id': 2}
+        mode = {'game_mode': 1, 'game_rule': 4, 'sub_mode': 10, 'team_mode': 3,
+                'map_id': 2201, 'match_mode_id': 142201103}
         with tempfile.TemporaryDirectory() as temporary:
             backend = Backend(Path(temporary) / 'save.sqlite3', root / 'definitions.json')
             token = backend.register('ds_probe_test', 'separate-test-password')['session']
@@ -1154,7 +1149,6 @@ class MapHandshakeDiagnosticTests(unittest.TestCase):
             self.assertIn(b'127.0.0.1', notice.body)
             self.assertIn(b'\x4a\x09localhost', notice.body)  # top-level DS domain
             self.assertIn(b'\x18\xf9\xf6\x02', notice.body)  # field 3, port 47993
-            self.assertIn(b'\x58\x02', notice.body)  # field 11, requested mode
             self.assertIn(
                 b'\x62\x1c\x0a\x09localhost\x12\x0f\x0a\x09' + b'127.0.0.1' +
                 b'\x10\xf9\xf6\x02', notice.body)  # field 12: HostInfo/DsIpInfo
@@ -1164,7 +1158,7 @@ class MapHandshakeDiagnosticTests(unittest.TestCase):
             from google.protobuf import descriptor_pb2, descriptor_pool, message_factory
             definition = descriptor_pb2.FileDescriptorProto(name='probe_join_contract.proto')
             message = definition.message_type.add(name='JoinEncryptionContract')
-            for field_name, number, field_type in (('enc_flag', 14, 13),
+            for field_name, number, field_type in (('match_mode_id', 11, 13), ('enc_flag', 14, 13),
                                                     ('secret_key', 19, 9)):
                 message.field.add(name=field_name, number=number, type=field_type, label=1)
             pool = descriptor_pool.DescriptorPool()
@@ -1172,6 +1166,7 @@ class MapHandshakeDiagnosticTests(unittest.TestCase):
             contract = message_factory.GetMessageClass(
                 pool.FindMessageTypeByName('JoinEncryptionContract'))()
             contract.ParseFromString(notice.body)
+            self.assertEqual(contract.match_mode_id, mode['match_mode_id'])
             self.assertEqual(contract.enc_flag, 0)
             self.assertFalse(contract.HasField('secret_key'))
             with patch.dict('os.environ', {'DF_LOCAL_DS_MAP_ID': '1901'}):
@@ -1565,6 +1560,83 @@ class MapHandshakeDiagnosticTests(unittest.TestCase):
                 self.assertEqual(progress[-1]['latest_match_handoff']['trigger_request'],
                                  'CSMatchRoomSolReadyTReq')
                 self.assertEqual(progress[-1]['latest_match_handoff']['map_id'], 2201)
+            finally:
+                client.close(); server.close(); worker.join(4)
+
+    def test_internal_ready_handoff_error_is_recorded_without_dropping_lobby(self):
+        codec = _candidate_codec()
+        root = Path(__file__).resolve().parent.parent
+        key = hashlib.md5(b'\x12').digest()
+        with tempfile.TemporaryDirectory() as temporary, patch.dict('os.environ', {
+                'DF_LOCAL_DS_JOIN_PROBE_AFTER_READY': '1',
+                'DF_LOCAL_DS_JOIN_PROBE_AFTER_HERO_LOCK': '0',
+                'DF_LOCAL_DS_MAP_ID': '2201'}), patch(
+                'dfserver.gateway.handshake_diagnostic._candidate_local_match_join_handoff',
+                side_effect=ImportError('missing merged helper')):
+            backend = Backend(Path(temporary) / 'save.sqlite3', root / 'definitions.json')
+            token = backend.register('ready_internal', 'separate-test-password')['session']
+            backend.register_game_nick(token, 'ReadyInternal')
+            identity = dict(backend.native_identity(token), token=token)
+            player_id = int(identity['native_id'])
+            client, server = socket.socketpair()
+            results = []
+            probe = SimpleNamespace(listening=True, port=47993)
+            worker = threading.Thread(target=lambda: results.append(
+                inspect_exchange(server, timeout=3, diagnostic_exponent_one=True,
+                                 expected_identity=identity, response_probe=True,
+                                 ready_probe=True, auth_identity_probe=True,
+                                 business_login_probe=True, business_bootstrap_probe=True,
+                                 backend=backend, local_session=token,
+                                 game_server_probe=probe)))
+            decoder, pending = StreamDecoder(), []
+            def receive():
+                while not pending:
+                    pending.extend(decoder.feed(client.recv(4096)))
+                return pending.pop(0)
+            def decoded(frame):
+                message = decode_data_frame(frame, key, direction='server_to_client',
+                                            compression_method=1).messages[0]
+                return parse_business_envelope(message).header['name']
+            def send(name, fields, sequence):
+                request = (sequence + 2).to_bytes(4, 'big') + codec.encode(
+                    name, fields, sequence=sequence)
+                client.sendall(encode_data_frame(
+                    (request,), key, direction='client_to_server',
+                    header_word4=12, header_word9=sequence + 2).encode())
+            try:
+                client.settimeout(3)
+                worker.start()
+                client.sendall(Frame(11, 12, 0x1001, 0, 1,
+                                     b'\x03\x00\x01\x12' + bytes(64) + b'\x03', b'').encode())
+                receive()
+                auth = AuthRequest(0x1000, b'QQ', token.encode(), b'')
+                client.sendall(Frame(11, 12, 0x2001, 0, 2, b'',
+                                     encrypt_body(auth.encode(), key)).encode())
+                receive(); receive()
+                send('CSAccountLoginReq', {}, 1)
+                receive()
+                send('CSStateGetInfoReq', {}, 2)
+                receive()
+                mode = {'game_mode': 1, 'game_rule': 4, 'sub_mode': 10,
+                        'team_mode': 3, 'map_id': 2201, 'match_mode_id': 142201103}
+                send('CSRoomMatchStartAllocReq', {'mode_infos': [mode]}, 3)
+                receive()
+                send('CSMatchCheckTReq', {'node_id': ''}, 4)
+                receive(); receive()
+                send('CSMatchRoomSolReadyTReq', {'room_id': player_id}, 5)
+                self.assertEqual([decoded(receive()) for _ in range(2)],
+                                 ['CSMatchRoomSolReadyTRes', 'CSMatchRoomSolReadyNtf'])
+                # The lobby connection is still served after the failed handoff.
+                send('CSOnlineHeartbeatReq', {'padding': 11}, 6)
+                self.assertEqual(decoded(receive()), 'CSOnlineHeartbeatRes')
+                client.shutdown(socket.SHUT_WR)
+                worker.join(4)
+                self.assertFalse(worker.is_alive())
+                ready = next(row for row in results[0]['bounded_business_continuation']
+                             if row['request_name'] == 'CSMatchRoomSolReadyTReq')
+                self.assertEqual(ready['local_match_handoff_internal_error'], 'ImportError')
+                self.assertTrue(ready['local_match_recovery_preflight_failed'])
+                self.assertNotIn('local_game_server_join_probe_sent', ready)
             finally:
                 client.close(); server.close(); worker.join(4)
 

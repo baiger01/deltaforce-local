@@ -130,14 +130,16 @@ class NativeSafehouseTests(unittest.TestCase):
         self.assertEqual(changes, {})
 
     def test_weapon_claim_fragmented_warehouse_preserves_finished_line(self):
+        from dfserver.native_warehouse_extensions import warehouse_grid
         self.prepare_weapon_recipe()
         with patch.object(native_safehouse.time, 'time', return_value=10000000):
             self.assertEqual(self.start_weapon()['result'], 0)
         with self.backend.connection() as connection:
             player_id = self.backend._authorize(connection, self.token)
+            columns, rows = warehouse_grid(connection, player_id, 2)
             connection.executemany('INSERT INTO native_lobby_props VALUES (?,?,?,?,?,?,?,?,?)', [
-                (10000 + y * 9 + x, player_id, 15020010028, 1, 2, x, y, 1, 1)
-                for y in range(40) for x in range(9) if x != 4])
+                (10000 + y * columns + x, player_id, 15020010028, 1, 2, x, y, 1, 1)
+                for y in range(rows) for x in range(columns) if x != 4])
             connection.commit()
         before = self.backend.native_lobby_profile(self.token)
         changes = {}
@@ -240,13 +242,16 @@ class NativeSafehouseTests(unittest.TestCase):
         self.assertIn('produce_line', self.request('CSSafehouseGetInfoReq')['devices'][0])
 
     def test_claim_partial_physical_grant_rolls_back_when_storage_fills(self):
+        from dfserver.native_warehouse_extensions import warehouse_grid
         with patch.object(native_safehouse.time, 'time', return_value=10000000):
             self.assertEqual(self.start()['result'], 0)
         with self.backend.connection() as connection:
             player_id = self.backend._authorize(connection, self.token)
+            columns, rows = warehouse_grid(connection, player_id, 2)
             connection.executemany('INSERT INTO native_lobby_props VALUES (?,?,?,?,?,?,?,?,?)', [
-                (10000 + y * 9 + x, player_id, 15020010028, 1, 2, x, y, 1, 1)
-                for y in range(40) for x in range(9) if (x, y) not in ((0, 0), (8, 39))])
+                (10000 + y * columns + x, player_id, 15020010028, 1, 2, x, y, 1, 1)
+                for y in range(rows) for x in range(columns)
+                if (x, y) not in ((0, 0), (columns - 1, rows - 1))])
             connection.commit()
         before = self.backend.native_lobby_profile(self.token)
         changes = {}

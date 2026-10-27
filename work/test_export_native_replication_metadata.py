@@ -648,6 +648,13 @@ class ElevationTests(unittest.TestCase):
             'work/native_metadata_names.py', 'work/native_metadata_paths.py',
             'work/native_replication_metadata_core.py',
             'outputs/df-local-server/dfserver/legacy_ds_class_net_cache.py',
+            'outputs/df-local-server/dfserver/replication/legacy_ds_class_net_cache.py',
+            'outputs/df-local-server/dfserver/replication/__init__.py',
+            'outputs/df-local-server/dfserver/__init__.py',
+            'outputs/df-local-server/dfserver/_compat.py',
+            'outputs/df-local-server/dfserver/_paths.py',
+            'outputs/df-local-server/dfserver/module_layout.json',
+            'work/server_source_layout.py',
         }
         actual = export.source_pins()
         self.assertEqual(set(actual), expected)

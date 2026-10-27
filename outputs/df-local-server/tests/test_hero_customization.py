@@ -193,6 +193,16 @@ class HeroCustomizationTests(unittest.TestCase):
         self.backend = Backend(self.backend.database, ROOT / 'definitions.json')
         self.assertTrue(next(r for r in self.record()['accessories'] if r['item']['prop_id'] == execution)['is_selected'])
 
+    def test_match_selection_freezes_saved_sol_operator_and_suit(self):
+        sol = sorted(hero.BASES)[0]
+        self.backend.set_native_selected_hero_for_mode(self.token, sol, 1)
+        hero_id, suit = hero.match_selection(self.backend, self.token)
+        self.assertEqual(hero_id, sol)
+        with self.backend.connection() as connection:
+            player_id = self.backend._authorize(connection, self.token)
+            record = hero.hero_record(connection, player_id, sol)
+        self.assertEqual([suit], [r['id'] for r in record['fashion_equipped'] if r['slot'] == 0])
+
 
 if __name__ == '__main__':
     unittest.main()

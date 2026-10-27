@@ -1,0 +1,406 @@
+{
+  "client_sha256": "4254fbe66585f260f1f9dbfc5e302887842552e7baed8939e023160a5e250be0",
+  "diagnostics": {
+    "current_timeline_and_internal_context_observed": false,
+    "internal_state_or_role_emitted": false,
+    "inventory_ui_readiness_repaired_by_this_field": false,
+    "native_held_weapon_verified": false,
+    "recipe_received_and_modular_initialization_observed": true
+  },
+  "enums": {
+    "Operation": {
+      "entries": [
+        {
+          "name": "ESwitchWeaponOperation::OP_Start",
+          "value": 0
+        },
+        {
+          "name": "ESwitchWeaponOperation::OP_ActivatePending",
+          "value": 1
+        },
+        {
+          "name": "ESwitchWeaponOperation::OP_Cancel",
+          "value": 2
+        }
+      ],
+      "generated_max_added": true,
+      "generated_maximum": 3,
+      "network_version": 13,
+      "pairs_rva": "0x167fd2e0",
+      "pairs_sha256": "5b865b3d014950977caac481516c6525be469444df6f036c424632c854344536",
+      "params_rva": "0x1cd621c0",
+      "params_sha256": "4ed66778d439f826a20f9281049ccffac344cb5dbfbcbd99aa154de7595167a0",
+      "wire_bits": 2
+    },
+    "SwitchType": {
+      "entries": [
+        {
+          "name": "EWeaponSwitchType::Default",
+          "value": 0
+        },
+        {
+          "name": "EWeaponSwitchType::Quiet",
+          "value": 1
+        },
+        {
+          "name": "EWeaponSwitchType::Instant",
+          "value": 2
+        },
+        {
+          "name": "EWeaponSwitchType::GetWeaponQuiet",
+          "value": 3
+        },
+        {
+          "name": "EWeaponSwitchType::PutWeaponQuiet",
+          "value": 4
+        },
+        {
+          "name": "EWeaponSwitchType::GetWeaponFast",
+          "value": 5
+        },
+        {
+          "name": "EWeaponSwitchType::PutWeaponFast",
+          "value": 6
+        },
+        {
+          "name": "EWeaponSwitchType::GetAndPutWeaponFast",
+          "value": 7
+        },
+        {
+          "name": "EWeaponSwitchType::PutQuietAndGetWeaponFast",
+          "value": 8
+        }
+      ],
+      "generated_max_added": true,
+      "generated_maximum": 9,
+      "network_version": 13,
+      "pairs_rva": "0x15903620",
+      "pairs_sha256": "cabb676f007e854a1db5b639afac4ee6d72b190fb7822c04631fe5583b0fd5c1",
+      "params_rva": "0x1caca698",
+      "params_sha256": "3fa019c7abf9524dbddcc6beed67428699e46b520c74bf0b304e6c2a8a3a91c2",
+      "wire_bits": 4
+    },
+    "SwitchWeaponContext": {
+      "entries": [
+        {
+          "name": "ESwitchWeaponContext::Default",
+          "value": 0
+        },
+        {
+          "name": "ESwitchWeaponContext::Client",
+          "value": 1
+        },
+        {
+          "name": "ESwitchWeaponContext::Init",
+          "value": 2
+        },
+        {
+          "name": "ESwitchWeaponContext::Input",
+          "value": 3
+        },
+        {
+          "name": "ESwitchWeaponContext::Interact",
+          "value": 4
+        },
+        {
+          "name": "ESwitchWeaponContext::Preview",
+          "value": 5
+        },
+        {
+          "name": "ESwitchWeaponContext::AIController",
+          "value": 6
+        },
+        {
+          "name": "ESwitchWeaponContext::AILab",
+          "value": 7
+        },
+        {
+          "name": "ESwitchWeaponContext::AITask",
+          "value": 8
+        },
+        {
+          "name": "ESwitchWeaponContext::SafeHouse",
+          "value": 9
+        },
+        {
+          "name": "ESwitchWeaponContext::DSLogic",
+          "value": 10
+        },
+        {
+          "name": "ESwitchWeaponContext::InventoryManager",
+          "value": 11
+        },
+        {
+          "name": "ESwitchWeaponContext::BattleFieldCharacter",
+          "value": 12
+        },
+        {
+          "name": "ESwitchWeaponContext::Ability",
+          "value": 13
+        },
+        {
+          "name": "ESwitchWeaponContext::AIDifficulty",
+          "value": 14
+        },
+        {
+          "name": "ESwitchWeaponContext::Skill",
+          "value": 15
+        },
+        {
+          "name": "ESwitchWeaponContext::Looting",
+          "value": 16
+        },
+        {
+          "name": "ESwitchWeaponContext::FuncPVE",
+          "value": 17
+        },
+        {
+          "name": "ESwitchWeaponContext::RemoveWeapon",
+          "value": 18
+        },
+        {
+          "name": "ESwitchWeaponContext::Character",
+          "value": 19
+        },
+        {
+          "name": "ESwitchWeaponContext::MachineGun",
+          "value": 20
+        },
+        {
+          "name": "ESwitchWeaponContext::Vehicle",
+          "value": 21
+        },
+        {
+          "name": "ESwitchWeaponContext::SkillEnd",
+          "value": 22
+        },
+        {
+          "name": "ESwitchWeaponContext::Reborn",
+          "value": 23
+        },
+        {
+          "name": "ESwitchWeaponContext::WeaponBlueprint",
+          "value": 24
+        },
+        {
+          "name": "ESwitchWeaponContext::WeaponBase",
+          "value": 25
+        },
+        {
+          "name": "ESwitchWeaponContext::InitDefWeapon",
+          "value": 26
+        },
+        {
+          "name": "ESwitchWeaponContext::CharacterBase",
+          "value": 27
+        },
+        {
+          "name": "ESwitchWeaponContext::ImpendingDeathAction",
+          "value": 28
+        },
+        {
+          "name": "ESwitchWeaponContext::DeathAction",
+          "value": 29
+        },
+        {
+          "name": "ESwitchWeaponContext::SOLEscapedStateAction",
+          "value": 30
+        },
+        {
+          "name": "ESwitchWeaponContext::SwitchEmptyHandComponent",
+          "value": 31
+        },
+        {
+          "name": "ESwitchWeaponContext::OnHelicopterAction",
+          "value": 32
+        },
+        {
+          "name": "ESwitchWeaponContext::GM",
+          "value": 33
+        },
+        {
+          "name": "ESwitchWeaponContext::CancelSwitchWeapon",
+          "value": 34
+        },
+        {
+          "name": "ESwitchWeaponContext::FastFire",
+          "value": 35
+        },
+        {
+          "name": "ESwitchWeaponContext::JailBreak",
+          "value": 36
+        },
+        {
+          "name": "ESwitchWeaponContext::SwimmingSprintBegin",
+          "value": 37
+        },
+        {
+          "name": "ESwitchWeaponContext::SwimmingSprintEnd",
+          "value": 38
+        },
+        {
+          "name": "ESwitchWeaponContext::ReconnectPutBackLeftWeapon",
+          "value": 39
+        },
+        {
+          "name": "ESwitchWeaponContext::NewYearEggs",
+          "value": 40
+        },
+        {
+          "name": "ESwitchWeaponContext::FireworkTransform",
+          "value": 41
+        }
+      ],
+      "generated_max_added": true,
+      "generated_maximum": 42,
+      "network_version": 13,
+      "pairs_rva": "0x15901ca0",
+      "pairs_sha256": "3f2e7511479b75224af8aaad500d4047093ea08ef561431fd75087d9823fb9d5",
+      "params_rva": "0x1caca430",
+      "params_sha256": "67c085dc082c4058aa8a8e0c7c3f149c7bc039c987f57258f7f409ac0ff78d96",
+      "wire_bits": 6
+    }
+  },
+  "frame": {
+    "array_count_bits": 16,
+    "identity_uint32_offsets": [
+      40,
+      44
+    ],
+    "inner_handle_stride": 9,
+    "leaves": [
+      {
+        "handle": 1,
+        "name": "LocalFrameNo",
+        "offset": 8,
+        "opcode": 5
+      },
+      {
+        "handle": 2,
+        "name": "RemoteFrameNo",
+        "offset": 12,
+        "opcode": 5
+      },
+      {
+        "handle": 3,
+        "name": "DepFrameNo",
+        "offset": 16,
+        "opcode": 5
+      },
+      {
+        "handle": 4,
+        "name": "WorldTime",
+        "offset": 32,
+        "opcode": 4
+      },
+      {
+        "handle": 5,
+        "name": "UniqueId",
+        "offset": 40,
+        "opcode": 9
+      },
+      {
+        "handle": 6,
+        "name": "UniqueId",
+        "offset": 44,
+        "opcode": 9
+      },
+      {
+        "handle": 7,
+        "name": "SwitchType",
+        "offset": 48,
+        "opcode": 6
+      },
+      {
+        "handle": 8,
+        "name": "Operation",
+        "offset": 49,
+        "opcode": 6
+      },
+      {
+        "handle": 9,
+        "name": "SwitchWeaponContext",
+        "offset": 50,
+        "opcode": 6
+      }
+    ],
+    "native_bytes": 56,
+    "signed_int32": [
+      "LocalFrameNo",
+      "RemoteFrameNo",
+      "DepFrameNo"
+    ],
+    "world_time": "finite_float32"
+  },
+  "kind": "source_qualified_owned_weapon_switch_timeline_v1",
+  "local_initialization_policy": {
+    "clock": "caller explicit local server nonzero frame and finite nonnegative world time",
+    "context": 2,
+    "kind": "explicit_local_server_fresh_initial_instant_switch",
+    "last_identity": 0,
+    "no_dependency_frame": -1,
+    "no_previous_client_frame": -1,
+    "official_current_frame_or_current_weapon_claimed": false,
+    "operation": 0,
+    "ring": {
+      "data_count": 2,
+      "front": 0,
+      "index0": "unused native default frame",
+      "index1": "one initial switch frame",
+      "max_size": 1,
+      "rear": 1
+    },
+    "ring_size_is_local_policy_not_observed_native_default": true,
+    "switch_type": 2
+  },
+  "manager": {
+    "class_path": "/Script/GPGameplay.MultiWeaponManagerComponent",
+    "native_offset": 864,
+    "ordinary_handles": {
+      "Data": 9,
+      "Front": 10,
+      "MaxSize": 12,
+      "Rear": 11
+    },
+    "parent_index": 8,
+    "rep_notify": "OnRep_RemoteTimeLineData",
+    "stable_name": "WeaponManager"
+  },
+  "native_receive": {
+    "actual_exec": "0x6146810 -> 0x5631dc0",
+    "direct_internal_field_replication": false,
+    "generated_getter_is_not_handler": "0x61422f0",
+    "native_current_writer": "0x55e50f0: manager PendingActiveWeapon+0x228 -> CurrentActiveWeapon+0x218",
+    "receiver": "interface+0x80 remote rebase, then ApplyCurrentFrame 0x55ec380",
+    "remote_import": "0x58ef280 exchanges LocalFrameNo and RemoteFrameNo",
+    "role_gate_in_this_onrep": false
+  },
+  "scheduling": {
+    "after": [
+      "all exact weapon Actor opens and identity/owner ACK",
+      "every complete Actor recipe ACK",
+      "complete manager lists, WeaponInfo and Active ACK"
+    ],
+    "partial_frame_splitting": false,
+    "required_positive_current_generation_full_send_ack": true,
+    "separate_complete_component_bunch": true
+  },
+  "sources": {
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-base-preview-frame-defaults-v1.json": "b17e65b4116d39d61830189a345c8a82c5e21264ea7c709834650b52e0cb0854",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-current-switch-and-timeline-source-v1.json": "2cbf0b5202a5bc2de32b7bb75b54e5a9dd4019337bd9870816be93ccf57c2cf9",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-local-current-writer-and-timeline-selector-v1.json": "012477e0e1ded2e6a1c512a8b5ea43f6b5a3699a5383d30e02ca9826ffaff81c",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-manager-timeline-list-notify-bodies-v1.json": "bafb852fc855cd50a689f999d4f7d19432a0467867c157fe3424ce7cd88d2e79",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-manager-timeline-vtable-bindings-v1.json": "4ae38454a772eea519b37d90f2caed06cce8a2ac08b8425c6901f38319b5ffcc",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-runtime-context-current-frame-v1.json": "09395d8386b871d9a124314b6ddb54ac253875fe1224e3519a5eb80fb0c55070",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-runtime-timeline-struct-fields-v1.json": "b98ce3947141f0708cf0c8e1ee2945f5689cf13024af34601db9eb41fc16d421",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-switch-frame-base-fields-v1.json": "12345399f34b3b7f4b7b1160ba1bfbd4d328a4321e9d1dd2d8242216aaac57d2",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-switch-frame-enum-records-v1.json": "6103a146f6eab6b26b3068cf3d940222b5b943dc51ae6c983f1e07f70bb54367",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-switch-frame-fields-v1.json": "c2ca168bdc6f52a14cc3a4da7b46d1a8bf74a1dc9c3513d4a063e3d1539f2cee",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-timeline-actual-remote-import-v1.json": "0197ef9850ac38ad711b7db8625555ed39edda8fff6523a608c6d86c18eb1fac",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-timeline-notify-and-client-switch-execs-v1.json": "ce0387c48f31d3b35a29f9c713927b0e1df52ff3d97150ffd014997ad03ac9ad",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-timeline-remote-data-binding-v1.json": "0c2ccc340d830d2c9d44fba9f903d1da4cb3d7c609e7e73b0e8552799cf33b04",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-timeline-ring-import-and-binding-v1.json": "a8dc9db88f8c349060f7bb5f1e7a5e017a74fac8a9c125523e69f681ff0eb953",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-timeline-vtable-and-frame-enum-records-v1.json": "5ff4ad29aae29d71baa30a34aaf37c44000ce8c4a05ba842dad738b530793826",
+    "work/native-client-tests/1792343957590810500/owned-weapon-state.json": "e9a923c075c5a462b7dec9a38bc4fd2fc233c519a7b3dacda89e8809233aaf63"
+  }
+}

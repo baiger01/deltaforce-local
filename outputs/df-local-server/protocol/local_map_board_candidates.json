@@ -1,7 +1,43 @@
 {
-  "evidence": "On 2026-09-30 the normally launched client selected Zero Dam. At 14:05:29.700 StrategicSelectionSOLMainPanel logged refresh group, 2, false, false, false, false, 1. The installed Lua function 0.21 (lines 192-369) logs group first and worldEntranceCfg.EntranceIdx last, confirming point_id 1. That selection entered match mode 142201103, game_mode 1, map_id 2201 / Dam_Iris_Level1. Only Zero Dam is advertised until each other entrance and mode is observed.",
+  "evidence": "Installed WorldEntranceConfig entrance rows and MatchModeDataConfig/MapConfig rows, recovered in work/evidence/gameplay-map-difficulty-research-20261021.json. Difficulty semantics were replayed against five original Lua chunks on 2026-10-22. Zero Dam point 1 / mode 142201103 was also observed natively on 2026-09-30. Other entrance-to-family candidates require native display validation. This is a local board policy, not the official live opening schedule or proof that a gameplay server accepts every map.",
+  "mapping_status": "client_table_candidates_pending_native_display",
+  "sources": {
+    "WorldEntranceConfig": {"pak": "pak-0-0-pakchunk2-WindowsClient.pak", "header_offset": 16656384, "header_sha256": "d848221bd8ec47c4ffa2a81d44ba937f45b1338db69f07392863fd65c47c67af", "body_offset": 16657689, "body_sha256": "341458717d94d572004c8e3537a0e02870c3101cea652d8e9f0dc4176f110a63", "rows": [1, 2, 12, 13, 14, 21]},
+    "MatchModeDataConfig": {"pak": "pak-0-0-pakchunk2-WindowsClient.pak", "body_offset": 49596409, "body_sha256": "6845f7e0b45f47a313cdbe64818f167be03d14f9be2bcfc8dcda6798a42df883", "row_key": "match_mode_id"},
+    "MapConfig": {"pak": "pak-0-0-pakchunk2-WindowsClient.pak", "body_offset": 49548361, "body_sha256": "5486a2b773a5a387b8d835f2693be17ca4b21eebf1444282a0734cb110590221", "row_key": "map_id"},
+    "RecruitConfig.lua": {"pak": "pak-0-0-pakchunk1-WindowsClient.pak", "offset": 25903104, "sha256": "fb416d821d3db47055abf3ea2464cbd12cf454891beb9a5cb73cb0e6bd27a29c", "function": "0", "pc_span": [691, 744], "difficulty_to_submode": {"1": 10, "2": 11, "3": 12}},
+    "ArmedForceConfig.lua": {"pak": "pak-0-0-pakchunk1-WindowsClient.pak", "offset": 11460608, "sha256": "099b45b57a4d1571e5b7888085130a0b3d4beee43a68c16cebe753c235f2bd58", "function": "0", "pc_span": [5355, 5396]},
+    "GameModeServer.lua": {"pak": "pak-0-0-pakchunk1-WindowsClient.pak", "offset": 34375680, "sha256": "c4ced93f1059d9cb8f91874a1d0084090d4263a95d443dcd7d9101548088e381", "functions": ["0.105", "0.107", "0.143"]}
+  },
+  "local_policy": "Retain the existing local minimum action level 1 and match_mode_type entries 1/3. Do not infer official fees, equipment thresholds, live opening times, weather or a missing difficulty from a neighbouring map.",
   "operations": [
-    {"point_id": 1, "map_id": 2201, "match_mode_id": 142201103, "match_mode_type": 1, "min_level": 1, "game_mode": 1, "game_rule": 4, "sub_mode": 10, "team_mode": 3},
-    {"point_id": 1, "map_id": 2201, "match_mode_id": 142201103, "match_mode_type": 3, "min_level": 1, "game_mode": 1, "game_rule": 4, "sub_mode": 10, "team_mode": 3}
+    {"point_id": 1, "map_id": 2201, "match_mode_id": 142201103, "match_mode_type": 1, "min_level": 1, "game_mode": 1, "game_rule": 4, "sub_mode": 10, "team_mode": 3, "difficulty": 1},
+    {"point_id": 1, "map_id": 2201, "match_mode_id": 142201103, "match_mode_type": 3, "min_level": 1, "game_mode": 1, "game_rule": 4, "sub_mode": 10, "team_mode": 3, "difficulty": 1},
+    {"point_id": 1, "map_id": 2202, "match_mode_id": 142202113, "match_mode_type": 1, "min_level": 1, "game_mode": 1, "game_rule": 4, "sub_mode": 11, "team_mode": 3, "difficulty": 2},
+    {"point_id": 1, "map_id": 2202, "match_mode_id": 142202113, "match_mode_type": 3, "min_level": 1, "game_mode": 1, "game_rule": 4, "sub_mode": 11, "team_mode": 3, "difficulty": 2},
+    {"point_id": 2, "map_id": 1901, "match_mode_id": 141901103, "match_mode_type": 1, "min_level": 1, "game_mode": 1, "game_rule": 4, "sub_mode": 10, "team_mode": 3, "difficulty": 1},
+    {"point_id": 2, "map_id": 1901, "match_mode_id": 141901103, "match_mode_type": 3, "min_level": 1, "game_mode": 1, "game_rule": 4, "sub_mode": 10, "team_mode": 3, "difficulty": 1},
+    {"point_id": 2, "map_id": 1902, "match_mode_id": 141902113, "match_mode_type": 1, "min_level": 1, "game_mode": 1, "game_rule": 4, "sub_mode": 11, "team_mode": 3, "difficulty": 2},
+    {"point_id": 2, "map_id": 1902, "match_mode_id": 141902113, "match_mode_type": 3, "min_level": 1, "game_mode": 1, "game_rule": 4, "sub_mode": 11, "team_mode": 3, "difficulty": 2},
+    {"point_id": 12, "map_id": 3901, "match_mode_id": 143901113, "match_mode_type": 1, "min_level": 1, "game_mode": 1, "game_rule": 4, "sub_mode": 11, "team_mode": 3, "difficulty": 2},
+    {"point_id": 12, "map_id": 3901, "match_mode_id": 143901113, "match_mode_type": 3, "min_level": 1, "game_mode": 1, "game_rule": 4, "sub_mode": 11, "team_mode": 3, "difficulty": 2},
+    {"point_id": 12, "map_id": 3902, "match_mode_id": 143902123, "match_mode_type": 1, "min_level": 1, "game_mode": 1, "game_rule": 4, "sub_mode": 12, "team_mode": 3, "difficulty": 3},
+    {"point_id": 12, "map_id": 3902, "match_mode_id": 143902123, "match_mode_type": 3, "min_level": 1, "game_mode": 1, "game_rule": 4, "sub_mode": 12, "team_mode": 3, "difficulty": 3},
+    {"point_id": 13, "map_id": 8101, "match_mode_id": 148101103, "match_mode_type": 1, "min_level": 1, "game_mode": 1, "game_rule": 4, "sub_mode": 10, "team_mode": 3, "difficulty": 1},
+    {"point_id": 13, "map_id": 8101, "match_mode_id": 148101103, "match_mode_type": 3, "min_level": 1, "game_mode": 1, "game_rule": 4, "sub_mode": 10, "team_mode": 3, "difficulty": 1},
+    {"point_id": 13, "map_id": 8102, "match_mode_id": 148102113, "match_mode_type": 1, "min_level": 1, "game_mode": 1, "game_rule": 4, "sub_mode": 11, "team_mode": 3, "difficulty": 2},
+    {"point_id": 13, "map_id": 8102, "match_mode_id": 148102113, "match_mode_type": 3, "min_level": 1, "game_mode": 1, "game_rule": 4, "sub_mode": 11, "team_mode": 3, "difficulty": 2},
+    {"point_id": 13, "map_id": 8103, "match_mode_id": 148103123, "match_mode_type": 1, "min_level": 1, "game_mode": 1, "game_rule": 4, "sub_mode": 12, "team_mode": 3, "difficulty": 3},
+    {"point_id": 13, "map_id": 8103, "match_mode_id": 148103123, "match_mode_type": 3, "min_level": 1, "game_mode": 1, "game_rule": 4, "sub_mode": 12, "team_mode": 3, "difficulty": 3},
+    {"point_id": 14, "map_id": 8801, "match_mode_id": 148801103, "match_mode_type": 1, "min_level": 1, "game_mode": 1, "game_rule": 4, "sub_mode": 10, "team_mode": 3, "difficulty": 1},
+    {"point_id": 14, "map_id": 8801, "match_mode_id": 148801103, "match_mode_type": 3, "min_level": 1, "game_mode": 1, "game_rule": 4, "sub_mode": 10, "team_mode": 3, "difficulty": 1},
+    {"point_id": 14, "map_id": 8802, "match_mode_id": 148802113, "match_mode_type": 1, "min_level": 1, "game_mode": 1, "game_rule": 4, "sub_mode": 11, "team_mode": 3, "difficulty": 2},
+    {"point_id": 14, "map_id": 8802, "match_mode_id": 148802113, "match_mode_type": 3, "min_level": 1, "game_mode": 1, "game_rule": 4, "sub_mode": 11, "team_mode": 3, "difficulty": 2},
+    {"point_id": 14, "map_id": 8803, "match_mode_id": 148803123, "match_mode_type": 1, "min_level": 1, "game_mode": 1, "game_rule": 4, "sub_mode": 12, "team_mode": 3, "difficulty": 3},
+    {"point_id": 14, "map_id": 8803, "match_mode_id": 148803123, "match_mode_type": 3, "min_level": 1, "game_mode": 1, "game_rule": 4, "sub_mode": 12, "team_mode": 3, "difficulty": 3},
+    {"point_id": 21, "map_id": 8901, "match_mode_id": 148901103, "match_mode_type": 1, "min_level": 1, "game_mode": 1, "game_rule": 4, "sub_mode": 10, "team_mode": 3, "difficulty": 1},
+    {"point_id": 21, "map_id": 8901, "match_mode_id": 148901103, "match_mode_type": 3, "min_level": 1, "game_mode": 1, "game_rule": 4, "sub_mode": 10, "team_mode": 3, "difficulty": 1},
+    {"point_id": 21, "map_id": 8902, "match_mode_id": 148902113, "match_mode_type": 1, "min_level": 1, "game_mode": 1, "game_rule": 4, "sub_mode": 11, "team_mode": 3, "difficulty": 2},
+    {"point_id": 21, "map_id": 8902, "match_mode_id": 148902113, "match_mode_type": 3, "min_level": 1, "game_mode": 1, "game_rule": 4, "sub_mode": 11, "team_mode": 3, "difficulty": 2}
   ]
 }

@@ -1,0 +1,280 @@
+{
+  "client_sha256": "4254fbe66585f260f1f9dbfc5e302887842552e7baed8939e023160a5e250be0",
+  "components": {
+    "WeaponManager": {
+      "active_array_children": [],
+      "cache_exclusive_maximum": 17,
+      "class_path": "/Script/GPGameplay.MultiWeaponManagerComponent",
+      "fields": [
+        {
+          "class_cache_index": 6,
+          "declared_rep_index": 6,
+          "declaring_class": "WeaponManagerComponent",
+          "name": "EmptyHandWeapon",
+          "ordinary_handle": 7,
+          "property_vtable_rva": 363359104,
+          "serializer_rva": 283700512,
+          "storage_bytes": 8,
+          "storage_offset": 464
+        }
+      ],
+      "layout_commands_sha256": "e3e18bba7d4b2f7998a196fbfbb5918ca8f0a1657f5444b33284aee1d7657dc1",
+      "name": "WeaponManager"
+    },
+    "WeaponReplicate": {
+      "active_array_children": [
+        {
+          "handle": 1,
+          "name": "bShouldReserveLastWeapon",
+          "offset": 12,
+          "opcode": 21,
+          "record_sha256": "46fc8942f1933a25180730c83c3077be39fc6ed80b35b32c312937117c03f197"
+        },
+        {
+          "handle": 2,
+          "name": "SwitchType",
+          "offset": 13,
+          "opcode": 6,
+          "record_sha256": "9a8f195e1f0fd1b446c0d71b175ed4529196bdd5c4b0183a9d3fb34f20d8478b"
+        },
+        {
+          "handle": 3,
+          "name": "UniqueId",
+          "offset": 16,
+          "opcode": 9,
+          "record_sha256": "225f83548430680e3a63d5dd27f7baca497c431235d49955d78c8eace4d95c13"
+        },
+        {
+          "handle": 4,
+          "name": "WeaponBPClassPath",
+          "offset": 24,
+          "opcode": 2,
+          "record_sha256": "4f528e6becae840dc586a1a7ee8ddb673a2b4dbb0e0c6fec16e3c298cbb649fd"
+        },
+        {
+          "handle": 5,
+          "name": "LastActiveFrame",
+          "offset": 80,
+          "opcode": 9,
+          "record_sha256": "f9f9e32c2d41159d38c39eaf9af06ae5d091bfb6e832312c0a52d3baad325f3a"
+        },
+        {
+          "handle": 6,
+          "name": "WeaponSlot",
+          "offset": 84,
+          "opcode": 6,
+          "record_sha256": "bf1394e243f4f73b2d8eae67c5a1082ed9d425e841285aad6f7bf5aa89bc5b79"
+        }
+      ],
+      "cache_exclusive_maximum": 25,
+      "class_path": "/Script/GPGameplay.WeaponReplicateComponent",
+      "fields": [
+        {
+          "class_cache_index": 2,
+          "declared_rep_index": 2,
+          "declaring_class": "GPWeaponReplicateComponent",
+          "name": "CharacterOwner",
+          "ordinary_handle": 3,
+          "property_vtable_rva": 363359104,
+          "serializer_rva": 283700512,
+          "storage_bytes": 8,
+          "storage_offset": 272
+        },
+        {
+          "class_cache_index": 4,
+          "declared_rep_index": 4,
+          "declaring_class": "GPWeaponReplicateComponent",
+          "name": "CurrActiveWeapInfoArr",
+          "ordinary_handle": 5,
+          "property_vtable_rva": 448116528,
+          "serializer_rva": 283495904,
+          "storage_bytes": 16,
+          "storage_offset": 296
+        },
+        {
+          "class_cache_index": 5,
+          "declared_rep_index": 5,
+          "declaring_class": "GPWeaponReplicateComponent",
+          "name": "WeapInfoArray",
+          "ordinary_handle": null,
+          "property_vtable_rva": 363360064,
+          "serializer_rva": 283700816,
+          "storage_bytes": 280,
+          "storage_offset": 312
+        }
+      ],
+      "layout_commands_sha256": "bcb773dbf0ab980fb78d1b406c0a62b7762946ca1bcbc84c6fb76a79b3211410",
+      "name": "WeaponReplicate"
+    }
+  },
+  "custom_delta": {
+    "after_first_legacy_receive_flags": 3,
+    "changed_item": "int32 ReplicationID then full reflected WeaponPair without size prefix",
+    "class_cache_exclusive_maximum": 25,
+    "delta_struct_prefix": false,
+    "field_index": 5,
+    "header": [
+      "int32 ArrayReplicationKey",
+      "int32 BaseReplicationKey",
+      "int32 NumDeletes",
+      "int32 NumChanged"
+    ],
+    "initial_array_flags": 2,
+    "maximum_changes": 2048,
+    "maximum_deletions": 2048,
+    "network_version": 13
+  },
+  "empty_hand_actor": {
+    "actor_channel_open_handler_rva": "0xd5f350",
+    "actor_property_replication_layout_qualified": false,
+    "cdo_flag": "0x10",
+    "cdo_flags": "0x280031",
+    "cdo_path": "/Game/BluePrints/Weapons/WeaponBP/MeleeWeaponBP/BP_EmptyHand.Default__BP_EmptyHand_C",
+    "class_path": "/Game/BluePrints/Weapons/WeaponBP/MeleeWeaponBP/BP_EmptyHand.BP_EmptyHand_C",
+    "custom_open_payload_bits": 0,
+    "interface_class_paths": [
+      "/Script/GPGameplay.WeaponInterface",
+      "/Script/GPGameplay.DamageMakerInterface",
+      "/Script/GPWeaponRuntime.GPWeaponTickActorInterface",
+      "/Script/Engine.ObjectPoolableInterface",
+      "/Script/GPGameplay.UEReplicationGraphInterface",
+      "/Script/GPWeaponRuntime.WeaponObInterface",
+      "/Script/GPWeaponRuntime.GPThrowableWeaponInterface",
+      "/Script/GPGameplay.GPSeamlessDynamicObjectInterface",
+      "/Script/GPAbility.GPASC_AttributeSet_Minimal",
+      "/Script/GPGameplay.WeaponSkinModifierInterface",
+      "/Script/GPEncryption.GPEncryptionInterface"
+    ],
+    "interface_layout_native_proof_rebuilt": true,
+    "native_vtable_rva": "0x17db5808",
+    "net_rep_actor_interface_present": false
+  },
+  "fast_class_path": {
+    "active_override_precedence_qualified": false,
+    "globals_map_native_offset": "0x410",
+    "id_wire_bits": 64,
+    "ids_to_paths": {
+      "1": "/Game/BluePrints/Weapons/WeaponBP/MeleeWeaponBP/BP_EmptyHand.BP_EmptyHand_C",
+      "2": "/Game/BluePrints/Weapons/WeaponBP/BP_WeaponModular.BP_WeaponModular_C",
+      "3": "/Game/BluePrints/Weapons/WeaponBP/BP_WeaponModular_3p.BP_WeaponModular_3p_C",
+      "4": "/Game/BluePrints/Weapons/WeaponBP/MeleeWeaponBP/BP_WeaponMeleeNoModular.BP_WeaponMeleeNoModular_C",
+      "5": "/Game/BluePrints/Weapons/WeaponBP/BP_WeaponBaseLeftThrow_C101Smoke.BP_WeaponBaseLeftThrow_C101Smoke_C",
+      "6": "/Game/BluePrints/Ability/MedicalSoldier/101/SmokeWall/BP_WeaponBaseThrow_SmokeUAS.BP_WeaponBaseThrow_SmokeUAS_C",
+      "7": "/Game/BluePrints/Weapons/WeaponBP/BP_WeaponSupport.BP_WeaponSupport_C"
+    },
+    "source_scope": "installed_baseline_packaged_config",
+    "type": 1,
+    "type_wire_bits": 8
+  },
+  "kind": "client_source_derived_owned_weapon_schema",
+  "lifecycle": [
+    "Resolve and acknowledge each actual Actor/class/CDO GUID export before its reference.",
+    "Set source-declared WeaponReplicate.CharacterOwner to the admitted Pawn.",
+    "First custom-delta receive selects legacy mode with false prefix; do not change an existing optimized array.",
+    "Weapon info creation and active identity must refer to the same nonzero uint32 UniqueId.",
+    "Actor weapon initialization fields require a newly observed actual weapon RepLayout before integration."
+  ],
+  "limitations": [
+    "The source qualifier does not prove gameplay initialization or client interaction.",
+    "The packaged common-class mapping has not been compared against all runtime INI layers.",
+    "Missing historical interface ledgers were replaced by new verified immutable native code reports.",
+    "No inventory GID, item TemplateID or RecID is inferred from WeaponIdentity.",
+    "No opaque WeaponManagerSlots custom struct or timeline data is fabricated."
+  ],
+  "pair": {
+    "native_size": 88,
+    "order": [
+      "bShouldReserveLastWeapon",
+      "SwitchType",
+      "UniqueId",
+      "WeaponBPClassPath",
+      "LastActiveFrame",
+      "WeaponSlot"
+    ],
+    "weapon_identity_is_template_or_inventory_gid": false,
+    "wire_bits": 149,
+    "wire_widths": [
+      1,
+      4,
+      32,
+      72,
+      32,
+      8
+    ]
+  },
+  "process_pointers_reused": false,
+  "public_schema_contains_process_addresses": false,
+  "sources": {
+    "work/evidence/map-system-audit-20261018/native-economy-gp-weapon-rep-info-fields.json": "88242f1b0209c46a66bd9b6aab5742a7fe67c90d5fb17c00b5a5f6739afb1507",
+    "work/evidence/map-system-audit-20261018/native-economy-weapon-identity-interacting-context-struct-fields.json": "f0f7f49ad23bb81d3e2c739bf8b9c6dd3758487c0ebde55043cdef33433e74a3",
+    "work/evidence/map-system-audit-20261018/native-game-mode-enum-vtable-constructors.json": "794216fd445a0ef523ec40af13c23fa5b5f9d14d323080011142b59b3e17851e",
+    "work/evidence/map-system-audit-20261018/native-game-mode-uenum-max-name-checks.json": "7fefd536a9d8cfe64450592d8735846ed75fb7e6a8faa7391ef1d0ed452b069d",
+    "work/evidence/map-system-audit-20261018/native-game-mode-uenum-set-enums.json": "18d392e839b7a9d991f2ad30a97755ca0a3887404485291223ee5a595d554817",
+    "work/evidence/map-system-audit-20261018/native-owning-weapon-actor-open-native-stub-prefix.json": "3db5677b10afc0ae8b5e35ff9888904a1fbc6abb6026d38889e3ef8426f741c5",
+    "work/evidence/map-system-audit-20261018/native-owning-weapon-common-class-map-and-switch-enum-declarations-v2.json": "dd11c78b4e25244ff1494da4d93a4e9bbabacd4683e26c2202c7d7a7a43193ab",
+    "work/evidence/map-system-audit-20261018/native-owning-weapon-cooked-character-emptyhand-defaults.json": "e935d6eab000430da6933ce6578e2fea6a40e9897849c14597c734bf742dc543",
+    "work/evidence/map-system-audit-20261018/native-owning-weapon-cooked-parent-chain.json": "8938c8c7820b04320eea0f4e9310bf801114d8261e9a55fd6e51cc15493d6e7d",
+    "work/evidence/map-system-audit-20261018/native-owning-weapon-custom-delta-receive.json": "2c8d26a210b435f0295075cb09ca698587caff6ab4cc80061a6a0d58ce4b1cd8",
+    "work/evidence/map-system-audit-20261018/native-owning-weapon-dfm-class-and-pair-walker.json": "da9a34cf8ba034b204c45a4fa45aa76bd564f93bb4ac9d93d4ce6281b68dbcff",
+    "work/evidence/map-system-audit-20261018/native-owning-weapon-fast-class-id-resolution.json": "ee39e6a30892014c9df525d551846c93e6502312f8d9b2303567e99938629a26",
+    "work/evidence/map-system-audit-20261018/native-owning-weapon-fastarray-header-and-baseclass.json": "6c494f4d5b9c2328bc6a0e05f5fae449f0e7d5f691b1420b7fa5e42323dbc9b0",
+    "work/evidence/map-system-audit-20261018/native-owning-weapon-fastarray-serializer-core.json": "cdf461af48a80dbd0af48868406826d2eec0b8dfa31e3551388e69a0f9b446fc",
+    "work/evidence/map-system-audit-20261018/native-owning-weapon-fastpath-actual-cppops-factory.json": "f8dee626f20a5a221374dc5ea4e70702e1ba51ec5a71500cd676b159f211c884",
+    "work/evidence/map-system-audit-20261018/native-owning-weapon-fastpath-actual-ops-vtable.json": "d6ef71a5dddfe41aef9bf48b171dd40e4219269547c61717fa73d0120c0a1855",
+    "work/evidence/map-system-audit-20261018/native-owning-weapon-fastpath-netserialize-core.json": "f18eaa755e5ed2f9f6921429abea054cce379b0e170d5e6bb1dc5e8ef4b42eca",
+    "work/evidence/map-system-audit-20261018/native-owning-weapon-fastpath-netserialize-thunk.json": "bd6757edefcd1bc77a96904d06783b0902d3665fa6bbd165d61910d2431aefb0",
+    "work/evidence/map-system-audit-20261018/native-owning-weapon-fastpath-property-wire-and-dfm-ctor.json": "515644d7de9d9fe6d6a0c6f3bc94c16757f095d67a5605490c309e57fac1c929",
+    "work/evidence/map-system-audit-20261018/native-owning-weapon-fastpath-resolver-and-interface-getters.json": "43ecf2d1f4aac6e3dd6bb66727c47fbc7f371c253fc98c24701be2a666d95747",
+    "work/evidence/map-system-audit-20261018/native-owning-weapon-interface-array-accessor-and-open-pointer.json": "20446a8a6483bdb58092daa589293143f5e8d3b48367012072c8674a15733a19",
+    "work/evidence/map-system-audit-20261018/native-owning-weapon-interface-array-data-accessor.json": "d6d4bdf31639a5dc952fd2e08022d79cacca4710c91828941ebbe5217ad62a98",
+    "work/evidence/map-system-audit-20261018/native-owning-weapon-native-interface-array-consumer.json": "138b32beae9b13777f83b94898f6cb8ba84a5cfd077b63d8eac0dca55e52c8dd",
+    "work/evidence/map-system-audit-20261018/native-owning-weapon-packaged-fast-class-settings.json": "bb3389df87d83d91925ef47663c55c55825c07d3fb09e0ffdbfa57fe9e7698af",
+    "work/evidence/map-system-audit-20261018/native-owning-weapon-pair-reflected-struct-wire.json": "97f037e0fdea1c19d553e6a87bf21f7cb25b9e798e1a1c94924746ff6982bcc3",
+    "work/evidence/map-system-audit-20261018/native-owning-weapon-pair-scalar-wire-leaves.json": "b43ce466da9529a1d4f5d00f9f007123f8f1b7559be38917734a01bdfcfa8d6c",
+    "work/native-client-tests/1792297548603201600/owned-emptyhand-class-interface-cdo-metadata-final.json": "3c04ac9792fc206aa1ceec1e526fda2e4071cebbfc4e8d0de19bc6a6153877da",
+    "work/native-client-tests/1792297548603201600/owned-gameplay-metadata-recheck.json": "a53833a56b5e31978fa6dbc17d996f6fc2b3d6358c55186d3d0bd0bfeab26e11"
+  },
+  "switch_type": {
+    "entries": [
+      {
+        "name": "EWeaponSwitchType::Default",
+        "value": 0
+      },
+      {
+        "name": "EWeaponSwitchType::Quiet",
+        "value": 1
+      },
+      {
+        "name": "EWeaponSwitchType::Instant",
+        "value": 2
+      },
+      {
+        "name": "EWeaponSwitchType::GetWeaponQuiet",
+        "value": 3
+      },
+      {
+        "name": "EWeaponSwitchType::PutWeaponQuiet",
+        "value": 4
+      },
+      {
+        "name": "EWeaponSwitchType::GetWeaponFast",
+        "value": 5
+      },
+      {
+        "name": "EWeaponSwitchType::PutWeaponFast",
+        "value": 6
+      },
+      {
+        "name": "EWeaponSwitchType::GetAndPutWeaponFast",
+        "value": 7
+      },
+      {
+        "name": "EWeaponSwitchType::PutQuietAndGetWeaponFast",
+        "value": 8
+      }
+    ],
+    "generated_maximum": 9,
+    "network_version": 13,
+    "wire_bits": 4
+  }
+}

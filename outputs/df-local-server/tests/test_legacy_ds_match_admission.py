@@ -61,6 +61,30 @@ class LocalMatchAdmissionsTests(unittest.TestCase):
                 self.admissions.authorize_login_url(login_url(self.ticket, **{key: value}))
         self.assertEqual(self.admissions.summary()['active_ticket_count'], 1)
 
+    def test_joined_session_survives_admission_expiry_without_allowing_an_expired_login(self):
+        admissions = LocalMatchAdmissions(ttl=5, joined_session_ttl=30, clock=self.clock)
+        ticket = admissions.issue(123, 456, 2201, 142201103)
+        self.clock.now = 12;admissions.begin_joined_session(ticket)
+        self.clock.now = 16
+        self.assertTrue(admissions.is_active(ticket))
+        with self.assertRaises(MatchAdmissionDenied):
+            admissions.authorize_login_url(login_url(ticket))
+        admissions.begin_joined_session(ticket)  # Idempotent; original session deadline42.
+        self.assertEqual(ticket.expires_at, 15)
+        self.clock.now = 42
+        self.assertFalse(admissions.is_active(ticket))
+
+    def test_expired_admission_cannot_be_promoted_and_close_releases_the_session(self):
+        self.clock.now = 15
+        with self.assertRaises(MatchAdmissionDenied):
+            self.admissions.begin_joined_session(self.ticket)
+        ticket = self.admissions.issue(123, 456, 2201, 142201103)
+        self.admissions.begin_joined_session(ticket)
+        self.clock.now = 21
+        self.assertTrue(self.admissions.is_active(ticket))
+        self.admissions.end_joined_session(ticket)
+        self.assertFalse(self.admissions.is_active(ticket))
+
     def test_extra_options_are_accepted_without_platform_authentication(self):
         url = (login_url(self.ticket) + '?ModularWeapon=1,2,3?Response0=anything'
                '?UID=not-the-player?Platform=QQ?SpectatorOnly')

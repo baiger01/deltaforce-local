@@ -1,0 +1,592 @@
+{
+  "archive_network_version": 13,
+  "cache_manifest_sha256": "dfd5c279d7db45842cee2bbc485ac8bf3cab03e4249ef5fe36bc9e8d6cd14754",
+  "client_sha256": "4254fbe66585f260f1f9dbfc5e302887842552e7baed8939e023160a5e250be0",
+  "component": {
+    "authority_name": "GameStateAbilityComponent",
+    "class_path": "/Script/DFMAbility.DFMAbilityGameStateComponent",
+    "client_replication_creation_name": null,
+    "creation_method": "authority_dynamic_instance_component",
+    "default_subobject": false,
+    "native_net_fields_without_wire_handles": [
+      {
+        "array_dim_or_bool_layout_low32": 1,
+        "declaring_class": "DFMAbilityGameStateComponent",
+        "extra_pointer_rva": "0x16db5550",
+        "name": "AbilityIndexRam2",
+        "native_gen_flags": "0x4",
+        "native_member_offset": "0x430",
+        "property_flags": "0x10000000000020",
+        "record_rva": "0x16f1a230",
+        "record_sha256": "322d6bdf627867b807d22a975e9dceca47c737b72b0eae3285c61de01199a4d7"
+      },
+      {
+        "array_dim_or_bool_layout_low32": 1,
+        "declaring_class": "DFMAbilityGameStateComponent",
+        "extra_pointer_rva": "0x16db5400",
+        "name": "AbilityIndexRam",
+        "native_gen_flags": "0x4",
+        "native_member_offset": "0x428",
+        "property_flags": "0x10000100000020",
+        "record_rva": "0x16f1a258",
+        "record_sha256": "5dafee3b479b227b5ea8c5889766c62e2fa67d077a8f0df13202058aa3e1bf09",
+        "rep_notify": "Rep_AbilityIndexRam"
+      },
+      {
+        "array_dim_or_bool_layout_low32": 1,
+        "declaring_class": "DFMAbilityGameStateComponent",
+        "extra_pointer_rva": "0x16db5400",
+        "name": "AbilityTemplateRepData",
+        "native_gen_flags": "0x16",
+        "native_member_offset": "0x418",
+        "property_flags": "0x10000100000020",
+        "record_rva": "0x16f1a280",
+        "record_sha256": "10ab7177830254b7064ca43e83f0946bc0189ebe1f1f4db566d645121dba270c",
+        "rep_notify": "Rep_AbilityTemplateRepData"
+      },
+      {
+        "array_dim_or_bool_layout_low32": 1,
+        "declaring_class": "GPAbilityGameStateComponent",
+        "extra_pointer_rva": "0x16526a08",
+        "name": "DSRegisteredActors",
+        "native_gen_flags": "0x16",
+        "native_member_offset": "0x280",
+        "property_flags": "0x40000100000020",
+        "record_rva": "0x165d7738",
+        "record_sha256": "d02f13ff26fcc73b37c257fbdda64f0e158177fe368a464ef5873f22245251a0",
+        "rep_notify": "OnRep_DSRegisteredActors"
+      },
+      {
+        "array_dim_or_bool_layout_low32": 1,
+        "declaring_class": "GPAbilityGameStateComponent",
+        "extra_pointer_rva": "0x165239f0",
+        "name": "SkillPlayerArray",
+        "native_gen_flags": "0x16",
+        "native_member_offset": "0x130",
+        "property_flags": "0x10000100000020",
+        "record_rva": "0x165d79d8",
+        "record_sha256": "7d89768a3f1bb236e1c0352fd6475613395874a8bb815aaf368b453c622c4fb8",
+        "rep_notify": "Rep_AbilityExcuteDataArray"
+      },
+      {
+        "array_dim_or_bool_layout_low32": 1,
+        "declaring_class": "GPAbilityGameStateComponent",
+        "extra_pointer_rva": "0x165233b0",
+        "name": "AbilityExcuteDataArray",
+        "native_gen_flags": "0x16",
+        "native_member_offset": "0x120",
+        "property_flags": "0x10000100000020",
+        "record_rva": "0x165d7a28",
+        "record_sha256": "bf3dab30dcfd0e487283f2b0104ec8b7952c3755c0a322e9de3e1cbbccb42db8",
+        "rep_notify": "Rep_AbilityExcuteDataArray"
+      }
+    ],
+    "outer": "existing_channel_GameState_actor",
+    "source_row": "GSAbilityComponent",
+    "source_row_uexp_offset": 45,
+    "source_table": "/Game/DataTables/Ability/DFMAbilityConfig"
+  },
+  "connection_network_version": 13,
+  "header": {
+    "actor_selector": false,
+    "client_new_object_name": null,
+    "client_new_object_outer": "channel_actor",
+    "component_register_hook": "0x125bcab0",
+    "empty_rep_layout_bits": 9,
+    "fields": [
+      "has_rep_layout_1bit",
+      "actor_selector_1bit",
+      "packed_object_guid",
+      "stably_named_1bit",
+      "packed_class_guid",
+      "packed_payload_bits",
+      "payload_exact_bits"
+    ],
+    "has_rep_layout": true,
+    "stably_named": false
+  },
+  "instruction_pins": [
+    {
+      "bytes": "4180be3001000003",
+      "mnemonic": "cmp",
+      "operands": "byte ptr [r14 + 0x130], 3",
+      "rva": "0xb89ccc9",
+      "source_relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-gs-ability-field-assignment-v1.json"
+    },
+    {
+      "bytes": "488bd0",
+      "mnemonic": "mov",
+      "operands": "rdx, rax",
+      "rva": "0xb89ccdd",
+      "source_relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-gs-ability-field-assignment-v1.json"
+    },
+    {
+      "bytes": "e888b356f6",
+      "mnemonic": "call",
+      "operands": "0x1e08070",
+      "rva": "0xb89cce3",
+      "source_relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-gs-ability-field-assignment-v1.json"
+    },
+    {
+      "bytes": "4989b6b0090000",
+      "mnemonic": "mov",
+      "operands": "qword ptr [r14 + 0x9b0], rsi",
+      "rva": "0xb89cd12",
+      "source_relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-gs-ability-field-assignment-v1.json"
+    },
+    {
+      "bytes": "488d1563b6280c",
+      "mnemonic": "lea",
+      "operands": "rdx, [rip + 0xc28b663]",
+      "rva": "0xb89cda6",
+      "source_relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-gs-ability-field-assignment-v1.json"
+    },
+    {
+      "bytes": "488d15daaac80a",
+      "mnemonic": "lea",
+      "operands": "rdx, [rip + 0xac8aada]",
+      "rva": "0xb89ce77",
+      "source_relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-gs-ability-field-assignment-v1.json"
+    },
+    {
+      "bytes": "498bcf",
+      "mnemonic": "mov",
+      "operands": "rcx, r15",
+      "rva": "0xb89ced4",
+      "source_relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-gs-ability-field-assignment-v1.json"
+    },
+    {
+      "bytes": "e8bb016205",
+      "mnemonic": "call",
+      "operands": "0x10ebd0a0",
+      "rva": "0xb89cee0",
+      "source_relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-gs-ability-field-assignment-v1.json"
+    },
+    {
+      "bytes": "498986b0090000",
+      "mnemonic": "mov",
+      "operands": "qword ptr [r14 + 0x9b0], rax",
+      "rva": "0xb89cee5",
+      "source_relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-gs-ability-field-assignment-v1.json"
+    },
+    {
+      "bytes": "ff92a8030000",
+      "mnemonic": "call",
+      "operands": "qword ptr [rdx + 0x3a8]",
+      "rva": "0xb89cef7",
+      "source_relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-gs-ability-field-assignment-v1.json"
+    },
+    {
+      "bytes": "e8f4fbc806",
+      "mnemonic": "call",
+      "operands": "0x1252cb00",
+      "rva": "0xb89cf07",
+      "source_relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-gs-ability-field-assignment-v1.json"
+    },
+    {
+      "bytes": "e868fae606",
+      "mnemonic": "call",
+      "operands": "0x1270c980",
+      "rva": "0xb89cf13",
+      "source_relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-gs-ability-field-assignment-v1.json"
+    },
+    {
+      "bytes": "4584ff",
+      "mnemonic": "test",
+      "operands": "r15b, r15b",
+      "rva": "0x12863e3b",
+      "source_relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-dynamic-subobject-receive-header-v1.json"
+    },
+    {
+      "bytes": "0f84dc000000",
+      "mnemonic": "je",
+      "operands": "0x12863f20",
+      "rva": "0x12863e3e",
+      "source_relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-dynamic-subobject-receive-header-v1.json"
+    },
+    {
+      "bytes": "4c8b11",
+      "mnemonic": "mov",
+      "operands": "r10, qword ptr [rcx]",
+      "rva": "0x12863f48",
+      "source_relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-dynamic-subobject-receive-header-v1.json"
+    },
+    {
+      "bytes": "41ff9260020000",
+      "mnemonic": "call",
+      "operands": "qword ptr [r10 + 0x260]",
+      "rva": "0x12863f4b",
+      "source_relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-dynamic-subobject-receive-header-v1.json"
+    },
+    {
+      "bytes": "443975b8",
+      "mnemonic": "cmp",
+      "operands": "dword ptr [rbp - 0x48], r14d",
+      "rva": "0x12863f52",
+      "source_relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-dynamic-subobject-receive-header-v1.json"
+    },
+    {
+      "bytes": "488b7dc0",
+      "mnemonic": "mov",
+      "operands": "rdi, qword ptr [rbp - 0x40]",
+      "rva": "0x128645dd",
+      "source_relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-dynamic-subobject-receive-header-v1.json"
+    },
+    {
+      "bytes": "0f85db020000",
+      "mnemonic": "jne",
+      "operands": "0x128648f0",
+      "rva": "0x1286460f",
+      "source_relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-dynamic-subobject-receive-header-v1.json"
+    },
+    {
+      "bytes": "744d",
+      "mnemonic": "je",
+      "operands": "0x128646e7",
+      "rva": "0x12864698",
+      "source_relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-dynamic-subobject-receive-header-v1.json"
+    },
+    {
+      "bytes": "4c39742470",
+      "mnemonic": "cmp",
+      "operands": "qword ptr [rsp + 0x70], r14",
+      "rva": "0x128646e7",
+      "source_relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-dynamic-subobject-receive-header-v1.json"
+    },
+    {
+      "bytes": "488bd3",
+      "mnemonic": "mov",
+      "operands": "rdx, rbx",
+      "rva": "0x128647d6",
+      "source_relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-dynamic-subobject-receive-header-v1.json"
+    },
+    {
+      "bytes": "488bcf",
+      "mnemonic": "mov",
+      "operands": "rcx, rdi",
+      "rva": "0x128647de",
+      "source_relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-dynamic-subobject-receive-header-v1.json"
+    },
+    {
+      "bytes": "e8a68865fe",
+      "mnemonic": "call",
+      "operands": "0x10ebd0a0",
+      "rva": "0x128647f5",
+      "source_relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-dynamic-subobject-receive-header-v1.json"
+    },
+    {
+      "bytes": "41ff90b0020000",
+      "mnemonic": "call",
+      "operands": "qword ptr [r8 + 0x2b0]",
+      "rva": "0x12864809",
+      "source_relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-dynamic-subobject-receive-header-v1.json"
+    },
+    {
+      "bytes": "e830223600",
+      "mnemonic": "call",
+      "operands": "0x12bc6a60",
+      "rva": "0x1286482b",
+      "source_relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-dynamic-subobject-receive-header-v1.json"
+    },
+    {
+      "bytes": "e81eaacd00",
+      "mnemonic": "call",
+      "operands": "0x132974e0",
+      "rva": "0x125bcabd",
+      "source_relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-gs-created-from-replication-body-v1.json"
+    },
+    {
+      "bytes": "e898fe1400",
+      "mnemonic": "call",
+      "operands": "0x1270c980",
+      "rva": "0x125bcae3",
+      "source_relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-gs-created-from-replication-body-v1.json"
+    },
+    {
+      "bytes": "b201",
+      "mnemonic": "mov",
+      "operands": "dl, 1",
+      "rva": "0x125bcae8",
+      "source_relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-gs-created-from-replication-body-v1.json"
+    },
+    {
+      "bytes": "e8ee401500",
+      "mnemonic": "call",
+      "operands": "0x12710be0",
+      "rva": "0x125bcaed",
+      "source_relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-gs-created-from-replication-body-v1.json"
+    },
+    {
+      "bytes": "ff90a8030000",
+      "mnemonic": "call",
+      "operands": "qword ptr [rax + 0x3a8]",
+      "rva": "0x1270cbc4",
+      "source_relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-component-register-and-beginplay-v1.json"
+    },
+    {
+      "bytes": "e8774affff",
+      "mnemonic": "call",
+      "operands": "0x12701650",
+      "rva": "0x1270cbd4",
+      "source_relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-component-register-and-beginplay-v1.json"
+    },
+    {
+      "bytes": "ff9018030000",
+      "mnemonic": "call",
+      "operands": "qword ptr [rax + 0x318]",
+      "rva": "0x1270cc03",
+      "source_relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-component-register-and-beginplay-v1.json"
+    },
+    {
+      "bytes": "0fb68e95000000",
+      "mnemonic": "movzx",
+      "operands": "ecx, byte ptr [rsi + 0x95]",
+      "rva": "0x1270cd0e",
+      "source_relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-component-register-and-beginplay-v1.json"
+    },
+    {
+      "bytes": "0f85e9feffff",
+      "mnemonic": "jne",
+      "operands": "0x1270cc13",
+      "rva": "0x1270cd24",
+      "source_relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-component-register-and-beginplay-v1.json"
+    },
+    {
+      "bytes": "ff9020030000",
+      "mnemonic": "call",
+      "operands": "qword ptr [rax + 0x320]",
+      "rva": "0x1270cd47",
+      "source_relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-component-register-and-beginplay-v1.json"
+    },
+    {
+      "bytes": "e82c850200",
+      "mnemonic": "call",
+      "operands": "0x7ee4b20",
+      "rva": "0x7ebc5ef",
+      "source_relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-data-and-gs-beginplay-v1.json"
+    },
+    {
+      "bytes": "ff9010040000",
+      "mnemonic": "call",
+      "operands": "qword ptr [rax + 0x410]",
+      "rva": "0x7ebc61c",
+      "source_relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-data-and-gs-beginplay-v1.json"
+    },
+    {
+      "bytes": "e876860200",
+      "mnemonic": "call",
+      "operands": "0x7ee4ca0",
+      "rva": "0x7ebc625",
+      "source_relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-data-and-gs-beginplay-v1.json"
+    },
+    {
+      "bytes": "488d8f38090000",
+      "mnemonic": "lea",
+      "operands": "rcx, [rdi + 0x938]",
+      "rva": "0x7ebc664",
+      "source_relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-data-and-gs-beginplay-v1.json"
+    },
+    {
+      "bytes": "e88e9dedf8",
+      "mnemonic": "call",
+      "operands": "0xd96400",
+      "rva": "0x7ebc66d",
+      "source_relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-data-and-gs-beginplay-v1.json"
+    },
+    {
+      "bytes": "e82299ffff",
+      "mnemonic": "call",
+      "operands": "0x3519290",
+      "rva": "0x351f969",
+      "source_relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-data-system-on-gs-init-replay-v1.json"
+    },
+    {
+      "bytes": "41c6462002",
+      "mnemonic": "mov",
+      "operands": "byte ptr [r14 + 0x20], 2",
+      "rva": "0x3518145",
+      "source_relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-context-type-write-bodies-v1.json"
+    },
+    {
+      "bytes": "e875a9feff",
+      "mnemonic": "call",
+      "operands": "0x3502ad0",
+      "rva": "0x3518156",
+      "source_relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-context-type-write-bodies-v1.json"
+    },
+    {
+      "bytes": "410fb687a0010000",
+      "mnemonic": "movzx",
+      "operands": "eax, byte ptr [r15 + 0x1a0]",
+      "rva": "0x35181e9",
+      "source_relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-context-type-write-bodies-v1.json"
+    },
+    {
+      "bytes": "41888690000000",
+      "mnemonic": "mov",
+      "operands": "byte ptr [r14 + 0x90], al",
+      "rva": "0x35181f1",
+      "source_relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-context-type-write-bodies-v1.json"
+    }
+  ],
+  "kind": "source_qualified_gs_ability_dynamic_component_creation_v1",
+  "later_override_absence_claimed": false,
+  "local_policy": "Only empty creation content; actual GS layout and state require a later strict observation",
+  "native_methods_invoked": false,
+  "normal_lifecycle": {
+    "after_creation": "Native GS ability class with current GS Outer must be strictly observed; actual name is not forced",
+    "before_owner_state": "Existing GS Open and class export ACKs; native registration and BeginPlay use normal world/owner conditions",
+    "beginplay_if_owner_begun_and_component_not_begun_rva": "0x1270cd47",
+    "context_config_fill_rva": "0x3517ba0",
+    "data_system_is_not_created_by_this_network_content": true,
+    "data_system_replay_existing_contexts_rva": "0x351f890",
+    "dfm_component_beginplay_rva": "0x7ebc540",
+    "game_state_init_delegate_offset": "0x938",
+    "gs_field_is_non_net": true,
+    "gs_field_lazy_find_getter_rva": "0xb8ab8d0",
+    "gs_field_may_stay_null_until_native_lazy_getter": true,
+    "local_ability_systems_init_rva": "0x7ee4ca0",
+    "owner_binding_constructor_rva": "0x126f4670",
+    "register_with_world_rva": "0x1270ca30",
+    "source_skill_state_type_load_rva": "0x35181e9",
+    "source_skill_state_type_store_rva": "0x35181f1"
+  },
+  "process_access": false,
+  "remaining_gates": [
+    "actual current component/owner/registered/begunplay values",
+    "existing SkillSubsystem.DataSystem and valid typed context owner/component references",
+    "actual driver RepLayout handles and serializers for six declared native net fields",
+    "AbilityTemplateRepData and AbilityIndexRam gameplay replication where required",
+    "global Blackboard skill permission reasons remain independently blocked in the latest log"
+  ],
+  "runtime_component_observed": false,
+  "skills_initialized_claimed": false,
+  "source_table_is_baseline": true,
+  "sources": [
+    {
+      "relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-game-state-factory-sources-v1.json",
+      "sha256": "a404c0261099ced2d11cb446bc92ef4a3f8d9b4442aa53adfcd610a78a04adb0"
+    },
+    {
+      "relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-gs-config-asset-source-v2.json",
+      "sha256": "904eeb71df27aab8ad7b96267b44c62f9f9eac042411166dc4764740545ed18a"
+    },
+    {
+      "relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-gs-config-table-rows-v1.json",
+      "sha256": "7b0e40733c544c922757ca17494715e2b0311c3fe841d25cc225da6395e7a538"
+    },
+    {
+      "relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-gs-config-key-initializer-v1.json",
+      "sha256": "4dd08e26f29d5a628153c2da025f40fc0a83532482e4b1fa611b6987d754c6be"
+    },
+    {
+      "relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-gs-ability-field-assignment-v1.json",
+      "sha256": "ec865e75e5c4a48fc7baaa7fcad6fa7ab311d4603dbd072496fd1ff3f0071cbf"
+    },
+    {
+      "relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-dfm-class-registrations-v1.json",
+      "sha256": "f71d7de5e6d43bb31648199e53d2ede1782fda113dc1e894578a2e7e8060e9e6"
+    },
+    {
+      "relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-dfm-constructors-v1.json",
+      "sha256": "deaf6394ccd5390b780e7fe92a8a0117c6be29af5208102dfdf32822d5ccc9a4"
+    },
+    {
+      "relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-gs-component-declarations-v1.json",
+      "sha256": "13214f5b1d293f156194323d9f62b163cc0e1f3eb74fb1b6286c5bedd8c5cd9e"
+    },
+    {
+      "relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-dynamic-subobject-receive-header-v1.json",
+      "sha256": "027ef34cb7fce8aa76a8e663b0e4e8ffe7486bae51fee5934d72742ee286770c"
+    },
+    {
+      "relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-gs-created-from-replication-slot-v1.json",
+      "sha256": "9658b072a63cb59f197a3e51379e31602267788d17b48cc0f2c45159e059801e"
+    },
+    {
+      "relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-gs-created-from-replication-body-v1.json",
+      "sha256": "dd64eb0425091017d881b8d5fdffbe23df8baf62c693875245b2f6cfd2145f98"
+    },
+    {
+      "relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-sol-gs-constructor-v1.json",
+      "sha256": "c24e566e8303fa38f9e6c17cf9a7fdaf2e187eee91f3745fa59b02af54a229de"
+    },
+    {
+      "relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-gs-config-registry-row-v1.json",
+      "sha256": "87de9bf2bb977b1a939cb6f8f70a75ddcc7a2e981f16f4d5702d039658bddfd7"
+    },
+    {
+      "relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-gs-ability-client-binding-callers-v1.json",
+      "sha256": "749c0488c07c8182b2d8460ca8777c4f0557de34b3302dfe52aa99aaf2f803ae"
+    },
+    {
+      "relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-component-register-and-beginplay-v1.json",
+      "sha256": "43d86e0ce4118dc6ba866abef25df1f7a841ec98109afe053a1f6b2a3304f370"
+    },
+    {
+      "relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-component-constructor-owner-v1.json",
+      "sha256": "eeb0d09eadf6d34e0afc161e839230bf3640b9d7a8e0566d2cc0673e7950c664"
+    },
+    {
+      "relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-data-and-gs-beginplay-v1.json",
+      "sha256": "8582f6b3e73c9a06bdf6435de0de87666ea2d58c2a48991924a5f9af136e5e17"
+    },
+    {
+      "relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-data-register-and-gs-local-init-v1.json",
+      "sha256": "4cb7360c38c538790bf1af1b3902fd759d48a1f2cc9383a65eaa38930087d954"
+    },
+    {
+      "relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-data-system-on-gs-init-replay-v1.json",
+      "sha256": "28af75435e11aa3da350fe68a22e7d165e967d6a949e5dbc35b6f8e173a5d01e"
+    },
+    {
+      "relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-dfm-gs-context-init-hook-v1.json",
+      "sha256": "aafda9614dbf5caa8a5953f4e059c31cba0f5ec4e6516892ba9ff65daa695762"
+    },
+    {
+      "relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-gs-no-template-row-fill-v1.json",
+      "sha256": "cb35aadd427f4a216ca7051a5067267f400292b84e7807085db63555c59f40d7"
+    },
+    {
+      "relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-context-type-write-bodies-v1.json",
+      "sha256": "4bacd044829b085bfd7f205e39e24d1d08a8072c217a260b10bf8b88f1b031d6"
+    },
+    {
+      "relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-gs-create-ability-template-v1.json",
+      "sha256": "db3200ff1efaddb9a716570c1fff795a53eb8baed63d80bc08d4df40ce6b6056"
+    },
+    {
+      "relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-gs-template-setup-context-v1.json",
+      "sha256": "e6f1c5b49c2c3c85b4f8547562e380a71ebdc25cabf543e5ebd572951e35d298"
+    },
+    {
+      "bytes": 11464,
+      "relative_path": "work/evidence/model-init-chain-20261018/map-marker-component-assets/pak-0-1-pakchunk73-WindowsClient/DeltaForce/Content/BluePrints/GameModes/TestGame/BP_GameState_PVPVE.uasset",
+      "sha256": "527ca55ced34c731f3710398e9956aaceb34ee953285d9c6ea32a85d78515448"
+    },
+    {
+      "bytes": 11523,
+      "relative_path": "work/evidence/model-init-chain-20261018/map-marker-component-assets/pak-0-1-pakchunk73-WindowsClient/DeltaForce/Content/BluePrints/GameModes/TestGame/BP_GameState_PVPVE.uexp",
+      "sha256": "50e3504d05f0a72254ba22a6d9b261ab65fd8b659f2c4e9a067e3b7cfb2c4508"
+    },
+    {
+      "bytes": 1207,
+      "relative_path": "work/evidence/model-init-chain-20261018/current-skill-gs-config-assets/pak-0-0-pakchunk2-WindowsClient/DeltaForce/Content/DataTables/Ability/DFMAbilityConfig.uasset",
+      "sha256": "575041a83b83ffa6e0ea57cad4d0ec15852aebf002ab8c0c25721464ac0cc30d"
+    },
+    {
+      "bytes": 428,
+      "relative_path": "work/evidence/model-init-chain-20261018/current-skill-gs-config-assets/pak-0-0-pakchunk2-WindowsClient/DeltaForce/Content/DataTables/Ability/DFMAbilityConfig.uexp",
+      "sha256": "006b315bcbd91b7fe46f3260faacd4ea0ada6848cfc417107407c36a0cd3036f"
+    },
+    {
+      "relative_path": "work/evidence/map-system-audit-20261018/economy-decrypted-assets/pak-0-0-pakchunk2-WindowsClient/DeltaForce/Content/DataTables/DataTableConfig/DataTableAssetInfo.uasset",
+      "sha256": "25c02646e684c7a9f939931d1f5802e32726d0013d16938938bb6c9b142b182a"
+    },
+    {
+      "relative_path": "work/evidence/map-system-audit-20261018/economy-decrypted-assets/pak-0-0-pakchunk2-WindowsClient/DeltaForce/Content/DataTables/DataTableConfig/DataTableAssetInfo.uexp",
+      "sha256": "63b11be4de14db3fe78e075c6702d33779e2751f3a8bef45b20c275e6b7f9d83"
+    }
+  ],
+  "wire_property_handles_qualified": false
+}

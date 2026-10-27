@@ -1,0 +1,160 @@
+{
+  "authority_counter": {
+    "autonomous_proxy_receive_increments_counter": false,
+    "increment_before_registration": true,
+    "native_type": "int32",
+    "registration_caller_requires_actor_role": 3,
+    "rva": "0x1cbd0430"
+  },
+  "client_launched": false,
+  "client_sha256": "4254fbe66585f260f1f9dbfc5e302887842552e7baed8939e023160a5e250be0",
+  "kind": "source_qualified_normal_skill_identity_scope_v1",
+  "normal_context_allocation": {
+    "assigns_received_unique_id": true,
+    "global_unique_id_lookup_in_allocator": false,
+    "key": "free or newly appended context index"
+  },
+  "normal_reconcile_lookup": {
+    "context_array_offset": "0x378",
+    "context_stride": "0x3f0",
+    "first_key": "this SkillComponent SkillEntityMap[SkillId]",
+    "map_member_offset": "0x658",
+    "mismatch_action": "remove this component old SkillId before adding the new state",
+    "unique_id_member_offset": "0x7c",
+    "unique_id_use": "generation equality within located component skill",
+    "value": "int32 SkillSubsystem context index"
+  },
+  "optional_profile_reason_until_observed": "native_skill_data_system_reference_not_observed",
+  "pending_current_observation": "DataSystem exact value was refused by old flags guard; corrected reader is ready",
+  "process_access": false,
+  "required_before_native_add": [
+    "current component SkillSystem resolves",
+    "SkillSubsystem.DataSystem is nonnull",
+    "source SkillData row resolves",
+    "current owning Actor/skill bindings are valid"
+  ],
+  "service_policy": {
+    "counter": "persistent signed32 monotonically reserved nonoverlapping ranges",
+    "other_subsystem_contexts_alone_prove_id_collision": false,
+    "retry": "same frozen actual admission hash reuses its reserved range",
+    "unknown_other_consumers_proved_globally_safe": false
+  },
+  "sources": {
+    "work/evidence/model-init-chain-20261018/native-dfm-skill-authority-create-ability-v1.json": "c96c2916bdf9702a24c806324432ce060a5203bb806cbb07e143f719ecc5dd23",
+    "work/evidence/model-init-chain-20261018/native-dfm-skill-manager-and-entity-instance-create-v1.json": "812f3acc38a884c0b0ecd2b8b8c317f076c8bde3773d1881a455112936a9ca9a",
+    "work/evidence/model-init-chain-20261018/native-skill-entity-client-replication-registration-v1.json": "bb73b31de0dc1f64a3e947d39b32e5b61199d58cc1ae4f5d7564f17dc07f4337",
+    "work/evidence/model-init-chain-20261018/native-skill-entity-component-identity-lookup-v1.json": "ffe5f2427f2a3bdedeea3654313c78a1997cf150c9998aea28d921490a09e41f",
+    "work/evidence/model-init-chain-20261018/native-skill-entity-context-index-accessor-v1.json": "a3e60feefa086b7c7506ee1e684c3df31238e119d0d5bca289a7428e33b320a9",
+    "work/evidence/model-init-chain-20261018/native-skill-state-client-add-and-reconcile-v1.json": "9c8cb467278aebada486165fced6df75b8836ec3074aad1edf15cf49278eba2c"
+  },
+  "verified_instruction_facts": [
+    {
+      "bytes": "80bf3001000003",
+      "mnemonic": "cmp",
+      "operands": "byte ptr [rdi + 0x130], 3",
+      "rva": "0x31ea10d"
+    },
+    {
+      "bytes": "7534",
+      "mnemonic": "jne",
+      "operands": "0x31ea14a",
+      "rva": "0x31ea114"
+    },
+    {
+      "bytes": "e88f340000",
+      "mnemonic": "call",
+      "operands": "0x31ed5b0",
+      "rva": "0x31ea11c"
+    },
+    {
+      "bytes": "ff050e2e9e19",
+      "mnemonic": "inc",
+      "operands": "dword ptr [rip + 0x199e2e0e]",
+      "rva": "0x31ed61c"
+    },
+    {
+      "bytes": "e85aedf0ff",
+      "mnemonic": "call",
+      "operands": "0x32f6770",
+      "rva": "0x33e7a11"
+    },
+    {
+      "bytes": "394f7c",
+      "mnemonic": "cmp",
+      "operands": "dword ptr [rdi + 0x7c], ecx",
+      "rva": "0x33e7a2d"
+    },
+    {
+      "bytes": "e854600100",
+      "mnemonic": "call",
+      "operands": "0x33fda90",
+      "rva": "0x33e7a37"
+    },
+    {
+      "bytes": "488d8f58060000",
+      "mnemonic": "lea",
+      "operands": "rcx, [rdi + 0x658]",
+      "rva": "0x32f6811"
+    },
+    {
+      "bytes": "e8b362d8fd",
+      "mnemonic": "call",
+      "operands": "0x107cad0",
+      "rva": "0x32f6818"
+    },
+    {
+      "bytes": "8b13",
+      "mnemonic": "mov",
+      "operands": "edx, dword ptr [rbx]",
+      "rva": "0x32f68b5"
+    },
+    {
+      "bytes": "e8c12f2100",
+      "mnemonic": "call",
+      "operands": "0x3509880",
+      "rva": "0x32f68ba"
+    },
+    {
+      "bytes": "3b9f80030000",
+      "mnemonic": "cmp",
+      "operands": "ebx, dword ptr [rdi + 0x380]",
+      "rva": "0x3509906"
+    },
+    {
+      "bytes": "488d8f78030000",
+      "mnemonic": "lea",
+      "operands": "rcx, [rdi + 0x378]",
+      "rva": "0x350990e"
+    },
+    {
+      "bytes": "4869d1f0030000",
+      "mnemonic": "imul",
+      "operands": "rdx, rcx, 0x3f0",
+      "rva": "0x350991e"
+    },
+    {
+      "bytes": "89437c",
+      "mnemonic": "mov",
+      "operands": "dword ptr [rbx + 0x7c], eax",
+      "rva": "0x34ce749"
+    },
+    {
+      "bytes": "4489bb80000000",
+      "mnemonic": "mov",
+      "operands": "dword ptr [rbx + 0x80], r15d",
+      "rva": "0x34ce74c"
+    },
+    {
+      "bytes": "488b8070030000",
+      "mnemonic": "mov",
+      "operands": "rax, qword ptr [rax + 0x370]",
+      "rva": "0x31e8048"
+    },
+    {
+      "bytes": "0f8408550000",
+      "mnemonic": "je",
+      "operands": "0x31ed564",
+      "rva": "0x31e8056"
+    }
+  ]
+}

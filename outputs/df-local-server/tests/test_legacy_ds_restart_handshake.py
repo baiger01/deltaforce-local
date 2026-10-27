@@ -218,9 +218,10 @@ class SamePeerRestartTests(RestartFlowFixture, unittest.TestCase):
 
 
 class RestartControlActorIntegrationTests(RestartFlowFixture, unittest.TestCase):
-    def setup_joined(self):
+    def setup_joined(self, *, joined_session_ttl=3600):
         self.clock = [0.0]
-        admissions = LocalMatchAdmissions(clock=lambda: self.clock[0])
+        admissions = LocalMatchAdmissions(clock=lambda: self.clock[0],
+            joined_session_ttl=joined_session_ttl)
         ticket = admissions.issue(101, 201, 2201, 142201103, 88000000025)
         probe, _ = self.verified(control_probe=True, control_admissions=admissions,
             control_welcome_maps=MAPS, expected_net_version=NET_VERSION)
@@ -286,11 +287,11 @@ class RestartControlActorIntegrationTests(RestartFlowFixture, unittest.TestCase)
     def test_ticket_expiry_or_changed_owner_rejects_initial_and_echo(self):
         for restriction in ('inactive', 'other_owner'):
             with self.subTest(restriction=restriction):
-                self.setup_joined()
+                self.setup_joined(joined_session_ttl=1)
                 generation = self.probe.pending[PEER]
                 _, echo = self.start_restart(self.probe)
                 if restriction == 'inactive':
-                    self.clock[0] = 120.0
+                    self.clock[0] = 1.0  # Expire the joined lease, not only Login.
                 else:
                     self.connection.ticket_peers[self.ticket.cookie] = OTHER_PEER
                 activity = generation.last_valid_activity_at

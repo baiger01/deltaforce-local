@@ -1,0 +1,65 @@
+{
+  "source": "GCloud.dll",
+  "source_sha256": "340288515cb1db59592481c066cb2aa23c53b823661d8b585be7f68d7d9c847b",
+  "scope": "Read-only native instruction and export inspection; DLL never loaded",
+  "game_files_modified": false,
+  "client_configured_modulus_recovered": false,
+  "verified_local_connection_override": false,
+  "default_initialization": {
+    "export_rva": "0x2ab70",
+    "key_mode_member_offset": "0x24",
+    "default_key_mode": 0,
+    "encryption_method_member_offset": "0x28",
+    "default_encryption_method": 0,
+    "parameter_string_member_offset": "0x30",
+    "string_constructor_rva": "0x48470",
+    "buffer_constructor_rva": "0x44fb0",
+    "initial_string_storage_zeroed": true
+  },
+  "parameter_provenance": {
+    "caller_rva": "0x35ce6",
+    "caller_configuration_pointer_member": "0x98",
+    "key_mode_source_member": "0x24",
+    "encryption_method_source_member": "0x28",
+    "parameter_string_source_member": "0x30",
+    "set_encryption_info_rva": "0x19c1e0",
+    "dh_setup_rva": "0x1a3a10",
+    "hex_string_to_bignum_call_rva": "0x1a3b1d",
+    "hex_string_to_bignum_target_rva": "0x75e0f0",
+    "observed_modulus_length_bytes": {
+      "minimum": 1,
+      "maximum": 64
+    },
+    "generator": 2,
+    "modulus_string_value_not_observed": true
+  },
+  "additional_static_callers": [
+    {
+      "caller_rva": "0x3bb7d",
+      "parameter_string_member": "0x258",
+      "key_mode_member": "0x254",
+      "encryption_method_member": "0x250",
+      "actual_game_use_verified": false
+    },
+    {
+      "caller_rva": "0x6e1876",
+      "parameter_string_member": "0x228",
+      "key_mode_member": "0x220",
+      "encryption_method_member": "0x21c",
+      "actual_game_use_verified": false
+    },
+    {
+      "caller_rva": "0x6e6b68",
+      "parameter_string_member": "0x1a8",
+      "key_mode_member": "0x1a0",
+      "encryption_method_member": "0x19c",
+      "actual_game_use_verified": false
+    }
+  ],
+  "interpretation": "This observed initialization path consumes an upper-layer parameter string. The default constructor supplies no DH modulus.",
+  "limits": [
+    "Member offsets describe this SDK binary only, not a writable game configuration entry.",
+    "The running game caller and the origin of its nondefault initialization values remain unverified.",
+    "These observations do not provide a client patch or decrypt an official session."
+  ]
+}

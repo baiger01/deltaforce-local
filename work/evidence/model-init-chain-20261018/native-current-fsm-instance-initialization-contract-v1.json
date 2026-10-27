@@ -1,0 +1,130 @@
+{
+  "client_launched": false,
+  "client_sha256": "4254fbe66585f260f1f9dbfc5e302887842552e7baed8939e023160a5e250be0",
+  "code_cache_manifest_sha256": "dfd5c279d7db45842cee2bbc485ac8bf3cab03e4249ef5fe36bc9e8d6cd14754",
+  "context_interface": {
+    "effective_instance_member_offset": 1400,
+    "instruction": {
+      "bytes": "488b8140050000",
+      "mnemonic": "mov",
+      "operands": "rax, qword ptr [rcx + 0x540]",
+      "rva": "0x105f180"
+    },
+    "slot": 16,
+    "target_rva": "0x105f180",
+    "this_offset": 56,
+    "vtable_rva": "0x14f9a8c0"
+  },
+  "immutable_tables": [
+    {
+      "bytes": 56,
+      "rva": "0x14f9a888",
+      "sha256": "484c69401bcaa99f14c8158e0e7e94f7d090f7a53354386165a7fa17275a59cc"
+    },
+    {
+      "bytes": 24,
+      "rva": "0x14f9a8c0",
+      "sha256": "30fd34dacddcdd2c27a36449fcc7625f448e24a8069e48a648877ec532ebc47a"
+    },
+    {
+      "bytes": 1072,
+      "rva": "0x14fa2140",
+      "sha256": "950b30f56d986fa740caa34af9a9c1a0cab3ddb874fb62a6cc18a0724210f964"
+    }
+  ],
+  "initialize": {
+    "collector_rva": "0x106d800",
+    "context_store": {
+      "bytes": "4c89b348050000",
+      "mnemonic": "mov",
+      "operands": "qword ptr [rbx + 0x548], r14",
+      "rva": "0x1061687"
+    },
+    "effective_context_member_offset": 1400,
+    "effective_initialized_member_offset": 1748,
+    "initialized_flag_is_not_an_input": true,
+    "initialized_store": {
+      "bytes": "c683a406000001",
+      "mnemonic": "mov",
+      "operands": "byte ptr [rbx + 0x6a4], 1",
+      "rva": "0x1061b92"
+    },
+    "requires_successful_reflected_state_property_collection": true
+  },
+  "instance_interface": {
+    "initialize_slot": 16,
+    "initialize_target_rva": "0x10615f0",
+    "start_slot": 24,
+    "start_target_rva": "0x106bf30",
+    "this_offset": 48,
+    "vtable_rva": "0x14f9a888"
+  },
+  "kind": "source_qualified_normal_fsm_replica_initialization_chain_v1",
+  "native_gameplay_verified": false,
+  "native_methods_invoked": false,
+  "packets_sent": false,
+  "post_initialize": {
+    "base_rva": "0x1065cd0",
+    "component_initialized_event_member": 264,
+    "component_virtual_callback_slot": 1152,
+    "delegate_names": [
+      "Internal_OnStateMachineStarted",
+      "Internal_OnStateMachineUpdated",
+      "Internal_OnStateMachineStopped",
+      "Internal_OnStateMachineTransitionTaken",
+      "Internal_OnStateMachineStateChanged"
+    ],
+    "instance_delegate_members": [
+      96,
+      112,
+      128,
+      144,
+      160
+    ]
+  },
+  "process_access": false,
+  "process_memory_written": false,
+  "remaining_wire_requirements": [
+    "current exact component and instance class RepLayouts/handles",
+    "normal current source-qualified instance/context object creation and channel bindings",
+    "source-qualified field arrival and RepNotify ordering in the actual receiver"
+  ],
+  "remote_order": [
+    "require current R_Instance",
+    "component pre-initialize virtual 0x470",
+    "read current R_StateMachineContext through context interface",
+    "invoke instance Initialize through interface with context and component",
+    "component post-initialize virtual 0x478 registers real delegates",
+    "optionally restore active states when bReplicateStatesOnLoad is set",
+    "start through interface when replicated R_bHasStarted bit 8 is set",
+    "consume or discard pending transitions by the real configured policy"
+  ],
+  "source_pins": {
+    "work/evidence/model-init-chain-20261018/native-current-fsm-base-post-initialize-body-v1.json": "c4d2357c656c0ecb7d83997caecd38344ae4bcee9ef623c112dc0dc9eb14c8f9",
+    "work/evidence/model-init-chain-20261018/native-current-fsm-context-initialize-start-execs-v1.json": "c9ead0708b2abae7f501d7a6831639a504819a6bb7f139e96b7a7b3b79e98f29",
+    "work/evidence/model-init-chain-20261018/native-current-fsm-initialize-graph-and-start-gates-v1.json": "40e82e773646f7ff52e90d6d35d888421e4d76739f76712ff0fe94602cf5600b",
+    "work/evidence/model-init-chain-20261018/native-current-fsm-instance-construct-start-bodies-v1.json": "7383579181dcf6fc9131a310eb0c8306cb96a92b7c004fe20caeec738a5b88ff",
+    "work/evidence/model-init-chain-20261018/native-current-fsm-instance-interface-constructor-v1.json": "255df060f09a2fe9cb3cba864e26bcc4714467780d4f5d1a674b17bbda579c90",
+    "work/evidence/model-init-chain-20261018/native-current-fsm-instance-interface-initialize-start-bodies-v1.json": "90b08a4dcf52a2de9eade3e7b579479ba687a42e4a69515b4a827ec391a279c4",
+    "work/evidence/model-init-chain-20261018/native-current-fsm-instance-interface-target-thunks-v1.json": "ce8ac291ef984dbe8ec0465bab1f585c70c7b5d1576c0a5c7eff814250c64dc8",
+    "work/evidence/model-init-chain-20261018/native-current-fsm-instance-start-notify-body-v1.json": "7207e681b1ae108ba43e1d7d7bd3c14da539fbca2f79396a3b1f401bbd9f4557",
+    "work/evidence/model-init-chain-20261018/native-current-fsm-remote-instance-initialize-body-v1.json": "3005a3db565b7495ff05016cdee39619dc84063b5ba6a80155769bf585fbc2cd"
+  },
+  "sprint_fsm_dependency_proved": false,
+  "start": {
+    "body_rva": "0x1058dd0",
+    "effective_started_member_offset": 1636,
+    "native_mask": 8,
+    "requires_initialized_byte_and_valid_uobject": true,
+    "start_notify_waits_for_initialized_byte": true,
+    "started_store": {
+      "bytes": "838b3406000008",
+      "mnemonic": "or",
+      "operands": "dword ptr [rbx + 0x634], 8",
+      "rva": "0x106c004"
+    },
+    "target_rva": "0x106bf30",
+    "validity_gate_rva": "0x1057300"
+  },
+  "wire_codec_qualified": false
+}

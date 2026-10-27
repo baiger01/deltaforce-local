@@ -15,8 +15,11 @@ ALERT = re.compile(
     r"QuickOperationLogic|WeaponBulletQuickOperationData|ProcessPbDataChange|"
     r"CSDeposit(?:OperateBullet|AssemblySyncBodyContainer|ChangeNtf)|"
     r"CSDeposit(?:Sort|SetCommonConfig|GetExtensionProps)|SafeBox|SafeAndCardPack|WarehouseArrange|"
+    r"CSDepositOperateExtensionBox|Warehouse.*_RefreshDepositTitle|extSlotId|extItem|"
+    r"LuaFunctions.*ensure|LuaErrorTips|attempt to|bad argument|"
     r"KeyBox|KeyCase|KeyCard|KeyChain|门卡|钥匙包|"
     r"CSWAssembly|AssemblyFail|AssembleFail|GunsmithServer|BattlePass|"
+    r"CSSeasonGetInfo|RankingServer.*ReqSeasonRankInfo|HallSeason.*RefreshSeasonName|"
     r"InventoryServer:|QuickOperation.*(?:Error|Fail)|Weapon.*(?:Error|Fail|Invalid)|"
     r"GoodsItemStruct|SourcingAuctionProvider|ComparePriceLogic\.SimpleComparePrice|"
     r"_RefreshDurability|"
@@ -25,6 +28,7 @@ ALERT = re.compile(
     r"StoreServer|StoreMainUI|StoreMallGift|HeroServer|StaffLottery|商城|干员研究|"
     r"HeroLogic|HeroWatch|HeroAccessory|HeroBusinessCard|HeroVoice|HeroAction|"
     r"AccountServer.*(?:Error|Fail)|PlayerProfile|LoadImage.*(?:Error|Fail)|"
+    r"ResImageUtil\.AsyncLoadImgObjByPath\.fOnImageLoadFinished:\s*Resource load failed|"
     r"RecommendBanner|RecommendHomepage|CheckPathValid|CDN.*(?:Error|Fail)|"
     r"UDFCDNImage:SetCDNImage|CDNDown DownFailed|ReqCdnDownload:|"
     r"FileExists.*(?:NotExist|HasExist)|PC CDNUrl IsEmpty|"
@@ -34,14 +38,33 @@ ALERT = re.compile(
     r"LoadedClass is NULL|GuideHDWeakClickUI|IsForcedGuideActive_Special|"
     r"DoCommonPopTipShow Tips content|InputHelper: OnInputModeChanged|"
     r"InputModeCounter:.*Guide|AssemblyHDQuickOperationMainView|"
+    r"GameModeServer|StrategicSelectionSOL|TeamServer:SendPersonMatchingWithParams|"
+    r"CSQuest|QuestServer|CSSafehouse|BlackSite|CSAttrQuality|CSAttrGetAllQuality|"
+    r"CSAttributeGetConfig|CSGetRoleQualityConfig|CSAccountExpChangeNtf|"
+    r"\[SandBoxMap(?:View)?\].*(?:show task|ShowTask)|"
+    r"StartMatchCheck|CSRoomMatchStartAlloc|CSMatchCheckTReq|"
+    r"CSMatchRoom.*(?:Sol|Hero)|CSPrepareJoinMatch|CSPlayerJoinMatch|AssemblySquadPick|"
+    r"OnDnsAsyncResloved|SeamlessFlow_|TryConnectDS|UDFMIrisEnterSubsystem|"
+    r"SerializeNewActor|FirstPlayerPreprocess|OnActorChannelSpawnNewPC|"
+    r"UGPNetConnection::HandleClientPlayer|IGPSeamlessConnectionInterface::HandleClientPlayer|"
+    r"Client received PlayerController=|LogNet:.*\bsetplayer\b|"
+    r"ADFMPlayerController::OnPossess|GPPlayerController::AcknowledgePossession|"
+    r"AGPGameMode::InitDSLogic|ADFMGameMode::(?:InitGame|InitNewPlayer|Login|PostLogin)|"
+    r"UDFMDSLogic|(?:Any2Ds|SDsa)SyncPlayerInfoReq|PreProcSyncPlayerHalfJoinReq|"
+    r"DFMDSLogic Is Null|Failed to conver GameState to ADFMGameState|"
+    r"PlayerInfo is not found|PlayerState is not ADFMPlayerState type|"
+    r"LuaMRange:|RangeLogic\.|DFHDKeySettingMgr::OnEnterRange|BP_RangeTargetCharacter|"
+    r"BroadcastNetworkFailure|OnDSNotifyAllPlayerReady|GetLevelUrlAsync|AppendSecretKeyToUrl|"
     r"请求超时|timed out|timeout|stack traceback|ScriptError|"
     r"Fatal error|Unhandled Exception",
     re.IGNORECASE,
 )
-SECRET = re.compile(r"(?i)(token|ticket|authorization)(\s*[:=]\s*)\S+")
+SECRET = re.compile(r"(?i)(token|ticket|authorization|cookie|secret_?key)(\s*[:=]\s*)[^\s?&]+")
+URL_OPTIONS = re.compile(r"([?&][A-Za-z0-9_]+)=([^?&\s,]*)")
 
 
-def follow(source, target, duration_seconds, *, from_start=False, stop=None, ready=None, echo=False):
+def follow(source, target, duration_seconds, *, from_start=False, stop=None, ready=None, echo=False,
+           observer=None):
     target.parent.mkdir(parents=True, exist_ok=True)
     identity = None
     position = 0
@@ -52,8 +75,11 @@ def follow(source, target, duration_seconds, *, from_start=False, stop=None, rea
         def emit(raw):
             nonlocal alerts
             line = raw.decode("utf-8", "replace").strip()
+            if observer is not None:
+                observer.observe_line(line)
             if not ALERT.search(line):
                 return
+            line = URL_OPTIONS.sub(r"\1=[redacted]", line)
             line = SECRET.sub(r"\1\2[redacted]", line)[:700]
             output.write(line + "\n")
             output.flush()
@@ -70,6 +96,8 @@ def follow(source, target, duration_seconds, *, from_start=False, stop=None, rea
                 current_identity = (stat.st_dev, stat.st_ino, stat.st_ctime_ns)
                 if current_identity != identity or stat.st_size < position:
                     first = identity is None
+                    if observer is not None:
+                        observer.reset()
                     identity = current_identity
                     position = 0 if from_start or not first or ready is not None and ready.is_set() else stat.st_size
                     pending = b""

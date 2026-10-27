@@ -253,7 +253,7 @@ class ProbePersistenceTests(unittest.TestCase):
         probe = self.make_probe(max_packets=32, packet_ack_probe=True, control_probe=True,
                                 expected_net_version=1077088301, control_welcome_maps=MAPS)
         # A delayed lobby startup is not the absolute monotonic clock used by admissions.
-        probe._started_at = time.monotonic() - 250
+        probe._started_at = time.perf_counter() - 250
         probe.set_initial_actor_manifests(2201, (replace(manifest(), channel_index=4),))
         ticket = probe.issue_match_admission(player_id=101, room_id=201,
             map_id=2201, match_mode_id=142201103, selected_hero_id=88000000025)

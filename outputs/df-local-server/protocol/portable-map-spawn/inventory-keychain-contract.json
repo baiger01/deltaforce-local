@@ -1,0 +1,505 @@
+{
+  "client_launched": false,
+  "client_sha256": "4254fbe66585f260f1f9dbfc5e302887842552e7baed8939e023160a5e250be0",
+  "encoding": [
+    "count raw int32",
+    "Index uint8",
+    "Length uint8",
+    "BaseCount uint8",
+    "TotalLocked count raw int32 then uint8 values",
+    "Unlocked count raw int32 then uint8 values"
+  ],
+  "index_semantics": "KeyInfo.MapID; ItemOperaTool.CheckKeyMatchIndex compares MapID with slot index",
+  "installed_lua_consumers": {
+    "client_launched": false,
+    "facts": {
+      "container_self_location_index": 0,
+      "cpp_grid_index_is_grid_id": true,
+      "direct_business_prop_to_native_struct_conversion_claimed": false,
+      "equipped_location_dimensions": [
+        1,
+        1
+      ],
+      "equipped_location_index": 1,
+      "pb_space_zero_defaults_to_one": true,
+      "raw_layout_string_to_cpp_half_units_recovered": false
+    },
+    "hotfix_override_absence_proven": false,
+    "index_sha256": "b0b6b1308e5aa83f92c02288091cd1994b2f7e9ac724b4fd040e8fe6f232b47d",
+    "kind": "installed_baseline_inventory_coordinate_lua_consumers",
+    "lua_executed": false,
+    "process_access": false,
+    "sources": [
+      {
+        "archive": "pak-0-0-pakchunk1-WindowsClient.pak",
+        "current_installed_baseline_bytes_verified": true,
+        "entry_offset": 8411136,
+        "functions": [
+          {
+            "constants": [
+              "KeyChainSpaceArr",
+              "ItemSlot",
+              "bUseErrorLog",
+              "logerror",
+              "loginfo",
+              "_FreeSpaceBatch",
+              "pairs",
+              "ItemSlot:InitKeyChainStructFromItemInfo",
+              "GetSlotGroup",
+              "SlotType",
+              "Index",
+              "Length",
+              "_ObtainItemSlotSpace",
+              "InitFromKeyChainSpaceInfo",
+              "_spaceBatch",
+              "index",
+              "SortSpaceIndex"
+            ],
+            "first_line": 1026,
+            "function_id": "0.88",
+            "last_line": 1038,
+            "listing": [
+              "0001 GETTABLE   R2 R1 K0='KeyChainSpaceArr'",
+              "0002 GETTABUP   R3 U0 K1='ItemSlot'",
+              "0003 GETTABLE   R3 R3 K2='bUseErrorLog'",
+              "0004 TEST       R3 0 0",
+              "0005 JMP        R0 jump=9",
+              "0006 GETTABUP   R3 U0 K3='logerror'",
+              "0007 TEST       R3 0 1",
+              "0008 JMP        R0 jump=10",
+              "0009 GETTABUP   R3 U0 K4='loginfo'",
+              "0010 SELF       R4 R0 K5='_FreeSpaceBatch'",
+              "0011 CALL       R4 2 1",
+              "0012 GETTABUP   R4 U0 K6='pairs'",
+              "0013 MOVE       R5 2 0",
+              "0014 CALL       R4 2 4",
+              "0015 JMP        R0 jump=32",
+              "0016 MOVE       R9 3 0",
+              "0017 LOADK      R10 K7='ItemSlot:InitKeyChainStructFromItemInfo'",
+              "0018 SELF       R11 R0 K8='GetSlotGroup'",
+              "0019 CALL       R11 2 2",
+              "0020 GETTABLE   R12 R0 K9='SlotType'",
+              "0021 GETTABLE   R13 R8 K10='Index'",
+              "0022 GETTABLE   R14 R8 K11='Length'",
+              "0023 CALL       R9 6 1",
+              "0024 SELF       R9 R0 K12='_ObtainItemSlotSpace'",
+              "0025 CALL       R9 2 2",
+              "0026 SELF       R10 R9 K13='InitFromKeyChainSpaceInfo'",
+              "0027 MOVE       R12 8 0",
+              "0028 CALL       R10 3 1",
+              "0029 GETTABLE   R10 R0 K14='_spaceBatch'",
+              "0030 GETTABLE   R11 R9 K15='index'",
+              "0031 SETTABLE   R10 R11 R9",
+              "0032 TFORCALL   R4 0 2",
+              "0033 TFORLOOP   R6 jump=16",
+              "0034 SELF       R4 R0 K16='SortSpaceIndex'",
+              "0035 CALL       R4 2 1",
+              "0036 RETURN     R0 1 0"
+            ],
+            "local_names": [
+              {
+                "end": 36,
+                "name": "self",
+                "start": 0
+              },
+              {
+                "end": 36,
+                "name": "itemInfo",
+                "start": 0
+              },
+              {
+                "end": 36,
+                "name": "spaceInfoArr",
+                "start": 1
+              },
+              {
+                "end": 36,
+                "name": "printLogFunc",
+                "start": 9
+              },
+              {
+                "end": 33,
+                "name": "(for generator)",
+                "start": 14
+              },
+              {
+                "end": 33,
+                "name": "(for state)",
+                "start": 14
+              },
+              {
+                "end": 33,
+                "name": "(for control)",
+                "start": 14
+              },
+              {
+                "end": 31,
+                "name": "_",
+                "start": 15
+              },
+              {
+                "end": 31,
+                "name": "spaceInfo",
+                "start": 15
+              },
+              {
+                "end": 31,
+                "name": "newSpace",
+                "start": 25
+              }
+            ]
+          }
+        ],
+        "lua_length": 74212,
+        "lua_offset": 0,
+        "lua_sha256": "1347f7004f235ab4761cbbaaec6a96d32b0f2058e0610fba1e501d1ea8234639",
+        "source_name": "@ItemSlot.lua"
+      },
+      {
+        "archive": "pak-0-0-pakchunk1-WindowsClient.pak",
+        "current_installed_baseline_bytes_verified": true,
+        "entry_offset": 8437760,
+        "functions": [
+          {
+            "constants": [
+              "isvalid",
+              "geometrySource",
+              "KeyChainSpace",
+              "index",
+              "Index",
+              "rawLength",
+              "Length",
+              "IsHD",
+              "CheckRunWarehouseLogic",
+              "length",
+              "math",
+              "min",
+              "IsWindows",
+              5,
+              3,
+              "height",
+              0,
+              "baseCnt",
+              "BaseCount",
+              "totalLocked",
+              "pairs",
+              "TotalLocked",
+              "table",
+              "insert",
+              "unlocked",
+              "Unlocked",
+              "_PostInitKeyChainSpace",
+              "sizeX",
+              "ItemConfig",
+              "DefaultItemViewSize",
+              "sizeY",
+              "endX",
+              "startX",
+              "DefaultSlotSpaceHalfPadding",
+              "endY",
+              "startY"
+            ],
+            "first_line": 119,
+            "function_id": "0.5",
+            "last_line": 155,
+            "listing": [
+              "0001 GETTABUP   R2 U0 K0='isvalid'",
+              "0002 MOVE       R3 1 0",
+              "0003 CALL       R2 2 2",
+              "0004 TEST       R2 0 1",
+              "0005 JMP        R0 jump=7",
+              "0006 RETURN     R0 1 0",
+              "0007 NEWTABLE   R2 2 0",
+              "0008 GETTABUP   R3 U1 K2='KeyChainSpace'",
+              "0009 MOVE       R4 1 0",
+              "0010 SETLIST    R2 2 1",
+              "0011 SETTABLE   R0 K1='geometrySource' R2",
+              "0012 GETTABLE   R2 R1 K4='Index'",
+              "0013 SETTABLE   R0 K3='index' R2",
+              "0014 GETTABLE   R2 R1 K6='Length'",
+              "0015 SETTABLE   R0 K5='rawLength' R2",
+              "0016 GETTABUP   R2 U0 K7='IsHD'",
+              "0017 CALL       R2 1 2",
+              "0018 TEST       R2 0 1",
+              "0019 JMP        R0 jump=24",
+              "0020 GETTABUP   R2 U2 K8='CheckRunWarehouseLogic'",
+              "0021 CALL       R2 1 2",
+              "0022 TEST       R2 0 0",
+              "0023 JMP        R0 jump=27",
+              "0024 GETTABLE   R2 R1 K6='Length'",
+              "0025 SETTABLE   R0 K9='length' R2",
+              "0026 JMP        R0 jump=44",
+              "0027 GETTABUP   R2 U0 K10='math'",
+              "0028 GETTABLE   R2 R2 K11='min'",
+              "0029 GETTABLE   R3 R1 K6='Length'",
+              "0030 GETTABUP   R4 U0 K7='IsHD'",
+              "0031 CALL       R4 1 2",
+              "0032 TEST       R4 0 1",
+              "0033 JMP        R0 jump=38",
+              "0034 GETTABUP   R4 U0 K12='IsWindows'",
+              "0035 CALL       R4 1 2",
+              "0036 TEST       R4 0 0",
+              "0037 JMP        R0 jump=41",
+              "0038 LOADK      R4 K13=5",
+              "0039 TEST       R4 0 1",
+              "0040 JMP        R0 jump=42",
+              "0041 LOADK      R4 K14=3",
+              "0042 CALL       R2 3 2",
+              "0043 SETTABLE   R0 K9='length' R2",
+              "0044 SETTABLE   R0 K15='height' K16=0",
+              "0045 GETTABLE   R2 R1 K18='BaseCount'",
+              "0046 SETTABLE   R0 K17='baseCnt' R2",
+              "0047 NEWTABLE   R2 0 0",
+              "0048 SETTABLE   R0 K19='totalLocked' R2",
+              "0049 GETTABUP   R2 U0 K20='pairs'",
+              "0050 GETTABLE   R3 R1 K21='TotalLocked'",
+              "0051 CALL       R2 2 4",
+              "0052 JMP        R0 jump=58",
+              "0053 GETTABUP   R7 U0 K22='table'",
+              "0054 GETTABLE   R7 R7 K23='insert'",
+              "0055 GETTABLE   R8 R0 K19='totalLocked'",
+              "0056 MOVE       R9 6 0",
+              "0057 CALL       R7 3 1",
+              "0058 TFORCALL   R2 0 2",
+              "0059 TFORLOOP   R4 jump=53",
+              "0060 NEWTABLE   R2 0 0",
+              "0061 SETTABLE   R0 K24='unlocked' R2",
+              "0062 GETTABUP   R2 U0 K20='pairs'",
+              "0063 GETTABLE   R3 R1 K25='Unlocked'",
+              "0064 CALL       R2 2 4",
+              "0065 JMP        R0 jump=71",
+              "0066 GETTABUP   R7 U0 K22='table'",
+              "0067 GETTABLE   R7 R7 K23='insert'",
+              "0068 GETTABLE   R8 R0 K24='unlocked'",
+              "0069 MOVE       R9 6 0",
+              "0070 CALL       R7 3 1",
+              "0071 TFORCALL   R2 0 2",
+              "0072 TFORLOOP   R4 jump=66",
+              "0073 GETTABLE   R2 R0 K19='totalLocked'",
+              "0074 LEN        R2 2 0",
+              "0075 LT         R1 272 2",
+              "0076 JMP        R0 jump=81",
+              "0077 GETTABLE   R2 R0 K24='unlocked'",
+              "0078 LEN        R2 2 0",
+              "0079 LT         R0 272 2",
+              "0080 JMP        R0 jump=83",
+              "0081 SELF       R2 R0 K26='_PostInitKeyChainSpace'",
+              "0082 CALL       R2 2 1",
+              "0083 GETTABLE   R2 R0 K9='length'",
+              "0084 GETTABUP   R3 U0 K28='ItemConfig'",
+              "0085 GETTABLE   R3 R3 K29='DefaultItemViewSize'",
+              "0086 MUL        R2 2 3",
+              "0087 SETTABLE   R0 K27='sizeX' R2",
+              "0088 GETTABLE   R2 R0 K15='height'",
+              "0089 GETTABUP   R3 U0 K28='ItemConfig'",
+              "0090 GETTABLE   R3 R3 K29='DefaultItemViewSize'",
+              "0091 MUL        R2 2 3",
+              "0092 SETTABLE   R0 K30='sizeY' R2",
+              "0093 GETTABLE   R2 R0 K32='startX'",
+              "0094 GETTABLE   R3 R0 K27='sizeX'",
+              "0095 ADD        R2 2 3",
+              "0096 GETTABUP   R3 U0 K28='ItemConfig'",
+              "0097 GETTABLE   R3 R3 K33='DefaultSlotSpaceHalfPadding'",
+              "0098 ADD        R2 2 3",
+              "0099 SETTABLE   R0 K31='endX' R2",
+              "0100 GETTABLE   R2 R0 K35='startY'",
+              "0101 GETTABLE   R3 R0 K30='sizeY'",
+              "0102 ADD        R2 2 3",
+              "0103 GETTABUP   R3 U0 K28='ItemConfig'",
+              "0104 GETTABLE   R3 R3 K33='DefaultSlotSpaceHalfPadding'",
+              "0105 ADD        R2 2 3",
+              "0106 SETTABLE   R0 K34='endY' R2",
+              "0107 RETURN     R0 1 0"
+            ],
+            "local_names": [
+              {
+                "end": 107,
+                "name": "self",
+                "start": 0
+              },
+              {
+                "end": 107,
+                "name": "spaceInfo",
+                "start": 0
+              },
+              {
+                "end": 59,
+                "name": "(for generator)",
+                "start": 51
+              },
+              {
+                "end": 59,
+                "name": "(for state)",
+                "start": 51
+              },
+              {
+                "end": 59,
+                "name": "(for control)",
+                "start": 51
+              },
+              {
+                "end": 57,
+                "name": "_",
+                "start": 52
+              },
+              {
+                "end": 57,
+                "name": "v",
+                "start": 52
+              },
+              {
+                "end": 72,
+                "name": "(for generator)",
+                "start": 64
+              },
+              {
+                "end": 72,
+                "name": "(for state)",
+                "start": 64
+              },
+              {
+                "end": 72,
+                "name": "(for control)",
+                "start": 64
+              },
+              {
+                "end": 70,
+                "name": "_",
+                "start": 65
+              },
+              {
+                "end": 70,
+                "name": "v",
+                "start": 65
+              }
+            ]
+          }
+        ],
+        "lua_length": 9216,
+        "lua_offset": 0,
+        "lua_sha256": "5d3b5f2d4948d8d14073651c733dadded94fa168ac0fbccd517aa56271766272",
+        "source_name": "@ItemSlotSpace.lua"
+      },
+      {
+        "archive": "pak-0-0-pakchunk1-WindowsClient.pak",
+        "current_installed_baseline_bytes_verified": true,
+        "entry_offset": 35543040,
+        "functions": [
+          {
+            "constants": [
+              "GetSpaceIdForKey",
+              "id",
+              0
+            ],
+            "first_line": 289,
+            "function_id": "0.14",
+            "last_line": 291,
+            "listing": [
+              "0001 GETTABUP   R2 U0 K0='GetSpaceIdForKey'",
+              "0002 GETTABLE   R3 R0 K1='id'",
+              "0003 CALL       R2 2 2",
+              "0004 EQ         R1 2 1",
+              "0005 JMP        R0 jump=9",
+              "0006 EQ         R1 1 258",
+              "0007 JMP        R0 jump=9",
+              "0008 LOADBOOL   R2 0 1",
+              "0009 LOADBOOL   R2 1 0",
+              "0010 RETURN     R2 2 0",
+              "0011 RETURN     R0 1 0"
+            ],
+            "local_names": [
+              {
+                "end": 11,
+                "name": "item",
+                "start": 0
+              },
+              {
+                "end": 11,
+                "name": "subIndex",
+                "start": 0
+              }
+            ]
+          },
+          {
+            "constants": [
+              "Facade",
+              "TableManager",
+              "GetTable",
+              "KeyInfo",
+              "tostring",
+              "MapID",
+              0
+            ],
+            "first_line": 293,
+            "function_id": "0.15",
+            "last_line": 301,
+            "listing": [
+              "0001 GETTABUP   R1 U0 K0='Facade'",
+              "0002 GETTABLE   R1 R1 K1='TableManager'",
+              "0003 SELF       R1 R1 K2='GetTable'",
+              "0004 LOADK      R3 K3='KeyInfo'",
+              "0005 CALL       R1 3 2",
+              "0006 GETTABUP   R2 U0 K4='tostring'",
+              "0007 MOVE       R3 0 0",
+              "0008 CALL       R2 2 2",
+              "0009 GETTABLE   R2 R1 R2",
+              "0010 TEST       R2 0 0",
+              "0011 JMP        R0 jump=15",
+              "0012 GETTABLE   R3 R2 K5='MapID'",
+              "0013 RETURN     R3 2 0",
+              "0014 JMP        R0 jump=17",
+              "0015 LOADK      R3 K6=0",
+              "0016 RETURN     R3 2 0",
+              "0017 RETURN     R0 1 0"
+            ],
+            "local_names": [
+              {
+                "end": 17,
+                "name": "keyId",
+                "start": 0
+              },
+              {
+                "end": 17,
+                "name": "keyInfoTable",
+                "start": 5
+              },
+              {
+                "end": 17,
+                "name": "mapInfo",
+                "start": 9
+              }
+            ]
+          }
+        ],
+        "lua_length": 90274,
+        "lua_offset": 0,
+        "lua_sha256": "40de2bf2c60e09661ab4ac24e1bb0768719fbdc09bf71b12dc1645f0395a4892",
+        "source_name": "@ItemOperaTool.lua"
+      }
+    ]
+  },
+  "keybox_row_index_is_not_inventory_grid_index": true,
+  "kind": "source_qualified_native_inventory_keychain_contract",
+  "native_array_count_rva": "0xc060c6d",
+  "native_array_rvas": [
+    "0xc060edf",
+    "0xc060f60",
+    "0xc060f92",
+    "0xc061013"
+  ],
+  "native_scalar_rvas": [
+    "0xc060e52",
+    "0xc060e87",
+    "0xc060ebb"
+  ],
+  "native_selector_rva": "0xc060c5b",
+  "native_sender_condition": "ItemId category classifier 11, subtype classifier 12",
+  "native_stride": 40,
+  "process_access": false,
+  "selector_minimal_bit_offset": 637,
+  "source_reports": {
+    "native-economy-inventory-item-netserialize-and-id-conversion.json": "a98229290deef047142826df9e6e0a79a4387dc9b9452217af7948192b592be8",
+    "native-economy-keychain-space-fields.json": "eb3dbfa3be25a40c20d0c231090f42ae36e02877b862a21bfdc843c8df089087"
+  },
+  "unlocked_counts_policy": "explicit local initial policy; zero unlocks for catalog rows with no locked cells"
+}

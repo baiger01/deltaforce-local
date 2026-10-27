@@ -40,8 +40,9 @@ def decode(body):
 
 
 class ActorDeliveryTests(unittest.TestCase):
-    def setUp(self):
-        self.admissions = LocalMatchAdmissions(clock=lambda: 0.0)
+    def setUp(self, *, joined_session_ttl=3600):
+        self.admissions = LocalMatchAdmissions(clock=lambda: 0.0,
+            joined_session_ttl=joined_session_ttl)
         self.ticket = self.admissions.issue(101, 201, 2201, 142201103, 88000000025)
         self.connection = LegacyDSControlConnection(admissions=self.admissions,
             welcome_maps=MAPS, expected_net_version=1077088301)
@@ -116,15 +117,17 @@ class ActorDeliveryTests(unittest.TestCase):
         self.assertEqual(self.connection.poll(0.3), [])
         self.assertEqual(self.connection.poll(0.7)[0][1], 'actor_open_timer_retransmit_prepared')
 
-    def test_unknown_inbound_actor_cannot_commit_ack_or_extend_protocol_acceptance(self):
+    def test_unknown_inbound_actor_keeps_header_receipt_without_accepting_body(self):
         self.connection.queue_actor_open(PEER, **actor_fields())
         outgoing = decode(self.connection.poll(0.1)[0][2])
         event, response = self.send(1259, 219, bunches=outgoing.bunches, now=0.2)
-        self.assertEqual((event, response), ('control_login_or_order_rejected', None))
-        self.assertEqual(self.connection.summary()['initial_actor_delivery_acks'], 0)
+        self.assertEqual((event, response), ('application_channel_payload_unsupported', None))
+        # The header acknowledges our outbound Actor, independently of the
+        # unsupported inbound Actor body. Never acknowledge that inbound body.
+        self.assertEqual(self.connection.summary()['initial_actor_delivery_acks'], 1)
         self.assertEqual(self.connection.peers[PEER].history & 1, 0)
-        self.connection.poll(0.8)
-        self.send(1260, 220, now=0.9)
+        self.assertEqual(self.connection.poll(0.8), [])
+        self.send(1260, outgoing.sequence, history=(0,), now=0.9)
         self.assertEqual(self.connection.summary()['initial_actor_delivery_acks'], 1)
 
     def test_retries_stop_at_transmission_budget_and_use_new_packet_ids(self):
@@ -271,7 +274,7 @@ class ActorDeliveryUdpTests(unittest.TestCase):
                     client.settimeout(0.7)
                     with self.assertRaises(socket.timeout):
                         client.recvfrom(1500)
-                    server._started_at = time.monotonic() - 700
+                    server._started_at = time.perf_counter() - 700
                     with self.assertRaisesRegex(ValueError, 'unique joined'):
                         server.queue_actor_open(player_id=101, room_id=201, **actor_fields(channel_index=2, actor_guid=4))
                     with server._lock:

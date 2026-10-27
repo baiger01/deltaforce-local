@@ -1,0 +1,46 @@
+{
+  "kind": "explicit_local_map_rules_v1",
+  "map_id": 2201,
+  "pools": {
+    "mandel_reward": {"source_blueprint_pool": "10001"},
+    "high_value_reward": {
+      "items": [
+        {"item_id": "15080050006", "weight": 3},
+        {"item_id": "15040050002", "weight": 1}
+      ]
+    }
+  },
+  "mandel": {
+    "occurrence_event_id": 2201,
+    "absence_event_id": 2202,
+    "appearance_probability": 0.75,
+    "selection_count": 1,
+    "candidate_weights": [
+      {"generator_id": 0, "weight": 10},
+      {"generator_id": 1, "weight": 10},
+      {"generator_id": 2, "weight": 10},
+      {"generator_id": 3, "weight": 10},
+      {"generator_id": 4, "weight": 10},
+      {"generator_id": 5, "weight": 10},
+      {"generator_id": 6, "weight": 10},
+      {"generator_id": 7, "weight": 10}
+    ],
+    "drop": {"pool": "mandel_reward", "rolls": 1, "quantity": {"min": 1, "max": 1}}
+  },
+  "high_value": {
+    "appearance_probability": 1,
+    "selection_count": 2,
+    "points_per_event": 1,
+    "event_weights": [
+      {"event_id": 2200101, "weight": 1},
+      {"event_id": 2200102, "weight": 1},
+      {"event_id": 2200103, "weight": 1},
+      {"event_id": 2200104, "weight": 1},
+      {"event_id": 2200105, "weight": 1},
+      {"event_id": 2200106, "weight": 1},
+      {"event_id": 2200107, "weight": 1},
+      {"event_id": 2200108, "weight": 1}
+    ],
+    "drop": {"pool": "high_value_reward", "rolls": 2, "quantity": {"min": 1, "max": 3}}
+  }
+}

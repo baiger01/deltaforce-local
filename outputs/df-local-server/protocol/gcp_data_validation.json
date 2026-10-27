@@ -1,0 +1,135 @@
+{
+  "recorded_at_utc": "2026-09-26T20:24:49.210202+00:00",
+  "scope": "Read-only native SDK analysis, captured clear headers and independent synthetic codecs",
+  "sdk_sha256": "340288515cb1db59592481c066cb2aa23c53b823661d8b585be7f68d7d9c847b",
+  "native_sdk_loaded_or_executed": false,
+  "original_client_interoperability_verified": false,
+  "game_programs_or_settings_modified": false,
+  "implementation": "dfserver/gcp_data.py",
+  "data_command": "0x4013",
+  "implemented_version": 11,
+  "implemented_route_variant": 0,
+  "header_layout": [
+    "compression_flag:u8",
+    "opaque_flag:u8",
+    "route_variant:u8",
+    "additional_message_count:u8",
+    "leading_message_lengths:be16[count]"
+  ],
+  "merge_layout": {
+    "maximum_additional_messages": 254,
+    "total_messages": "additional_message_count + 1",
+    "implicit_final_length": "decompressed_body_length - sum(leading_message_lengths)",
+    "queued_length_width": "uint16",
+    "empty_messages_and_out_of_range_implicit_lengths_rejected_by_our_receiver": true,
+    "observed_in_capture": false
+  },
+  "native_evidence": [
+    {
+      "rva": "0x1883e0",
+      "fact": "Command 0x4013 dispatches its extension to parser 0x188180"
+    },
+    {
+      "rva": "0x188180",
+      "fact": "Compression byte, version>=9 opaque byte and route variant, version>=10 merge count and BE16 leading lengths; versions above 10 use the version-10 extension"
+    },
+    {
+      "rva": "0x194a15",
+      "fact": "Nonzero compression flag selects negotiated method: 1 raw LZ4, 2 zlib; zero method with compressed data fails"
+    },
+    {
+      "rva": "0x194be7",
+      "fact": "Method 1 calls raw LZ4 decode at 0x1768a0 with compressed input length and output capacity"
+    },
+    {
+      "rva": "0x194ac8",
+      "fact": "Method 2 calls zlib uncompress at 0x3098b0"
+    },
+    {
+      "rva": "0x194cf1",
+      "fact": "After decompression, a nonzero count returns the first declared length and queues count further messages, ending with the body remainder"
+    },
+    {
+      "rva": "0x195cb0",
+      "fact": "Alternate receive path decrypts before checking the compression flag at 0x195d2f"
+    }
+  ],
+  "compression_methods": {
+    "1": "LZ4 raw block without a stored decompressed-size prefix",
+    "2": "zlib stream"
+  },
+  "our_default_decompressed_limit": 65536,
+  "limit_policy": "Configurable own receiver bound, not a recovered universal SDK maximum; observed native paths use different capacities",
+  "not_implemented": [
+    "nonzero route variants",
+    "command 0x4023 extension",
+    "automatic threshold/maximum compression selection policy",
+    "native new-protocol business envelope"
+  ],
+  "capture_validation": {
+    "capture_sha256": "70d8af6469185f4d3e97e3659a44506bfd15fd0a95f250f04e5ee4e083944439",
+    "raw_values_exported": false,
+    "complete_prefixes_only": true,
+    "gaps_joined": false,
+    "headers_parsed_and_byte_exact_reencoded": 468,
+    "headers_rejected": 0,
+    "additional_message_count_histogram": {
+      "0": 468
+    },
+    "official_bodies_decrypted": false,
+    "compressed_official_bodies_validated": false,
+    "application_headers": [
+      {
+        "direction": "client_to_server",
+        "version": 11,
+        "extra_header_length": 4,
+        "compression_flag": 0,
+        "opaque_flag": 0,
+        "route_variant": 0,
+        "frames": 332
+      },
+      {
+        "direction": "client_to_server",
+        "version": 11,
+        "extra_header_length": 4,
+        "compression_flag": 1,
+        "opaque_flag": 0,
+        "route_variant": 0,
+        "frames": 38
+      },
+      {
+        "direction": "server_to_client",
+        "version": 11,
+        "extra_header_length": 4,
+        "compression_flag": 0,
+        "opaque_flag": 0,
+        "route_variant": 0,
+        "frames": 82
+      },
+      {
+        "direction": "server_to_client",
+        "version": 11,
+        "extra_header_length": 4,
+        "compression_flag": 0,
+        "opaque_flag": 64,
+        "route_variant": 0,
+        "frames": 2
+      },
+      {
+        "direction": "server_to_client",
+        "version": 11,
+        "extra_header_length": 4,
+        "compression_flag": 1,
+        "opaque_flag": 0,
+        "route_variant": 0,
+        "frames": 14
+      }
+    ]
+  },
+  "test_scope": "Manual BE header, raw LZ4 and zlib vectors; merge count and uint16 bounds; invalid compression and bounded output; decrypt/decompress/split order; encrypted compressed merged typed warehouse exchange over real loopback TCP",
+  "official_session_decrypted": false,
+  "official_compressed_payloads_validated": false,
+  "original_game_gateway_enabled": false,
+  "raw_packet_values_or_credentials_exported": false,
+  "lz4_format_reference": "https://github.com/lz4/lz4/blob/dev/doc/lz4_Block_format.md"
+}

@@ -1,0 +1,48 @@
+{
+  "kind": "qualified_immutable_native_movement_wire_scalars_v1",
+  "client_sha256": "4254fbe66585f260f1f9dbfc5e302887842552e7baed8939e023160a5e250be0",
+  "cache_manifest_sha256": "dfd5c279d7db45842cee2bbc485ac8bf3cab03e4249ef5fe36bc9e8d6cd14754",
+  "process_access": false,
+  "client_launched": false,
+  "native_code_executed": false,
+  "source": "Installed client immutable PE data, mmap ACCESS_READ and ImmutableImage.read; instruction references from pinned cached functions",
+  "constants": [
+    {
+      "consumer_rva": "0x4d11927",
+      "data_rva": "0x14ec8324",
+      "bytes": "cdcccc3d",
+      "float32_value": 0.10000000149011612,
+      "role": "InAccel native load multiplier after cvtdq2ps"
+    },
+    {
+      "consumer_rva": "0x4d12269",
+      "data_rva": "0x14f345b4",
+      "bytes": "0ad7233c",
+      "float32_value": 0.009999999776482582,
+      "role": "ClientLoc and ClientVelocity native load multiplier after cvtdq2ps"
+    },
+    {
+      "consumer_rva": "0x1dd2379",
+      "data_rva": "0x14ec836c",
+      "bytes": "00002041",
+      "float32_value": 10.0,
+      "role": "InAccel save helper multiplier; no save encoder implemented here"
+    }
+  ],
+  "native_rpc_presence_bit": {
+    "consumer_rva": "0x12db9682",
+    "bit_read_extent": "0x12db968d..0x12db96df",
+    "zero_skips_parameter_at": "0x12db96e1",
+    "dispatch_command_loop_at": "0x12db9742",
+    "command_loop_rva": "0x12dc23f0",
+    "leaf_property_netserialize_slot_call_at": "0x12dc2554",
+    "comment": "The generic normal RPC parent gate precedes both plain-struct expansion and native property NetSerialize. GPMoveParams has one struct parameter. Absent defaults remain unsupported."
+  },
+  "wire_limits": {
+    "InAccel_SerializeInt_exclusive_width_maximum": 24,
+    "LocationVelocity_SerializeInt_exclusive_width_maximum": 30,
+    "width_to_component_bias": "1 << (width + 1)",
+    "width_to_component_exclusive_maximum": "1 << (width + 2)",
+    "compression_or_version_selector_bit_present": false
+  }
+}

@@ -3,3 +3,7 @@
 *.pb binary
 # Protocol profiles are sealed by SHA-256; preserve their original bytes.
 outputs/df-local-server/protocol/*.json -text whitespace=cr-at-eol
+# Cross-machine handoff must preserve every sealed source and evidence byte.
+work/** -text
+outputs/df-local-server/protocol/** -text
+outputs/df-local-server/dfserver/** -text

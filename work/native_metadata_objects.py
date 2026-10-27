@@ -19,6 +19,8 @@ PARAMETER_RVA = 0x1E3187B4
 ENTRY_SIZE = 24
 MAX_BATCH_BYTES = 8192  # Reader policy; batches contain whole 24-byte entries.
 OBJECT_INDEX_OFFSET = 0x24
+OBJECT_CLASS_OFFSET = 0x08
+OBJECT_CLASS_INDEX_SPAN = 0x20  # [UObject+0x08,UObject+0x28), all object metadata.
 EXCLUDED_FLAGS = 0x30000000
 DEFAULT_MAX_OBJECTS = 1_000_000
 ABSOLUTE_MAX_OBJECTS = 2_000_000  # Reader policy, not a native capacity.
@@ -34,6 +36,7 @@ class ObjectRecord:
     index: int
     object_address: int
     serial: int
+    class_address: int | None = None
 
 
 @dataclass(frozen=True)
@@ -221,20 +224,37 @@ def iter_object_records(read_exact: ReadExact, module_base: int, *,
                         max_objects: int = DEFAULT_MAX_OBJECTS,
                         scan_metadata: dict | None = None,
                         start_index: int = 0,
-                        stop_index: int | None = None) -> Iterator[ObjectRecord]:
+                        stop_index: int | None = None,
+                        include_class_pointer: bool = False,
+                        unpublished_batch_attempts: int = 1) -> Iterator[ObjectRecord]:
     """Iterate the initial registry range or an explicit frozen subrange.
 
     Caller must exhaust the iterator and discard accumulated results on errors.
     This is not an atomic snapshot or a complete global inventory. Bounded count
     growth is allowed while every other header/chunk parameter remains stable;
     newly appended entries are not scanned. Observed count shrinkage, changed
-    chunk pointers or changed batch bytes are rejected. Callers still recheck
+    chunk pointers or changed batch bytes are rejected by default. The explicit
+    two-attempt binding mode may discard one UNYIELDED batch and reread the
+    identical range, at most eight times per scan. Its replacement must begin
+    with the previous checked bytes and pass another complete double read.
+    Nothing from a discarded batch is yielded or merged. Callers still recheck
     every selected class/descriptor/outer/driver identity. Records contain no
-    names, class guesses, or object payload. An optional empty metadata sink is
+    names, class guesses, or object payload. The optional class-pointer mode
+    combines the proven UObject+0x08 Class pointer and +0x24 index into one
+    bounded metadata read [object+0x08,object+0x28). The intervening Outer/name
+    metadata and padding are not interpreted or published. It never replaces
+    the caller's final selected-object type/identity/name/Outer checks.
+    An optional empty metadata sink is
     filled only after successful exhaustion; it never reports a global inventory.
     """
     if scan_metadata is not None and (type(scan_metadata) is not dict or scan_metadata):
         raise ObjectMetadataError('scan_metadata_requires_empty_dict')
+    if type(include_class_pointer) is not bool:
+        raise ObjectMetadataError('include_class_pointer_requires_boolean')
+    if (type(unpublished_batch_attempts) is not int or
+            unpublished_batch_attempts not in (1, 2) or
+            unpublished_batch_attempts == 2 and not include_class_pointer):
+        raise ObjectMetadataError('invalid_unpublished_batch_attempts')
     if (type(start_index) is not int or start_index < 0 or
             (stop_index is not None and
              (type(stop_index) is not int or stop_index < start_index))):
@@ -244,6 +264,7 @@ def iter_object_records(read_exact: ReadExact, module_base: int, *,
     if start_index > stop or stop > snapshot.count:
         raise ObjectMetadataError('explicit_registry_index_range_outside_snapshot')
     observed_count = snapshot.count
+    retried_batches = 0
     first = start_index
     while first < stop:
         observed_count = _check_snapshot(read_exact, module_base, max_objects, snapshot,
@@ -257,29 +278,54 @@ def iter_object_records(read_exact: ReadExact, module_base: int, *,
                      snapshot.entries_per_chunk-within)
         block_address = _address(chunk, ENTRY_SIZE*within)
         block_bytes = ENTRY_SIZE*amount
-        original = _read(read_exact, block_address, block_bytes)
-        candidates = []
-        for offset in range(amount):
-            at = ENTRY_SIZE*offset
-            pointer = struct.unpack_from('<Q', original, at)[0]
-            flags = struct.unpack_from('<I', original, at+8)[0]
-            serial = struct.unpack_from('<I', original, at+0x14)[0]
-            if not pointer or flags & EXCLUDED_FLAGS:
-                continue
-            index = first+offset
-            actual_index = struct.unpack('<i', _read(
-                read_exact, _address(pointer, OBJECT_INDEX_OFFSET), 4
-            ))[0]
-            if actual_index != index:
-                raise ObjectMetadataError('object_slot_backreference_mismatch')
-            candidates.append(ObjectRecord(index, pointer, serial))
-        observed_count = _check_snapshot(read_exact, module_base, max_objects, snapshot,
-                                         minimum_count=observed_count)
-        if _u64(read_exact, table_entry) != chunk:
-            raise ObjectMetadataError('object_chunk_pointer_changed_during_metadata_read')
-        repeated = _read(read_exact, block_address, block_bytes)
-        if repeated != original:
-            raise _changed_slot_error(_batch_change_context(first, amount, original, repeated))
+        retry_baseline = None
+        for attempt in range(unpublished_batch_attempts):
+            if retry_baseline is not None:
+                observed_count = _check_snapshot(read_exact, module_base, max_objects, snapshot,
+                                                 minimum_count=observed_count)
+                if _u64(read_exact, table_entry) != chunk:
+                    raise ObjectMetadataError('object_chunk_pointer_changed_during_metadata_read')
+            original = _read(read_exact, block_address, block_bytes)
+            if retry_baseline is not None and original != retry_baseline:
+                raise _changed_slot_error(_batch_change_context(first, amount, retry_baseline, original))
+            candidates = []
+            for offset in range(amount):
+                at = ENTRY_SIZE*offset
+                pointer = struct.unpack_from('<Q', original, at)[0]
+                flags = struct.unpack_from('<I', original, at+8)[0]
+                serial = struct.unpack_from('<I', original, at+0x14)[0]
+                if not pointer or flags & EXCLUDED_FLAGS:
+                    continue
+                index = first+offset
+                class_address = None
+                if include_class_pointer:
+                    metadata = _read(read_exact, _address(pointer, OBJECT_CLASS_OFFSET),
+                                     OBJECT_CLASS_INDEX_SPAN)
+                    class_address = struct.unpack_from('<Q', metadata)[0]
+                    actual_index = struct.unpack_from('<i', metadata,
+                        OBJECT_INDEX_OFFSET - OBJECT_CLASS_OFFSET)[0]
+                else:
+                    actual_index = struct.unpack('<i', _read(
+                        read_exact, _address(pointer, OBJECT_INDEX_OFFSET), 4
+                    ))[0]
+                if actual_index != index:
+                    raise ObjectMetadataError('object_slot_backreference_mismatch')
+                candidates.append(ObjectRecord(index, pointer, serial, class_address))
+            observed_count = _check_snapshot(read_exact, module_base, max_objects, snapshot,
+                                             minimum_count=observed_count)
+            if _u64(read_exact, table_entry) != chunk:
+                raise ObjectMetadataError('object_chunk_pointer_changed_during_metadata_read')
+            repeated = _read(read_exact, block_address, block_bytes)
+            if repeated == original:
+                break
+            if attempt + 1 == unpublished_batch_attempts or retried_batches >= 8:
+                raise _changed_slot_error(_batch_change_context(first, amount, original, repeated))
+            # All candidates remain private. A changed slot cannot retain a
+            # previous identity: the replacement rebuilds every record and
+            # verifies its actual UObject index against this frozen range.
+            candidates.clear()
+            retry_baseline = repeated
+            retried_batches += 1
         # No item is yielded until the whole batch passed its second metadata read.
         yield from candidates
         first += amount
@@ -292,6 +338,9 @@ def iter_object_records(read_exact: ReadExact, module_base: int, *,
             source_scope=('initial_bounded_registry_entries' if start_index == 0 and stop_index is None
                           else 'explicit_bounded_registry_entries'), initial_range_exhausted=True,
             complete_global_inventory=False, snapshot_atomic=False)
+        if unpublished_batch_attempts == 2:
+            scan_metadata.update(unpublished_batch_attempts=2, retried_batches=retried_batches,
+                                 maximum_retried_batches=8, discarded_batch_records_merged=False)
 
 
 def validate_object_record(read_exact: ReadExact, module_base: int, object_address: int, *,

@@ -1,0 +1,144 @@
+{
+  "kind": "offline_native_character_authority_readiness_port_spec_v1",
+  "client_sha256": "4254fbe66585f260f1f9dbfc5e302887842552e7baed8939e023160a5e250be0",
+  "cache_manifest_sha256": "dfd5c279d7db45842cee2bbc485ac8bf3cab03e4249ef5fe36bc9e8d6cd14754",
+  "process_access": false,
+  "native_methods_invoked": false,
+  "client_launched": false,
+  "runtime_sources_modified": false,
+  "implemented": false,
+  "native_acceptance_verified": false,
+  "source_pins": {
+    "work/evidence/skill-flow-research-20261020-v1/native-gpfsm-inited-writer.json": "94e0a59c42b44ecb05c26c630b3a08c328a2a05597ed2c8fff901e835282874e",
+    "work/evidence/model-init-chain-20261018/native-current-fsm-databoard-dfm-initializer-v1.json": "4f25990490042a7ee3302cb2db80c20a52b47a1fd6c7487caadc304380ae3e83",
+    "work/evidence/model-init-chain-20261018/native-current-fsm-databoard-gp-initializer-v1.json": "7196d43ab311c07db9bf557add47219a7a7866b74e632b6d15ed07dbd592ac2b",
+    "work/evidence/model-init-chain-20261018/native-current-fsm-databoard-network-initializer-v1.json": "3d5ecc8191f6c4c9a4ee93a5508f1dd3ad659fe453fc263f2cca695c4dcf5fdd",
+    "work/evidence/model-init-chain-20261018/native-current-fsm-databoard-dfm-vtable-tail-v1.json": "2c4feb7c95c1af6768fc211c97ca84dcc0c3f2a0c75f90311fd38b25e794b7bf",
+    "work/evidence/model-init-chain-20261018/native-current-blackboard-uht-metadata-v1.json": "c3593a8493ec0221de5ecf41c40fbbde0a68636919fd929720c43f308e906eb3",
+    "work/evidence/skill-flow-research-20261020-v1/native-character-authority-network-hooks-subagent-v1.json": "5350cf6fad8af6ffab92d7e2cbc555cf1fd95f19f5f6db4fddf763ac4251bf36",
+    "work/evidence/skill-flow-research-20261020-v1/native-character-authority-identity-base-subagent-v1.json": "7540ba0da7eaa5660e3dfcd434c9e3af21d3b625f86326b2270b88d2a5dbbd27",
+    "work/evidence/skill-flow-research-20261020-v1/native-character-authority-role-query-subagent-v1.json": "e8b5f09e893fde6ca8400889c72d35bf12a6c5eec6d639f63a96a0458c3125e2",
+    "work/evidence/skill-flow-research-20261020-v1/native-character-authority-refresh-tail-subagent-v1.json": "bb865cfa9a4dc3124733f52ec9c97033cb6c812836b3d33154a44e3f5f959b07",
+    "work/evidence/skill-flow-research-20261020-v1/native-character-authority-character-components-subagent-v1.json": "6002a2fe9abded1f54df227c12d154fadd3bdcd58763a4e09431d5eb483b903d"
+  },
+  "native_functions": {
+    "InitCharacter": {"begin_rva": "0x48a2090", "writer_rva": "0x48a2920", "bytes": 2281, "code_sha256": "b2fb0878d14516f794e5164b20c203a309928faa304e7ad75edc61ed025d1c2a"},
+    "DFMBlackboardInitialize": {"begin_rva": "0xafd4f40", "bytes": 48450, "code_sha256": "baa4ecfa2fe685daa269f07785ff34ba8b5c62d5eb5634d25666f924e2bc2884"},
+    "GPBlackboardInitialize": {"begin_rva": "0x3bf9d60", "bytes": 160, "code_sha256": "da17831f48114a71980faf575c5f8c79f29f7a76e788d26291cd469a3537bda2"},
+    "NetworkInitialize": {"begin_rva": "0x3fd59f0", "bytes": 183, "code_sha256": "dbce409d259af30c5463591bda7888ed0c6cfb016ca5236fb204a19a86b0e541"},
+    "GPBlackboardRefreshComponent": {"begin_rva": "0x3c3f550", "bytes": 137495, "code_sha256": "fdc04194dd2ef134369ce6dc89b25f8279d147a015960c500bc54971ce313962"},
+    "GPBlackboardRefreshIdentity": {"begin_rva": "0x3c63980", "bytes": 13291, "code_sha256": "df57642c31383c1981327e0ec0046b50b8936761209dd0ffe85dafe87aea4f70"},
+    "NetworkRefreshIdentity": {"begin_rva": "0x409c7f0", "bytes": 6013, "code_sha256": "00a0638a4772b56feee02d2e368492ccdcaa9821c2c4dc09aede49fcfc84f9d9"},
+    "OwnerNetworkMode": {"begin_rva": "0x1255b940", "bytes": 93, "code_sha256": "cf60391554a2b026316a95adc3bdc5086ff294428a7436b54af1e6e4bb2edcd9"},
+    "NetworkDriverMode": {"begin_rva": "0x12b90bb0", "bytes": 45, "code_sha256": "8da341797be0213e523914feb2cb220bbbd130768066e6d7247dc2fc0f2ad11d"}
+  },
+  "InitCharacter_semantics": {
+    "context_actor_cast": {"write_rva": "0x48a21d0", "destination": "FSM+0x6d8", "value": "context cast to Actor; null on incompatible class"},
+    "character_cast": {"write_rva": "0x48a220f", "destination": "FSM+0x718", "value": "context cast to GPCharacter; separate noncharacter fallback uses actor component lookup"},
+    "board_binding": {"read_rva": "0x48a2216", "source": "GPCharacter+0x1020 encrypted Blackboard reference", "write_rvas": ["0x48a2695", "0x48a269c"], "destinations": ["FSM+0x6f8 Blackboard", "FSM+0x6f0 GPIdentity"], "same_object": true},
+    "event_map": {
+      "owner": "GPCharacter",
+      "offset": "0x12e0",
+      "count_guard_rvas": ["0x48a269f", "0x48a26a5", "0x48a26ab", "0x48a26b1"],
+      "count_expression": "int32(Pawn+0x12e8)-int32(Pawn+0x1314)",
+      "loop_only_when_count_less_than": 164,
+      "event_ids": {"first": 0, "last": 163},
+      "lookup_rva": "0x48a2707",
+      "preserve_existing_entry_branch_rva": "0x48a2732",
+      "insert_key_rva": "0x48a276b",
+      "insert_empty_listener_pointer_rva": "0x48a276e",
+      "insert_listener_count_rva": "0x48a277f",
+      "insert_listener_capacity_zero_rva": "0x48a278b",
+      "insert_unbound_handle_minus_one_rva": "0x48a278f",
+      "loop_limit_rva": "0x48a2805",
+      "installs_gameplay_callbacks": false,
+      "meaning": "Ensure missing keys have empty dispatch/listener storage. Preserve existing listener entries. No invented callbacks are required or authorized by this loop."
+    },
+    "conditional_board_initialize": {"test_rva": "0x48a28fa", "test_offset": "board+0x100", "virtual_call_rva": "0x48a2906", "virtual_slot": "0x438", "only_when_byte_zero": true},
+    "ready_commit": {"test_rva": "0x48a2917", "test_offset": "board+0x102", "write_rva": "0x48a2920", "destination": "FSM+0x728", "value": true, "only_when_board_server_identity_true": true, "clears_on_false": false}
+  },
+  "network_initialize_order": [
+    {"at": "0xafd4fbe", "step": "DFMBlackboardInitialize calls GPBlackboardInitialize"},
+    {"at": "0x3bf9db6", "step": "GPBlackboardInitialize calls NetworkInitialize"},
+    {"at": "0x3fd5a49", "step": "virtual +0x450: GPBlackboardRefreshIdentity"},
+    {"at": "0x3fd5a55", "step": "virtual +0x440: GPBlackboardRefreshComponent"},
+    {"at": "0x3fd5a5b", "step": "write board+0x100=1 after both hooks; no hook success return is checked"},
+    {"at": "0xafd5016", "step": "DFM-specific typed cache refresh proceeds after base initialization"}
+  ],
+  "server_identity_producer": {
+    "owner_reference": "board+0x110 encrypted actual owning Actor",
+    "owner_reference_read_rva": "0x409c858",
+    "mode_query_rvas": ["0x409d139", "0x409d5b1"],
+    "standalone_flag": {"destination": "board+0x101", "write_rva": "0x409d143", "expression": "owner network mode == 0"},
+    "standalone_branch": {"write_rva": "0x409d14e", "destinations": ["board+0x102", "board+0x103"], "values": [true, true]},
+    "nonstandalone_server_flag": {"destination": "board+0x102", "write_rva": "0x409d5bc", "expression": "owner network mode == 1"},
+    "mode_one_branch": {"at": "0x409d5c5", "board_0x103": false, "board_0x104": false, "board_0x108": false},
+    "nonserver_roles": {"autonomous_write_rva": "0x409da2f", "autonomous_expression": "owner role byte +0x130 == 2", "simulated_write_rva": "0x409dea9", "simulated_expression": "owner role byte +0x130 == 1"},
+    "server_or_autonomous": {"write_rva": "0x409df1a", "destination": "board+0x107", "expression": "board+0x103 || board+0x102"},
+    "GPBlackboard_post_base": {
+      "base_call_rva": "0x3c639e3",
+      "FSM_component_copy_rva": "0x3c650f0",
+      "FSM_component_source": "current GPCharacter+0x1030",
+      "FSM_component_destination": "board.FSMComponent+0x130",
+      "locally_controlled_query": "valid current GPCharacter.Controller+0x3a8 then Controller virtual+0x728",
+      "locally_controlled_write_rva": "0x3c65a5f",
+      "locally_controlled_destination": "board+0x106",
+      "standalone_only_autonomous_overwrite_rva": "0x3c65a68",
+      "server_identity_overwritten": false
+    },
+    "client_observation_is_not_authority_proof": true
+  },
+  "refresh_component_boundary": {
+    "required_input": "actual board.GPCharacter+0x128 for character-specific cache work",
+    "null_character_early_return_rvas": ["0x3c40898", "0x3c40d44"],
+    "early_return_target": "0x3c60dd2",
+    "FSM_component_copy_rva": "0x3c50b5e",
+    "source": "GPCharacter+0x1030",
+    "destination": "board.FSMComponent+0x130",
+    "typed_reflected_cache_names": ["TPPMesh", "FPPMesh", "TPPMeshHair", "TPPMeshHead", "TPPMeshLower", "FPPMeshLowBody", "CharacterMovement", "AnimProxy", "CameraMode", "HealthData", "HitEffect", "SpeedScaleData", "StaminaData", "VaultAndClimb", "ParachuteComponent", "SlidingTackleComponent", "Blackboard", "ActionSequence", "SprintComponent", "PlayerCameraManager", "AdvancedTicking", "GPASC", "AttributesCenter", "VehicleDataComponent", "AnimDataComponent", "GPPlayerState", "GPGameState", "GPSkill", "GPSkillReplicate", "WeaponManager", "WeaponReplicateComponent"],
+    "class_offset_record_source": "native-current-blackboard-uht-metadata-v1.json declared_property_records; per-record native offsets and hashes retained",
+    "optional_missing_components_are_not_an_initialization_error_return": true,
+    "character_setup_call": {"at": "0x3c5db4b", "target": "0x4b2fb00", "code_sha256": "3c66e4b0e222b48b2abbe402ded75212af73c65624543bdfdd48cc144a2aef95", "unclaimed_mechanics": ["optional configured class at Pawn+0x1e80 may create/register Pawn+0x1e70 object", "calls gameplay configuration setup 0x4bbc7c0", "authority role byte 3 permits configured FreezeValueComponent creation"]},
+    "FPP_state": {"camera_query_at": "0x3c5e42c", "camera_query_target": "0x3bf3d90", "board_setter_at": "0x3c5e437", "board_setter_target": "0x3c865b0", "board_boolean_write_at": "0x3c8662c", "board_boolean_offset": "0x379"},
+    "attributes_delegate_branch": {"FPP_guard_rva": "0x3c5f693", "AttributesCenter_guard_rva": "0x3c5f6a9", "network_mode_tests_rvas": ["0x3c5fff0", "0x3c5fffc", "0x3c60001"], "accepted_modes": [0, 3], "dedicated_mode_one_skips": true, "delegate_registration_call_rva": "0x3c60dcb", "delegate_registration_target": "0x3b717d0"},
+    "no_claim_that_character_setup_or_camera_mechanics_are_implemented": true
+  },
+  "DFM_refresh_boundary": {
+    "component_lookup_calls": [
+      {"destination": "board+0x1a10", "class_getter_rva": "0xcf085c0", "actor_component_lookup_rva": "0xafdb8d3", "actor_virtual_slot": "0x680"},
+      {"destination": "board+0x1a18", "class_getter_rva": "0xce4df50", "actor_component_lookup_rva": "0xafdc1d4", "actor_virtual_slot": "0x680"},
+      {"destination": "board+0x1a20", "class_getter_rva": "0xcee44b0", "actor_component_lookup_rva": "0xafdcada", "actor_virtual_slot": "0x680"},
+      {"destination": "board+0x1a28", "class_getter_rva": "0xce4d190", "actor_component_lookup_rva": "0xafdd3eb", "actor_virtual_slot": "0x680"},
+      {"destination": "board+0x1a40", "class_getter_rva": "0xceec040", "actor_component_lookup_rva": "0xafddcf7", "actor_virtual_slot": "0x680"},
+      {"destination": "board+0x1a30", "class_getter_rva": "0xcdab9b0", "actor_component_lookup_rva": "0xafde607", "actor_virtual_slot": "0x680"}
+    ],
+    "direct_cache_examples": [
+      {"destination": "board+0x19e0", "getter_call_rva": "0xafd705d", "getter_target": "0xbf679d0", "destination_setup_rva": "0xafd7067"},
+      {"destination": "board+0x19d0", "source": "typed DFMCharacter+0x2948", "source_read_rva": "0xafd879d", "destination_setup_rva": "0xafd8c0f"},
+      {"destination": "board+0x19d8", "class_getter_rva": "0xd0126e0", "actor_lookup_call_rva": "0xafd94f1", "actor_lookup_target": "0x1e08070", "type_check_rva": "0xafd9501", "destination_setup_rva": "0xafd9511"},
+      {"destination": "board+0x19f8", "class_getter_rva": "0xce39b20", "actor_lookup_call_rva": "0xafda6d6", "actor_lookup_target": "0x1e08070", "type_check_rva": "0xafda6e6", "destination_setup_rva": "0xafda6f6"}
+    ],
+    "no_gameplay_delegate_registration_identified_in_DFM_body": true,
+    "noise_to_exclude_from_port": ["stack probe 0x14979400", "native instrumentation/logging 0xcbd1940", "encrypted pointer mode/conversion and handle cleanup machinery 0x10a99200/0x10a99210/0x10aa4490/0xd9efd0/0xe86f50/0x1a999a0"],
+    "exclusion_does_not_authorize_skipping_actual_reference_lookup_or_class_validation": true
+  },
+  "minimal_local_producer_spec": {
+    "scope": "admission-owned source-derived character initialization result, not a native-method invocation or complete combat simulation",
+    "input_identity": ["actual current ticket and transport generation", "actual admitted Pawn GUID/class", "actual created main FSM GUID/class and Outer=current Pawn", "actual current Blackboard component GUID under that Pawn", "actual current GPFSMStateMachine component GUID under that Pawn", "trusted server execution network mode"],
+    "derive_and_preserve": ["FSM GPActor and GPCharacter=current typed Pawn", "FSM Blackboard and GPIdentity=current Pawn Blackboard", "board owning Actor and GPCharacter=current Pawn", "board FSMComponent=current Pawn GPFSMStateMachine", "Pawn event dispatch map: preserve entries/listeners, ensure missing 0..163 entries only per native count guard", "board server identity from trusted authority owner network mode using native branch", "native network-initialization ordering and source-specific completion record", "FSM readiness result only after that local authority initialization commit"],
+    "commit_identity": ["admission ID", "transport generation", "Pawn/FSM/Blackboard/FSM-component GUID tuple", "source pins", "owner network mode", "derived identity", "event-map initialization state"],
+    "wire_projection_rule": "Ordinary bFSMIsInited handle h6 may read this committed result. It must not accept a free boolean or derive authority from client board+0x102. Place before dependent R_Instance/Started updates and preserve native field serialization.",
+    "forbidden_substitutes": ["transport ACKs alone", "client IsInitialized or R_bHasStarted", "client board networkInitialized=true", "constant-True validation callback", "empty fake gameplay callbacks", "writing native board+0x102 on the client", "silently declaring every optional cache or battle mechanic initialized"],
+    "bIsCheckingSkill": "No write to board+0x389 was found in these initializer/refresh bodies. Do not change it as part of the readiness producer.",
+    "native_gate_does_not_assert": ["all optional components present", "gameplay event listeners bound", "weapons or skills functional", "full native refresh side effects executed"]
+  },
+  "current_repository_assessment": {
+    "identity_registry": "outputs/df-local-server/dfserver/legacy_ds_control_connection.py:_component_namespace maps GUID to (Actor GUID,name), enforces uniqueness, and preserves admission content bindings",
+    "existing_registry_is_a_readiness_commit": false,
+    "enough_for_bounded_new_producer_when_paired_with_typed_metadata_and_trusted_authority_mode": true,
+    "requires_new_actual_local_state": ["admission-owned character/board initialization record", "source-qualified current typed references", "empty dispatch-map semantics with preservation", "trusted explicit authority mode", "commit-before-wire dependency"],
+    "not_blockers_for_bounded_ready_result": ["encryption storage representation in Python", "native logging/instrumentation", "optional gameplay component mechanics which the native ready test does not assert"],
+    "unclosed_full_refresh_mechanics": ["optional configured actor component creation and its gameplay configuration dependencies", "camera FPP virtual behavior", "full DFM private class names/cache semantics beyond the recorded native lookup expressions"],
+    "native_trial_sources_must_remain_frozen_until_cleanup": true
+  }
+}

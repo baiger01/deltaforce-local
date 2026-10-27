@@ -1,7 +1,9 @@
 """Read two previously witnessed direct image-loader implementation targets.
 
-Requires an already-running shadow client. No launches, writes, hooks, client
-function calls, heap reads, indirect pointer reads, or further jump traversal.
+Requires an already-running shadow client. The explicit --object-path-calls
+option verifies three fixed direct E8 call sites before reading their code,
+then verifies one constructor E8 and one helper E8 before their fixed targets.
+No launches, writes, hooks, client calls, heap reads or indirect pointer reads.
 """
 
 import argparse
@@ -22,16 +24,46 @@ IMPLEMENTATIONS = {
     'OnFastLoadComplete': (0xd50d190, 0xd4e0f20),
 }
 IMPLEMENTATION_SIZE = 2048
+# Direct call sites witnessed in the original client's plaintext implementations.
+# Labels describe the observed data flow, not recovered native symbol names.
+OBJECT_PATH_CALLS = {
+    'record_from_input_string': ('FastRequestAsyncLoad', 0x0d4cf651, 0x10ebb460, 1024),
+    'key_string_from_record': ('OnFastLoadComplete', 0x0d4e1107, 0x10ec0870, 512),
+    'object_from_record': ('OnFastLoadComplete', 0x0d4e110f, 0x10eba6f0, 512),
+}
+OBJECT_PATH_HELPERS = {
+    'non_slash_string_transform': ('record_from_input_string', 0x10ebb5b5, 0x10cc77c0, 1024),
+}
+OBJECT_PATH_PARSERS = {
+    'typed_string_parser': ('non_slash_string_transform', 0x10cc77eb, 0x10cd5b10, 1024),
+}
 READ_POLICY = ('Existing four verified registration rows, names and eight named '
                'code prefixes, followed by exactly two independently witnessed '
                'direct-entry targets of 2048 bytes each; no other jump or pointer '
                'traversal, heap data, SDK access, writes, hooks or function calls')
 
 
-def capture_implementations(read, base, module_size):
+def allowed_spans(object_path_calls=False):
+    spans = {(rva, 48) for rva, _ in registration_probe.REGISTRATIONS.values()}
+    spans.update((row[0], 32) for _, row in registration_probe.REGISTRATIONS.values())
+    spans.update(registration_probe.FIXED_CODE.values())
+    spans.update((target, IMPLEMENTATION_SIZE) for _, target in IMPLEMENTATIONS.values())
+    if object_path_calls:
+        spans.update((target, size) for _, _, target, size in OBJECT_PATH_CALLS.values())
+        spans.update((target, size) for _, _, target, size in OBJECT_PATH_HELPERS.values())
+        spans.update((target, size) for _, _, target, size in OBJECT_PATH_PARSERS.values())
+    return spans
+
+
+def capture_implementations(read, base, module_size, *, object_path_calls=False):
     if any(target < 0 or target + IMPLEMENTATION_SIZE > module_size
            for _, target in IMPLEMENTATIONS.values()):
         raise ValueError('Implementation witness exceeds the main module')
+    if object_path_calls and any(target < 0 or target + size > module_size
+                                 for _, _, target, size in
+                                 (*OBJECT_PATH_CALLS.values(), *OBJECT_PATH_HELPERS.values(),
+                                  *OBJECT_PATH_PARSERS.values())):
+        raise ValueError('Optional direct-call witness exceeds the main module')
     report = registration_probe.capture(read, base, module_size)
     for name, (entry, target) in IMPLEMENTATIONS.items():
         block = report['fixed_code'][name + '_callback']
@@ -55,12 +87,93 @@ def capture_implementations(read, base, module_size):
             'scope': 'Fixed code prefix only; contained branch/call targets are not followed',
         }
         report['captured_bytes'] += IMPLEMENTATION_SIZE
+    if object_path_calls:
+        for name, (owner, callsite, target, _) in OBJECT_PATH_CALLS.items():
+            source = report['implementations'][owner]
+            code = bytes.fromhex(source['bytes'])
+            offset = callsite - source['rva']
+            if not 0 <= offset <= len(code) - 5 or code[offset] != 0xe8:
+                raise ValueError(f'{name} source instruction is not the fixed direct E8 call')
+            actual = callsite + 5 + struct.unpack_from('<i', code, offset + 1)[0]
+            if actual != target:
+                raise ValueError(f'{name} direct call target differs from the witnessed target')
+        report['object_path_calls'] = {}
+        report['read_policy'] += ('; explicit optional three fixed code targets only, after all '
+                                 'source E8 calls match; no further target traversal')
+        report['object_path_call_source'] = 'work/evidence/live-resource-implementations-bundle-20261005-private.json'
+        for name, (owner, callsite, target, size) in OBJECT_PATH_CALLS.items():
+            code = read(base + target, size)
+            if not isinstance(code, bytes) or len(code) != size:
+                raise ValueError('Optional direct-call witness read length differs from its fixed bound')
+            report['object_path_calls'][name] = {
+                'source_implementation': owner, 'source_callsite_rva': callsite,
+                'source_call_opcode': 'E8', 'direct_call_target_verified': True,
+                'rva': target, 'size': size, 'bytes': code.hex(),
+                'sha256': hashlib.sha256(code).hexdigest(),
+                'label_status': 'Observed data-flow role; native symbol name not recovered',
+                'scope': 'Fixed direct-call code prefix; no contained targets or heap pointers followed',
+            }
+            report['captured_bytes'] += size
+        for name, (owner, callsite, target, _) in OBJECT_PATH_HELPERS.items():
+            source = report['object_path_calls'][owner]
+            code = bytes.fromhex(source['bytes'])
+            offset = callsite - source['rva']
+            if not 0 <= offset <= len(code) - 5 or code[offset] != 0xe8:
+                raise ValueError(f'{name} source instruction is not the fixed direct E8 call')
+            actual = callsite + 5 + struct.unpack_from('<i', code, offset + 1)[0]
+            if actual != target:
+                raise ValueError(f'{name} direct call target differs from the witnessed target')
+        report['object_path_helpers'] = {}
+        report['read_policy'] += ('; one fixed string-helper code target only after the captured '
+                                 'constructor E8 matches; no further target traversal')
+        report['object_path_helper_source'] = 'work/evidence/live-resource-path-calls-bundle-20261005-private.json'
+        for name, (owner, callsite, target, size) in OBJECT_PATH_HELPERS.items():
+            code = read(base + target, size)
+            if not isinstance(code, bytes) or len(code) != size:
+                raise ValueError('Optional string-helper witness read length differs from its fixed bound')
+            report['object_path_helpers'][name] = {
+                'source_object_path_call': owner, 'source_callsite_rva': callsite,
+                'source_call_opcode': 'E8', 'direct_call_target_verified': True,
+                'rva': target, 'size': size, 'bytes': code.hex(),
+                'sha256': hashlib.sha256(code).hexdigest(),
+                'label_status': 'Observed data-flow role; native symbol name not recovered',
+                'scope': 'Fixed string-helper code prefix; no contained targets or heap pointers followed',
+            }
+            report['captured_bytes'] += size
+        for name, (owner, callsite, target, _) in OBJECT_PATH_PARSERS.items():
+            source = report['object_path_helpers'][owner]
+            code = bytes.fromhex(source['bytes'])
+            offset = callsite - source['rva']
+            if not 0 <= offset <= len(code) - 5 or code[offset] != 0xe8:
+                raise ValueError(f'{name} source instruction is not the fixed direct E8 call')
+            actual = callsite + 5 + struct.unpack_from('<i', code, offset + 1)[0]
+            if actual != target:
+                raise ValueError(f'{name} direct call target differs from the witnessed target')
+        report['object_path_parsers'] = {}
+        report['read_policy'] += ('; one fixed parser code target only after the captured '
+                                 'string-helper E8 matches; no further target traversal')
+        report['object_path_parser_source'] = 'work/evidence/live-resource-string-normalization-bundle-20261005-private.json'
+        for name, (owner, callsite, target, size) in OBJECT_PATH_PARSERS.items():
+            code = read(base + target, size)
+            if not isinstance(code, bytes) or len(code) != size:
+                raise ValueError('Optional parser witness read length differs from its fixed bound')
+            report['object_path_parsers'][name] = {
+                'source_object_path_helper': owner, 'source_callsite_rva': callsite,
+                'source_call_opcode': 'E8', 'direct_call_target_verified': True,
+                'rva': target, 'size': size, 'bytes': code.hex(),
+                'sha256': hashlib.sha256(code).hexdigest(),
+                'label_status': 'Observed data-flow role; native symbol name not recovered',
+                'scope': 'Final fixed parser code prefix; no contained targets or heap pointers followed',
+            }
+            report['captured_bytes'] += size
     return report
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--pid', type=int, required=True)
+    parser.add_argument('--object-path-calls', action='store_true',
+                        help='Verify three fixed E8 calls, then constructor and helper E8 calls, before their bounded code prefixes')
     parser.add_argument('--output', type=Path,
                         default=ROOT / 'work/evidence/live-resource-implementations.json')
     args = parser.parse_args()
@@ -106,10 +219,7 @@ def main():
         info = registration_probe.ModuleInfo()
         if not kernel.K32GetModuleInformation(handle, image, ctypes.byref(info), ctypes.sizeof(info)):
             raise ctypes.WinError(ctypes.get_last_error())
-        allowed = {(rva, 48) for rva, _ in registration_probe.REGISTRATIONS.values()}
-        allowed.update((row[0], 32) for _, row in registration_probe.REGISTRATIONS.values())
-        allowed.update(registration_probe.FIXED_CODE.values())
-        allowed.update((target, IMPLEMENTATION_SIZE) for _, target in IMPLEMENTATIONS.values())
+        allowed = allowed_spans(args.object_path_calls)
 
         def read(address, size):
             if ((address - info.base, size) not in allowed or not 0 < size <= IMPLEMENTATION_SIZE
@@ -123,21 +233,30 @@ def main():
                 raise ValueError('ReadProcessMemory returned a different witness length')
             return buffer.raw
 
-        report = capture_implementations(read, info.base, info.size)
+        report = capture_implementations(read, info.base, info.size,
+                                         object_path_calls=args.object_path_calls)
         report['pid'] = args.pid
         report['shadow_executable'] = str(expected_shadow.resolve())
         from probe_live_keybox_registration import capstone_module
         capstone = capstone_module()
         disassembler = capstone.Cs(capstone.CS_ARCH_X86, capstone.CS_MODE_64)
-        for block in (*report['fixed_code'].values(), *report['implementations'].values()):
+        for block in (*report['fixed_code'].values(), *report['implementations'].values(),
+                      *report.get('object_path_calls', {}).values(),
+                      *report.get('object_path_helpers', {}).values(),
+                      *report.get('object_path_parsers', {}).values()):
             block['instructions'] = [
                 {'rva': item.address - info.base, 'op': item.mnemonic, 'args': item.op_str}
                 for item in disassembler.disasm(bytes.fromhex(block['bytes']), info.base + block['rva'])]
         args.output.parent.mkdir(parents=True, exist_ok=True)
         args.output.write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')
-        print(json.dumps({'registrations_verified': len(report['registrations']),
-                          'implementation_ranges': len(report['implementations']),
-                          'captured_bytes': report['captured_bytes'], 'report': str(args.output)}))
+        summary = {'registrations_verified': len(report['registrations']),
+                   'implementation_ranges': len(report['implementations']),
+                   'captured_bytes': report['captured_bytes'], 'report': str(args.output)}
+        if args.object_path_calls:
+            summary['object_path_call_ranges'] = len(report['object_path_calls'])
+            summary['object_path_helper_ranges'] = len(report['object_path_helpers'])
+            summary['object_path_parser_ranges'] = len(report['object_path_parsers'])
+        print(json.dumps(summary))
     finally:
         kernel.CloseHandle(handle)
 

@@ -1,0 +1,463 @@
+{
+  "kind": "bounded_native_inventory_full_item_receive_wire_contract",
+  "process_access": false,
+  "client_launched": false,
+  "production_edited": false,
+  "source_reports": {
+    "native-economy-inventory-item-netserialize-and-id-conversion.json": "a98229290deef047142826df9e6e0a79a4387dc9b9452217af7948192b592be8",
+    "native-economy-fastarray-header-read-and-write.json": "609ee7b9b878c9d4fa1daf2138eb15b15ed8d6d96359801cf50477a07092f62e",
+    "native-economy-inventory-empty-set-and-id-type-consumers.json": "72dea7e97187e09273ec392554328c7c8a77656ce64204b97633f68af88133ae",
+    "native-economy-inventory-item-default-body.json": "4fba7b5e765929ac4d088fdeed03fdd2f392a9b64c6b8c9330c4a40c320fb7ed"
+  },
+  "serializer": {
+    "struct": "FInventoryItemInfo",
+    "native_size": 2048,
+    "cpp_ops_rva": "0x1884ad80",
+    "netserialize_callback_rva": "0xcfb6340",
+    "body_rva": "0xc05fda0",
+    "body_code_sha256": "6fb9da3724b7c6a158fe7ccf3ed268dccf67d901124a0dcbe465495d676811f1"
+  },
+  "item_id_conversion": {
+    "body_rva": "0x6177f20",
+    "formula": "Category * 10000 + Sequence",
+    "item_gid_is_independent_local_instance_id": true
+  },
+  "array": {
+    "struct": "FItemArray",
+    "native_size": 288,
+    "items_native_offset": "0x108",
+    "cpp_ops_rva": "0x18867660",
+    "netdelta_body_rva": "0xcac0ef0",
+    "header_reader_rva": "0x1d1dab0",
+    "header_fields": [
+      {
+        "name": "ArrayReplicationKey",
+        "bits": 32,
+        "encoding": "raw_little_endian_int32"
+      },
+      {
+        "name": "BaseReplicationKey",
+        "bits": 32,
+        "encoding": "raw_little_endian_int32"
+      },
+      {
+        "name": "NumDeletes",
+        "bits": 32,
+        "encoding": "raw_little_endian_int32"
+      },
+      {
+        "name": "NumChanged",
+        "bits": 32,
+        "encoding": "raw_little_endian_int32"
+      }
+    ],
+    "deleted_element_ids": "NumDeletes raw int32 IDs immediately follow the four header scalars",
+    "changed_elements": "NumChanged pairs of raw int32 ElementID plus full-item NetSerialize payload",
+    "maximum_each_native_count": 2048,
+    "custom_delta_struct_branch_rva": "0xcac6cd0",
+    "branch_gate": "FItemArray+0x100 bit 0x04; source also negotiates via FNetDeltaSerializeInfo+0x4e",
+    "active_client_delta_struct_branch_observed": false
+  },
+  "minimal_full_item_receive_operations": [
+    {
+      "name": "ItemId.Category",
+      "bits": 32,
+      "native_offset": "0x10",
+      "anchor_rva": "0xc05fdfb",
+      "encoding": "raw_little_endian_scalar",
+      "minimal_receive_bit_offset": 0
+    },
+    {
+      "name": "ItemId.Sequence",
+      "bits": 32,
+      "native_offset": "0x14",
+      "anchor_rva": "0xc05fe2d",
+      "encoding": "raw_little_endian_scalar",
+      "minimal_receive_bit_offset": 32
+    },
+    {
+      "name": "ItemGid",
+      "bits": 64,
+      "native_offset": "0x28",
+      "anchor_rva": "0xc05fe8a",
+      "encoding": "raw_little_endian_scalar",
+      "minimal_receive_bit_offset": 64
+    },
+    {
+      "name": "AttachPosition",
+      "bits": 32,
+      "native_offset": "0x70",
+      "anchor_rva": "0xc05febd",
+      "encoding": "raw_little_endian_scalar",
+      "minimal_receive_bit_offset": 128
+    },
+    {
+      "name": "ItemSpaceLocation.X",
+      "bits": 8,
+      "native_offset": "0x74",
+      "anchor_rva": "0xc05ff0e",
+      "encoding": "raw_little_endian_scalar",
+      "minimal_receive_bit_offset": 160
+    },
+    {
+      "name": "ItemSpaceLocation.Y",
+      "bits": 8,
+      "native_offset": "0x75",
+      "anchor_rva": "0xc05ff42",
+      "encoding": "raw_little_endian_scalar",
+      "minimal_receive_bit_offset": 168
+    },
+    {
+      "name": "ItemSpaceLocation.Length",
+      "bits": 8,
+      "native_offset": "0x76",
+      "anchor_rva": "0xc05ff76",
+      "encoding": "raw_little_endian_scalar",
+      "minimal_receive_bit_offset": 176
+    },
+    {
+      "name": "ItemSpaceLocation.Height",
+      "bits": 8,
+      "native_offset": "0x77",
+      "anchor_rva": "0xc05ffaa",
+      "encoding": "raw_little_endian_scalar",
+      "minimal_receive_bit_offset": 184
+    },
+    {
+      "name": "ItemSpaceLocation.bRotated",
+      "bits": 32,
+      "native_offset": "0x78",
+      "anchor_rva": "0xc05ffde",
+      "encoding": "raw_little_endian_scalar",
+      "minimal_receive_bit_offset": 192
+    },
+    {
+      "name": "ItemSpaceLocation.GridIndex",
+      "bits": 8,
+      "native_offset": "0x79",
+      "anchor_rva": "0xc060024",
+      "encoding": "raw_little_endian_scalar",
+      "minimal_receive_bit_offset": 224
+    },
+    {
+      "name": "ModifyTimeStamp",
+      "bits": 32,
+      "native_offset": "0x608",
+      "anchor_rva": "0xc060057",
+      "encoding": "raw_little_endian_scalar",
+      "minimal_receive_bit_offset": 232
+    },
+    {
+      "name": "LastUpdateReason",
+      "bits": 8,
+      "native_offset": "0x60c",
+      "anchor_rva": "0xc0600ab",
+      "encoding": "raw_little_endian_scalar",
+      "minimal_receive_bit_offset": 264
+    },
+    {
+      "name": "TempLastSearchUin",
+      "bits": 64,
+      "native_offset": "0x620",
+      "anchor_rva": "0xc0600e5",
+      "encoding": "raw_little_endian_scalar",
+      "minimal_receive_bit_offset": 272
+    },
+    {
+      "name": "bIsRawBinded",
+      "bits": 32,
+      "native_offset": "0x63c",
+      "anchor_rva": "0xc06012e",
+      "encoding": "raw_little_endian_scalar",
+      "minimal_receive_bit_offset": 336
+    },
+    {
+      "name": "BindPlayerId",
+      "bits": 64,
+      "native_offset": "0x640",
+      "anchor_rva": "0xc06018a",
+      "encoding": "raw_little_endian_scalar",
+      "minimal_receive_bit_offset": 368
+    },
+    {
+      "name": "ItemState",
+      "bits": 8,
+      "native_offset": "0x628",
+      "anchor_rva": "0xc0601d3",
+      "encoding": "raw_little_endian_scalar",
+      "minimal_receive_bit_offset": 432
+    },
+    {
+      "name": "UsingPlayerUin",
+      "bits": 64,
+      "native_offset": "0x630",
+      "anchor_rva": "0xc0601fd",
+      "encoding": "raw_little_endian_scalar",
+      "minimal_receive_bit_offset": 440
+    },
+    {
+      "name": "CoolDownStartTime",
+      "bits": 32,
+      "native_offset": "0x638",
+      "anchor_rva": "0xc060242",
+      "encoding": "raw_little_endian_scalar",
+      "minimal_receive_bit_offset": 504
+    },
+    {
+      "name": "IsInContainer",
+      "bits": 32,
+      "native_offset": "0x5f0",
+      "anchor_rva": "0xc060296",
+      "encoding": "raw_little_endian_scalar",
+      "minimal_receive_bit_offset": 536
+    },
+    {
+      "name": "CurrentSearchingPlayers.Count",
+      "bits": 32,
+      "native_offset": "0x5e8",
+      "anchor_rva": "0xc0602e2",
+      "encoding": "raw_little_endian_scalar",
+      "minimal_receive_bit_offset": 568,
+      "minimal_branch_value": 0
+    },
+    {
+      "name": "SearchedPlayers.Count",
+      "bits": 32,
+      "native_offset": "0x600",
+      "anchor_rva": "0xc0603be",
+      "encoding": "raw_little_endian_scalar",
+      "minimal_receive_bit_offset": 600,
+      "minimal_branch_value": 0
+    },
+    {
+      "name": "StackBlock.Present",
+      "bits": 1,
+      "native_offset": null,
+      "anchor_rva": "0xc0604f2",
+      "encoding": "SerializeBits_presence_selector",
+      "minimal_receive_bit_offset": 632,
+      "minimal_branch_value": 0
+    },
+    {
+      "name": "DurabilityBlock.Present",
+      "bits": 1,
+      "native_offset": null,
+      "anchor_rva": "0xc0605bd",
+      "encoding": "SerializeBits_presence_selector",
+      "minimal_receive_bit_offset": 633,
+      "minimal_branch_value": 0
+    },
+    {
+      "name": "ArmorHealthBlock.Present",
+      "bits": 1,
+      "native_offset": null,
+      "anchor_rva": "0xc060667",
+      "encoding": "SerializeBits_presence_selector",
+      "minimal_receive_bit_offset": 634,
+      "minimal_branch_value": 0
+    },
+    {
+      "name": "GunDescInfoBlock.Present",
+      "bits": 1,
+      "native_offset": null,
+      "anchor_rva": "0xc060713",
+      "encoding": "SerializeBits_presence_selector",
+      "minimal_receive_bit_offset": 635,
+      "minimal_branch_value": 0
+    },
+    {
+      "name": "ArchiveInfoBlock.Present",
+      "bits": 1,
+      "native_offset": null,
+      "anchor_rva": "0xc060756",
+      "encoding": "SerializeBits_presence_selector",
+      "minimal_receive_bit_offset": 636,
+      "minimal_branch_value": 0
+    },
+    {
+      "name": "KeyChainSpaceArrBlock.Present",
+      "bits": 1,
+      "native_offset": null,
+      "anchor_rva": "0xc060c5b",
+      "encoding": "SerializeBits_presence_selector",
+      "minimal_receive_bit_offset": 637,
+      "minimal_branch_value": 0
+    },
+    {
+      "name": "ExtraRecordBlock.Present",
+      "bits": 1,
+      "native_offset": null,
+      "anchor_rva": "0xc061082",
+      "encoding": "SerializeBits_presence_selector",
+      "minimal_receive_bit_offset": 638,
+      "minimal_branch_value": 0
+    },
+    {
+      "name": "OwnerPlayerId",
+      "bits": 64,
+      "native_offset": "0x648",
+      "anchor_rva": "0xc0610e7",
+      "encoding": "raw_little_endian_scalar",
+      "minimal_receive_bit_offset": 639
+    },
+    {
+      "name": "CurrencyBlock.Present",
+      "bits": 1,
+      "native_offset": null,
+      "anchor_rva": "0xc061158",
+      "encoding": "SerializeBits_presence_selector",
+      "minimal_receive_bit_offset": 703,
+      "minimal_branch_value": 0
+    },
+    {
+      "name": "WeaponRackInfoBlock.Present",
+      "bits": 1,
+      "native_offset": null,
+      "anchor_rva": "0xc06129d",
+      "encoding": "SerializeBits_presence_selector",
+      "minimal_receive_bit_offset": 704,
+      "minimal_branch_value": 0
+    },
+    {
+      "name": "FootballSignatureBlock.Present",
+      "bits": 1,
+      "native_offset": null,
+      "anchor_rva": "0xc061381",
+      "encoding": "SerializeBits_presence_selector",
+      "minimal_receive_bit_offset": 705,
+      "minimal_branch_value": 0
+    },
+    {
+      "name": "UnCarryablePositions.Count",
+      "bits": 32,
+      "native_offset": "0x750",
+      "anchor_rva": "0xc061517",
+      "encoding": "raw_int32_via_0x1997d10",
+      "minimal_receive_bit_offset": 706,
+      "minimal_branch_value": 0
+    },
+    {
+      "name": "PaperPieceInfoBlock.Present",
+      "bits": 1,
+      "native_offset": null,
+      "anchor_rva": "0xc0615ba",
+      "encoding": "SerializeBits_presence_selector",
+      "minimal_receive_bit_offset": 738,
+      "minimal_branch_value": 0
+    },
+    {
+      "name": "FalloutType",
+      "bits": 32,
+      "native_offset": "0x7d8",
+      "anchor_rva": "0xc061737",
+      "encoding": "raw_little_endian_scalar",
+      "minimal_receive_bit_offset": 739
+    },
+    {
+      "name": "bIsWantedItem",
+      "bits": 1,
+      "native_offset": "0x6a0",
+      "anchor_rva": "0xc061789",
+      "encoding": "SerializeBits_boolean_value",
+      "minimal_receive_bit_offset": 771
+    },
+    {
+      "name": "UseCountBlock.Present",
+      "bits": 1,
+      "native_offset": null,
+      "anchor_rva": "0xc0617aa",
+      "encoding": "SerializeBits_presence_selector",
+      "minimal_receive_bit_offset": 772,
+      "minimal_branch_value": 0
+    },
+    {
+      "name": "PokerBoxBlock.Present",
+      "bits": 1,
+      "native_offset": null,
+      "anchor_rva": "0xc061860",
+      "encoding": "SerializeBits_presence_selector",
+      "minimal_receive_bit_offset": 773,
+      "minimal_branch_value": 0
+    },
+    {
+      "name": "TypeSpecificExtraInfos.Count",
+      "bits": 32,
+      "native_offset": "0x558",
+      "anchor_rva": "0xc06190e",
+      "encoding": "raw_little_endian_scalar",
+      "minimal_receive_bit_offset": 774,
+      "minimal_branch_value": 0
+    },
+    {
+      "name": "BombDefusalBlock.Present",
+      "bits": 1,
+      "native_offset": null,
+      "anchor_rva": "0xc061b4e",
+      "encoding": "SerializeBits_presence_selector",
+      "minimal_receive_bit_offset": 806,
+      "minimal_branch_value": 0
+    },
+    {
+      "name": "TwigStringBlock.Present",
+      "bits": 1,
+      "native_offset": null,
+      "anchor_rva": "0xc061bfb",
+      "encoding": "SerializeBits_presence_selector",
+      "minimal_receive_bit_offset": 807,
+      "minimal_branch_value": 0
+    },
+    {
+      "name": "CustomWeightBlock.Present",
+      "bits": 1,
+      "native_offset": null,
+      "anchor_rva": "0xc061c32",
+      "encoding": "SerializeBits_presence_selector",
+      "minimal_receive_bit_offset": 808,
+      "minimal_branch_value": 0
+    },
+    {
+      "name": "CustomLengthBlock.Present",
+      "bits": 1,
+      "native_offset": null,
+      "anchor_rva": "0xc061c9d",
+      "encoding": "SerializeBits_presence_selector",
+      "minimal_receive_bit_offset": 809,
+      "minimal_branch_value": 0
+    }
+  ],
+  "minimal_full_item_receive_bits": 810,
+  "native_defaults_when_stack_block_absent": {
+    "constructor_rva": "0xbfe46d0",
+    "ItemCount": {
+      "native_offset": "0x38",
+      "value": 1,
+      "store_rva": "0xbfe470d"
+    },
+    "ItemNumMax": {
+      "native_offset": "0x3c",
+      "value": 1,
+      "store_rva": "0xbfe4714"
+    }
+  },
+  "stack_block_when_present": {
+    "gate_rva": "0xc0604f2",
+    "sender_condition": "ItemNumMax > 1",
+    "ordered_fields": [
+      "ItemCount int32",
+      "ItemNumMax int32",
+      "ContainPlayerIds count int32 then uint64 values",
+      "ContainNums count int32 then int32 values"
+    ],
+    "array_serializer_rvas": [
+      "0x13b60d0",
+      "0x1081740"
+    ]
+  },
+  "limits": [
+    "This is the receive grammar with optional selectors absent and all mandatory arrays empty.",
+    "Optional blocks required by real item type/state must be supplied through their actual native sender predicates; absence is not an official sender policy.",
+    "AttachPosition, grid dimensions and destinations require actual client/config values; this report assigns none.",
+    "Property handles, NetGUID bindings, RepLayout and active delta-struct mode must be separately qualified.",
+    "No complete production sender, packet, or native client acceptance is claimed."
+  ]
+}

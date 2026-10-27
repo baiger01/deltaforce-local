@@ -1,0 +1,345 @@
+{
+  "bounded_next_observation": {
+    "current_observer_has_never_run": true,
+    "extension_implemented": false,
+    "fields": [
+      "Existing observer: manager lists/Slot, WeapInfo/Active and every actual carried Actor scalar identity/owner.",
+      "Add only declared ModularReplicateInfo WeaponPartNodes count + PoorItemId + SkinInfo.",
+      "Add typed CurrentModularWeaponDesc reference, then bounded native config facts under its actual declaration.",
+      "Add declared owner ExtraData item identities/GIDs/slots and bounded compact part arrays; no arbitrary object scan."
+    ],
+    "roots": "Only actual typed manager WeaponList references, current Pawn-level Outer, known Modular class/CDO."
+  },
+  "client_launched": false,
+  "compact_wire_boundary": {
+    "array_cppops": {
+      "NetDeltaSerialize": "0x6157970 -> 0x5ce9300",
+      "factory": "0x61527f0",
+      "vtable": "0x168a6308"
+    },
+    "item_cppops": {
+      "NetSerialize": "0x6157990 -> 0x5629090",
+      "factory": "0x6152870",
+      "vtable": "0x168a6438"
+    },
+    "item_native_bytes": 320,
+    "item_serialization_order": [
+      "WeaponIdentity raw32 via 0x2185250",
+      "WeaponId raw64",
+      "GUID-equals-WeaponId bit, else GUID raw64",
+      "WeaponEquipPosition packed32",
+      "SkillID packed32",
+      "WeaponSlot raw8",
+      "ReplicatePartNodes via 0x55df920",
+      "PoorItemId-is-zero bit, else PoorItemId raw64",
+      "SkinInfo via 0x509d220",
+      "AmmoLogic raw8"
+    ],
+    "parent_attach_info": {
+      "fields": [
+        "SocketId uint32+0",
+        "SocketName FName+4",
+        "PartNodeIndex int32+c",
+        "ExtraSocketId_RecID int64+10",
+        "ExtraSocketId_ItemID int64+18"
+      ],
+      "native_bytes": 32,
+      "native_socket_name_or_config_lookup_modes": "0x5628d00",
+      "raw_BOOL32_presence_flags_are_not_single_bits": true,
+      "struct": "WeaponReplicateAttachInfo"
+    },
+    "part_native_bytes": 64,
+    "part_serialization_order": [
+      "array count raw32, bounded by native maximum",
+      "ItemId raw64",
+      "GUID raw64",
+      "NodeType raw8",
+      "ParentPartInfo via 0x5628d00",
+      "b3PModelExclude bit",
+      "b1PModelExclude bit",
+      "bUIModelExclude bit"
+    ],
+    "skin": {
+      "default_flag_true_uses_native_default_skin": true,
+      "inventory_raw_GunDesc_skin_bytes_are_not_directly_this_network_encoding": true,
+      "leading_default_flag_raw_BOOL32": true,
+      "nondefault_skin_requires_full_serialized_fields": true,
+      "serializer": "0x509d220"
+    },
+    "unresolved": [
+      "ParentPartInfo caller values and compression choices must bind exact frozen GunDesc semantics.",
+      "EquipPosition and AmmoLogic must use qualified constructor/caller values, not inventory-location inference.",
+      "Native global receive gate and identity-map state were not observed in this cohort."
+    ],
+    "wire_encoder_implemented": false
+  },
+  "concrete_missing_state": {
+    "actor": {
+      "actual_exec": "0x6100880 -> 0x58d9700",
+      "generated_getter_is_not_handler": "0x60f9810",
+      "offset": "0x8f0",
+      "ordinary_handles": {
+        "PoorItemId": 37,
+        "SkinInfo": 38,
+        "WeaponPartNodes": 36
+      },
+      "parent": 26,
+      "property": "WeaponBase.ModularReplicateInfo",
+      "rep_notify": "OnRepBuildModularDesc"
+    },
+    "owner": {
+      "actual_current_extra_data_values_observed": false,
+      "actual_exec": "0x6151540 -> 0x562faf0",
+      "class_cache_field": 17,
+      "custom_delta_parent": 8,
+      "interface_call": "actual resolved interface pair vslot+0x928 -> 0x58e7780",
+      "offset": "0x740",
+      "ordinary_property_handle_claimed": false,
+      "property": "WeaponReplicateComponent.WeaponReplicatedExtraDataList",
+      "receiver_initializes": [
+        "WeaponId",
+        "GUID",
+        "WeaponEquipPosition",
+        "WeaponSlot",
+        "CurrentModularWeaponDesc and native config inputs"
+      ],
+      "rep_notify": "OnRepExtraDataList"
+    }
+  },
+  "dependency_edges": [
+    [
+      "frozen admitted inventory GunDesc",
+      "exact component ItemIDs/GIDs/parent/socket/Skin"
+    ],
+    [
+      "normal server AWeaponBase recipe",
+      "ReplicateModularWeaponDescToClients(NewOwner)"
+    ],
+    [
+      "ReplicateModularWeaponDescToClients(NewOwner)",
+      "owner WeaponReplicatedExtraDataList"
+    ],
+    [
+      "owner extra-data OnRep",
+      "resolve identity to existing weapon interface pair"
+    ],
+    [
+      "resolved weapon interface+0x928",
+      "compact nodes -> installed config -> full 0x128-byte nodes"
+    ],
+    [
+      "expanded recipe",
+      "CurrentModularWeaponDesc / native weapon config refresh"
+    ],
+    [
+      "changed expanded recipe",
+      "Actor OnRepBuildModularDesc and model/config notification"
+    ],
+    [
+      "Actor post-notify vslot1f0",
+      "ready retry requires ID + CharacterOwner + nonempty recipe nodes"
+    ],
+    [
+      "ready retry primary800 -> primary808",
+      "native Actor+a8d initialized and normal owner/activation callbacks"
+    ],
+    [
+      "complete identity bindings and descriptor recipe",
+      "ordinary WeapInfo and final Active selection"
+    ],
+    [
+      "GameFlow CheckServerEnabled true and initial notification",
+      "Lua cached InventoryManager and tick fetch"
+    ]
+  ],
+  "excluded_claims": [
+    "Transport ACK is not native property decoding or model readiness.",
+    "CreateFppObWeapon is not proved the normal owning-player FPP path.",
+    "Stale SafeHouse HUD model log does not prove SetPawn or all inventory initialization absent.",
+    "Missing recipe is source-proven missing state; uniqueness as the no-held-weapon root cause is not yet native-proven."
+  ],
+  "existing_producer": {
+    "actor_encoded_fields": [
+      "CharacterOwner",
+      "Owner",
+      "ServerWeaponIdentity",
+      "WeaponGuid",
+      "WeaponID",
+      "WeaponSlot"
+    ],
+    "actor_modular_recipe_encoded": false,
+    "ordinary_recipe_is_not_inventory_GunDesc": true,
+    "owning_extra_data_encoded": false,
+    "path": "work/portable_modular_weapon_initialization.py"
+  },
+  "gameplay_or_fpp_verified": false,
+  "initial_open_and_beginplay": {
+    "actual_postnetinit": "0x58e0990 -> AActor 0x1256cb80",
+    "actual_weapon_beginplay": "0xc73ad10 -> 0x5881420",
+    "all_properties_must_be_in_actor_open_proven": false,
+    "force_previous_dither_beginplay_log_proves_missing_all_late_initialization": false,
+    "identity_has_late_receiver": "OnRepWeaponID -> 0x58dae30",
+    "owner_has_late_receiver": "OnRepCharacterOwner 0x601e530 -> primary+0x7e8 -> 0x58da750",
+    "ready_retry": {
+      "activation_before_ready": "0x5878b60 requires Actor+a8d and CharacterOwner; otherwise 0x587929d stores pending Actor+a93=1.",
+      "actor_post_notify": "0x58e0ca0 -> primary800 -> 0x590ce90",
+      "actual_post_notify": "FObjectReplicator 0x12879ed0 -> object vslot1f0",
+      "component_extra_data_alone_triggers_actor_post_notify_proven": false,
+      "flags_are_source_qualified_native_diagnostics_not_net_properties": true,
+      "owner_rebind_conditional": "OnRepCharacterOwner only rebinds/activates when Actor+0xa8d is already true",
+      "pending_activation_replayed": "If Actor+a93 was set, 0x58c641a calls primary8d8 ActivateInventory_Internal and clears pending.",
+      "prerequisites": [
+        "valid World",
+        "WeaponID > 0",
+        "CharacterOwner != null",
+        "58af810 weapon-node array count > 0",
+        "normal cached descriptor/asset or deferred path"
+      ],
+      "ready_flag_current_value_observed": false,
+      "ready_flag_write": "0x58c63f9 writes Actor+0xa8d = 1",
+      "ready_initializer": "primary808 -> 0x58c61f0",
+      "ready_initializer_refreshes_actual_components": "0x58c63cf -> 0x58e5120 RefreshAllComponents"
+    },
+    "recipe_has_late_receiver": "OnRepBuildModularDesc 0x58d9700",
+    "remaining_gate": "Recipe plus the actual Actor post-notify/ready path must complete; a component ACK alone does not prove this."
+  },
+  "inventory_cross_initialization": {
+    "actual_packet_chronology": {
+      "first_send": "2026-10-18T13:05:57.196970+00:00",
+      "last_exact_positive_ack": "2026-10-18T13:05:58.111729+00:00",
+      "last_send": "2026-10-18T13:05:58.111729+00:00",
+      "onrep_and_lua_callback_execution_times_not_observed": true,
+      "sequences": [
+        6190,
+        6191,
+        6192,
+        6193,
+        6194,
+        6195,
+        6196,
+        6197,
+        6198,
+        6199,
+        6200,
+        6201,
+        6202,
+        6203,
+        6204,
+        6205
+      ]
+    },
+    "game_ready_signal_for_this_same_admitted_pawn_still_requires_qualification": true,
+    "lua_can_discard_initial_event_in_SafeHouseToGame": true,
+    "native_inventory_complete": {
+      "all_derived_grid_edges_correct": true,
+      "config_bindings": 52,
+      "grids": 23,
+      "items": 52,
+      "original_gids_quantities_gun_nodes_ammo_skins_all_received": true,
+      "owner_and_controller_and_playerstate_current": true,
+      "quantity_sum": 544,
+      "spaces": 13
+    },
+    "ordinary_Game_entry_does_not_refetch": true,
+    "repair_candidate": {
+      "arbitrary_time_delay_is_not_qualified": true,
+      "base_local_array_key": 15,
+      "initial_stream_array_key": 15,
+      "kind": "normal_existing_inventory_delta_after_verified_game_ready",
+      "next_local_array_key": 16,
+      "no_new_item_or_component_or_native_call_required": true,
+      "normal_effect": "OnRep_RepItemArray -> OnGameInventoryClientInitialize -> enabled Lua reset/cache/register tick -> FetchPlayerItems -> all spaces/items rebuilt",
+      "permitted_data": "An existing element with unchanged exact admitted GID/template/quantity/features; new monotonic array key/base key.",
+      "prerequisite": "Use a source-qualified normal Game-ready signal for this same admitted Pawn; an ACK alone is not a Lua flow observation.",
+      "ui_fix_verified": false
+    },
+    "weapon_extra_recipe_does_not_repair_inventory_Lua_cache": true
+  },
+  "kind": "source_qualified_owned_weapon_model_lifecycle_research_v4",
+  "native_acceptance_conditions": [
+    "Same exact admitted snapshot, actual current Pawn-level Modular Actor IDs/GIDs and Owner/CharacterOwner match.",
+    "Current manager lists, Slot, WeapInfo and Active resolve to the same Actor/interface identity.",
+    "ExtraData compact nodes/GIDs/parent sockets/Skin match the frozen GunDesc; CurrentModularWeaponDesc is valid and nonempty.",
+    "Actual first-person current weapon/mesh is visible, switching selects both admitted guns, fire/reload consume the admitted ammo state.",
+    "Inventory UI has all admitted items/spaces after actual Game-ready flow, without a timer or a fabricated new item."
+  ],
+  "native_function_invoked": false,
+  "owning_extra_receive_gate": {
+    "conditional": "When enabled, skip receive event processing if the component CharacterOwner is AutonomousProxy (Role2).",
+    "current_value_observed": false,
+    "cvar_name": "Weapon.Replicate.SkipReplicateFor1P",
+    "cvar_storage_rva": "0x1db80ae0",
+    "native_wrapper": "0x21e4350",
+    "static_constructor": "0x2adc30",
+    "unconditional_owner_extra_only_repair_qualified": false
+  },
+  "process_access": false,
+  "production_modified": false,
+  "proposed_repair_boundary": {
+    "before_implementation": [
+      "Finish ParentPartInfo/EquipPosition/AmmoLogic source values and receive role gate.",
+      "Offline native-consumer-derived bytes/negative cases and 0/1/2-gun packet budgets.",
+      "Inspect source-qualified normal identity-map registration/retry before selecting owner-only versus Actor recipe transport.",
+      "An owner-component-only recipe must additionally prove an ordinary Actor ready trigger; otherwise use the qualified complete Actor recipe property."
+    ],
+    "producer": "Independent pure frozen-GunDesc to owning compact ExtraData codec/producer; retain exact GIDs and local Actor identities.",
+    "receiver": "Existing source-qualified component custom-delta parent8 and its actual native OnRep; no native function calls or new RPC.",
+    "schedule": "After Actor identity/owner and complete manager bindings, before final Active; preserve own positive full-send ACK and generation rules."
+  },
+  "sources": {
+    "work/evidence/map-system-audit-20261018/native-economy-inventory-character-memoizer-v2.json": "7d1d31a203a3551350d5ccb51849d58d2f6c384a80ba1fa404b345be28114192",
+    "work/evidence/map-system-audit-20261018/native-economy-inventory-gameflow-installed-lua-v5.json": "8d85b4867fe4e45b930e59695459b7d3d564bc945872689ecdaaa896b3fa8b8b",
+    "work/evidence/map-system-audit-20261018/native-economy-inventory-layout-flow-installed-lua-v6.json": "4465cbc411c0e1a41af142d0285abd8b018cbe7a34bab03ef6bc12cfe6508375",
+    "work/evidence/map-system-audit-20261018/native-economy-inventory-packet-lifecycle-1792328560808149500-v2.json": "c5d63fad1072fa400778033965f55eb0f132fa22360d21d9bd7d3361b2da3c9f",
+    "work/evidence/map-system-audit-20261018/native-economy-inventory-ready-lifecycle-contract-v1.json": "f19d8ff97c65aed10429191fa2eb218c18e23791c1336775b1392c2fccde3cdb",
+    "work/evidence/map-system-audit-20261018/native-economy-inventory-ready-lifecycle-installed-lua-v3.json": "1381b63ee2ba45a6c730e6ba1427cf09c5fe26c27706ce4cc60a57b370183707",
+    "work/evidence/map-system-audit-20261018/native-economy-inventory-ui-receipt-audit-1792328560808149500-v1.json": "c9c2b1afc7cd7960078ac08cfc0afa1a8d5da3bb0bdea8589a7cb266d6281a39",
+    "work/evidence/map-system-audit-20261018/native-economy-local-ready-delegate-qualified-consumers-v1.json": "80c589ce99ca456897e9854a0b61f0bb55c06597dc4524aec4827600860f9a81",
+    "work/evidence/map-system-audit-20261018/native-economy-lua-proxy-cache-invalidation-bodies-v1.json": "5dd0f5afe5eab8ce193859bc86294d41bcc71f05de0ea2ca1d9228a75867bafc",
+    "work/evidence/map-system-audit-20261018/native-economy-owning-inventory-creation-id-conversion-and-onrep.json": "f7af4ef55252ed747b5897edbade0b8293883115a85ae04911fc0607cb273996",
+    "work/evidence/map-system-audit-20261018/native-economy-replicator-repnotify-dispatch-source-v1.json": "b780d36162c0baf5eef6c60e61d3e50a06a77f2d932161986e37cc4ae7f7c551",
+    "work/evidence/map-system-audit-20261018/native-economy-stale-weapon-hud-owner-guard-v1.json": "62f62d2d819562c8e763e267c005668f2095cfcaa1134f2fff49d4552de20381",
+    "work/evidence/map-system-audit-20261018/native-economy-weapon-hud-bind-current-character-v1.json": "ca8c3d35052cb12ad70340f8abc0593c91c35eb05c9c7169f3a62b88b4d082d4",
+    "work/evidence/map-system-audit-20261018/native-economy-weapon-hud-character-rebind-model-refresh-v1.json": "aad2229bef50744baeb96b928b0435d9980fd376abed7f75ed7c98c0c2f8954e",
+    "work/evidence/map-system-audit-20261018/native-economy-weapon-hud-local-pawn-callbacks-v1.json": "9517655ed1be078420917ec7133274f5ce0a49b7eeb6b66ee0536ab52d9adfb8",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-create-list-owner-mode-gate-v1.json": "a08d8c8fcc15040030710b60f9552799eae9df68c905600af31b8a8ce97852a2",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-dfm-constructor-v1.json": "736e79773c2d2a56ff2efcc045873ea117fc6bfd48c8d1680fd397459c665f7f",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-extra-array-cppops-and-compact-config-resolver-v1.json": "9cfeec078e7dc41616b44fadb3a74d523ebf84fcb3c2eb271261993f5ef37a7b",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-extra-array-netdelta-entry-v1.json": "0aaa9dbc7c6c5502f6c2a0693d4a1a252defecb3b7ecb10d8c244beee7481953",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-extra-array-netdelta-thunk-and-model-init-v1.json": "df2fbb458aa80fb74003c7d60d114dd563285d69c034ab3b68feab465d6441d8",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-extra-compact-to-model-description-v1.json": "2d05258c0e99a653fdd5129baf34e0ba3f95bd69a29dcc13dbc9f5e55df96030",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-extra-data-actual-native-exec-v1.json": "01a1a0aeb326befc078736fb766250ec6d3d1e227a4e350081bf6e051d2abcda",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-extra-data-actual-receive-consumers-v1.json": "a5530a0e04e47fbe5c958e7b6c22ec5655f65da1163d2516d8b38264963de00f",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-extra-data-correct-interface-consumer-v1.json": "03ce4afb702d29294fd04221b9ae0206392563279c9c4cbfeaae0cd875f25c56",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-extra-data-owner-gate-static-constructor-v1.json": "dac594fccfad08d4a0b17fc1a7a35b835b5ab3c6e51db80c58b97807e4005ba1",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-extra-identity-netserialize-v1.json": "dbdbaab31d82b1bb4d4c987f491ea62a00fc3e16132cc18b500676a80b684815",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-extra-interface-and-cppops-vtables-v1.json": "d57ebd0c610b24b56681cc18fd5697649b8828e66d1b6e44ccf327e5f5495ced",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-extra-item-cppops-and-fastarray-element-type-v1.json": "1a926411b37653c10351928a52d1a6050a2184b37583930501b1f6fd5c228843",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-extra-item-netserialize-v1.json": "0d16e1cc0b6fe42539052baf59ebeb633b141928328f3fc96d9cc93c22dbdf1a",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-extra-parent-info-fields-v1.json": "a78692b170046b324fc9c81d7e2dffa52f852b771e2ead2fa75a0db5b65f6a98",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-extra-part-array-and-node-netserialize-v1.json": "7ca52091d4a9428b7e5e7cf89c25582f2fc12f3ed8b1c226f5d1d002a830892c",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-extra-part-array-count-grammar-v1.json": "3767e855b3b8b18838fcec3bfbc429156a34af4169f6e3242418991351d13b97",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-id-and-equipment-late-notify-bodies-v1.json": "ebe5bdcd61d76069fbf9f459b29aee67335b440818fd67535944404970c68a11",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-initial-postnetinit-beginplay-v1.json": "b3d776596626d147a0d3b7a50be4f7a753a7897bf9da38ad8dff0d4bb1258da5",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-initialization-ready-flag-writers-v1.json": "38693123aab5b3f7f4f54e2d37d5a7c9fd5b27ec2615d186ef2b51cf5d5d22c0",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-late-character-owner-actual-exec-v1.json": "8e3c8b21b0dfa217a348d7a05d2ebec9c325281eaaa2eaec41826099ba3a7afe",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-late-character-owner-receive-body-v1.json": "ce158d1e2c39cb424e837609b63dfb7d25cdeb88a9e14686955413de0f99ca2a",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-late-owner-rebind-hooks-v1.json": "b998ee11d2581fd849b826d2e54ec390ba272b9d83242c68e21beb48e24ba9cc",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-model-skin-netserialize-v1.json": "d195c179b8d12bc6bd0ab9c35b3fad6450f7e356a57bfa858ba79b0798109109",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-modular-desc-actual-exec-v1.json": "b287410dd0e5fa909670414a6730a621e7c38b90499a0b15b03aa1177e31ac43",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-modular-desc-receive-and-export-v1.json": "c4859e15715da5ec24ad1ac5327dcd3e1c2d838d952fb21855d194e3a2b395e7",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-modular-desc-to-config-components-v1.json": "68c75f3887431041f4c2085cc64e7457da87d2aeb752262e0d5a256080652f53",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-modular-parameter-declarations-v1.json": "d7fde6bf19c36d5e0b54d8c70f609aae90576b88a3ca52263e4a045cf35f59ca",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-owner-extra-data-model-consumer-v1.json": "a7f0b8ca4d23fba46612de67b8778dab034a0c999b5775b98950b700eec846cc",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-postreceive-and-owner-ready-retry-v1.json": "fc189ad587fddd8bba7ad7038a444e6aba1a95986e8d6a9d61350f0ddacc98a9",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-postreceive-ready-vtables-v1.json": "403286f50bde5a53345465ea49a6bd3dd06424f9c863309c410ea6d62c4477fe",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-ready-config-mesh-and-dfm-hooks-v1.json": "2bc4dbf4889258aca75bc484b41b1c6fa10e5f73af4d93d5e0611c0a28b19e98",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-ready-init-virtual-caller-v1.json": "937b474287b54baa32f8e169a5aeb40f7b89d212a593a037819ec88434234d32",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-replicate-component-uht-declarations-v1.json": "b261216db6309ea374abf0e1e6fbad3b7b3e88674efeed9366b48f2c7208f2b2",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-replicate-extra-data-item-struct-v1.json": "56066aae47a3c6234fb52e2856c11819ef49b65535572acdd644b2f6b7608ef7",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-replicate-extra-data-list-struct-v1.json": "034b032acd9563a10b6a8c8ed9b0253ad7cadd36a0563a96e56188b0694628cb",
+    "work/evidence/map-system-audit-20261018/native-owned-weapon-replicate-part-node-struct-v1.json": "0df09ef3f09f6b7c344648b97f514ba63fde6436d4bc5917f90efcbf3f9e0765",
+    "work/native-client-tests/1792328560808149500/owned-gameplay-metadata.json": "18fcdea26eba57403bc94e712e07906aef38e5a641e8a140012d2d4504233a31",
+    "work/portable_modular_weapon_initialization.py": "163ed6d47c4e42d95b1956fbf02f7d53b64062a0bccec70920724aea2855ecd6"
+  }
+}

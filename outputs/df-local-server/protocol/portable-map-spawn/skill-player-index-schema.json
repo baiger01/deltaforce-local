@@ -1,0 +1,155 @@
+{
+  "ability_instances_granted": false,
+  "allocation": {
+    "absent_slot": -1,
+    "empty_roster_first_index": 0,
+    "generator_rva": "0x4ba7390",
+    "native_slots_count_offset": 312,
+    "native_slots_offset": 304,
+    "normal_rules": [
+      "Existing participant identity is not appended twice.",
+      "Bind reuses the first -1 slot, else writes old count and appends identity.",
+      "Unbind writes the component index and its matching slot to -1."
+    ],
+    "owner_class": "UGPAbilityGameStateComponent",
+    "producer_subset": "One initial participant in an explicitly empty local room roster.",
+    "proof": [
+      {
+        "bytes": "418b8f38010000",
+        "mnemonic": "mov",
+        "operands": "ecx, dword ptr [r15 + 0x138]",
+        "rva": "0x4ba81d4",
+        "source": "work/evidence/model-init-chain-20261018/native-skill-player-index-generator-candidate-bodies-v1.json"
+      },
+      {
+        "bytes": "48833c30ff",
+        "mnemonic": "cmp",
+        "operands": "qword ptr [rax + rsi], -1",
+        "rva": "0x4ba81eb",
+        "source": "work/evidence/model-init-chain-20261018/native-skill-player-index-generator-candidate-bodies-v1.json"
+      },
+      {
+        "bytes": "898818020000",
+        "mnemonic": "mov",
+        "operands": "dword ptr [rax + 0x218], ecx",
+        "rva": "0x4ba8212",
+        "source": "work/evidence/model-init-chain-20261018/native-skill-player-index-generator-candidate-bodies-v1.json"
+      },
+      {
+        "bytes": "894708",
+        "mnemonic": "mov",
+        "operands": "dword ptr [rdi + 8], eax",
+        "rva": "0x4ba821f",
+        "source": "work/evidence/model-init-chain-20261018/native-skill-player-index-generator-candidate-bodies-v1.json"
+      },
+      {
+        "bytes": "4c8934d8",
+        "mnemonic": "mov",
+        "operands": "qword ptr [rax + rbx*8], r14",
+        "rva": "0x4ba823a",
+        "source": "work/evidence/model-init-chain-20261018/native-skill-player-index-generator-candidate-bodies-v1.json"
+      },
+      {
+        "bytes": "899818020000",
+        "mnemonic": "mov",
+        "operands": "dword ptr [rax + 0x218], ebx",
+        "rva": "0x4ba82e4",
+        "source": "work/evidence/model-init-chain-20261018/native-skill-player-index-generator-candidate-bodies-v1.json"
+      },
+      {
+        "bytes": "c78018020000ffffffff",
+        "mnemonic": "mov",
+        "operands": "dword ptr [rax + 0x218], 0xffffffff",
+        "rva": "0x4ba8345",
+        "source": "work/evidence/model-init-chain-20261018/native-skill-player-index-generator-candidate-bodies-v1.json"
+      },
+      {
+        "bytes": "48c704c8ffffffff",
+        "mnemonic": "mov",
+        "operands": "qword ptr [rax + rcx*8], 0xffffffffffffffff",
+        "rva": "0x4ba8358",
+        "source": "work/evidence/model-init-chain-20261018/native-skill-player-index-generator-candidate-bodies-v1.json"
+      }
+    ],
+    "slot_storage_bytes": 8
+  },
+  "archive_profile": {
+    "archive_network_version": 13,
+    "checksum_option": false,
+    "connection_network_version": 13,
+    "internal_ack": false,
+    "no_byteswap": true
+  },
+  "client_sha256": "4254fbe66585f260f1f9dbfc5e302887842552e7baed8939e023160a5e250be0",
+  "component": {
+    "class_path": "/Script/DFMGameplay.DFMSkillComponent",
+    "name": "DFMSkill",
+    "name_stability_source_schema": "outputs/df-local-server/protocol/portable-map-spawn/vitals-metadata-probe-schema.json",
+    "outer": "current admitted Pawn"
+  },
+  "field": {
+    "captured_runtime_flags": "0x18001040000220",
+    "command_index": 7,
+    "command_sha256": "ed75fe6bc52ef1a87e84bb67e5a63a67a561cf57eabc333343ccdf8792242ace",
+    "data_offset": 536,
+    "dispatch_opcode": 5,
+    "name": "SkillPlayerIndex",
+    "ordinary_handle": 6,
+    "parent_index": 4,
+    "property_vtable_rva": "0x15a863c0",
+    "scalar_leaf_rva": "0x286bf70",
+    "serializer_rva": "0x10e5ce20",
+    "storage_bytes": 4
+  },
+  "kind": "client_source_derived_skill_player_index_schema",
+  "limitations": [
+    "The service must freeze the first assignment once per admitted room participant.",
+    "Business UID labels the local assignment only; equality to the native opaque identity is not asserted.",
+    "This value does not create, grant, bind or initialize any ability instance.",
+    "Only the one-participant, initially empty room subset is implemented."
+  ],
+  "native_gameplay_verified": false,
+  "native_identity_equal_to_business_uid_assumed": false,
+  "observed_expert_id": 10010,
+  "observed_value": -1,
+  "public_schema_contains_process_addresses": false,
+  "sources": {
+    "outputs/df-local-server/protocol/portable-map-spawn/skill-initialization-source-schema-v2.json": "6eaec3810b1c8af29ed21522a7580461a12f71ed8600fed1049e2a20dd8dfac8",
+    "outputs/df-local-server/protocol/portable-map-spawn/vitals-metadata-probe-schema.json": "acec9f0b1f31346933d48e410ab8c866efd9cbab0c0da144933eafae94b904aa",
+    "work/evidence/map-system-audit-20261018/native-empty-subobject-replicator-receive-core.json": "0a4edae073161f2ed99b076827effeee1e66fde13b32bda818306688f7794419",
+    "work/evidence/map-system-audit-20261018/native-owning-weapon-actor-property-serializers-v1.json": "dd600b28177bccef60437b6c4fa1db516271adfbfe383ea7f720dd6a9e648158",
+    "work/evidence/map-system-audit-20261018/native-owning-weapon-actor-scalar-archive-v1.json": "35633aa498c7d9a03284d6cfcf8f4a66b3f40fbd98307fc648a57747edb89141",
+    "work/evidence/map-system-audit-20261018/native-owning-weapon-bool-property-mask-v1.json": "f9b0cb0b567d06fe183a74f1ea549b4a54706d389661cd71cc407d85f93fb616",
+    "work/evidence/model-init-chain-20261018/native-skill-player-index-generator-candidate-bodies-v1.json": "77e340feee97fff2c2728492d9b6cb039bfdef8c8ac2fe3732dbb6b1e46e3578",
+    "work/evidence/model-init-chain-20261018/native-vitals-expertskilldata-actual-rows.json": "25d281c9d8d10b737cfa0f47d0674527a297ee4325d852f302e1165bdba13c19",
+    "work/evidence/model-init-chain-20261018/native-vitals-expertskillgroupdata-actual-rows.json": "33026ff86c94048f91dbea7d38dcd6a5641456e88690f20a6deeb8b1402d1325",
+    "work/evidence/model-init-chain-20261018/native-vitals-gameplay-config-component-cdo-defaults.json": "3f554e5cf20e4beb2e2cc7d13f74b3380c3ca675fcdf52413eb10b9575fd4d87",
+    "work/evidence/model-init-chain-20261018/native-vitals-health-max-attribute-base-current-getters.json": "38aac5b025a8246ff58aa0b13aa63ff42614d67357359167845eabf87fcf95f5",
+    "work/evidence/model-init-chain-20261018/native-vitals-herodata-actual-rows.json": "034819576f991f8bd2f720ff1e85e5358ee222b6cc64a5e87023164c7973fd6f",
+    "work/evidence/model-init-chain-20261018/native-vitals-initialization-binding-declarations.json": "45c83dfee803b5b557f1007d27def362af435e6a7deaf2b41fb9e0652bf7f40a",
+    "work/evidence/model-init-chain-20261018/native-vitals-max-health-base-character-constructors.json": "ea12f7157fa2d56367fdf35c4bd5392e03d514410572d296ea632e97dd050168",
+    "work/evidence/model-init-chain-20261018/native-vitals-max-health-float-writer-bodies.json": "43b2dce5cc4483267f989a712a0d1869a12a4e0847a4ec672ae6ff08e15f3859",
+    "work/evidence/model-init-chain-20261018/native-vitals-player-character-skill-component-create-prefix.json": "e7a337a0a2d5f6aec6a902f95e20a829b1ccc6674747af6a284f7710881a78bd",
+    "work/evidence/model-init-chain-20261018/native-vitals-skill-and-health-source-contract.json": "1196e31c0239f2df0c58f6698525daba91791df97de9b0893b54d2a0f9033592",
+    "work/evidence/model-init-chain-20261018/native-vitals-skill-detail-info-struct-fields.json": "d8459c79a67dea155d2e208da926a77c1f9e45494ac4ef4db9c081c12bb3a99a",
+    "work/evidence/model-init-chain-20261018/native-vitals-skill-detail-onrep-and-set-expert.json": "3c167521d9dec59ac4bb6bbc7dac4f1609a3d694b3179fedde96de6fcde93953",
+    "work/evidence/model-init-chain-20261018/native-vitals-skill-source-table-manager-mappings.json": "d829a6067873b760946eff6b63d77136d3b43cb85c2b1da5bc8fa32d4cb4d321",
+    "work/evidence/model-init-chain-20261018/native-vitals-skill-tables-all-pak-overrides-search.json": "fa2e34bfbc1dd9f8d648f8fc25133b9a4a74740614ad1f40be9022ff451268da",
+    "work/evidence/model-init-chain-20261018/native-vitals-skill-tables-baseline-extraction.json": "40e02e4700ebab21a05fe638fe25a3014237cddbf8d8453bfebb562a69fb3441",
+    "work/evidence/model-init-chain-20261018/native-vitals-skilldataconfig-actual-rows.json": "4db22da3c108c0e28bf60a2883402cbb90c90fcd19b0af9666948312047e1611",
+    "work/evidence/model-init-chain-20261018/native-vitals-skilldataconfig-combination-actual-rows.json": "edc2323cccfdf5d352c6866e6ab47b0467e1564b001e45afcd0eb10bb25001a6",
+    "work/evidence/model-init-chain-20261018/native-vitals-skilldataconfig-skilldev-actual-rows.json": "0731b5c5b5a31c805e9d51ecfa3b04bc939b23e812eb7016902844cae05d574b",
+    "work/native-client-tests/1792297548603201600/owned-vitals-attributes-metadata.json": "3d59a171c18f6a953502fe48e41beac2ea56576056da20cabbe5f0173abef64f",
+    "work/native-client-tests/1792297548603201600/owned-vitals-sprint-gates-metadata.json": "e873158afdb8e84f490f81a4c30b5c23719c670d337dace165faabb8f4515e97",
+    "work/native-client-tests/1792311694804456800/owned-vitals-metadata.json": "0b9b7b84aeb27ebc33ab6caab0c9f8f6cc2508ed790fdb56f0868c0b3872b7c1",
+    "work/native-client-tests/1792314937287546900/owned-vitals-metadata.json": "b9a0c833779649e650517f2322c8e0207b06a5401a4cb0e403d4b33051ba7ed3"
+  },
+  "value_wire": {
+    "checksum_option": false,
+    "content_bit_count": 49,
+    "handle_encoding": "packed uint32",
+    "terminal_handle": 0,
+    "value": "signed int32 raw little endian"
+  },
+  "version": 1
+}

@@ -1,0 +1,323 @@
+{
+  "classes": {
+    "/Game/BluePrints/Characters/BP_DFMCharacter.BP_DFMCharacter_C": {
+      "class_path": "/Game/BluePrints/Characters/BP_DFMCharacter.BP_DFMCharacter_C",
+      "closed_observation_layout_status": [
+        "exported_existing"
+      ],
+      "fields": {
+        "CurrentOverrideMovementInfo": {
+          "declaring_class": "GPCharacterBase",
+          "element_bytes": 2,
+          "is_net_property": true,
+          "name": "CurrentOverrideMovementInfo",
+          "property_flags": "0x10001000000020",
+          "storage_offset": 5872
+        },
+        "MaxHealthBase": {
+          "declaring_class": "GPCharacter",
+          "element_bytes": 4,
+          "is_net_property": false,
+          "name": "MaxHealthBase",
+          "property_flags": "0x18001040000200",
+          "storage_offset": 8176
+        }
+      }
+    },
+    "/Script/DFMGameplay.DFMSkillComponent": {
+      "class_path": "/Script/DFMGameplay.DFMSkillComponent",
+      "closed_observation_layout_status": [
+        "missing"
+      ],
+      "fields": {
+        "DFMCharacter": {
+          "declared_native_class_path": "/Script/DFMGameplay.DFMCharacter",
+          "declaring_class": "DFMSkillComponent",
+          "element_bytes": 8,
+          "is_net_property": false,
+          "name": "DFMCharacter",
+          "native_property_type": "FEncryptedObjectProperty",
+          "property_flags": "0x1c000000000014",
+          "storage_offset": 16920
+        },
+        "GMExpertID": {
+          "declaring_class": "DFMSkillComponent",
+          "element_bytes": 8,
+          "is_net_property": true,
+          "name": "GMExpertID",
+          "property_flags": "0x18001140000220",
+          "storage_offset": 17032
+        },
+        "GPActor": {
+          "declared_native_class_path": "/Script/Engine.Actor",
+          "declaring_class": "GPSkillComponent",
+          "element_bytes": 8,
+          "is_net_property": false,
+          "name": "GPActor",
+          "native_property_type": "FEncryptedObjectProperty",
+          "property_flags": "0x1c000000000014",
+          "storage_offset": 304
+        },
+        "GPCharacter": {
+          "declared_native_class_path": "/Script/GPGameplay.GPCharacter",
+          "declaring_class": "GPSkillComponent",
+          "element_bytes": 8,
+          "is_net_property": false,
+          "name": "GPCharacter",
+          "native_property_type": "FEncryptedObjectProperty",
+          "property_flags": "0x1c000000000014",
+          "storage_offset": 312
+        },
+        "PendingGiveSkillIDs": {
+          "declaring_class": "GPSkillComponent",
+          "element_bytes": 16,
+          "is_net_property": false,
+          "name": "PendingGiveSkillIDs",
+          "property_flags": "0x40000000000200",
+          "storage_offset": 1152
+        },
+        "ReplicatedAbilityInstances": {
+          "declaring_class": "GPSkillComponentBase",
+          "element_bytes": 16,
+          "is_net_property": true,
+          "name": "ReplicatedAbilityInstances",
+          "property_flags": "0x10000000000220",
+          "storage_offset": 248
+        },
+        "SkillDataFlow": {
+          "declared_native_class_path": "/Script/GPGameplay.GPSkillDataFlow",
+          "declaring_class": "GPSkillComponent",
+          "element_bytes": 8,
+          "is_net_property": false,
+          "name": "SkillDataFlow",
+          "native_property_type": "FObjectProperty",
+          "property_flags": "0x18001040000200",
+          "storage_offset": 544
+        },
+        "SkillDetailInfo": {
+          "declaring_class": "GPSkillComponent",
+          "element_bytes": 8,
+          "is_net_property": true,
+          "name": "SkillDetailInfo",
+          "property_flags": "0x10001100000020",
+          "storage_offset": 528
+        },
+        "SkillPlayerIndex": {
+          "declaring_class": "GPSkillComponent",
+          "element_bytes": 4,
+          "is_net_property": true,
+          "name": "SkillPlayerIndex",
+          "property_flags": "0x18001040000220",
+          "storage_offset": 536
+        },
+        "StaticSkillIDs": {
+          "declaring_class": "GPSkillComponent",
+          "element_bytes": 16,
+          "is_net_property": false,
+          "name": "StaticSkillIDs",
+          "property_flags": "0x10000000010201",
+          "storage_offset": 480
+        }
+      }
+    },
+    "/Script/DFMGameplay.SOLHealthDataComponent": {
+      "class_path": "/Script/DFMGameplay.SOLHealthDataComponent",
+      "closed_observation_layout_status": [
+        "missing"
+      ],
+      "fields": {
+        "HealthSet": {
+          "declared_native_class_path": "/Script/GPGameplay.GPAttributeSetHealth",
+          "declaring_class": "GPHealthDataComponent",
+          "element_bytes": 8,
+          "is_net_property": false,
+          "name": "HealthSet",
+          "native_property_type": "FEncryptedObjectProperty",
+          "property_flags": "0x1c000000000014",
+          "storage_offset": 640
+        }
+      }
+    },
+    "/Script/GPGameplay.GPAttributeSetHealth": {
+      "class_path": "/Script/GPGameplay.GPAttributeSetHealth",
+      "closed_observation_layout_status": [
+        "missing"
+      ],
+      "fields": {
+        "Health": {
+          "declaring_class": "GPAttributeSetHealth",
+          "element_bytes": 24,
+          "is_net_property": true,
+          "name": "Health",
+          "property_flags": "0x10000100020035",
+          "storage_offset": 48
+        },
+        "MaxHealth": {
+          "declaring_class": "GPAttributeSetHealth",
+          "element_bytes": 16,
+          "is_net_property": true,
+          "name": "MaxHealth",
+          "property_flags": "0x10000100020035",
+          "storage_offset": 72
+        },
+        "MaxShieldHealth": {
+          "declaring_class": "GPAttributeSetHealth",
+          "element_bytes": 16,
+          "is_net_property": true,
+          "name": "MaxShieldHealth",
+          "property_flags": "0x10000100020035",
+          "storage_offset": 208
+        },
+        "ShieldHealth": {
+          "declaring_class": "GPAttributeSetHealth",
+          "element_bytes": 24,
+          "is_net_property": true,
+          "name": "ShieldHealth",
+          "property_flags": "0x10000100020035",
+          "storage_offset": 184
+        }
+      }
+    },
+    "/Script/GPGameplay.GPAttributeSetSpeed": {
+      "class_path": "/Script/GPGameplay.GPAttributeSetSpeed",
+      "closed_observation_layout_status": [
+        "missing"
+      ],
+      "fields": {
+        "EnableSprint": {
+          "declaring_class": "GPAttributeSetSpeed",
+          "element_bytes": 16,
+          "is_net_property": true,
+          "name": "EnableSprint",
+          "property_flags": "0x10000100020035",
+          "storage_offset": 504
+        },
+        "LockSprint": {
+          "declaring_class": "GPAttributeSetSpeed",
+          "element_bytes": 16,
+          "is_net_property": true,
+          "name": "LockSprint",
+          "property_flags": "0x10000100020035",
+          "storage_offset": 232
+        },
+        "Moveable": {
+          "declaring_class": "GPAttributeSetSpeed",
+          "element_bytes": 16,
+          "is_net_property": true,
+          "name": "Moveable",
+          "property_flags": "0x10000100020035",
+          "storage_offset": 216
+        },
+        "SprintBasicSpeed": {
+          "declaring_class": "GPAttributeSetSpeed",
+          "element_bytes": 16,
+          "is_net_property": true,
+          "name": "SprintBasicSpeed",
+          "property_flags": "0x10000100020035",
+          "storage_offset": 104
+        }
+      }
+    },
+    "/Script/GPGameplay.GPSprintComponent": {
+      "class_path": "/Script/GPGameplay.GPSprintComponent",
+      "closed_observation_layout_status": [
+        "missing"
+      ],
+      "fields": {
+        "StaminaData": {
+          "declared_native_class_path": "/Script/GPGameplay.GPStaminaDataComponent",
+          "declaring_class": "GPSprintComponent",
+          "element_bytes": 8,
+          "is_net_property": false,
+          "name": "StaminaData",
+          "native_property_type": "FObjectProperty",
+          "property_flags": "0x18001040080208",
+          "storage_offset": 288
+        },
+        "bSprintingIgnoreStamina": {
+          "declaring_class": "GPSprintComponent",
+          "element_bytes": 1,
+          "is_net_property": false,
+          "name": "bSprintingIgnoreStamina",
+          "property_flags": "0x18001040000201",
+          "storage_offset": 256
+        }
+      }
+    },
+    "/Script/GPGameplay.GPStaminaDataComponent": {
+      "class_path": "/Script/GPGameplay.GPStaminaDataComponent",
+      "closed_observation_layout_status": [
+        "missing"
+      ],
+      "fields": {
+        "AttributeSetSpeed": {
+          "declared_native_class_path": "/Script/GPGameplay.GPAttributeSetSpeed",
+          "declaring_class": "GPStaminaDataComponent",
+          "element_bytes": 8,
+          "is_net_property": false,
+          "name": "AttributeSetSpeed",
+          "native_property_type": "FObjectProperty",
+          "property_flags": "0x28081040000200",
+          "storage_offset": 480
+        },
+        "bTiredStateAllowSprint": {
+          "declaring_class": "GPStaminaDataComponent",
+          "element_bytes": 1,
+          "is_net_property": true,
+          "name": "bTiredStateAllowSprint",
+          "property_flags": "0x28081140000224",
+          "storage_offset": 488
+        }
+      }
+    },
+    "/Script/SOL.SOLPlayerMovementComponent": {
+      "class_path": "/Script/SOL.SOLPlayerMovementComponent",
+      "closed_observation_layout_status": [
+        "missing"
+      ],
+      "fields": {
+        "AttributeSetSpeed": {
+          "declared_native_class_path": "/Script/GPGameplay.GPAttributeSetSpeed",
+          "declaring_class": "GPCharacterMovementComponent",
+          "element_bytes": 8,
+          "is_net_property": false,
+          "name": "AttributeSetSpeed",
+          "native_property_type": "FObjectProperty",
+          "property_flags": "0x28081040000200",
+          "storage_offset": 3344
+        }
+      }
+    }
+  },
+  "client_launched": false,
+  "client_sha256": "4254fbe66585f260f1f9dbfc5e302887842552e7baed8939e023160a5e250be0",
+  "historical_values_promoted_to_current": false,
+  "kind": "offline_skill_initialization_binding_declarations",
+  "limits": [
+    "These declarations are from closed captures, not current runtime values.",
+    "Non-Net local references need lifecycle/binding proof, not invented property handles.",
+    "Object names alone do not prove stable default-subobject identity."
+  ],
+  "minimum_next_observations": [
+    "DFMSkill existing RepLayout cmds/parents/leaf handles and exactly eight SkillDetailInfo bytes.",
+    "DFMSkill SkillPlayerIndex, GMExpertID and ReplicatedAbilityInstances/StaticSkillIDs/PendingGiveSkillIDs counts.",
+    "DFMSkill GPActor/GPCharacter/DFMCharacter/SkillDataFlow typed current identities with rechecks.",
+    "HealthComp.HealthSet encrypted typed current binding; target Name/Outer/flags and existing class layout.",
+    "HealthSet Health/MaxHealth/ShieldHealth/MaxShieldHealth complete declared struct bytes plus native getters.",
+    "Stamina/Movement AttributeSetSpeed typed current bindings and target Name/Outer/flags/layout.",
+    "Speed Moveable/LockSprint/EnableSprint/SprintBasicSpeed complete declared attribute bytes.",
+    "Sprint StaminaData binding, bSprintingIgnoreStamina; Stamina bTiredStateAllowSprint; Pawn CurrentOverrideMovementInfo."
+  ],
+  "net_flag_mask": "0x20",
+  "process_access": false,
+  "sources": [
+    {
+      "relative_path": "work/native-client-tests/1792297548603201600/owned-vitals-attributes-metadata.json",
+      "sha256": "3d59a171c18f6a953502fe48e41beac2ea56576056da20cabbe5f0173abef64f"
+    },
+    {
+      "relative_path": "work/native-client-tests/1792297548603201600/owned-vitals-sprint-gates-metadata.json",
+      "sha256": "e873158afdb8e84f490f81a4c30b5c23719c670d337dace165faabb8f4515e97"
+    }
+  ]
+}

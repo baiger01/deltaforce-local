@@ -56,7 +56,13 @@ def main():
             'IamgeSourceBig_CDN': string(f[272]),
             'ImageSourceLogo_CDN_CN': string(f[276]),
             'ImageSourceLogo_CDN_EN': string(f[277]),
-            'preview_asset': string(f[273]), 'row': row['row'], 'offset': row['offset']})
+            'preview_asset': string(f[273]),
+            'native_big_asset': string(f[271]),
+            'native_logo_asset': string(f[275]),
+            'items_sort_index_text': string(f[281]),
+            'additional_resource_references': [
+                {'field_index': 304, 'value': string(f[304])}] if f[304] else [],
+            'row': row['row'], 'offset': row['offset']})
     gifts = []
     for row in tables['gifts']:
         f = row['fields']
@@ -66,7 +72,10 @@ def main():
             'midas_product_id': string(f[73]),
             'google_item_id': string(f[74]),
             'bundle_item_list': items(f[86]), 'online_time_text': string(f[95]),
-            'offline_time_text': string(f[94]), 'row': row['row'], 'offset': row['offset']})
+            'offline_time_text': string(f[94]),
+            'native_banner_asset': string(f[80]),
+            'items_sort_index_text': string(f[87]),
+            'row': row['row'], 'offset': row['offset']})
     lotteries = [{'lottery_id': r['fields'][106], 'lottery_type': r['fields'][112],
                   'lottery_key_id': r['fields'][108], 'row': r['row'], 'offset': r['offset']}
                  for r in tables['lotteries'] if r['fields'][112] == 3]
@@ -85,6 +94,17 @@ def main():
     tabs = [{'tab_id': r['fields'][18], 'name': string(r['fields'][35]),
              'row': r['row'], 'offset': r['offset']} for r in tables['tabs']]
     report = {'source_pak': PAK, 'sources': sources,
+        'serialized_resource_field_indices': {
+            'recommendations': {'preview_asset': 273, 'native_big_asset': 271,
+                'native_logo_asset': 275, 'IamgeSourceSmall_CDN': 274,
+                'IamgeSourceBig_CDN': 272, 'ImageSourceLogo_CDN_CN': 276,
+                'ImageSourceLogo_CDN_EN': 277, 'items_sort_index_text': 281},
+            'gifts': {'native_banner_asset': 80, 'items_sort_index_text': 87}},
+        'resource_contract': ('Native asset references are read by the client table. '
+            'They are retained for auditing, not added as unsupported wire fields. '
+            'Additional field 304 retains its exact source reference without '
+            'assigning an unverified image role. A reference alone does not prove '
+            'the asset exists, loads, or renders.'),
         'client_consumers': ['StoreServer.lua 0.0, 0.126, 0.146, 0.169.0',
             'StoreMallGiftItem.lua 0.1, 0.2', 'StoreRecommendItem.lua',
             'StoreLotteryProbDistributionItem.lua 0.1, 0.2',
@@ -93,7 +113,7 @@ def main():
         'recommendations': recommendations, 'gifts': gifts, 'lotteries': lotteries,
         'lottery_rewards': rewards, 'fashion_links': fashions, 'tabs': tabs}
     (PROTOCOL / 'premium_shop_catalog.json').write_text(
-        json.dumps(report, ensure_ascii=True, indent=2) + '\n', encoding='utf-8')
+        json.dumps(report, ensure_ascii=True, indent=2) + '\n', encoding='utf-8', newline='\n')
     print({name: len(report[name]) for name in tables})
 
 

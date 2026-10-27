@@ -30,8 +30,12 @@ from dfserver.legacy_ds_game_spawn_flags import (  # noqa: E402
 PAWN_CLASS = 'BP_DFMCharacter_C'
 GAME_STATE_CLASS = 'BP_GameState_PVPVE_C'
 PLAYER_CONTROLLER_CLASS = 'BP_DFMPlayerController_C'
+MOVEMENT_REPLICATION_CLASS = 'MovementReplicationActor'
+PLAYER_STATE_CLASS = 'BP_SOLPlayerState_C'
 ROLE_CLASSES = MappingProxyType({'Pawn': PAWN_CLASS, 'GameState': GAME_STATE_CLASS,
-                                'PlayerController': PLAYER_CONTROLLER_CLASS})
+                                'PlayerController': PLAYER_CONTROLLER_CLASS,
+                                'MovementReplicationActor': MOVEMENT_REPLICATION_CLASS,
+                                'PlayerState': PLAYER_STATE_CLASS})
 PC_OPEN_HOOK_SLOT = 0x3d8
 PC_BASE_OPEN_HOOK_RVA = 0x12d4ddb0
 MAX_METADATA_REPORT_BYTES = 32 * 1024 * 1024  # Factory policy, not an engine limit.
@@ -252,6 +256,19 @@ def _metadata_actor(roots, role):
     class_path = klass.get('asset_path')
     if class_path != package_path + '.' + class_name:
         raise ValueError(role + ' Class path disagrees with its observed Package Outer')
+    if role == 'MovementReplicationActor':
+        ancestry = klass.get('class_ancestry')
+        if (package_path != '/Script/GPGameplay' or type(ancestry) is not list
+                or [row.get('name') for row in ancestry] !=
+                    ['MovementReplicationActor', 'Actor', 'Object']):
+            raise ValueError('Movement Actor must match the observed native package and Actor ancestry')
+    if role == 'PlayerState':
+        ancestry = klass.get('class_ancestry')
+        if (class_path != '/Game/BluePrints/GameModes/TestGame/BP_SOLPlayerState.BP_SOLPlayerState_C' or
+                type(ancestry) is not list or [row.get('name') for row in ancestry] !=
+                    ['BP_SOLPlayerState_C', 'SOLPlayerState', 'DFMPlayerState', 'GPPlayerState',
+                     'BasePlayerState', 'PlayerState', 'Info', 'Actor', 'Object']):
+            raise ValueError('PlayerState must match the qualified official spawned class and ancestry')
     relation = candidate.get('outer_relation')
     if relation == 'same_outer_as_class':
         if outer != class_outer or candidate.get('outer_path') != package_path:
@@ -393,7 +410,7 @@ def build_initial_actor_bootstrap(metadata_report, *, role, source_relative_path
         actor_guid, channel_index, channel_sequence, connection_network_version,
         archive_network_version, max_packet_bytes, references_resolvable,
         location=None, scale=None, velocity=None, local_player_index=None, pc_tail_profile=None,
-        game_spawn_profile=None):
+        game_spawn_profile=None, rotation=None):
     """Preflight one metadata-selected, property-free initial Actor.
 
     The metadata source is verified against exact supplied bytes. Level contents
@@ -408,7 +425,7 @@ def build_initial_actor_bootstrap(metadata_report, *, role, source_relative_path
     byte. The returned effective state is not committed to a server model here.
     """
     if type(role) is not str or role not in ROLE_CLASSES:
-        raise ValueError('Only Pawn, GameState or PlayerController roles are supported')
+        raise ValueError('Only explicit source-supported initial Actor roles are supported')
     if game_spawn_profile is not None and role != 'Pawn':
         raise ValueError('The qualified game spawn profile is supported only for Pawn')
     metadata_source = _source_pin(source_relative_path, source_sha256, verified=True)
@@ -448,7 +465,7 @@ def build_initial_actor_bootstrap(metadata_report, *, role, source_relative_path
         connection_network_version=connection_network_version,
         archive_network_version=archive_network_version,
         references_resolvable=references_resolvable, channel_index=channel_index,
-        location=location, scale=scale, velocity=velocity, local_player_index=local_player_index,
+        location=location, scale=scale, velocity=velocity, rotation=rotation, local_player_index=local_player_index,
         game_replication_flags=game_result.flags_u8 if game_result is not None else None)
     preflight = preflight_actor_manifest(manifest, channel_sequence=channel_sequence,
                                           max_packet_bytes=max_packet_bytes)

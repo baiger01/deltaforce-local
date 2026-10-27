@@ -1,0 +1,139 @@
+{
+  "kind": "updated_metadata_code_root_qualification_summary",
+  "shipping_sha256": "79fb7b105170141ed863331d36833a73062e66bf5291b2364fe3a64c18336203",
+  "historical_comparison_shipping_sha256": "4254fbe66585f260f1f9dbfc5e302887842552e7baed8939e023160a5e250be0",
+  "evidence_reports": [
+    {
+      "path": "work/evidence/updated-metadata-roots-79fb7b10-static.json",
+      "sha256": "cf16eb2c584ceec54582fa0471ed130b965a488585d891e521b429a8bd7886a8"
+    },
+    {
+      "path": "work/evidence/updated-metadata-roots-79fb7b10-emulation.json",
+      "sha256": "d8cd8c2a1814b78e8bd7a86e33ca1d277e866fb582d8a28f415494c63ab81862"
+    }
+  ],
+  "bindings": {
+    "registry_rva": "0x1e34ee88",
+    "count_rva": "0x1e34ee9c",
+    "chunks_rva": "0x1e34eea8",
+    "pointer_decoder_rva": "0x1db3a770",
+    "outer_selector_rva": "0x1e3187c4",
+    "inner_selectors_rva": "0x1e3187cc",
+    "inner_selector_count": 10,
+    "parameter_rva": "0x1e3187f4",
+    "name_pool_rva": "0x1e326ac0",
+    "name_pool_initialized_rva": "0x1e3267ec",
+    "package_class_rva": "0x1e34cad0"
+  },
+  "proof_scope": {
+    "offline_only": true,
+    "game_launched": false,
+    "process_accessed": false,
+    "process_memory_written": false,
+    "native_getter_called": false,
+    "production_reader_modified": false,
+    "production_build_guard_bypassed": false,
+    "runtime_metadata_recovered": false,
+    "native_protocol_compatibility_verified": false,
+    "static_function_comparisons": 21,
+    "full_jump_tables": 4,
+    "names_cases_per_build": 4092,
+    "divisor_cases_per_build": 48008,
+    "path_control_flow_cases": 48,
+    "path_external_string_helpers": "explicit synthetic ABI stubs"
+  },
+  "unchanged_native_rules": {
+    "object_registry": {
+      "count_offset": "0x14",
+      "chunks_offset": "0x20",
+      "entry_bytes": 24,
+      "pointer_offset": 0,
+      "flags_offset": 8,
+      "serial_offset": "0x14",
+      "excluded_flags": "0x30000000",
+      "object_index_offset": "0x24",
+      "object_class_offset": 8,
+      "outer_offset": "0x10",
+      "object_name_token_offset": "0x1c",
+      "pointer_decoder": "native callback if nonzero; pure reader must reject"
+    },
+    "chunk_arithmetic": {
+      "outer_default": "outside 1..10: signed IDIV by 0x10000",
+      "outer_1_to_10": "select the corresponding one of 10 u32 inner-selector cells",
+      "formulas": "native_metadata_objects._chunk_divisor; all non-reference bytes and full tables match",
+      "parameter": "u32; formulas depend on low six bits",
+      "zero_divisor": "inner4, inner>20, or a formula yielding zero; reject in pure reader",
+      "valid_python_domain": "nonnegative signed-int32 object index; count bounds still required"
+    },
+    "name_pool": {
+      "block_pointer_array_offset": 8,
+      "slots": 8192,
+      "block_bytes": "0x80000",
+      "id_block": "u32_id >> 18",
+      "id_offset": "(u32_id & 0x3ffff)*2",
+      "header": "u16",
+      "length": "header>>6",
+      "wide": "header&1",
+      "payload_offset": 2,
+      "max_length_units": 1023,
+      "field_rep0_name_token_offset": "0x28",
+      "initialization": "native constructs if byte is zero; pure reader must reject uninitialized pool"
+    },
+    "characters": {
+      "key": "native_metadata_names._key; nine dispatch cases verified for all valid lengths",
+      "first_raw_unit_zero": "transform returns without modifying payload",
+      "ascii": "XOR every byte",
+      "wide": "XOR only UTF16-unit indexes 0,2,4,...",
+      "zero_number_ToString_narrow_high_bytes": "U+003F fallback",
+      "append_narrow_high_bytes": "sign-extend signed byte into UTF16 unit",
+      "suffix": "underscore plus signed-int32 decimal of u32(number-1)"
+    },
+    "paths": {
+      "outer_first": true,
+      "null_object": "None",
+      "class_test": "Outer.Class and Outer.Outer.Class compared against PackageClass singleton",
+      "separator": "colon only if Outer.Class!=PackageClass and Outer.Outer.Class==PackageClass; otherwise dot",
+      "native_stop_outer_variant": true,
+      "pure_reader_support": "only null stop-Outer; local bound32 and identity rechecks"
+    }
+  },
+  "limitations": [
+    "No new-build runtime registry/header/pool values, pointer-decoder nullness, initialized pool, selected classes, reflection descriptor schemas, or replication layout accepted by a client have been observed.",
+    "The name-pool constructor comparison covers its first143 bytes only; block-array size and first block allocation are proved, not the entire15247-byte constructor.",
+    "Path emulation interprets complete native recursion/separators and Package getter fast path, with synthetic external FString append/data callbacks; it does not prove allocator behavior or native acceptance.",
+    "Pre-existing pure object_path delegates object_name/resolve_name, whose zero-number narrow high-byte handling is ToString fallback U+003F. Native GetPath always calls TokenAppend->EntryAppend, which sign-extends those bytes even for number0. ASCII decoded names agree; arbitrary high-byte narrow names do not have an exact pure path formatting guarantee.",
+    "Entry header low bits other than wide-bit, pool allocator cursors, runtime synchronization guarantees and non-null pointer decoder callback internals remain unqualified.",
+    "Generic string allocation, security cookie and diagnostic/profiling dependencies were recorded as exact reference pairs but not all recursively qualified. No claim of full executable or protocol equivalence is made."
+  ],
+  "source_pins": [
+    {
+      "path": "work/research_updated_metadata_roots.py",
+      "sha256": "ea107a5bc475bea3ec262dd26ea91283b6fdfa5ad564e29fec3763b737c32cf6"
+    },
+    {
+      "path": "work/research_updated_metadata_emulation.py",
+      "sha256": "541d56fc45456529d30c7b84740edf86c4de18ef9aa1bb6fdb75069fa02faaea"
+    },
+    {
+      "path": "work/research_updated_metadata_qualification.py",
+      "sha256": "6f9dc3e39a07aef29fafdd9c5b93afab1ca210a171df59c5f0df86a0f70de01d"
+    },
+    {
+      "path": "work/native_metadata_objects.py",
+      "sha256": "2e8236abeed2771ce95aabf74d97be9bbb6d35450afdae4b56bbcff2592fd80f"
+    },
+    {
+      "path": "work/native_metadata_names.py",
+      "sha256": "79ffe2d969cc54b15f6068d6baebb473bed5bf9a714266fcbb9657494a339a2a"
+    },
+    {
+      "path": "work/native_metadata_paths.py",
+      "sha256": "5a57e9b08df6b840d600b219983beb8d0e940b50dbb8567154839769406ed6a4"
+    }
+  ],
+  "verification_commands": [
+    "python work/research_updated_metadata_roots.py --static",
+    "python work/research_updated_metadata_emulation.py",
+    "python work/research_updated_metadata_qualification.py"
+  ]
+}

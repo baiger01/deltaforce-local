@@ -100,6 +100,18 @@ class NativeControlFieldTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             encode_message(1, 'A', '')
 
+    def test_same_build_post_join_failure_and_game_specific_field_order(self):
+        self.assertEqual(decode_messages(b'\x10\x08\x00\x00\x00'),
+            (ControlMessage(16, (8,)),))
+        self.assertEqual(encode_message(16, 8), b'\x10\x08\x00\x00\x00')
+        self.assertEqual(decode_messages(b'\x14\x00\x00\x00\x00\x00'),
+            (ControlMessage(20, (0, '')),))
+        self.assertEqual(encode_message(20, 0, ''), b'\x14\x00\x00\x00\x00\x00')
+        for raw in (b'\x10', b'\x10\x08\0\0', b'\x14', b'\x14\0',
+                    b'\x14\0\0\0\0', b'\x14\0\0\0\0\0\xff'):
+            with self.subTest(length=len(raw)), self.assertRaises(ValueError):
+                decode_messages(raw)
+
 
 if __name__ == '__main__':
     unittest.main()

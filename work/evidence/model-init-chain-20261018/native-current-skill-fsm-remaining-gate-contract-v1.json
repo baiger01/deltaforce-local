@@ -1,0 +1,464 @@
+{
+  "client_launched": false,
+  "client_sha256": "4254fbe66585f260f1f9dbfc5e302887842552e7baed8939e023160a5e250be0",
+  "current_runtime_log_values": [
+    {
+      "checking_action_entered_byte": 0,
+      "global_can_use_skill": 1,
+      "line_number": 53232,
+      "skill_specific_can_use": 1
+    },
+    {
+      "checking_action_entered_byte": 0,
+      "global_can_use_skill": 1,
+      "line_number": 53241,
+      "skill_specific_can_use": 1
+    },
+    {
+      "checking_action_entered_byte": 0,
+      "global_can_use_skill": 1,
+      "line_number": 53250,
+      "skill_specific_can_use": 1
+    },
+    {
+      "checking_action_entered_byte": 0,
+      "global_can_use_skill": 1,
+      "line_number": 53260,
+      "skill_specific_can_use": 1
+    },
+    {
+      "checking_action_entered_byte": 0,
+      "global_can_use_skill": 1,
+      "line_number": 53269,
+      "skill_specific_can_use": 1
+    },
+    {
+      "checking_action_entered_byte": 0,
+      "global_can_use_skill": 1,
+      "line_number": 53279,
+      "skill_specific_can_use": 1
+    },
+    {
+      "checking_action_entered_byte": 0,
+      "global_can_use_skill": 1,
+      "line_number": 53289,
+      "skill_specific_can_use": 1
+    },
+    {
+      "checking_action_entered_byte": 0,
+      "global_can_use_skill": 1,
+      "line_number": 53298,
+      "skill_specific_can_use": 1
+    },
+    {
+      "checking_action_entered_byte": 0,
+      "global_can_use_skill": 1,
+      "line_number": 53308,
+      "skill_specific_can_use": 1
+    },
+    {
+      "checking_action_entered_byte": 0,
+      "global_can_use_skill": 1,
+      "line_number": 53317,
+      "skill_specific_can_use": 1
+    }
+  ],
+  "direct_failure": "The logged checking byte is zero; this native branch requires it nonzero independently of both successful CanUse checks.",
+  "exact_next_readonly_scope": {
+    "blackboard_checking_field": {
+      "array_dim_or_bool_layout_low32": 1,
+      "bool_setter_first_instruction": {
+        "bytes": "c6818903000001",
+        "mnemonic": "mov",
+        "operands": "byte ptr [rcx + 0x389], 1"
+      },
+      "bool_setter_rva": "0x117dad0",
+      "name": "bIsCheckingSkill",
+      "native_gen_flags": "0x4c",
+      "native_member_offset": "0x389",
+      "property_flags": "0x10000000000004",
+      "record_rva": "0x1662ae08",
+      "record_sha256": "3c80f923fbe61b9365071130a172b8b8c502a13fd61b9f97a2ce6337a1ec9921"
+    },
+    "bounded_array_headers_only_until_element_layout_is_qualified": true,
+    "component_extra_source_bound_values": [
+      {
+        "name": "GPOwner",
+        "offset": "0x1e0",
+        "representation": "encrypted_typed_object_reference"
+      },
+      {
+        "name": "GPActor",
+        "offset": "0x1d8",
+        "representation": "object_reference"
+      },
+      {
+        "mask": "0x8",
+        "name": "component_replication_bit",
+        "offset": "0xc8"
+      },
+      {
+        "name": "registered_initialized_begunplay",
+        "representation": "existing qualified ActorComponent lifecycle reader"
+      }
+    ],
+    "component_field_declarations": [
+      {
+        "array_dim_or_bool_layout_low32": 1,
+        "extra_pointer_rva": "0x106ff90",
+        "name": "StateMachineClass",
+        "native_gen_flags": "0x11",
+        "native_member_offset": "0x168",
+        "property_flags": "0x15000000000005",
+        "record_rva": "0x14fa80f8",
+        "record_sha256": "f30bea82a5df67edac6496b70dedbe3252a222307386729bce96343f37e82bd4"
+      },
+      {
+        "array_dim_or_bool_layout_low32": 1,
+        "extra_pointer_rva": "0x106ff90",
+        "name": "InstanceTemplate",
+        "native_gen_flags": "0x12",
+        "native_member_offset": "0x1b0",
+        "property_flags": "0x220800002b0009",
+        "record_rva": "0x14fa7d80",
+        "record_sha256": "4a647dde0958366bdeb7511dcd3f04902b48c1e7029917d582e0569f0056e838"
+      },
+      {
+        "array_dim_or_bool_layout_low32": 1,
+        "extra_pointer_rva": "0x106ff90",
+        "name": "R_Instance",
+        "native_gen_flags": "0x12",
+        "native_member_offset": "0x1a8",
+        "property_flags": "0x20080100002020",
+        "record_rva": "0x14fa7db0",
+        "record_sha256": "50791f1b72d67dae7c96b5e92d1cf32bac1e7284817a8b6cc65e3e8cd38bbf52",
+        "rep_notify": "REP_OnInstanceLoaded"
+      },
+      {
+        "array_dim_or_bool_layout_low32": 1,
+        "extra_pointer_rva": "0x14fa8458",
+        "name": "R_NetworkedTransactions",
+        "native_gen_flags": "0x16",
+        "native_member_offset": "0x188",
+        "property_flags": "0x20080100002020",
+        "record_rva": "0x14fa7e38",
+        "record_sha256": "030079d04601599d5c802dbf983f9909ae3d6964b9e380576262de1566d8e573",
+        "rep_notify": "REP_NetworkedTransactions"
+      },
+      {
+        "array_dim_or_bool_layout_low32": 1,
+        "bool_setter_first_instruction": {
+          "bytes": "c681c001000001",
+          "mnemonic": "mov",
+          "operands": "byte ptr [rcx + 0x1c0], 1"
+        },
+        "bool_setter_rva": "0x1079470",
+        "name": "R_bShuttingDown",
+        "native_gen_flags": "0x4c",
+        "native_member_offset": "0x1c0",
+        "property_flags": "0x20080100002020",
+        "record_rva": "0x14fa7c78",
+        "record_sha256": "bc24f2eb794683a1a626cc55c9f292f074f1660417e30155e94ac27ef2b4eebe",
+        "rep_notify": "REP_ShuttingDown"
+      },
+      {
+        "array_dim_or_bool_layout_low32": 1,
+        "bool_setter_first_instruction": {
+          "bytes": "c6818401000001",
+          "mnemonic": "mov",
+          "operands": "byte ptr [rcx + 0x184], 1"
+        },
+        "bool_setter_rva": "0x10794d0",
+        "name": "bInitializeOnBeginPlay",
+        "native_gen_flags": "0x4c",
+        "native_member_offset": "0x184",
+        "property_flags": "0x11000000000005",
+        "record_rva": "0x14fa7f00",
+        "record_sha256": "8672ca2bee83d23d4e4933183795e81b1b16666f5a323e7bd84cee17bafcf474"
+      },
+      {
+        "array_dim_or_bool_layout_low32": 1,
+        "bool_setter_first_instruction": {
+          "bytes": "c6818501000001",
+          "mnemonic": "mov",
+          "operands": "byte ptr [rcx + 0x185], 1"
+        },
+        "bool_setter_rva": "0x10794c0",
+        "name": "bStartOnBeginPlay",
+        "native_gen_flags": "0x4c",
+        "native_member_offset": "0x185",
+        "property_flags": "0x11000000000005",
+        "record_rva": "0x14fa7ec8",
+        "record_sha256": "ee314c04c2ac86686075739c628a8e577fd0582be439ba461b11732bcdbbd6ac"
+      },
+      {
+        "array_dim_or_bool_layout_low32": 1,
+        "bool_setter_first_instruction": {
+          "bytes": "c6817c01000001",
+          "mnemonic": "mov",
+          "operands": "byte ptr [rcx + 0x17c], 1"
+        },
+        "bool_setter_rva": "0x10794f0",
+        "name": "bReplicateStatesOnLoad",
+        "native_gen_flags": "0x4c",
+        "native_member_offset": "0x17c",
+        "property_flags": "0x10040000010005",
+        "record_rva": "0x14fa7f98",
+        "record_sha256": "1f724844f4fe69d5795036bf636985f5ac2deb9a346635397ba52bc0393a83e5"
+      },
+      {
+        "array_dim_or_bool_layout_low32": 1,
+        "bool_setter_first_instruction": {
+          "bytes": "c6817d01000001",
+          "mnemonic": "mov",
+          "operands": "byte ptr [rcx + 0x17d], 1"
+        },
+        "bool_setter_rva": "0x10794e0",
+        "name": "bDiscardTransitionsBeforeInitialize",
+        "native_gen_flags": "0x4c",
+        "native_member_offset": "0x17d",
+        "property_flags": "0x10040000010005",
+        "record_rva": "0x14fa7f60",
+        "record_sha256": "2895748523433d23f9884ba82fbcf3b42074847fa7df07fdca84a4ffa4049cd2"
+      }
+    ],
+    "export_only_existing_class_netcache_and_replayout": true,
+    "instance_extra_source_bound_values": [
+      {
+        "name": "IsInitialized",
+        "offset": "0x6d4",
+        "storage_bytes": 1
+      }
+    ],
+    "instance_field_declarations": [
+      {
+        "array_dim_or_bool_layout_low32": 1,
+        "extra_pointer_rva": "0x10ed3c00",
+        "name": "R_StateMachineContext",
+        "native_gen_flags": "0x12",
+        "native_member_offset": "0x578",
+        "property_flags": "0x20080000002020",
+        "record_rva": "0x14fa0920",
+        "record_sha256": "c7baa5d42d5d564a54751650feb319682085e7daa44f1f2f3e7089ce4c403f6f"
+      },
+      {
+        "array_dim_or_bool_layout_low32": 1,
+        "extra_pointer_rva": "0x14fa1040",
+        "name": "R_ActiveStates",
+        "native_gen_flags": "0x16",
+        "native_member_offset": "0x580",
+        "property_flags": "0x20080100002020",
+        "record_rva": "0x14fa08c8",
+        "record_sha256": "9afa040ad374bd40aabe70313194b6140b1a6123335b33109ebf759795711769",
+        "rep_notify": "OnRep_ActiveStateChanges"
+      },
+      {
+        "array_dim_or_bool_layout_low32": 1,
+        "extra_pointer_rva": "0x14fa1028",
+        "name": "RootStatePathGuidArray",
+        "native_gen_flags": "0x16",
+        "native_member_offset": "0x590",
+        "property_flags": "0x20080100000020",
+        "record_rva": "0x14fa0870",
+        "record_sha256": "f15a2a2780d8220e1f1726f3de02b764f98297c8564c8229795d19a856e5836b",
+        "rep_notify": "OnRep_RootStatePathGuidArray"
+      },
+      {
+        "array_dim_or_bool_layout_low32": 1,
+        "extra_pointer_rva": "0x14fa1008",
+        "name": "PackedActiveStateNumInfos",
+        "native_gen_flags": "0x16",
+        "native_member_offset": "0x5a0",
+        "property_flags": "0x20080100000020",
+        "record_rva": "0x14fa0818",
+        "record_sha256": "0c39012291b8bf7d0aec45df2d4c9448214100a23f3cfd21204d592e73164355",
+        "rep_notify": "OnRep_ActiveStateChanges"
+      },
+      {
+        "array_dim_or_bool_layout_low32": 1,
+        "name": "R_bHasStarted",
+        "native_gen_flags": "0xc",
+        "native_member_offset": "0x664",
+        "native_storage_mask": "0x8",
+        "native_storage_width": 4,
+        "packed_bool_corrected_from_source_setbit_and_named_hasstarted_thunk": true,
+        "property_flags": "0x20080100002020",
+        "record_rva": "0x14fa0298",
+        "record_sha256": "5793c92f241d3cea3e1846606e6c94534d89db57114afc47839a97654f05ee6c",
+        "rep_notify": "REP_StartChanged"
+      }
+    ],
+    "no_getdefaultobject_or_native_methods": true,
+    "pawn_typed_root": {
+      "array_dim_or_bool_layout_low32": 1,
+      "extra_pointer_rva": "0x5ff2470",
+      "name": "FSMComponent",
+      "native_gen_flags": "0x23",
+      "native_member_offset": "0x1030",
+      "property_flags": "0x140000000a001d",
+      "record_rva": "0x1664acc0",
+      "record_sha256": "ac34a10e20f82f1439c225ed07c86326fafe7fd57965c1c6cc8af4e398aca587"
+    },
+    "recheck_current_typed_root_class_name_outer_slot_and_field_bytes": true
+  },
+  "gameplay_written": false,
+  "implementation_gaps": [
+    "Exact current GPFSMStateMachineComponent RepLayout handles/parents/cmds",
+    "Exact loaded DFMCharacterFSM_Main_C instance class and its existing runtime RepLayout",
+    "Source-qualified complete normal instance creation/context/start update order before emitting gameplay"
+  ],
+  "kind": "current_skill_fsm_remaining_gate_and_initialization_contract_v1",
+  "log_argument_mapping": {
+    "bIsCheckingSkill": {
+      "bytes": "0fb68389030000",
+      "mnemonic": "movzx",
+      "operands": "eax, byte ptr [rbx + 0x389]",
+      "rva": "0x3234fa6"
+    },
+    "fourth_unprinted_boolean_is_CanUseUISlotSkill": "0x326e110",
+    "printed_GetbCanUseSkill_is_call": "0x324ba20",
+    "printed_unnamed_boolean_is_global_GetbCanUseSkill": "0x32ff920"
+  },
+  "native_fsm_gameplay_verified": false,
+  "no_permission_or_checking_byte_patch_produced": true,
+  "normal_checking_byte_lifecycle": {
+    "field": {
+      "array_dim_or_bool_layout_low32": 1,
+      "bool_setter_first_instruction": {
+        "bytes": "c6818903000001",
+        "mnemonic": "mov",
+        "operands": "byte ptr [rcx + 0x389], 1"
+      },
+      "bool_setter_rva": "0x117dad0",
+      "name": "bIsCheckingSkill",
+      "native_gen_flags": "0x4c",
+      "native_member_offset": "0x389",
+      "property_flags": "0x10000000000004",
+      "record_rva": "0x1662ae08",
+      "record_sha256": "3c80f923fbe61b9365071130a172b8b8c502a13fd61b9f97a2ce6337a1ec9921"
+    },
+    "force_boolean_is_not_an_equivalent_initialization": true,
+    "on_enter": {
+      "also_registers_real_skill_begin_delegates": true,
+      "function_rva": "0xabba470",
+      "store": {
+        "bytes": "c6808903000001",
+        "mnemonic": "mov",
+        "operands": "byte ptr [rax + 0x389], 1",
+        "rva": "0xabbeceb"
+      }
+    },
+    "on_exit": {
+      "also_removes_real_skill_begin_delegates": true,
+      "function_rva": "0xac1e510",
+      "store": {
+        "bytes": "c6808903000000",
+        "mnemonic": "mov",
+        "operands": "byte ptr [rax + 0x389], 0",
+        "rva": "0xac22cf6"
+      }
+    },
+    "owner": "GPBlackboardComponent"
+  },
+  "normal_fsm_initialization": {
+    "base_beginplay_local_initialization_skipped_when": {
+      "bInitializeOnBeginPlay": true,
+      "component_replication_bit_set": true,
+      "net_mode_not_in": [
+        0,
+        2
+      ],
+      "owner_role_not": 3
+    },
+    "base_beginplay_rva": "0x1055040",
+    "base_remote_instance_initializer_rva": "0x1068640",
+    "component_class_path": "/Script/GPGameplay.GPFSMStateMachineComponent",
+    "component_rep_notify": "R_Instance -> REP_OnInstanceLoaded",
+    "component_rep_notify_gp_override_rva": "0x48eef10",
+    "instance_class_path": "/Game/BluePrints/Characters/CharacterFSM/DFMCharacterFSM_Main.DFMCharacterFSM_Main_C",
+    "ordinary_native_start_after_remote_initialize_when_R_bHasStarted_set": true,
+    "pawn_component_field": {
+      "array_dim_or_bool_layout_low32": 1,
+      "extra_pointer_rva": "0x5ff2470",
+      "name": "FSMComponent",
+      "native_gen_flags": "0x23",
+      "native_member_offset": "0x1030",
+      "property_flags": "0x140000000a001d",
+      "record_rva": "0x1664acc0",
+      "record_sha256": "ac34a10e20f82f1439c225ed07c86326fafe7fd57965c1c6cc8af4e398aca587"
+    },
+    "pawn_default_component_name": "GPFSMStateMachine",
+    "remote_initializer_calls_instance_initialize_using_its_context_interface": true,
+    "started_notify_rva": "0x10688e0",
+    "started_notify_waits_for_initialized_byte": "0x6d4"
+  },
+  "process_access": false,
+  "source_pins": [
+    {
+      "relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-fsm-permission-bodies-v1.json",
+      "sha256": "26293d88c6cbdeae0aa64d4b98349dc87fe117dbc32b5532a528a0a62a06d945"
+    },
+    {
+      "relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-check-action-enter-exit-bodies-v1.json",
+      "sha256": "b8269107f4ef226e9a59ba93af251c730667eb8590a93b64963dc4678bea5263"
+    },
+    {
+      "relative_path": "work/evidence/model-init-chain-20261018/native-current-blackboard-uht-metadata-v1.json",
+      "sha256": "c3593a8493ec0221de5ecf41c40fbbde0a68636919fd929720c43f308e906eb3"
+    },
+    {
+      "relative_path": "work/evidence/model-init-chain-20261018/native-current-character-fsm-base-beginplay-body-v1.json",
+      "sha256": "fba68733485d28f29a8486e87703de8182f5f16d19130da4fad0baf1448383be"
+    },
+    {
+      "relative_path": "work/evidence/model-init-chain-20261018/native-current-character-fsm-initialize-beginplay-bodies-v1.json",
+      "sha256": "070d56552803774dcc01e0e31fe6f40045cd3d1da920f86ceec5faeac0ac3021"
+    },
+    {
+      "relative_path": "work/evidence/model-init-chain-20261018/native-current-fsm-network-class-uht-v1.json",
+      "sha256": "65f72d1a9e832ab6d8a4f8d2715a328607d6d71b6166d98dfef27872aeadc5d6"
+    },
+    {
+      "relative_path": "work/evidence/model-init-chain-20261018/native-current-pawn-fsm-owner-uht-v1.json",
+      "sha256": "cf200cc36bbcaa341cc3171c8f1df248004a6b946a1f77f2e400923536c44f5d"
+    },
+    {
+      "relative_path": "work/evidence/model-init-chain-20261018/native-current-base-fsm-instance-uht-v1.json",
+      "sha256": "0dc857d471478d93967ca6d9d52a6ab85ffe124d2298de92b3182f8a1fc956c9"
+    },
+    {
+      "relative_path": "work/evidence/model-init-chain-20261018/native-current-fsm-instance-runtime-state-thunks-v1.json",
+      "sha256": "f96586e9990fb5f63e9463d978d4ce4ea48f39e3e290b431f346d0590f545278"
+    },
+    {
+      "relative_path": "work/evidence/model-init-chain-20261018/native-current-fsm-instance-start-bool-and-bindings-v1.json",
+      "sha256": "af88c6237110b2f8c7f661d2005939c38e8302e8a4f2012fc5964d95659b1888"
+    },
+    {
+      "relative_path": "work/evidence/model-init-chain-20261018/native-current-fsm-instance-start-notify-body-v1.json",
+      "sha256": "7207e681b1ae108ba43e1d7d7bd3c14da539fbca2f79396a3b1f401bbd9f4557"
+    },
+    {
+      "relative_path": "work/evidence/model-init-chain-20261018/native-current-skill-main-fsm-cooked-contract-v1.json",
+      "sha256": "f9deebf95291c8c90b26b6d8f86e20c2dd02df6fc669383b23fec13da785a9ca"
+    },
+    {
+      "relative_path": "work/evidence/model-init-chain-20261018/native-current-fsm-on-instance-loaded-body-v1.json",
+      "sha256": "1a4759f01af5117ffa56e7f924faf106868079c503f04e62c6d58984db8e9f26"
+    },
+    {
+      "relative_path": "work/evidence/model-init-chain-20261018/native-current-fsm-remote-instance-initialize-body-v1.json",
+      "sha256": "3005a3db565b7495ff05016cdee39619dc84063b5ba6a80155769bf585fbc2cd"
+    },
+    {
+      "relative_path": "work/native-client-tests/1792368031415613200/diagnostic-snapshots/1792368692388093900/redacted-audit.json",
+      "sha256": "8676829d214410135e5678b938de0e5eb2932637e45444c29a20538f7e97f96a"
+    }
+  ],
+  "unobserved": [
+    "current FSMComponent identity/lifecycle and R_Instance",
+    "current instance context/initialized/started/active state values",
+    "whether the real SkillCheck action never entered or subsequently exited",
+    "fourth CanUseUISlotSkill return value for this runtime attempt"
+  ]
+}

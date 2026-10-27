@@ -142,6 +142,7 @@ class BootstrapLifetimeTests(unittest.TestCase):
 
     def test_waiting_set_expires_without_queue_or_identity_transfer(self):
         self.connection.control_peers[PEER].client_join_observed = False
+        self.server._admissions.end_joined_session(self.ticket)
         self.server._admissions._clock = lambda: self.ticket.expires_at
         with self.server._lock:
             self.server._queue_registered_bootstraps_locked()
@@ -178,7 +179,7 @@ class BootstrapLifetimeTests(unittest.TestCase):
             original_expire(now)
             count[0] += 1
             if count[0] == 3:
-                self.server._admissions._clock = lambda: self.ticket.expires_at
+                self.server._admissions._clock = lambda: 3600.0
 
         original_socket = self.server._udp
         self.server._udp = Mock()

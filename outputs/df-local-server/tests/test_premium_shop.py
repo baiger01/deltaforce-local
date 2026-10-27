@@ -113,6 +113,124 @@ class PremiumShopTests(unittest.TestCase):
         self.assertEqual(result[0]['tab_id'], 10102077)
         self.assertTrue(result[0]['is_sold_out'])
 
+    def test_native_sn472_paid_item_list_completes_bundle_and_persists_its_gifts(self):
+        from dfserver import premium_shop
+        offer = premium_shop.RECOVERED_RECOMMENDATIONS[10101048]
+        fields = {'tab_id': '10101048', 'banner_type': 1,
+            'item_ids': ['28040250003', '28020250006', '28060850003'],
+            'currency_type': '17888808889', 'price': '2400',
+            'currency_type_substitute': '17888808888'}
+        request = self.codec.decode(self.codec.encode(
+            'CSShopBuyHotRecommendationReq', fields, sequence=472))
+        result = response_fields(request, self.backend, self.token)
+        self.assertEqual(result['result'], 0)
+        self.assertEqual(result['change']['currency_changes'][0]['delta'], -2400)
+        self.assertEqual({r['prop']['id'] for r in result['change']['prop_changes']},
+                         {r['id'] for r in offer['bundle_item_list']})
+        self.assertEqual(self.codec.decode(self.codec.response(request, result)).sequence, 472)
+        self.backend = Backend(self.backend.database, ROOT / 'definitions.json')
+        record = self.request('CSShopGetBuyRecordReq')['hot_recommendation_records'][0]
+        self.assertTrue(record['is_sold_out'])
+        self.assertEqual(set(record['item_ids']), {r['id'] for r in offer['bundle_item_list']})
+        before = self.backend.native_lobby_profile(self.token)
+        self.assertNotEqual(self.request('CSShopBuyHotRecommendationReq', fields)['result'], 0)
+        self.assertEqual(self.backend.native_lobby_profile(self.token), before)
+
+    def test_native_remaining_paid_items_use_bundle_discount_and_include_unowned_gifts(self):
+        with self.backend.connection() as connection:
+            player_id = self.backend._authorize(connection, self.token)
+            connection.execute('INSERT INTO native_lobby_gun_skins VALUES (?,?,0,NULL)',
+                               (player_id, 28040250003))
+            connection.commit()
+        result = self.request('CSShopBuyHotRecommendationReq', {'tab_id': 10101048,
+            'banner_type': 1, 'item_ids': [28020250006, 28060850003],
+            'currency_type': 17888808889, 'price': 1600})
+        self.assertEqual(result['result'], 0)
+        self.assertEqual(result['change']['currency_changes'][0]['delta'], -1600)
+        self.assertEqual({r['prop']['id'] for r in result['change']['prop_changes']},
+                         {28020250006, 28060850003, 13460040218, 42010040740,
+                          42020030782, 38020030561})
+        self.assertTrue(self.request('CSShopGetBuyRecordReq')[
+            'hot_recommendation_records'][0]['is_sold_out'])
+
+    def test_paid_item_bundle_failure_after_grant_rolls_back_currency_ownership_and_record(self):
+        from dfserver import premium_shop
+        from dfserver.core import fail
+        original_grant = premium_shop.grant
+        before = self.backend.native_lobby_profile(self.token)
+
+        def fail_after_grant(connection, player_id, items, changes):
+            original_grant(connection, player_id, items, changes)
+            self.assertEqual(changes['currency_changes'][0]['delta'], -2400)
+            self.assertEqual(len(changes['prop_changes']), 7)
+            fail('INVALID_ARGUMENT', 'Injected grant failure')
+
+        with patch('dfserver.premium_shop.grant', side_effect=fail_after_grant):
+            result = self.request('CSShopBuyHotRecommendationReq', {
+                'tab_id': 10101048, 'banner_type': 1,
+                'item_ids': [28040250003, 28020250006, 28060850003],
+                'currency_type': 17888808889, 'price': 2400})
+        self.assertNotEqual(result['result'], 0)
+        self.backend = Backend(self.backend.database, ROOT / 'definitions.json')
+        self.assertEqual(self.backend.native_lobby_profile(self.token), before)
+        self.assertEqual(self.request('CSShopGetBuyRecordReq')['hot_recommendation_records'], [])
+
+    def test_last_remaining_paid_item_uses_original_price_for_explicit_or_full_selection(self):
+        with self.backend.connection() as connection:
+            player_id = self.backend._authorize(connection, self.token)
+            for skin_id in (28040250003, 28020250006):
+                connection.execute('INSERT INTO native_lobby_gun_skins VALUES (?,?,0,NULL)',
+                                   (player_id, skin_id))
+            connection.commit()
+        before = self.backend.native_lobby_profile(self.token)
+        base = {'tab_id': 10101048, 'banner_type': 1, 'currency_type': 17888808889}
+        for extra in ({'item_ids': [28060850003]}, {}):
+            with self.subTest(extra=extra):
+                result = self.request('CSShopBuyHotRecommendationReq',
+                                      {**base, **extra, 'price': 800})
+                self.assertNotEqual(result['result'], 0)
+                self.assertEqual(self.backend.native_lobby_profile(self.token), before)
+        result = self.request('CSShopBuyHotRecommendationReq',
+                              {**base, 'item_ids': [28060850003], 'price': 1150})
+        self.assertEqual(result['result'], 0)
+        self.assertEqual(result['change']['currency_changes'][0]['delta'], -1150)
+        self.assertEqual([r['prop']['id'] for r in result['change']['prop_changes']], [28060850003])
+        gifts = self.request('CSShopBuyHotRecommendationReq', base)
+        self.assertEqual(gifts['result'], 0)
+        self.assertEqual(gifts['change']['currency_changes'], [])
+        self.assertEqual({r['prop']['id'] for r in gifts['change']['prop_changes']},
+                         {13460040218, 42010040740, 42020030782, 38020030561})
+
+    def test_full_remaining_bundle_with_one_paid_item_uses_original_price(self):
+        with self.backend.connection() as connection:
+            player_id = self.backend._authorize(connection, self.token)
+            for skin_id in (28040250003, 28020250006):
+                connection.execute('INSERT INTO native_lobby_gun_skins VALUES (?,?,0,NULL)',
+                                   (player_id, skin_id))
+            connection.commit()
+        result = self.request('CSShopBuyHotRecommendationReq', {'tab_id': 10101048,
+            'banner_type': 1, 'currency_type': 17888808889, 'price': 1150})
+        self.assertEqual(result['result'], 0)
+        self.assertEqual(result['change']['currency_changes'][0]['delta'], -1150)
+        self.assertTrue(self.request('CSShopGetBuyRecordReq')[
+            'hot_recommendation_records'][0]['is_sold_out'])
+
+    def test_standalone_paid_item_keeps_original_price_and_cannot_claim_free_bundle_items(self):
+        base = {'tab_id': 10101048, 'banner_type': 1, 'currency_type': 17888808889}
+        before = self.backend.native_lobby_profile(self.token)
+        for fields in ({**base, 'item_ids': [28040250003], 'price': 800},
+                       {**base, 'item_ids': [13460040218], 'price': 0},
+                       {**base, 'item_ids': [28040250003, 13460040218], 'price': 1150}):
+            self.assertNotEqual(self.request('CSShopBuyHotRecommendationReq', fields)['result'], 0)
+            self.assertEqual(self.backend.native_lobby_profile(self.token), before)
+        result = self.request('CSShopBuyHotRecommendationReq',
+                              {**base, 'item_ids': [28040250003], 'price': 1150})
+        self.assertEqual(result['result'], 0)
+        self.assertEqual(result['change']['currency_changes'][0]['delta'], -1150)
+        self.assertEqual([r['prop']['id'] for r in result['change']['prop_changes']], [28040250003])
+        self.assertFalse(self.request('CSShopGetBuyRecordReq')[
+            'hot_recommendation_records'][0]['is_sold_out'])
+
     def test_foreign_bundle_items_and_wrong_prices_do_not_charge(self):
         before = self.backend.native_lobby_profile(self.token)
         for fields in [dict(tab_id=10104007, banner_type=1, item_ids=[32320000001],
@@ -334,6 +452,115 @@ class PremiumShopTests(unittest.TestCase):
             'banner_type': 1, 'item_ids': [28010650008], 'currency_type': 17888808889, 'price': 1150})
         self.assertNotEqual(result['result'], 0)
         self.assertEqual(self.backend.native_lobby_profile(self.token), before)
+
+    def test_native_confirmed_melee_bundles_are_advertised(self):
+        config = self.request('CSShopNewGetConfigReq')
+        advertised = {r['tab_id'] for r in config['hot_recommendation_descs']}
+        self.assertTrue({10102058, *range(10103001, 10103011)} <= advertised)
+        self.assertTrue({10101035, 10102013, 10102077}.isdisjoint(advertised))
+
+    def test_melee_bundle_purchase_persists_native_ownership_and_cannot_charge_twice(self):
+        from dfserver import melee_weapons, premium_shop
+        offer = premium_shop.RECOVERED_RECOMMENDATIONS[10103001]
+        fields = {'tab_id': offer['tab_id'], 'banner_type': offer['banner_type'],
+            'currency_type': offer['bundle_currency_type'], 'price': offer['bundle_price']}
+        result = self.request('CSShopBuyHotRecommendationReq', fields)
+        self.assertEqual(result['result'], 0)
+        self.assertEqual(result['change']['currency_changes'][0]['delta'], -5200)
+        self.assertIn({'change_type': 1, 'delta': 1,
+            'prop': {'id': 28101250003, 'gid': 0, 'num': 1}}, result['change']['prop_changes'])
+        self.assertNotIn(28101250003, self.collection())
+        state = self.backend.native_lobby_profile(self.token)
+        owned = next(r for r in state['melee_props'] if r['template_id'] == melee_weapons.SKINS[28101250003])
+        self.assertGreater(owned['gid'], 0)
+        self.backend.native_lobby_move_props(self.token, [{'prop_id': owned['template_id'],
+            'prop_gid': owned['gid'], 'target_pos': melee_weapons.MELEE_POSITION}])
+        self.backend = Backend(self.backend.database, ROOT / 'definitions.json')
+        self.assertIn(owned, self.backend.native_lobby_profile(self.token)['melee_props'])
+        self.assertEqual(self.backend.native_lobby_profile(self.token)['selected_melee_id'], owned['template_id'])
+        before = self.backend.native_lobby_profile(self.token)
+        self.assertNotEqual(self.request('CSShopBuyHotRecommendationReq', fields)['result'], 0)
+        self.assertEqual(self.backend.native_lobby_profile(self.token), before)
+        records = self.request('CSShopGetBuyRecordReq')['hot_recommendation_records']
+        self.assertEqual(len(records), 1)
+        self.assertTrue(records[0]['is_sold_out'])
+
+    def test_melee_bundle_deducts_native_owned_skin_from_remaining_quote(self):
+        self.backend.ensure_native_lobby_melee_collection(self.token)
+        fields = {'tab_id': 10103001, 'banner_type': 1,
+            'currency_type': 17888808889, 'price': 1600}
+        result = self.request('CSShopBuyHotRecommendationReq', fields)
+        self.assertEqual(result['result'], 0)
+        self.assertEqual(result['change']['currency_changes'][0]['delta'], -1600)
+        self.assertNotIn(28101250003, {r['prop']['id'] for r in result['change']['prop_changes']})
+        before = self.backend.native_lobby_profile(self.token)
+        self.assertNotEqual(self.request('CSShopBuyHotRecommendationReq', {
+            'tab_id': 10103002, 'banner_type': 1, 'item_ids': [28101250010],
+            'currency_type': 17888808889, 'price': 4880})['result'], 0)
+        self.assertEqual(self.backend.native_lobby_profile(self.token), before)
+
+    def test_new_melee_receiver_is_notified_before_skin_and_purchase_callback(self):
+        result = self.request('CSShopBuyHotRecommendationReq', {
+            'tab_id': 10103001, 'banner_type': 1, 'item_ids': [28101250003],
+            'currency_type': 17888808889, 'price': 4880})
+        self.assertEqual(result['result'], 0)
+        key = b'0123456789abcdef'
+        response = encode_data_frame((self.codec.encode('CSShopBuyHotRecommendationRes',
+            result, sequence=19),), key, direction='server_to_client',
+            opaque_flag=64, header_word4=12, header_word9=20)
+        frames = _candidate_local_collection_response_frames(response, key, self.backend, self.token)
+        messages = [self.codec.decode(decode_data_frame(f, key,
+            direction='server_to_client', compression_method=1).messages[0]) for f in frames]
+        self.assertEqual([m.name for m in messages], [
+            'CSMeleeUnlockChangeNtf', 'CSCollectionPropChangeNtf', 'CSShopBuyHotRecommendationRes'])
+        self.assertEqual([f.header_word9 for f in frames], [20, 21, 22])
+        receiver_change = messages[0].fields['deposit_change']['prop_changes'][0]
+        self.assertEqual(receiver_change['change_type'], 1)
+        prop = receiver_change['prop']
+        self.assertEqual(int(prop['id']), 18100000008)
+        self.assertEqual(int(prop['weapon']['skin_id']), 28101250003)
+        owned = next(r for r in self.backend.native_lobby_profile(self.token)['melee_props']
+                     if r['template_id'] == 18100000008)
+        self.assertEqual(int(prop['gid']), owned['gid'])
+        self.assertEqual(int(prop['num']), 1)
+        self.assertEqual(prop['position'], 0)
+        self.assertEqual([int(r['prop']['id']) for r in messages[1].fields['data_change']], [28101250003])
+        self.assertEqual([int(r['prop']['id']) for r in messages[2].fields['change']['prop_changes']], [28101250003])
+        currency = _candidate_local_inventory_change_notification(frames[-1], key,
+            header_word4=12, header_word9=23)
+        change = self.codec.decode(decode_data_frame(currency, key,
+            direction='server_to_client', compression_method=1).messages[0]).fields['deposit_change']
+        self.assertFalse(change.get('prop_changes'))
+        self.assertEqual(int(change['currency_changes'][0]['delta']), -4880)
+
+    def test_existing_melee_receiver_claim_does_not_send_duplicate_unlock_notification(self):
+        from dfserver import gun_skins
+        self.backend.ensure_native_lobby_melee_collection(self.token)
+        gun_skins.collection(self.backend, self.token)
+        result = self.request('CSShopBuyHotRecommendationReq', {
+            'tab_id': 10103001, 'banner_type': 1, 'currency_type': 17888808889})
+        self.assertEqual(result['result'], 0)
+        key = b'0123456789abcdef'
+        response = encode_data_frame((self.codec.encode('CSShopBuyHotRecommendationRes',
+            result, sequence=19),), key, direction='server_to_client',
+            opaque_flag=64, header_word4=12, header_word9=20)
+        frames = _candidate_local_collection_response_frames(response, key, self.backend, self.token)
+        names = [self.codec.decode(decode_data_frame(f, key,
+            direction='server_to_client', compression_method=1, max_output=1024 * 1024).messages[0]).name for f in frames]
+        self.assertNotIn('CSMeleeUnlockChangeNtf', names)
+
+    def test_missing_game_item_skin_bundles_remain_hidden_and_cannot_charge(self):
+        catalog = json.loads((ROOT / 'protocol/premium_shop_catalog.json').read_text())
+        advertised = {r['tab_id'] for r in self.request('CSShopNewGetConfigReq')['hot_recommendation_descs']}
+        for offer_id in (10101035, 10102013):
+            with self.subTest(tab_id=offer_id):
+                self.assertNotIn(offer_id, advertised)
+                offer = next(r for r in catalog['recommendations'] if r['tab_id'] == offer_id)
+                before = self.backend.native_lobby_profile(self.token)
+                self.assertNotEqual(self.request('CSShopBuyHotRecommendationReq', {
+                    'tab_id': offer_id, 'banner_type': offer['banner_type'],
+                    'currency_type': offer['bundle_currency_type'], 'price': offer['bundle_price']})['result'], 0)
+                self.assertEqual(self.backend.native_lobby_profile(self.token), before)
 
     def test_gift_records_accumulate_instead_of_hiding_previous_purchases(self):
         for _ in range(2):

@@ -25,7 +25,7 @@ from tests.test_legacy_ds_wire_codec import HELLO_BODIES
 class BootstrapResolverBoundaryTests(unittest.TestCase):
     def setUp(self):
         fixture = delivery.ActorDeliveryTests()
-        fixture.setUp()
+        fixture.setUp(joined_session_ttl=1)
         folder = tempfile.TemporaryDirectory()
         self.addCleanup(folder.cleanup)
         self.server = GameServerProbe(folder.name, handshake_probe=True, packet_ack_probe=True,
@@ -139,7 +139,8 @@ class BootstrapResolverBoundaryTests(unittest.TestCase):
         state.client_join_observed = False
         self.queue()
         state.client_join_observed = True
-        self.server._admissions._clock = lambda: self.ticket.expires_at
+        # Login expiry does not expire an authenticated joined session.
+        self.server._admissions._clock = lambda: 1.0
         self.queue()
         self.assertEqual(calls, [])
         self.assertEqual(registration['status'], 'waiting_for_join')
@@ -148,7 +149,7 @@ class BootstrapResolverBoundaryTests(unittest.TestCase):
 
     def test_expiry_during_callback_does_not_commit_any_actor(self):
         def resolver(ticket, fields):
-            self.server._admissions._clock = lambda: ticket.expires_at
+            self.server._admissions._clock = lambda: 1.0
             return fields
         self.assert_rejected_without_mutation(self.register(resolver))
 

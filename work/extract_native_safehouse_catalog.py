@@ -87,6 +87,7 @@ def source_structs(tables):
                     raise ValueError('Native descriptor and reflected field order differ')
                 expected_flags = (SCALAR_TYPES[kind][1] if kind in SCALAR_TYPES else
                                   21 if kind == 'FString' else 29 if kind == 'FText' else
+                                  25 if kind in ('FSoftObjectPath', 'FVector') else
                                   76 if kind == 'bool' else 22 if kind.startswith('TArray<') else None)
                 if record['gen_flags'] != expected_flags or (kind != 'bool' and member != record['member_offset']):
                     raise ValueError('Native descriptor type/member differs from reflection')
@@ -146,13 +147,16 @@ def field_value(raw, tag, kind):
         if tag['metadata_bytes'] != 8:
             raise ValueError('Native array serialization differs')
         element = kind[7:-1]
-        if element == 'EQuestGoalForbiddenType':
+        if element.startswith('E'):
             count, = struct.unpack_from('<i', value)
             if count < 0 or len(value) != 4 + count * 8:
                 raise ValueError('Native enum-name array serialization differs')
             return [{'fname_hex': value[4 + index * 8:12 + index * 8].hex()}
                     for index in range(count)]
-        fmt = '<q' if element == 'int64' else '<I' if element == 'uint32' else '<i'
+        formats = {'int64': '<q', 'uint64': '<Q', 'uint32': '<I', 'int32': '<i'}
+        if element not in formats:
+            raise ValueError('Unsupported verified native array element type: ' + element)
+        fmt = formats[element]
         count, = struct.unpack_from('<i', value)
         if count < 0 or len(value) != 4 + count * struct.calcsize(fmt):
             raise ValueError('Native array element size/count differs')
@@ -161,6 +165,14 @@ def field_value(raw, tag, kind):
         if tag['metadata_bytes']:
             raise ValueError('Native text serialization differs')
         return {'serialized_hex': value.hex()}
+    if kind == 'FSoftObjectPath':
+        if tag['metadata_bytes'] != 24 or len(value) < 12:
+            raise ValueError('Native soft object path serialization differs')
+        return {'serialized_hex': value.hex()}
+    if kind == 'FVector':
+        if tag['metadata_bytes'] != 24 or len(value) != 12:
+            raise ValueError('Native vector serialization differs')
+        return list(struct.unpack('<fff', value))
     raise ValueError('Unsupported verified native field type: ' + kind)
 
 

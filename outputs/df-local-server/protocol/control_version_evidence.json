@@ -1,0 +1,30 @@
+{
+  "source": "Read-only analysis of installed GCloud.dll and bounded local original-client tests",
+  "transport_header": {
+    "magic": "0x3366",
+    "second_16_bit_word": 11,
+    "third_16_bit_word": 12,
+    "command_word_offset": 6,
+    "native_control_reader_version_source": "the third 16-bit word at packet offset 4, copied to connection+0x17dc and passed to the 0x188070 dispatcher"
+  },
+  "native_source_rvas": {
+    "header_to_control_dispatch": ["0x1a2204", "0x1a2466"],
+    "ready_reader": "0x187d80",
+    "ready_base_reader": "0x188ba0",
+    "control_dispatch": "0x188070"
+  },
+  "ready_0x6002": {
+    "version_11_bytes_consumed_by_native_reader": 33,
+    "version_12_bytes_consumed_by_native_reader": 49,
+    "version_12_added_fields": "four 32-bit extension words after the 33-byte prefix",
+    "version_12_synthetic_native_reader_return_code": 0,
+    "version_12_synthetic_dispatch_return_code": 0,
+    "official_ciphertext_body_bytes": 64,
+    "corrected_local_ciphertext_body_bytes": 64,
+    "old_local_ciphertext_body_bytes": 48,
+    "extra_padding_block_native_decrypt_return_code": -5,
+    "interpretation": "The old 33-byte ready body used the wrong control layout version. The official 64-byte ciphertext is consistent with the 49-byte version-12 structure; adding a padding block to a 33-byte body is rejected by the installed native decryptor. This establishes a structural correction, not yet original-client login acceptance."
+  },
+  "raw_credentials_or_session_keys_exported": false,
+  "original_lobby_verified": false
+}

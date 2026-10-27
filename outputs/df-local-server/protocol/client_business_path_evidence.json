@@ -1,0 +1,60 @@
+{
+  "scope": "Static Lua branches only; no original-client execution or runtime branch validation",
+  "original_client_business_envelope_placement_verified": false,
+  "original_client_connected": false,
+  "manager_source": "@ProtoManager.lua",
+  "manager_payload_sha256": "83773304fcbaaceb2b335d4ba92fd14b95de31c490ae08e66df55ec67ef91c82",
+  "default_protocol_selection": {
+    "method": "Ctor",
+    "function_id": "0.1",
+    "instruction": 137,
+    "useNewProtoSystem": true
+  },
+  "new_path": {
+    "method": "LuaSendProto",
+    "function_id": "0.33",
+    "external_send_method": "SendProtoBase",
+    "serialized_envelope_not_defined_in_this_function": true
+  },
+  "conditional_legacy_path": {
+    "source": "@ProtocolProcessingToolClass.lua",
+    "payload_sha256": "028d3cd3d0e3f0c10ddcbc70dd492bb7cb8c49ffd951d107f37eb5f064ef543f",
+    "method": "LuaEncodePkg",
+    "function_id": "0.43",
+    "body_encoding": "Named generated business encoder with PbEncoder",
+    "header_fields_observed": [
+      "name",
+      "service",
+      "client_sequence_id",
+      "language"
+    ],
+    "outer_encoder": "pb_CSPkgEncode",
+    "send_method": "SendBuffer",
+    "requires_useLuaPack_branch": true,
+    "proved_active_in_current_shipping_client": false
+  },
+  "limits": [
+    "Static constructor defaults can be changed later at runtime.",
+    "Legacy Lua envelope construction does not prove the new path uses identical bytes.",
+    "GCP business body placement, native encoder and response correlation remain to be verified."
+  ],
+  "initialization_calls": [
+    {
+      "source": "@DFMMain.lua",
+      "source_sha256": "80320535f7ff2340916c2e3440b324b49654a9c9e14f9bc64858240ab2294d26",
+      "function": "GFLogin_InitPreloadBusiness",
+      "function_id": "0.14",
+      "InitProto_argument": true,
+      "argument_instruction": 6
+    },
+    {
+      "source": "@MainStart.lua",
+      "source_sha256": "70e0304c26e09eb649b0eda1a69c1e1c3a1e338d3d2ad192632f5eb6fb8184c8",
+      "function": "LuaShutDown",
+      "function_id": "0.3",
+      "InitProto_argument": false,
+      "argument_instruction": 10
+    }
+  ],
+  "initialization_calls_runtime_observed": false
+}

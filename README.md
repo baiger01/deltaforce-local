@@ -1,17 +1,16 @@
 # deltaforce-local
 
-更新日期：2026-10-04。本页记录已完成内容，作为协作和代码审查的进度基准。
+更新日期：2026-10-27。本页记录已完成内容，作为协作和代码审查的进度基准。换机先看[迁移说明](MIGRATION.md)和[最新进图交接](docs/HANDOFF_CURRENT_ENTRY_20261027.md)。
 
-统一源码版本以 `main` 为准：本次汇总包含装备与交易分支 `fix/ammo-reopen` 截至 `9eac457` 的全部修复，以及地图集成分支 `integration/map-and-equipment-20261004` 截至 `7708e3c` 的运行代码和已校验研究资料。拉取 `main` 即可获得完整源码、静态配置、测试和工具，后续协作从此版本建立分支。
+唯一正式开发与运行目录为本仓库根目录，分支为 `main`；大厅、装备、地图和局内玩法统一在这里维护。2026-10-04 的历史集成包含装备分支截至 `9eac457`、地图集成截至 `7708e3c` 的代码与资料。2026-10-27 统一保存后续源码、配置和必要证据，依赖清单见 `work/git-runtime-manifest.json`。
 
-实际服务代码位于根目录的 `outputs/df-local-server`，启动和提取工具位于 `work`；`进图调研` 是历史参考快照。共用大厅分发器同时处理装备、商城与地图请求，干员选择按 SOL/MP 分开保存，原客户端试验默认 1800 秒。地图仍未验证进入可操作场景；当前原客户端证据是三个初始 Actor 已创建，随后连接超时且 PlayerController/Owner 为空。详见 [地图与装备集成记录](docs/MAP_EQUIPMENT_INTEGRATION_20261004.md)。
+实际服务代码位于 `outputs/df-local-server/dfserver`，已按14个领域组归入子目录；根包同名文件是旧导入与命令行兼容入口。各目录README标明模块职责，先看[服务端结构说明](docs/architecture/SERVER_LAYOUT.md)或[源码入口](outputs/df-local-server/dfserver/README.md)。启动和提取工具位于 `work`；`进图调研` 是历史参考快照。共用大厅分发器处理装备、商城与地图请求，干员选择按 SOL/MP 分开保存，原客户端试验默认1800秒。最初集成状态见[历史集成记录](docs/MAP_EQUIPMENT_INTEGRATION_20261004.md)，已有玩法调查及后续勘误见[玩法调研](docs/GAMEPLAY_INTEGRATION_RESEARCH_20261020.md)。
 
-## 分工
+## 工作区约定
 
-| 负责方 | 负责范围 |
-| --- | --- |
-| 本会话 Codex | 枪械、配件、弹药、近战武器，以及药品、防具、背包、胸挂等杂货；对应的商店购买、出售、仓库、装备和持久化逻辑 |
-| 另一位协作者 | 地图、战局及相关协议和状态流程 |
+所有模块按本目录的领域子包协作，不能再按“大厅目录”和“地图目录”分配运行版本。原客户端测试使用本目录的 `work/native-test-account/save.sqlite3`；网页存档继续使用 `outputs/df-local-server/data/local.sqlite3`，两种入口的数据库保持独立。
+
+旧 `deltaforce-map-appearance` 工作区于2026-10-22退役。必要运行实现和来源证据已经统一到本仓库，换机不需要另一个工作区。历史归档不作为运行入口，不覆盖当前实现或账号存档。
 
 ## 实机已确认
 
@@ -27,6 +26,8 @@
 | 枪械皮肤 | 本地账号提供普通枪械皮肤，列表与装备可用 | 2026-09-30 用户实测确认“皮肤没问题”；客户端真实皮肤目录与装备持久化用例 |
 | 曼德尔十连与购买 | 十连动画、奖励页和购买均正常；八次连续十连记录 80 件奖励与扫描历史 | 2026-10-01 用户实测确认；00:51 至 00:55 原客户端八次扫描成功及动画结束回调、SQLite 重读 |
 | 测试工具 | 限时启动、客户端日志监听及原 SDK 哈希校验与恢复工具已运行使用；按用户最新要求默认测试 1800 秒，请求日志服务预留 60 秒收尾 | 本机测试记录、`work/run_native_elevated_trial.py` |
+| 藏品箱页签与存取 | 普通移动成功回包保留真实箱页顺序，避免误跳钓鱼仓库；物品可移入移出，切回主仓库和退出重开后箱页保留 | 2026-10-20 用户实测确认移动和箱页正常；原生回调来源、同事务顺序回执及加密请求回归 |
+| 子弹分堆与满匣操作 | 分出部分子弹移入口袋、给未满和已满弹匣拖入子弹均正常，数量正确 | 2026-10-20 用户实测确认三项正常；同轮原客户端分堆、移动、装卸弹请求成功 |
 
 ## 代码与数据已完成
 
@@ -34,11 +35,13 @@
 
 | 内容 | 已完成范围 | 对照文件 |
 | --- | --- | --- |
+| 服务端按领域整理 | 81个实现模块（含CLI）迁入14个领域组；保留同对象旧导入和5个CLI，固定资源根，新试验封存覆盖兼容层与真实实现 | [结构与维护说明](docs/architecture/SERVER_LAYOUT.md)、`dfserver/module_layout.json`；整理前1369项、整理后1373项服务测试通过，54项目录封存及直接相关工具测试通过；没有改账号存档或合入另一工作区的运行代码 |
 | 本地账号 | 注册、密码登录、会话撤销、SQLite 存档与账号隔离 | `dfserver/core.py`、`tests/test_accounts.py` |
 | 客户端物品目录 | 物品、仓库格子、干员外观、护甲耐久和错误码的提取结果及来源信息已入库 | `protocol/*_catalog.json`、[数据来源](DATA_PROVENANCE.md) |
 | 枪械配置与购买目录 | 恢复 98 套源组件树；按原改枪台的基础枪标记与非零默认预设开放 67 种完整枪械，包含截图中的 4 种机枪；报价使用实际机匣尺寸与组件，购买保存各自 receiver；未核实销售路径的特殊机匣不进入购买目录，已确认商城条目和已有物品回收计价保留 | `weapon_component_catalog.json`、`weapon_preset_catalog.json`、`gunsmith_sale_consumer_evidence.json`、`tests/test_gunsmith_stock.py`；8 项目录回归通过，新增目录的界面回测待确认 |
 | 弹药关联 | 恢复 261 条武器配置、176 条弹药配置与 385 个已知弹匣的容量模式；无覆盖值时读取该枪真实基础容量，枪管附加容量单独累加；67 种销售基础枪中 65 种容量已核实 | `weapon_ammo_catalog.json`、`dfserver/weapon_ammo.py`、`tests/test_weapon_ammo_capacity.py`；`18050000033/18010000049` 缺少原属性，保留未知，未猜填容量 |
 | 装弹与卸弹 | 接入真实装卸弹枚举、口径匹配、容量检查、枪内弹药保存、库存变更响应与通知 | `dfserver/core.py`、`dfserver/handshake_diagnostic.py`、`tests/test_native_inventory.py` |
+| 装弹预算与弹药分堆 | 原请求数量作为尝试增装预算，按剩余容量扣除实际子弹，满匣零转移；分堆保留原栈余量与绑定，新栈落入真实目的容器，整批失败回滚 | `test_native_bullet_saturation.py`、`test_native_warehouse_partial_stacks.py`；原客户端请求与虚拟饱和记账已核验，装弹截断为本地处理策略，不隐式卸弹或换弹；2026-10-20 用户确认分堆和装弹均正常且数量正确 |
 | 背包与胸挂 | 恢复 44 项具体容器布局，按客户端配置提供分区格子；销售目录只开放已核实布局，避免列出购买后无法装备的条目，已拥有物品仍保留回收计价 | `container_layout_catalog.json`、`dfserver/container_layouts.py`、`tests/test_container_stock.py`；44 件分别通过报价、装备、分区响应与重读验证 |
 | 卸下容器与内容迁移 | 卸下或替换胸挂、背包时，将其内容按真实旧坐标移回仓库并清除旧容量；原生响应同时更新物品与分区，仓满整批回滚；旧存档孤立内容通过带原模板核对、预览和备份的显式工具恢复 | `dfserver/core.py`、`tests/test_native_carrying_containers.py`、`tests/test_native_carrying_wire.py`、`work/repair_native_orphaned_containers.py`；新响应的界面回测待确认 |
 | 配件购买与装配 | 按原生 GUID 指令恢复插槽路径；已拥有枪械的拍卖配件购买与装配同一事务提交，旧配件保留原 gid 回仓，批量统一扣款；普通装配保留皮肤、挂饰和枪内弹药，容量不足回滚；换位和购买替换响应保留完整枪械状态 | `dfserver/socket_guid.py`、`dfserver/weapon_assembly.py`、`tests/test_weapon_assembly.py`、`tests/test_native_weapon_displacement.py`；商城自动装配、新购整枪绑定和换枪装配尚未接入 |
@@ -48,10 +51,23 @@
 | 门卡基础数据与耐久 | 从原表逐列核验 334 条门卡的地图与最大耐久；读取已保存的当前耐久，保留耗尽状态，购买新卡不会恢复旧卡耐久；账户与实际 gid 校验、移动、删除和存档重开有回归覆盖 | `native_keycard_catalog.json`、`dfserver/native_keycards.py`、`tests/test_native_keycards.py` |
 | 门禁卡包分区与存取 | 原生只读核验 `Key/KeyBox` 与 `KeyBox` 两表的 109 行、21 个 FName 组；104 行对应 20 个现有模板，按真实 MapID 下发格子；权限装备、卡片移动与交换、切包、身体快照和保存重开有覆盖，堆叠卡及失败操作整批回滚 | `dfserver/native_keychains.py`、`work/bind_native_keybox_catalog.py`、`tests/test_native_keychains.py`；默认模板 `11120000001` 六区共 24 格，管理页和取消固定后的仓库显示已实测；槽位解锁及缺失模板未恢复 |
 | 安全屋生产与领取 | 492 条配方与 73 条升级配置通过原生反射和序列化核验；确定产物按原设备、时间和材料生产，扣料及领取使用事务；预设产物先核实真实机匣与树，到期交付实际 receiver 和组件，修正配方 `100400900` 的 `118008` | `native_safehouse_catalog.json`、`dfserver/native_safehouse.py`、`tests/test_native_safehouse.py`；蓝图、随机产物及未恢复物理布局仍拒绝 |
-| 普通任务接受与同步 | 恢复 2365 条任务、13 条任务线及 5585 条奖励配置；普通 Mission 接受校验真实等级、任务线、已领奖前置和冷却，保存实际目标并在响应前发送 `CSQuestDataChangeNtf`；重开恢复、失败无写入或通知有覆盖 | `native_quest_catalog.json`、`dfserver/native_quests.py`、`tests/test_native_quests.py`、`tests/test_native_activity_wire.py`；特殊任务类型、完成判定与领奖流程未接入 |
+| 设施材料提交与升级 | 接入真实材料提交、分次保存、开工扣款和原表计时；校验行动等级、前置设施、部门声望与任务，失败回滚，到期查询与重开恢复；生产和升级分别保存，升级使用当前等级的生产能力 | `native_safehouse_progress.py`、`test_native_safehouse_progress.py`；新账号只自动提供原表免费且立即完成的首级，付费建造为 0 级，这是明确的本地初始化策略；2026-10-20 用户确认交料、倒计时及前提正常 |
+| 仓库十级容量与箱槽联动 | 全十级按已完成等级读取原始容量加成与箱槽，不逐级累加；购买、移动、整理、制作、配件返仓及奖励共用实际尺寸，扩容通知先于升级回调；新账号与旧档备份迁移分别记录容量策略 | `native_warehouse_growth.py`、`native_warehouse_growth_catalog.json`；315 基数是原始创作者总容量记录推导，官方一级响应未恢复；本账号已备份无损重排，新增界面待回测 |
+| 扩容箱安装与物品存取 | 恢复 30 条真实箱配置，支持普通箱安装、空箱卸载、类型和品质限制、物品移动交换合堆、旋转、整理及顺序保存；安装箱禁止普通出售或交料，失败整笔回滚；通知保留真实箱页顺序 | `native_warehouse_extensions.py`、`native_warehouse_wire.py`、`test_native_warehouse_wire.py`；VIP、非空箱卸载及专用箱流程仍拒绝，2026-10-20 用户确认箱内存取、页签切换和退出重开正常 |
+| 设施功能解锁查询 | 从本账号已完成等级的原始 `UnlockSystemList` 生成能力参数，未获得的能力不返回条目；修正旧查询仅回显 ID 就误授予仓库维修能力的问题，升级倒计时结束和存档重开保持一致 | `native_safehouse_progress.py`、`test_native_safehouse_progress.py`、`test_native_activity_wire.py`；复合参数保留原顺序，多等级条目逐项输出是本地序列化策略，界面待回测 |
+| 旧强制满级存档迁移 | 只识别早期十项固定等级指纹，备份完整数据库后保存迁移审计；已有生产、交料或正常升级记录时拒绝迁移，库存、货币、任务及其它存档保持不变；保留账号已完成一次迁移并通过数据比较 | `work/migrate_legacy_department_save.py`、`native_safehouse_progress.py`；其它等级组合不自动套用 |
+| 普通任务接受与同步 | 恢复 2365 条任务、13 条任务线及 5585 条奖励配置；普通 Mission/Branch 接受校验真实等级、任务线、已领奖前置和冷却，保存实际目标并在响应前发送 `CSQuestDataChangeNtf`；重开恢复、失败无写入或通知有覆盖 | `native_quest_catalog.json`、`dfserver/native_quests.py`、`tests/test_native_quests.py`、`tests/test_native_activity_wire.py` |
+| 普通任务放弃 | 按原版 `remove_quest_id` 和 `res` 字段接入手动接受的进行中任务；放弃后清空进度、保存未接受状态并通知，已提交物品不退还；重新接受仍校验等级和已领奖前置，自动接受及特殊任务不走此通道 | `native_quest_abandon.py`、`test_native_quest_abandon.py`、`test_native_activity_wire.py`；重开、账号隔离、回滚与加密回包验证通过，2026-10-20 原客户端任务 50001、49001 放弃及重接均响应成功并发通知 |
+| 普通任务提交与领奖事务 | 简单物品提交按实际库存、数量和绑定状态扣料；现金目标读取实际余额、不扣款、不进入手动提交。领取按原奖励行整笔保存物品、货币、经验账及部门声望账，保存逐行收据并防重复；空间不足或写库失败回滚，提交后再发库存、收藏、任务、经验、声望与干员外观通知 | `native_quest_rewards.py`、`native_departments.py`、`native_quest_wallet.py`；原客户端 50001 提交及领奖成功，2026-10-20 用户确认收藏家现金目标正常且余额未扣 |
+| 部门声望查询与升级 | 五张真实声望卡使用保存的累计声望，恢复非空等级配置及领取后的等级变更通知；不再以空数组把部门判为满级，升级条件与设施检查共用同一曲线 | `native_department_queries.py`、`native_reputation_curve.json`；20/30/30 的首档来自原始服务提供者记录，其余有原版界面数值，来源与版本限制明确记录；未声称恢复官方服务端配置，界面待回测 |
+| 任务行动经验与升级前提 | 从原 SeasonLevel 恢复 60 级经验表，领奖事务内更新行动等级和级内经验，发送原生经验通知；重开查询与设施等级检查读取同一存档。账号与爆破旧档展示基线独立保存，不随行动奖励提高 | `native_action_progress.py`、`native_action_level_catalog.json`；六条真实任务奖励串联仓库升级门槛的加密回包回归通过，基线是明确的本地兼容策略，界面待回测 |
+| 任务奖励武器与绑定 | 从原 GunPreset 恢复普通任务使用的 42 种奖励枪预设，按各自枪体和完整配件树落库；奖励绑定随拆分、移动、弹药装卸及重开保留，只有相同绑定可合堆 | `native_quest_weapon_presets_catalog.json`、`native_prop_bindings.py`、`test_native_prop_bindings.py`；目录逐项和重开验证已覆盖 |
+| 账户条件任务 | 已接受普通任务中的现金、部门声望等级与设施等级目标，按本账号实际余额和等级更新；现金交易后同步任务变化，满足全部必需目标后保存完成，领奖保持独立；不以客户端完成请求代替击杀或撤离证据 | `native_quest_conditions.py`、`native_quest_wallet.py`；比较规则是原目标字段上的本地重建，非官方服务端代码；2026-10-20 用户确认现金目标正常且余额未扣 |
+| 部门商人记录 | 按原表关系返回五个真实 MerchantID，去掉只返回商人 1 和固定 VIP 1 的旧响应；VIP 与声望分别处理，未核实 VIP 数值保留协议默认 | `local_commerce.py`、`native_department_catalog.json`、`test_local_commerce.py`；界面待回测 |
+| 任务完成配置 | 默认关闭；支持目录内 2365 条任务全部完成或按真实 QuestID 逐条选择，按原表 4537 条目标的要求数量保存 Completed；已完成、已领奖记录保持不变，整批回滚、账号隔离、重开恢复及原生通知有回归覆盖 | [配置说明](docs/QUEST_COMPLETION_CONFIG.md)、`config/quest_completion.json`、`native_quest_objectives.json`；只标记任务完成，不自动领奖或升级部门，现有测试账号未执行全量完成，客户端界面待回测 |
 | 设置保存与本地聊天查询 | 按原 Lua 字段保存设置，按账号和类型读取；8 个原生可选初始化键缺省时下发明确空值，保留客户端默认配置，已有记录优先；本地世界频道、聊天摘要返回真实协议形状的空记录，结束未响应状态 | `dfserver/native_settings.py`、`dfserver/local_chat.py`、`tests/test_native_settings.py`、`tests/test_local_chat.py` |
 | 安全箱来源与存取 | 恢复 38 条真实安全箱 ID、容量和原始尺寸；本地账号提供方向明确的 4 格和 9 格安全箱权限，支持原生无 gid 装备请求、容量更新、物品移动、快照与单件/批量购买；切换保留内容坐标，容量不足整笔回滚，权限物品不能作为普通货物移出 | `safe_box_layout_catalog.json`、`dfserver/safe_boxes.py`、`tests/test_native_safe_box.py`；非方形方向及官方归属未恢复，实机操作待确认 |
-| 主仓库实际整理 | 主仓库页 2 整理返回实际位置和旋转变更，事务保存并保留数量、枪械组件、枪内弹药；接入原生 `CSDepositSetCommonConfigReq` 并保存设置；无效页和无法完整落位的请求返回错误并回滚 | `dfserver/deposit_sort.py`、`tests/test_native_deposit_sort.py`；采用本地确定性落位策略，多扩容页及官方分类对应尚未恢复 |
+| 仓库实际整理 | 主仓库与已安装普通扩容页整理返回实际位置和旋转变更，事务保存并保留数量、枪械组件、枪内弹药；接入原生 `CSDepositSetCommonConfigReq` 并保存设置；无效页和无法完整落位的请求返回错误并回滚 | `dfserver/deposit_sort.py`、`tests/test_native_deposit_sort.py`、`test_native_warehouse_extension_inventory.py`；采用本地确定性落位策略，官方分类对应尚未恢复 |
 | 容器同步 | 接入已观察的胸挂、背包和口袋同步；实现落位检查、堆叠拆分、数量守恒及失败整批回滚 | `dfserver/core.py`、`tests/test_local_commerce.py`、`tests/test_native_inventory.py` |
 | 批量购买空间规划 | 修正真实八件药品购买时有空间却返回 14032 的问题；保留指定容器和已有物品坐标，先规划全批再扣费，必要时旋转和有限回溯；数量拆分、通知顺序、真实空间不足与规划限制耗尽均有回归 | `dfserver/core.py`、`tests/test_native_purchase_packing.py`；5 项新增回归与 117 项关联测试通过，落位搜索属于本地策略 |
 | 容器精确移动与交换 | 修正原生请求省略零坐标后的错误自动落位；按指定格子和旋转落位，处理目标 gid 的原子交换，失败整批回滚；仓库旋转在移动响应及库存重取中保持一致；日志保留移动参数、结果码及具体拒绝原因 | `dfserver/core.py`、`dfserver/local_commerce.py`、`dfserver/handshake_diagnostic.py`、`tests/test_native_inventory.py`、`tests/test_local_commerce.py`；实机回测待确认 |
@@ -71,12 +87,22 @@
 | 未启用匹配的失败响应 | 未运行单局探针时，分配请求返回原 `MatchGateServiceInMaintenance=139005`，回调清除客户端等待状态；重复请求保留序号，不创建匹配、节点或战局。已启用的地图探针继续使用地图侧分配流程 | `dfserver/native_match_unavailable.py`、`tests/test_native_match_unavailable.py`；维护响应仅结束等待，不代表已完成进图 |
 | 曼德尔目录与购买 | 恢复 34 种砖配置、11 项商城关系、5 项经验卡赠送密钥配置；购买目录只开放客户端商城与真实奖池同时关联的 11 种砖，旧条目不能误入扫描页；整批核价、扣款与收藏入账，防止重复迁移密钥 | `mandel_box_catalog.json`、`dfserver/mandel.py`、`tests/test_native_cosmetics.py`、`tests/test_native_mandel_view.py` |
 | 本地扫描事务与协议 | 实现砖和密钥扣除、真实皮肤实例、历史与计数持久化；收藏通知先于购买回调，十连动画响应只含十件奖励。抽样使用明确记录的本地规则 | `dfserver/mandel.py`、`dfserver/handshake_diagnostic.py`、`tests/test_native_cosmetics.py`、[规则与来源](DATA_PROVENANCE.md) |
-| 商城配置提取 | 恢复 158 条推荐、61 条特供、8 个干员研究奖池的 64 条奖励、54 条外观归属及原生主页签；保留原始行、偏移与来源哈希 | `premium_shop_catalog.json`、`work/extract_premium_shop_catalog.py`、[数据来源](DATA_PROVENANCE.md) |
+| 商城配置提取 | 恢复 158 条推荐、61 条特供、8 个干员研究奖池的 64 条奖励、54 条外观归属及原生主页签；补齐源表大图、Logo、特供横幅与物品排序引用，保留原始行、偏移与来源哈希 | `premium_shop_catalog.json`、`work/extract_premium_shop_catalog.py`、[数据来源](DATA_PROVENANCE.md) |
 | 原生商城接口 | 接入推荐、特供、购买记录、研究奖池及干员外观装备；按配方、原价和已拥有内容核价，扣费、发货与记录整笔提交；周限购累计，旧轮次拒绝重复执行；收藏及干员归属通知先于购买回调 | `dfserver/premium_shop.py`、`dfserver/handshake_diagnostic.py`、`tests/test_premium_shop.py` |
+| 礼包收费条目购买 | 修正客户端仅提交收费条目时返回 `14026` 的问题；按原配方识别整包并补发未拥有赠品，多件使用折扣、仅剩一件使用原价；单件购买保持独立报价，失败回滚扣款、归属和记录 | `dfserver/premium_shop.py`、`tests/test_premium_shop.py`、[来源与实际请求](DATA_PROVENANCE.md)；04:24 试验的五次原客户端购买响应成功，原三件收费条目向量由回归覆盖 |
+| HTTP 断连收尾 | 已提交业务遇到响应发送断连时结束连接，避免误报内部错误及再次发送 500；业务异常仍保留原错误处理，不重执行业务或撤销已提交状态 | `dfserver/http_api.py`、`tests/test_http_disconnect.py`；响应头和正文断连、错误响应及业务异常回归通过，新服务已随共享试验重新加载 |
+| 收藏红点已读 | 接入原生 `CSCollectionUpdateRedPointReq`，按账号和实际物品 ID/gid 保存已读；收藏、神秘皮肤、挂饰和社交页共用状态，再次获得恢复红点，未知归属拒绝，写入失败整笔回滚并答复原错误码 | `dfserver/native_collection.py`、`tests/test_native_collection_redpoints.py`；9 项新增及 80 项关联回归通过，修正上一轮 8 次漏回复，原客户端复测待进行 |
 | 推荐页宣传跳转 | 接回 16 条原生奖池宣传项及客户端跳转目标，包含安魂 `10210005 -> 20300008`；空配方宣传项不能作为商品购买 | `premium_shop_catalog.json`、`dfserver/premium_shop.py`、`tests/test_premium_shop.py` |
 | 曼德尔页签与数量同步 | 按客户端时间筛选规则提供奖池开放窗口；重复购买通知返回当前总量与本次增量，密钥重买后保持客户端与存档数量一致 | `dfserver/mandel.py`、`tests/test_native_cosmetics.py` |
 | 研究奖池序号 | 八个池使用原表池内序号 1～8，修正稀疏全局编号导致奖池为空、误显示全部已获得的问题；旧记录读取时迁移序号 | `dfserver/premium_shop.py`、`tests/test_premium_shop.py` |
 | 推荐图片引用 | 下发原版四个 CDN 字段；隐藏没有任何图片引用的一条推荐并兼容其历史购买记录 | `premium_shop_catalog.json`、`tests/test_premium_shop.py`；尚未确认全部宣传图实机渲染 |
+| 全量礼包资源清单 | 逐项核对 158 条推荐与 61 条特供的 1325 个资源字段槽，记录 497 个本地虚拟包路径、原始 CDN 引用及实际缓存名；初始 47 个商城缓存全部对应，26 个专用格式缓存通过有界解压；补充 23 条原媒体表关联和 96 条物品与场景背景交集 | [完整资源清单](outputs/df-local-server/protocol/premium_shop_resources.json)、`work/bundle_asset_locations.py`、`work/bundle_asset_locations_media.py`；初始缓存数量是历史快照，当前补齐结果见下方；全部原客户端图片渲染仍未确认 |
+| 礼包奖励资源关联 | 保留全部 219 行的 1115 个直接奖励条目，逐项关联原 GameItem、武器皮肤和干员外观；恢复 110 条枪皮图片文件名、11 条干员外观的 54 个不同网格路径、3 个非空物品图标；干员外观 ID 的消费参数链由原 Lua 核对 | [奖励资源清单](outputs/df-local-server/protocol/premium_shop_reward_resources.json)、`work/bundle_reward_resources.py`；枪皮文件名所属目录和图片消费字段未恢复，网格包归属与渲染未实测 |
+| 原生图片路径与 CDN 配置核验 | 核实类型与引号转换后的快加载回调键，以及原 Lua 警告后仍设置有效对象的分支；从运行中的原客户端读取三个来源明确的 CDN 设置，PC 域名为 `repo.df.qq.com`，资源根为 `G/CN` | `work/probe_live_resource_implementations.py`、`work/read_live_cdn_settings.py`、[数据来源](DATA_PROVENANCE.md)；未将配置值或键不一致的警告当作全部图片渲染通过 |
+| 全量 CDN 地址检查 | 全部 219 行保留关联，对 202 个源字段的 199 个不同路径检查两种观测域名，共 398 次 HEAD；每个域名各有 101 个 HTTP 200、98 个 HTTP 404，逐项保留原路径和结果 | [逐项状态清单](outputs/df-local-server/protocol/premium_shop_cdn_availability.json)、`work/check_bundle_cdn_resources.py`；此清单记录原始路径，不代表经过原生质量档位处理后的最终请求结果 |
+| 图片请求与缓存命名 | 同一运行客户端核对 CDN 设置、选择位、质量表与完整路径处理；无扩展名路径在原目录与原文件名之间插入 `/7/`，带扩展名路径保留原文；磁盘缓存使用原始文件名的 ASCII 大写、UTF-16LE 及原生 CRC 表，生成有符号十进制名称 | `work/probe_live_cdn_loader.py`、[数据来源](DATA_PROVENANCE.md)；未改写客户端源表、猜补扩展名或将 HTTP 状态作为渲染验证 |
+| 商城图片缓存补齐 | 按原始路径从已观察的官方默认 CDN 补入 140 个图片缓存，保留原有 49 个；48 条含已知 CDN 图片的推荐共 189 个目标现均有缓存，全部通过完整图片解码或原版有界解压；两张带尾部数据的 PNG 仅按精确路径、长度、哈希及尺寸支持，原字节保留 | [资源位置与执行记录](docs/BUNDLE_RESOURCE_LOCATIONS_20261005.md)、[逐项最终报告](outputs/df-local-server/protocol/premium_shop_cache_repair.json)、`work/repair_bundle_cdn_cache.py`；10 个未知用途引用未自动补写，全部宣传图实机显示仍未确认 |
+| 刀具礼包过滤与发货 | 修正 11 个已确认刀具礼包被当成未恢复枪皮肤过滤的问题；按真实外观与 receiver 对应保存归属、抵扣已拥有内容，新实例在购买回调前发送原生近战解锁通知，已有实例不重复通知或扣费 | `dfserver/premium_shop.py`、`dfserver/handshake_diagnostic.py`、`tests/test_premium_shop.py`；两个含未恢复物品的礼包继续拒绝购买，新通知的原客户端操作效果未实测 |
 | 干员自定义目录与穿戴 | 恢复 54 条服装与 2049 条附件，覆盖名片、喷漆、展示动作、手势、语音、处决、手表、徽章及称号；目录含锁定项，解锁按客户端默认标记和实际收藏；装备、卸下、已读与播放状态持久化 | `hero_customization_catalog.json`、`dfserver/hero_customization.py`、`tests/test_hero_customization.py` |
 | 奖励到穿戴流程 | 研究抽奖或礼包发货后，在回调前更新收藏与对应干员；加密接口回归验证研究外观、手表获得、装备和重连恢复；完整目录响应允许 1 MiB 出站容量 | `dfserver/handshake_diagnostic.py`、`tests/test_native_customization_flow.py` |
 | 干员详情刷新 | 按原客户端缓存规则区分完整名单与筛选详情；单人刷新保留全部 17 个干员及已选外观缓存，修正名单缩水响应；测试日志记录筛选参数 | `dfserver/hero_customization.py`、`tests/test_native_customization_flow.py`、[消费规则来源](DATA_PROVENANCE.md) |
@@ -127,11 +153,30 @@
 - 2026-10-04：13:47 的 1800 秒试验完整结束（1799.8 秒），原 SDK 恢复且哈希核验通过。管理页六区完整，用户确认取消安全箱固定后仓库第六区完整显示；该原生设置已保存为 `SafeBoxbFixed=False`。
 - 2026-10-04：仓库拖拽、模型节点与批量药品落位修正后，全部 627 项自动测试通过（107.454 秒）；23 项改装联合回归含真实请求、实物子配件、旋转回包、重复操作及重开。254 个上传文件审计通过，原日志、账号存档和原始客户端提取物未上传；新修正的界面效果待复测。
 - 2026-10-04：统一装备 `9eac457` 与地图集成 `7708e3c` 后，独立工作区全部 1106 项服务端测试通过（110.091 秒）。新增回归覆盖停止地图探针时的维护和排位响应、两套登录路由及启动参数与进程保护；两个启动入口统一为 1800 秒，依赖最低 psutil 6.1.1。721 个上传文件审计通过，258 份历史参考资料哈希一致。高级地图研究模式仍需本地原证据，这次代码集成不代表已进入可操作地图。
+- 2026-10-05：全量礼包源字段核对没有目录失配、FString 解析丢失或物品图标解码失配；11 个刀具礼包及新实例通知的 115 项关联回归通过，随后当前工作区全部 1119 项服务端测试通过（172.879 秒）。完整资源清单逐项覆盖 219 行；物理缓存、媒体与原生配置检查不代表全部原客户端图片已渲染。
+- 2026-10-05：原生图片路径采集、CDN 定址采集与类型限定的设置读取器共 48 项合成回归通过；运行中的真实 CDN 设置来源已核验，初始化前的无效弱引用会明确跳过。此次配置读取没有调用原生函数、扫描其它堆对象或写入游戏。
+- 2026-10-05：补齐图片请求质量档位、完整路径组件和缓存 CRC 的源证据后，五项只读工具共 131 项合成回归通过。三个官方原始地址的独立 GET 核对中，默认 CDN 的一张 JPEG 与既有缓存逐字节相同；另两次 PC 请求返回 302，未跟随重定向。该结果不代表全部图片已显示。
+- 2026-10-05：七项资源工具执行 177 项回归，173 项通过，4 项 Windows 符号链接权限用例跳过。两轮实际补入 140 个缓存、共 104,514,651 字节，逐文件重读大小及 SHA-256 一致；189 个已知目标完整解码／有界解压通过，初始 47 个缓存快照哈希未变。再次生成计划为 0 请求、0 新增、0 已知目标缺缓存。02:03 的 1800 秒原客户端试验完整结束（1800.72 秒），`record_complete` 与 `original_sdk_restored` 均为 true，实际 SDK 哈希与源安装一致；该轮用于源实现核验，未作为全部礼包画面通过的依据。
+- 2026-10-05：03:53 的实际礼包购买请求只含三件收费皮肤、报价 2400，旧服务返回 `14026`；对应修正的 37 项商城回归及 74 项商城、资源、干员、枪皮与近战联合回归通过（50.197 秒）。覆盖赠品入账、重复购买不扣费、存档重开和迟发失败回滚；修正后的实机购买仍待回测。用户截图确认推荐缩略图仍大量空白、白鹰军团大图保留上一项画面，图片问题尚未解决。
+- 2026-10-05：04:24 的 1800 秒原客户端试验完整结束（1801.72 秒），2650 条处理记录、0 条非零业务结果、0 条未响应，五次礼包购买均返回 0；只读存档核对五条对应记录及完整物品归属，其中两次收费、三次补领剩余赠品，原三件收费条目请求尚未在本轮重现。完成与 SDK 恢复标记均为 true，独立记录已保留。04:26 的 HTTP 响应头发送断连已修正，57 项 HTTP、身份及商城联合回归通过（20.247 秒）；业务提交不会因断连重新执行。
+- 2026-10-06：补齐大厅 `CSSeasonGetInfoReq` 的当前序号、原始赛季日期及未参赛摘要，原版三张表共 33 行完成字段注册与序列化交叉核对；当前日期对应序号 11，与通行证 `202604` 一致。赛季、辅助协议、通行证及日志监听的 30 项回归通过，覆盖实际本地 socket 分发、赛季时间边界、历史查询、身份限制及查询无库存变化。17:46～17:47 实机四次赛季查询均返回成功及序号 11，用户确认大厅已显示 S11。
 - GitHub 仓库已按用户指示改为公开，源码、测试、静态目录和来源信息已上传；上传文件审计通过。
 
 ## 协作依据
 
 提交与审查对照本页：新增成果说明改了哪些文件、来源是什么、通过了哪些测试，以及哪些操作得到实机确认。涉及共享文件时先协调责任范围。客户端 ID、枚举、配置和关联信息必须先查客户端并记录依据，规范见 [AGENTS.md](AGENTS.md)。运行命令见 [运行说明](docs/RUNNING.md)。
+
+## 玩法接入调研（2026-10-20至21）
+
+已完成当前地图实现与客户端来源的分域复查，覆盖角色/移动/技能、枪械/医疗/AI、世界交互/物资/撤离/结算、六地图与其它模式。追加恢复了首次技能30/31/38标准参数grammar、医疗14使用schema及13取消codec、射击专用serializer与处理入口、门卡消费规则、付费撤离及合法状态转移；医疗取消6项离线测试通过。另恢复AI行为树启动调用和原始巡逻树的实际有序节点、条件与黑板键。早先物品绑定白名单冲突已按最新源码和探针更正。详见 [接入调研总报告](docs/GAMEPLAY_INTEGRATION_RESEARCH_20261020.md)、[射击协议补查](docs/GAMEPLAY_WEAPON_WIRE_RESEARCH_20261020.md)及[AI来源补查](docs/GAMEPLAY_AI_AUTHORITY_RESEARCH_20261020.md)。这些是源码调研和离线验证成果，没有新增完整玩法实机通过项；下方2026-10-04参考为历史状态。
+
+10月21日进一步恢复[射击可选数据与车辆校验](docs/GAMEPLAY_WEAPON_OPTIONAL_RESEARCH_20261021.md)的字段顺序和配置依赖，以及[实际巡逻任务](docs/GAMEPLAY_AI_LEAF_RESEARCH_20261021.md)的Blueprint控制流与黑板写入；[SOL终局hook](docs/GAMEPLAY_TERMINAL_HOOK_RESEARCH_20261021.md)已定位到DFMGameplay模块167的两个指定Lua stub及绑定基础设施。三项均已独立重跑源证据复核；实际运行配置、其余AI算法、有效终局producer和账号提交仍未通过完整玩法验收。
+
+同日完成[奔跑流程](docs/GAMEPLAY_SPRINT_FLOW_RESEARCH_20261021.md)、[动力推进技能实例](docs/GAMEPLAY_SKILL_FLOW_RESEARCH_20261021.md)、[F交互与逐项搜索取物](docs/GAMEPLAY_F_INTERACTION_RESEARCH_20261021.md)和[六图模式及难度](docs/GAMEPLAY_MAP_DIFFICULTY_RESEARCH_20261021.md)的来源对照与离线重放。恢复了奔跑意图位生成/消费、技能任务与冷却覆盖、搜索计时与取物数量边界，核实默认地图目录仅发布大坝一个档位且未显式发送独立difficulty字段。[原始模式枚举](docs/GAMEPLAY_MAP_ENUM_RESEARCH_20261021.md)也已从实际赋值源核对。生产接入缺口和世界收据运行时的最新状态已汇入总报告第13节；本轮未新增完整玩法实机通过项。
+
+继续完成[独立难度1/2/3及常规/机密/绝密的真实映射](docs/GAMEPLAY_MAP_DIFFICULTY_MAPPING_20261021.md)、[Sprint体力调用](docs/GAMEPLAY_SPRINT_STAMINA_RESEARCH_20261021.md)、[默认组件系数](docs/GAMEPLAY_SPRINT_STAMINA_CONFIG_RESEARCH_20261021.md)与[惩罚开关/曲线来源](docs/GAMEPLAY_SPRINT_STAMINA_POLICY_RESEARCH_20261021.md)，并恢复[F输入队列到面板分发](docs/GAMEPLAY_F_DISPATCH_RESEARCH_20261021.md)及[技能两种入口和CD哨兵选值](docs/GAMEPLAY_SKILL_ACTIVATION_RESEARCH_20261021.md)。新证据均已独立重放通过，旧F广播owner与技能getter称谓已更正；具体进度汇入总报告第14节。本轮完成调研工具、证据和文档，没有新增完整玩法实机通过项。
+
+[F目标接收者补查](docs/GAMEPLAY_F_RECEIVER_RESEARCH_20261021.md)另恢复了目标侧组件到角色侧组件的条件转发，确认组件版真实SOL字段70与Actor版71/72不同，并以两份当前源码核实该decoder/调用路径只支持71/72。字段70身份、参数声明、57个native范围及相关断言已重放通过；FunctionRepLayout与实际引用仍需补证，未将该差异直接改成假成功。
 
 ## 地图进场调研参考（2026-10-04）
 

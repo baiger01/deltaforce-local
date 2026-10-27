@@ -23,7 +23,7 @@ def enums():
     for name, expected in (
             ('QuestState', {'Locked': 0, 'Unread': 1, 'Unaccepted': 2, 'Accepted': 3,
                             'Failed': 4, 'Paused': 5, 'Completed': 6, 'Rewarded': 7, 'Expired': 8}),
-            ('QuestType', {'Mission': 1})):
+            ('QuestType', {'Mission': 1, 'Branch': 2})):
         start = next(index for index, line in enumerate(lines) if repr(name) in line and 'LOADK' in line)
         end = next(index for index in range(start + 1, len(lines)) if 'SETTABUP' in lines[index])
         block = lines[start:end + 1]

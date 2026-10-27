@@ -7,8 +7,9 @@ from dfserver.legacy_ds_control_fields import encode_message
 from dfserver.legacy_ds_handshake_probe import LegacyDSHandshakeProbe
 from dfserver.legacy_ds_wire_codec import decode_observed_application, encode_observed_application
 from dfserver.unreal_handshake_payload import decode_payload, encode_payload
+from tests import test_legacy_ds_restart_handshake as restart_tests
 from tests.test_legacy_ds_restart_handshake import (
-    RestartFlowFixture, RestartControlActorIntegrationTests, INITIAL, RESTART_INITIAL,
+    RestartFlowFixture, INITIAL, RESTART_INITIAL,
     PREFIX, FRESH_COOKIE, NET_VERSION,
 )
 from tests.test_legacy_ds_control_probe import COOKIE, PEER
@@ -20,7 +21,7 @@ THIRD_PEER = ('127.0.0.1', PEER[1] + 3)
 
 
 class PeerRestartTests(RestartFlowFixture, unittest.TestCase):
-    setup_joined = RestartControlActorIntegrationTests.setup_joined
+    setup_joined = restart_tests.RestartControlActorIntegrationTests.setup_joined
 
     def send(self, payload=None, *, now, peer=PEER, history=(1,), close=False):
         transport, state = self.connection.peers[peer], self.connection.control_peers[peer]
@@ -176,12 +177,12 @@ class PeerRestartTests(RestartFlowFixture, unittest.TestCase):
     def test_expired_inactive_wrong_ticket_owner_and_closed_source_cannot_migrate(self):
         for reason in ('inactive', 'wrong_owner', 'closed', 'absolute_expired', 'idle_expired'):
             with self.subTest(reason=reason):
-                self.setup_joined()
+                self.setup_joined(joined_session_ttl=1)
                 echo = self.start_peer_restart()
                 original = self.probe.pending[PEER]
                 now = 1.1
                 if reason == 'inactive':
-                    self.clock[0] = 120
+                    self.clock[0] = 1.0  # Expire the joined lease, not only Login.
                 elif reason == 'wrong_owner':
                     self.connection.ticket_peers[self.ticket.cookie] = THIRD_PEER
                 elif reason == 'closed':

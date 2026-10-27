@@ -18,10 +18,10 @@ from pathlib import Path
 
 import pefile
 import psutil
+from local_game_paths import game_paths
 
 ROOT = Path(__file__).resolve().parent.parent
 CACHE_ROOT = ROOT/'work/native-code-cache'
-SHADOW_ROOT = Path('D:/个人工作区/DeltaForce-local-client')
 EXECUTABLE_RELATIVE = Path('DeltaForce/Binaries/Win64/DeltaForceClient-Win64-Shipping.exe')
 SOURCE_SHA = '4254fbe66585f260f1f9dbfc5e302887842552e7baed8939e023160a5e250be0'
 HEADER_SHA = '683ce652da328fbb05743e755090b86d616dfebb67d47a6dd4cc183c854c291e'
@@ -51,6 +51,14 @@ def sha(data):
 
 def normalized(path):
     return os.path.normcase(str(Path(path).resolve()))
+
+
+def qualified_shadow_root(game_root):
+    """Use the configured independent client, preserving the original boundary."""
+    _, shadow = game_paths()
+    if normalized(game_root) != normalized(shadow):
+        raise ValueError('Live snapshot is restricted to the configured independent shadow root')
+    return shadow
 
 
 def save_json(path, value):
@@ -264,8 +272,7 @@ def collect(game_root, output_dir, expected_pid, expected_create_time):
             isinstance(expected_create_time, bool) or not isinstance(expected_create_time, (int, float)) or
             not math.isfinite(expected_create_time) or expected_create_time <= 0):
         raise ValueError('Exact positive PID/create time required')
-    if normalized(game_root) != normalized(SHADOW_ROOT):
-        raise ValueError('Live snapshot is restricted to fixed shadow game root')
+    qualified_shadow_root(game_root)
     folder = private_output(output_dir)
     plan = validate_plan(game_root)
     executable = Path(game_root)/EXECUTABLE_RELATIVE

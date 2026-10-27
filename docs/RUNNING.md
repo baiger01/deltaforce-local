@@ -1,8 +1,13 @@
 # 运行说明
 
+2026-10-24客户端更新后的构建核对、独立影子目录及诊断模式见
+[CLIENT_UPDATE_20261024.md](CLIENT_UPDATE_20261024.md)。新版战局适配尚未验收；不要只替换旧运行配置中的客户端哈希。
+
 以下 PowerShell 命令从项目根目录执行。推荐独立 Python 3.12 环境；使用 `hashlib.file_digest` 的工具至少需要 Python 3.11。
 
-统一源码从 `main` 拉取，包含装备、商城、地图集成代码及其静态配置、测试和工具。实际运行目录为根目录的 `outputs/df-local-server` 和 `work`；`进图调研/资料` 保留历史参考版本。
+唯一正式项目根目录为本仓库根目录。大厅与地图均从当前实现运行。旧地图工作区已退役，换机不需要该工作区；不要从历史归档启动服务或覆盖账号。完整交接见[迁移说明](../MIGRATION.md)。
+
+基础源码从 `main` 拉取，包含装备、商城、地图集成代码及其静态配置、测试、工具和迁移依赖清单。实际运行目录为根目录的 `outputs/df-local-server` 和 `work`；`进图调研/资料` 保留历史参考版本。Python实现在 `dfserver/app`、`inventory`、`weapons`、`commerce`、`progression`等领域子包，根包同名文件仅用于兼容旧导入；[结构说明](architecture/SERVER_LAYOUT.md)列出全部职责。
 
 ## 服务与测试
 
@@ -33,19 +38,20 @@ try {
 1. 准备同版本游戏，默认位于 `../game`。安装在别处时设置下列路径；源游戏与 shadow 必须不同，硬链接创建要求同一磁盘卷。
 
 ```powershell
-$env:DF_LOCAL_SOURCE_GAME = "F:/WeGameApps/rail_apps/DeltaForce(2001918)"
-$env:DF_LOCAL_SHADOW_GAME = "F:/deltaforce-local-shadow"
+$env:DF_LOCAL_SOURCE_GAME = "../game"
+$env:DF_LOCAL_SHADOW_GAME = "../shadow"
 python work/create_local_client_shadow.py
 ```
 
 2. 使用自行准备的 Zig 编译器及同版本 SDK，构建并验证本项目提供者：
 
 ```powershell
-python outputs/native-account-provider/build_provider.py --sdk "$env:DF_LOCAL_SOURCE_GAME/DeltaForce/Binaries/ThirdParty/WeGame/Win64/rail_api64.dll" --compiler "C:/path/to/zig.exe" --stage work/sdk-local-provider-stage
+$zigCompiler = (Get-Command zig -ErrorAction Stop).Source
+python outputs/native-account-provider/build_provider.py --sdk "$env:DF_LOCAL_SOURCE_GAME/DeltaForce/Binaries/ThirdParty/WeGame/Win64/rail_api64.dll" --compiler "$zigCompiler" --stage work/sdk-local-provider-stage
 python outputs/native-account-provider/verify_provider.py --sdk "$env:DF_LOCAL_SOURCE_GAME/DeltaForce/Binaries/ThirdParty/WeGame/Win64/rail_api64.dll" --stage work/sdk-local-provider-stage
 ```
 
-本机生成 `build-record.json` 和 `validation.json`。源 SDK SHA-256 必须为 `9d39a0f5af96d56f465060a582e21faf5c11d5cfdd4e221891d81c58cd7f1723`；Shipping 程序 SHA-256 必须为 `4254fbe66585f260f1f9dbfc5e302887842552e7baed8939e023160a5e250be0`。
+目标环境生成 `build-record.json` 和 `validation.json`。源 SDK SHA-256 必须为 `9d39a0f5af96d56f465060a582e21faf5c11d5cfdd4e221891d81c58cd7f1723`；当前 Shipping SHA-256 为 `79fb7b105170141ed863331d36833a73062e66bf5291b2364fe3a64c18336203`。旧 `4254...` 配置只用于匹配的历史客户端，不能混用。
 
 3. 设置上述 `PYTHONPATH`，用 `python -m dfserver --port 8878 --database work/native-test-account/save.sqlite3` 启动临时服务。在另一终端同样设置 `PYTHONPATH`，执行 `python -m dfserver.accounts register YOUR_LOCAL_USERNAME --port 8878`，通过隐藏输入设置自己的密码。完成后停止临时服务。原客户端测试与网页入口使用各自的数据库。
 

@@ -1,0 +1,168 @@
+{
+  "arrays_must_match_or_sum_to_count_claimed": false,
+  "client_launched": false,
+  "client_sha256": "4254fbe66585f260f1f9dbfc5e302887842552e7baed8939e023160a5e250be0",
+  "empty_arrays_added_bits": 128,
+  "gid_split_required": false,
+  "instruction_facts": [
+    {
+      "bytes": "41837e3c01",
+      "mnemonic": "cmp",
+      "operands": "dword ptr [r14 + 0x3c], 1",
+      "rva": "0xc0604d5"
+    },
+    {
+      "bytes": "0f9fc0",
+      "mnemonic": "setg",
+      "operands": "al",
+      "rva": "0xc0604da"
+    },
+    {
+      "bytes": "41b801000000",
+      "mnemonic": "mov",
+      "operands": "r8d, 1",
+      "rva": "0xc0604e9"
+    },
+    {
+      "bytes": "498d5638",
+      "mnemonic": "lea",
+      "operands": "rdx, [r14 + 0x38]",
+      "rva": "0xc060504"
+    },
+    {
+      "bytes": "4189463c",
+      "mnemonic": "mov",
+      "operands": "dword ptr [r14 + 0x3c], eax",
+      "rva": "0xc060553"
+    },
+    {
+      "bytes": "498d9680060000",
+      "mnemonic": "lea",
+      "operands": "rdx, [r14 + 0x680]",
+      "rva": "0xc060581"
+    },
+    {
+      "bytes": "e8405b35f5",
+      "mnemonic": "call",
+      "operands": "0x13b60d0",
+      "rva": "0xc06058b"
+    },
+    {
+      "bytes": "498d9690060000",
+      "mnemonic": "lea",
+      "operands": "rdx, [r14 + 0x690]",
+      "rva": "0xc060593"
+    },
+    {
+      "bytes": "e8a11102f5",
+      "mnemonic": "call",
+      "operands": "0x1081740",
+      "rva": "0xc06059a"
+    },
+    {
+      "bytes": "89442440",
+      "mnemonic": "mov",
+      "operands": "dword ptr [rsp + 0x40], eax",
+      "rva": "0x13b6120"
+    },
+    {
+      "bytes": "488902",
+      "mnemonic": "mov",
+      "operands": "qword ptr [rdx], rax",
+      "rva": "0x13b61da"
+    },
+    {
+      "bytes": "89442440",
+      "mnemonic": "mov",
+      "operands": "dword ptr [rsp + 0x40], eax",
+      "rva": "0x1081790"
+    },
+    {
+      "bytes": "8902",
+      "mnemonic": "mov",
+      "operands": "dword ptr [rdx], eax",
+      "rva": "0x108184a"
+    }
+  ],
+  "kind": "source_qualified_native_inventory_optional_stack_contract",
+  "minimal_contract_sha256": "f7c1dbc2fc359d2340125a2601babaec28d2e0d4bb9c3b75db84e8b55afa378d",
+  "native_fields": {
+    "ContainNums": {
+      "array_dim_or_bool_layout_low32": 1,
+      "extra_pointer_rva": "0x181a78e0",
+      "name": "ContainNums",
+      "native_gen_flags": "0x16",
+      "native_member_offset": "0x690",
+      "offset_or_bool_layout_high32": 1680,
+      "property_flags": "0x10000000000000",
+      "property_record_rva": "0x18844450",
+      "property_record_sha256": "90d1abbb32e41b9c8eee7bc9dd95b0a5cd791f1730f096a105b742e954eb88b4"
+    },
+    "ContainPlayerIds": {
+      "array_dim_or_bool_layout_low32": 1,
+      "extra_pointer_rva": "0x1611d848",
+      "name": "ContainPlayerIds",
+      "native_gen_flags": "0x16",
+      "native_member_offset": "0x680",
+      "offset_or_bool_layout_high32": 1664,
+      "property_flags": "0x10000000000000",
+      "property_record_rva": "0x188444a0",
+      "property_record_sha256": "eb2a4cc642b3de96db663d974e8d6c5e852bc0ec9cddb7c05420020b34a7cb6e"
+    },
+    "ItemCount": {
+      "array_dim_or_bool_layout_low32": 1,
+      "extra_pointer_rva": "0x181a1570",
+      "name": "ItemCount",
+      "native_gen_flags": "0x3",
+      "native_member_offset": "0x38",
+      "offset_or_bool_layout_high32": 56,
+      "property_flags": "0x10000000000000",
+      "property_record_rva": "0x18844ca0",
+      "property_record_sha256": "c14c87ec1795ba18a1b527e17555fe6c779d9c1fd9fb93e39ec573b4fdce7492"
+    },
+    "ItemNumMax": {
+      "array_dim_or_bool_layout_low32": 1,
+      "extra_pointer_rva": "0x154cd8a0",
+      "name": "ItemNumMax",
+      "native_gen_flags": "0x3",
+      "native_member_offset": "0x3c",
+      "offset_or_bool_layout_high32": 60,
+      "property_flags": "0x10000000000000",
+      "property_record_rva": "0x18844c78",
+      "property_record_sha256": "0debca501217732d7853ee384cce902aecd6360626ef285c200325c715e0a772"
+    }
+  },
+  "payload": [
+    {
+      "bits": 32,
+      "kind": "int32_raw",
+      "name": "ItemCount"
+    },
+    {
+      "bits": 32,
+      "kind": "int32_raw",
+      "name": "ItemNumMax"
+    },
+    {
+      "count_bits": 32,
+      "element_bits": 64,
+      "kind": "uint64_array_raw",
+      "name": "ContainPlayerIds"
+    },
+    {
+      "count_bits": 32,
+      "element_bits": 32,
+      "kind": "int32_array_raw",
+      "name": "ContainNums"
+    }
+  ],
+  "process_access": false,
+  "selector_bits": 1,
+  "selector_minimal_bit_offset": 632,
+  "sender_predicate": "ItemNumMax > 1",
+  "source_hashes": {
+    "work/evidence/map-system-audit-20261018/native-economy-inventory-fastarray-item-fields.json": "05b7366c8863e01fe0d03ac8074e5b2887909c41af00f7a89b65438a8625ae86",
+    "work/evidence/map-system-audit-20261018/native-economy-inventory-item-netserialize-and-id-conversion.json": "a98229290deef047142826df9e6e0a79a4387dc9b9452217af7948192b592be8",
+    "work/evidence/map-system-audit-20261018/native-economy-inventory-stack-array-serializers.json": "0f38e9eeb1a32aaa96568771d220e5a51cafcad6d008325c769b651a2618d95a"
+  }
+}

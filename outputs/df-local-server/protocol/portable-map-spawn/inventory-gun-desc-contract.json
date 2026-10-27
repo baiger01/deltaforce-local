@@ -1,0 +1,333 @@
+{
+  "cache_manifest_sha256": "dfd5c279d7db45842cee2bbc485ac8bf3cab03e4249ef5fe36bc9e8d6cd14754",
+  "client_launched": false,
+  "client_sha256": "4254fbe66585f260f1f9dbfc5e302887842552e7baed8939e023160a5e250be0",
+  "description_cache_revision": {
+    "policy": "explicit local initial match revision, not an official timestamp or constant",
+    "initial_description_revision": 1,
+    "initial_attribute_revision": 1,
+    "producer_range": [1, 2147483647],
+    "decoder_range": [0, 2147483647],
+    "native_modify_timestamp_offset": "0x68",
+    "native_attribute_modify_timestamp_offset": "0x70",
+    "inventory_gun_desc_offset": "0x90",
+    "lua_get_desc_count": "c05d020 reads item+0xf8 as int32",
+    "lua_get_attr_desc_count": "c05cfc0 reads item+0x100 as int32",
+    "initial_lua_caches": "ItemBase.lua 0.2 instructions 58 and 59 initialize descCount and descAttrCount to zero",
+    "equal_zero_skip": "ItemBase.lua 0.38 instructions 102..107 skip GetItemExtraInfoData, SetRawDescObjOnly and Desc_To_PropInfo when identity and both versions are unchanged"
+  },
+  "dynamic": {
+    "ammo": {
+      "business_source": "WeaponAssemblyTool.lua 0.14.2",
+      "contain_player_ids_from_nonzero_bind_player": true,
+      "cooled_num_taken_is_not_serialized": true,
+      "native_stride": 56,
+      "sub_clip_false_from_native_add_ammo": "0x5063272 -> 0x50633ae",
+      "wire": [
+        [
+          "item_id",
+          "uint64"
+        ],
+        [
+          "gid",
+          "uint64"
+        ],
+        [
+          "num",
+          "int32"
+        ],
+        [
+          "bind_player_id",
+          "uint64"
+        ],
+        [
+          "contain_player_ids_count",
+          "int32"
+        ],
+        [
+          "contain_player_ids",
+          "uint64[]"
+        ],
+        [
+          "sub_clip",
+          "bool32",
+          false
+        ]
+      ]
+    },
+    "base_serializer_rva": "0x51325f0",
+    "default_ctor_rva": "0x60bb870",
+    "serializer_rva": "0x5131f30",
+    "supported_only_with_empty_attribute_arrays_zero_owner_and_zero_overheat": true
+  },
+  "entry": {
+    "all_payload_primitives_are_archive_raw_bytes": true,
+    "inventory_netserialize_rva": "0xc05fda0",
+    "native_count_offset": "0x98",
+    "outer_inventory_bits_not_included": true,
+    "payload_native_offset": "0x90",
+    "payload_native_size": 336,
+    "payload_netserialize_rva": "0x5079450",
+    "presence_selector_minimal_bit": 635
+  },
+  "kind": "native_inventory_gun_desc_payload_subset_v1",
+  "process_access": false,
+  "row": {
+    "client_looks_up_parts_config_from_item_id": "0x511eb90",
+    "consumer_rva": "0x50817b0",
+    "des_id_socket_id_child_node_type_not_read_by_this_consumer": true,
+    "empty_tunes_preserve_client_config_defaults": true,
+    "fixed_wire_bytes_with_empty_tunes": 68,
+    "gid_source": "original prop gid; zero would generate a different client ID",
+    "index_is_one_based": true,
+    "item_id_source": "original prop id or root template_id",
+    "native_stride": 136,
+    "parent_must_precede_child": true,
+    "parent_socket_id_source": "WeaponAssemblyTool.lua 0.14.1 components[].slot",
+    "root_index": 1,
+    "root_parent_index": 0,
+    "serializer_rva": "0x5106200",
+    "wire": [
+      [
+        "des_id",
+        "uint64",
+        0
+      ],
+      [
+        "index",
+        "uint16"
+      ],
+      [
+        "item_id",
+        "uint64"
+      ],
+      [
+        "gid",
+        "uint64"
+      ],
+      [
+        "parent_index",
+        "uint16"
+      ],
+      [
+        "parent_socket_id",
+        "uint32"
+      ],
+      [
+        "socket_id",
+        "uint32",
+        0
+      ],
+      [
+        "child",
+        "uint16",
+        0
+      ],
+      [
+        "node_type",
+        "uint8",
+        0
+      ],
+      [
+        "durability",
+        "float32"
+      ],
+      [
+        "durability_max",
+        "float32",
+        0
+      ],
+      [
+        "bind_type",
+        "uint8"
+      ],
+      [
+        "bind_player_id",
+        "uint64"
+      ],
+      [
+        "raw_bound",
+        "bool32"
+      ],
+      [
+        "tune_ids_count",
+        "int32",
+        0
+      ],
+      [
+        "tune_values_count",
+        "int32",
+        0
+      ]
+    ],
+    "zero_metadata_is_native_row_constructor_default": true
+  },
+  "scope": {
+    "business_property_values_not_present_use_qualified_original_defaults": true,
+    "default_presets_and_new_inventory_gids_not_generated": true,
+    "inventory_description_does_not_spawn_or_equip_a_weapon_actor": true,
+    "snapshot_quantity_and_original_part_ammo_gids_preserved": true,
+    "unsupported_nondefault_features_rejected": true,
+    "connected_to_inventory_content_producer": true,
+    "native_client_receive_verified": false
+  },
+  "skin": {
+    "basic_fixed_wire_bytes": 72,
+    "empty_custom_name_wire": [
+      "int32",
+      0
+    ],
+    "serializer_rva": "0x5079660",
+    "skin_appearance_id_not_serialized_here": true,
+    "skin_id_gid_from_original_snapshot_weapon": true,
+    "wire": [
+      [
+        "skin_id",
+        "uint64"
+      ],
+      [
+        "skin_gid",
+        "uint64"
+      ],
+      [
+        "mystical_id",
+        "uint64",
+        0
+      ],
+      [
+        "wear",
+        "uint64",
+        0
+      ],
+      [
+        "material_random_seed",
+        "uint64",
+        0
+      ],
+      [
+        "pendant_id",
+        "uint64",
+        0
+      ],
+      [
+        "lock_appearance",
+        "bool32",
+        false
+      ],
+      [
+        "kill_count",
+        "uint64",
+        0
+      ],
+      [
+        "source_type",
+        "uint64",
+        0
+      ],
+      [
+        "custom_name",
+        "FString",
+        ""
+      ]
+    ]
+  },
+  "source_pins": {
+    "work/evidence/map-system-audit-20261018/native-economy-gun-desc-add-ammo-body.json": "8aa9644728f5420755d0d95670e3b31eaaf1e22df9db6ac487081029c0bc5ff6",
+    "work/evidence/map-system-audit-20261018/native-economy-gun-desc-ammo-item-fields.json": "7cbe2ec226b2b7364150d15510da3220f897cc526c3b7661ef84d9c877ac6076",
+    "work/evidence/map-system-audit-20261018/native-economy-gun-desc-child-serializers.json": "7c642031e4bc9ceca7cef33377efe67cad4e7dc1def25b6d0b0606dd43ebe416",
+    "work/evidence/map-system-audit-20261018/native-economy-gun-desc-constructor-and-skin-bool.json": "6b683e4c3e50db0223684d8fea558e1cea34f0d2b0839357fa61bd9fd07404a4",
+    "work/evidence/map-system-audit-20261018/native-economy-gun-desc-context-defaults-and-base-arrays.json": "30f0cc12afb7a21f1450eaaa1cad242be2108f52a91bfbe2fccd161af0fe7e72",
+    "work/evidence/map-system-audit-20261018/native-economy-gun-desc-fields.json": "75eabe37c3e421f779337c7fcf682b26723c590c33a06eafa4ffd149334b5e10",
+    "work/evidence/map-system-audit-20261018/native-economy-gun-desc-installed-lua-v2.json": "61f9a23709b1e2068806f22b19ee9cec9c2885e9835e81a5efa996d214cc753c",
+    "work/evidence/map-system-audit-20261018/native-economy-gun-desc-lua-all-directories.json": "54cb05ce080f8ec6736acad65735965fbde43e59133135149ccda826b5a55d80",
+    "work/evidence/map-system-audit-20261018/native-economy-gun-desc-nested-fields.json": "c0d32be38245e479fb095dfe647e4d9f438a852341bbebea18bba959835d3c7e",
+    "work/evidence/map-system-audit-20261018/native-economy-gun-desc-netserialize-and-struct.json": "21ddc34d201e0c16bdd92ebccb0e6897c3fa86761b320a8ea0aee24906b2b65d",
+    "work/evidence/map-system-audit-20261018/native-economy-gun-desc-network-row-to-node.json": "f517690274d132531fc6b43118c59a53cd416ccbb8b2ffcbec1f5982f1093639",
+    "work/evidence/map-system-audit-20261018/native-economy-gun-desc-overheat-fields.json": "747351707e95da9860b68884a29206f78def7bb8fb480ff0aaca3b8bec79f680",
+    "work/evidence/map-system-audit-20261018/native-economy-gun-desc-skin-empty-string-serializer.json": "645d8905de88251ac1ba18b2c6896ba990066175a8d2359e845fb0cfa73408ee",
+    "work/evidence/map-system-audit-20261018/native-economy-modular-desc-dynamic-codec-and-tree-core.json": "bf4084dcd95bcc097d7942246b37dcfc6418c13e1e535b33fdcf505a8bb58df6",
+    "work/evidence/map-system-audit-20261018/native-economy-gun-desc-business-optional-fields-lua.json": "62449422c14631be3ab5e26a1e4c00dc5595c39738879428378d5ee4c3d997fd",
+    "work/evidence/map-system-audit-20261018/native-economy-initial-desc-cache-installed-lua.json": "906797e2c00259c9019120b9bb551468bd2bc6c78931ecb1ab0fe91f87215251",
+    "work/evidence/map-system-audit-20261018/native-economy-gun-desc-client-getter-bodies.json": "d817f3e85bca2d5b9bcca6be127f66472f4fc339e630dce6b4a9727a83fb4d00",
+    "work/evidence/map-system-audit-20261018/native-economy-gun-desc-lua-binding-and-cache-converter.json": "a42fcd1eacd1a8bc6bb28b5753725dd531a93f7e87d4d03191c5282527f89405"
+  },
+  "wire": [
+    [
+      "row_count",
+      "uint8"
+    ],
+    [
+      "rows",
+      "row_count * GunDescRow"
+    ],
+    [
+      "dynamic_attribute_ids_count",
+      "int32",
+      0
+    ],
+    [
+      "dynamic_attribute_values_count",
+      "int32",
+      0
+    ],
+    [
+      "character_owner_uin_is_zero",
+      "bool32",
+      true
+    ],
+    [
+      "ammo_count",
+      "int32"
+    ],
+    [
+      "ammo",
+      "ammo_count * AmmoDataItem"
+    ],
+    [
+      "total_heat",
+      "int32",
+      0
+    ],
+    [
+      "overheat_seconds_left",
+      "int32",
+      0
+    ],
+    [
+      "heat_decrease_per_second",
+      "int32",
+      0
+    ],
+    [
+      "poor_item_id",
+      "uint64"
+    ],
+    [
+      "modify_timestamp",
+      "uint64",
+      "explicit local description cache revision"
+    ],
+    [
+      "attribute_modify_timestamp",
+      "uint64",
+      "explicit local attribute cache revision"
+    ],
+    [
+      "skin",
+      "WeaponSkinInfo"
+    ]
+  ],
+  "unsupported_nondefault_business_fields": [
+    "weapon.skinInfo",
+    "mystical_skin_data",
+    "node.weapon.attr_set",
+    "tune_info",
+    "tunes",
+    "fine_tunes",
+    "finetune",
+    "weapon.skin_info",
+    "weapon.mystical_skin_info",
+    "weapon.pendant_info",
+    "nested weapon.load_bullets"
+  ]
+}

@@ -1,0 +1,5650 @@
+{
+  "kind": "installed_weapon_actor_selection_lua_sources_v1",
+  "sources": [
+    {
+      "source_name": "@ItemHelperTool.lua",
+      "archive": "pak-0-0-pakchunk1-WindowsClient.pak",
+      "entry_offset": 35399680,
+      "lua_offset": 0,
+      "lua_length": 41306,
+      "lua_sha256": "f31339b9c5a75d2c52c2e7eb36732c26e03c5f58c12c3dbbb31c57a8bf8a095c",
+      "current_installed_baseline_bytes_verified": true,
+      "functions": [
+        {
+          "function_id": "0",
+          "first_line": 0,
+          "last_line": 0,
+          "constants": [
+            "require",
+            "DFM.StandaloneLua.BusinessTool.StructTool.ItemConfigTool",
+            "DFM.YxFramework.Core.Class.LazyObject",
+            "DFM.Business.DataStruct.Common.Base.Time",
+            "CacheExchangeList",
+            "IsPresetSlotType",
+            "IsEquipmentSlotType",
+            "IsContainerSlotType",
+            "IsBagSlotType",
+            "IsBuyToSlotType",
+            "IsMainWeaponSlotType",
+            "IsSOLWeaponSlotType",
+            "IsMpWeaponSlotType",
+            "IsStackSlotType",
+            "IsMPEquipmentSlotType",
+            "IsArmedForceUniqueSlotType",
+            "IsArmedForceWithTDMSlotType",
+            "IsArmedForceProp1SlotType",
+            "IsArmedForceProp2SlotType",
+            "IsSOLArmedForceSlotType",
+            "IsMPArmedForceSlotType",
+            "IsBulletSlotType",
+            "IsBlastSlotType",
+            "IsBlastWeaponSlotType",
+            "IsBlastPistolWeaponSlotType",
+            "IsBlastInitialPistolWeaponSlotType",
+            "IsBlastRangeInitialPistolBlocked",
+            "IsBlastStandardWeaponSlotType",
+            "IsBlastEliteWeaponSlotType",
+            "IsBlastSpecialWeaponSlotType",
+            "IsBlastMeleeWeaponSlotType",
+            "IsBlastArmorSlotType",
+            "GetBlastOutfitTypeBySlotType",
+            "IsArmedForceUniquePropById",
+            "IsArmedForceUniquePropByItem",
+            "IsArmedForce1PropById",
+            "IsArmedForce1PropByItem",
+            "IsArmedForce2PropById",
+            "IsArmedForce2PropByItem",
+            "GetDepositIdByExtId",
+            "GetStartExtIdByDepositId",
+            "CheckIdIsValid",
+            "GetCombinedTypeById",
+            "GetMainTypeById",
+            "GetSubTypeById",
+            "GetThirdTypeById",
+            "CheckIsIDStartWithPrefix",
+            "GetQualityTypeById",
+            "GetMedicalDurableTypeById",
+            "GetHealthInfoById",
+            10,
+            "GetIsExchangeCostItemById",
+            "GetCanExchangeIdListById",
+            "GetIconByExtItemId_Selected",
+            "GetIconByExtItemId_NonSelected",
+            "GetTypeIconAndTipsByExtItemId",
+            "GetBagCapacityExtendValue",
+            "IsCantIntoDsItemById",
+            "IsExposureItem",
+            "FindPermissonInfo",
+            "FindPermissonArray",
+            "FindSafeBoxSkinData",
+            "FindSafeBoxSkinByID",
+            "GetSeasonBySeasonID",
+            "IsDecipheredBrickTypeById",
+            "IsMasterSkinPattern",
+            "IsMysticalSkin",
+            "IsMysticalSkinType",
+            "IsMysticalPendant",
+            "IsHiddenMysticalPendant",
+            "IsFishItem",
+            "IsFishBaitItem",
+            "IsFishLine",
+            "IsFishReel",
+            "IsFishingRelatedItem",
+            "CreateItemByPropInfo",
+            "LazyCreateCreateItemByPropInfo",
+            "_InternalCreateItemByPropInfo",
+            "IsRequireAmmoWeapon",
+            "ESpecialExchangeType",
+            "InGame",
+            0,
+            "Exchange",
+            1,
+            "GetSpecialExchangeInfo",
+            "GetSpecialExchangeType",
+            "GetSpecialExchangeID",
+            "IsMPHeroItemSkinId",
+            "MPSkinItemToItemSkin",
+            "GetStashExpireConfigRaw",
+            "IsExpiredItem4WeaponPartID",
+            "IsExpiredByWeaponPartID",
+            "IsExpiredByItemBase",
+            "_InternalIsExpired",
+            "CreateItembaseByPropInfo",
+            "IsExpiredItemByPropInfo",
+            "IsExpiredByPropInfo",
+            "CheckItemIdInRange",
+            "CheckItemIdInMultiRange",
+            "CheckIsHighValueItem",
+            "DisassemblyArmorCombination",
+            "FindArmorCombinationPresetId",
+            "TimeStringToTimeStamp"
+          ],
+          "local_names": [
+            {
+              "name": "ItemConfigTool",
+              "start": 3,
+              "end": 203
+            },
+            {
+              "name": "LazyObject",
+              "start": 6,
+              "end": 203
+            },
+            {
+              "name": "Time",
+              "start": 9,
+              "end": 203
+            },
+            {
+              "name": "ItemHelperTool",
+              "start": 10,
+              "end": 203
+            },
+            {
+              "name": "MONEY_TYPE_MAX",
+              "start": 103,
+              "end": 203
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R0 U0 K0='require'",
+            "0002 LOADK      R1 K1='DFM.StandaloneLua.BusinessTool.StructTool.ItemConfigTool'",
+            "0003 CALL       R0 2 2",
+            "0004 GETTABUP   R1 U0 K0='require'",
+            "0005 LOADK      R2 K2='DFM.YxFramework.Core.Class.LazyObject'",
+            "0006 CALL       R1 2 2",
+            "0007 GETTABUP   R2 U0 K0='require'",
+            "0008 LOADK      R3 K3='DFM.Business.DataStruct.Common.Base.Time'",
+            "0009 CALL       R2 2 2",
+            "0010 NEWTABLE   R3 0 0",
+            "0011 NEWTABLE   R4 0 0",
+            "0012 SETTABLE   R3 K4='CacheExchangeList' R4",
+            "0013 CLOSURE    R4 child[0]",
+            "0014 SETTABLE   R3 K5='IsPresetSlotType' R4",
+            "0015 CLOSURE    R4 child[1]",
+            "0016 SETTABLE   R3 K6='IsEquipmentSlotType' R4",
+            "0017 CLOSURE    R4 child[2]",
+            "0018 SETTABLE   R3 K7='IsContainerSlotType' R4",
+            "0019 CLOSURE    R4 child[3]",
+            "0020 SETTABLE   R3 K8='IsBagSlotType' R4",
+            "0021 CLOSURE    R4 child[4]",
+            "0022 SETTABLE   R3 K9='IsBuyToSlotType' R4",
+            "0023 CLOSURE    R4 child[5]",
+            "0024 SETTABLE   R3 K10='IsMainWeaponSlotType' R4",
+            "0025 CLOSURE    R4 child[6]",
+            "0026 SETTABLE   R3 K11='IsSOLWeaponSlotType' R4",
+            "0027 CLOSURE    R4 child[7]",
+            "0028 SETTABLE   R3 K12='IsMpWeaponSlotType' R4",
+            "0029 CLOSURE    R4 child[8]",
+            "0030 SETTABLE   R3 K13='IsStackSlotType' R4",
+            "0031 CLOSURE    R4 child[9]",
+            "0032 SETTABLE   R3 K14='IsMPEquipmentSlotType' R4",
+            "0033 CLOSURE    R4 child[10]",
+            "0034 SETTABLE   R3 K15='IsArmedForceUniqueSlotType' R4",
+            "0035 CLOSURE    R4 child[11]",
+            "0036 SETTABLE   R3 K16='IsArmedForceWithTDMSlotType' R4",
+            "0037 CLOSURE    R4 child[12]",
+            "0038 SETTABLE   R3 K17='IsArmedForceProp1SlotType' R4",
+            "0039 CLOSURE    R4 child[13]",
+            "0040 SETTABLE   R3 K18='IsArmedForceProp2SlotType' R4",
+            "0041 CLOSURE    R4 child[14]",
+            "0042 SETTABLE   R3 K19='IsSOLArmedForceSlotType' R4",
+            "0043 CLOSURE    R4 child[15]",
+            "0044 SETTABLE   R3 K20='IsMPArmedForceSlotType' R4",
+            "0045 CLOSURE    R4 child[16]",
+            "0046 SETTABLE   R3 K21='IsBulletSlotType' R4",
+            "0047 CLOSURE    R4 child[17]",
+            "0048 SETTABLE   R3 K22='IsBlastSlotType' R4",
+            "0049 CLOSURE    R4 child[18]",
+            "0050 SETTABLE   R3 K23='IsBlastWeaponSlotType' R4",
+            "0051 CLOSURE    R4 child[19]",
+            "0052 SETTABLE   R3 K24='IsBlastPistolWeaponSlotType' R4",
+            "0053 CLOSURE    R4 child[20]",
+            "0054 SETTABLE   R3 K25='IsBlastInitialPistolWeaponSlotType' R4",
+            "0055 CLOSURE    R4 child[21]",
+            "0056 SETTABLE   R3 K26='IsBlastRangeInitialPistolBlocked' R4",
+            "0057 CLOSURE    R4 child[22]",
+            "0058 SETTABLE   R3 K27='IsBlastStandardWeaponSlotType' R4",
+            "0059 CLOSURE    R4 child[23]",
+            "0060 SETTABLE   R3 K28='IsBlastEliteWeaponSlotType' R4",
+            "0061 CLOSURE    R4 child[24]",
+            "0062 SETTABLE   R3 K29='IsBlastSpecialWeaponSlotType' R4",
+            "0063 CLOSURE    R4 child[25]",
+            "0064 SETTABLE   R3 K30='IsBlastMeleeWeaponSlotType' R4",
+            "0065 CLOSURE    R4 child[26]",
+            "0066 SETTABLE   R3 K31='IsBlastArmorSlotType' R4",
+            "0067 CLOSURE    R4 child[27]",
+            "0068 SETTABLE   R3 K32='GetBlastOutfitTypeBySlotType' R4",
+            "0069 CLOSURE    R4 child[28]",
+            "0070 SETTABLE   R3 K33='IsArmedForceUniquePropById' R4",
+            "0071 CLOSURE    R4 child[29]",
+            "0072 SETTABLE   R3 K34='IsArmedForceUniquePropByItem' R4",
+            "0073 CLOSURE    R4 child[30]",
+            "0074 SETTABLE   R3 K35='IsArmedForce1PropById' R4",
+            "0075 CLOSURE    R4 child[31]",
+            "0076 SETTABLE   R3 K36='IsArmedForce1PropByItem' R4",
+            "0077 CLOSURE    R4 child[32]",
+            "0078 SETTABLE   R3 K37='IsArmedForce2PropById' R4",
+            "0079 CLOSURE    R4 child[33]",
+            "0080 SETTABLE   R3 K38='IsArmedForce2PropByItem' R4",
+            "0081 CLOSURE    R4 child[34]",
+            "0082 SETTABLE   R3 K39='GetDepositIdByExtId' R4",
+            "0083 CLOSURE    R4 child[35]",
+            "0084 SETTABLE   R3 K40='GetStartExtIdByDepositId' R4",
+            "0085 CLOSURE    R4 child[36]",
+            "0086 SETTABLE   R3 K41='CheckIdIsValid' R4",
+            "0087 CLOSURE    R4 child[37]",
+            "0088 SETTABLE   R3 K42='GetCombinedTypeById' R4",
+            "0089 CLOSURE    R4 child[38]",
+            "0090 SETTABLE   R3 K43='GetMainTypeById' R4",
+            "0091 CLOSURE    R4 child[39]",
+            "0092 SETTABLE   R3 K44='GetSubTypeById' R4",
+            "0093 CLOSURE    R4 child[40]",
+            "0094 SETTABLE   R3 K45='GetThirdTypeById' R4",
+            "0095 CLOSURE    R4 child[41]",
+            "0096 SETTABLE   R3 K46='CheckIsIDStartWithPrefix' R4",
+            "0097 CLOSURE    R4 child[42]",
+            "0098 SETTABLE   R3 K47='GetQualityTypeById' R4",
+            "0099 CLOSURE    R4 child[43]",
+            "0100 SETTABLE   R3 K48='GetMedicalDurableTypeById' R4",
+            "0101 CLOSURE    R4 child[44]",
+            "0102 SETTABLE   R3 K49='GetHealthInfoById' R4",
+            "0103 LOADK      R4 K50=10",
+            "0104 CLOSURE    R5 child[45]",
+            "0105 SETTABLE   R3 K51='GetIsExchangeCostItemById' R5",
+            "0106 CLOSURE    R5 child[46]",
+            "0107 SETTABLE   R3 K52='GetCanExchangeIdListById' R5",
+            "0108 CLOSURE    R5 child[47]",
+            "0109 SETTABLE   R3 K53='GetIconByExtItemId_Selected' R5",
+            "0110 CLOSURE    R5 child[48]",
+            "0111 SETTABLE   R3 K54='GetIconByExtItemId_NonSelected' R5",
+            "0112 CLOSURE    R5 child[49]",
+            "0113 SETTABLE   R3 K55='GetTypeIconAndTipsByExtItemId' R5",
+            "0114 CLOSURE    R5 child[50]",
+            "0115 SETTABLE   R3 K56='GetBagCapacityExtendValue' R5",
+            "0116 CLOSURE    R5 child[51]",
+            "0117 SETTABLE   R3 K57='IsCantIntoDsItemById' R5",
+            "0118 CLOSURE    R5 child[52]",
+            "0119 SETTABLE   R3 K58='IsExposureItem' R5",
+            "0120 CLOSURE    R5 child[53]",
+            "0121 SETTABLE   R3 K59='FindPermissonInfo' R5",
+            "0122 CLOSURE    R5 child[54]",
+            "0123 SETTABLE   R3 K60='FindPermissonArray' R5",
+            "0124 CLOSURE    R5 child[55]",
+            "0125 SETTABLE   R3 K61='FindSafeBoxSkinData' R5",
+            "0126 CLOSURE    R5 child[56]",
+            "0127 SETTABLE   R3 K62='FindSafeBoxSkinByID' R5",
+            "0128 CLOSURE    R5 child[57]",
+            "0129 SETTABLE   R3 K63='GetSeasonBySeasonID' R5",
+            "0130 CLOSURE    R5 child[58]",
+            "0131 SETTABLE   R3 K64='IsDecipheredBrickTypeById' R5",
+            "0132 CLOSURE    R5 child[59]",
+            "0133 SETTABLE   R3 K65='IsMasterSkinPattern' R5",
+            "0134 CLOSURE    R5 child[60]",
+            "0135 SETTABLE   R3 K66='IsMysticalSkin' R5",
+            "0136 CLOSURE    R5 child[61]",
+            "0137 SETTABLE   R3 K67='IsMysticalSkinType' R5",
+            "0138 CLOSURE    R5 child[62]",
+            "0139 SETTABLE   R3 K68='IsMysticalPendant' R5",
+            "0140 CLOSURE    R5 child[63]",
+            "0141 SETTABLE   R3 K69='IsHiddenMysticalPendant' R5",
+            "0142 CLOSURE    R5 child[64]",
+            "0143 SETTABLE   R3 K70='IsFishItem' R5",
+            "0144 CLOSURE    R5 child[65]",
+            "0145 SETTABLE   R3 K71='IsFishBaitItem' R5",
+            "0146 CLOSURE    R5 child[66]",
+            "0147 SETTABLE   R3 K72='IsFishLine' R5",
+            "0148 CLOSURE    R5 child[67]",
+            "0149 SETTABLE   R3 K73='IsFishReel' R5",
+            "0150 CLOSURE    R5 child[68]",
+            "0151 SETTABLE   R3 K74='IsFishingRelatedItem' R5",
+            "0152 CLOSURE    R5 child[69]",
+            "0153 SETTABLE   R3 K75='CreateItemByPropInfo' R5",
+            "0154 CLOSURE    R5 child[70]",
+            "0155 SETTABLE   R3 K76='LazyCreateCreateItemByPropInfo' R5",
+            "0156 CLOSURE    R5 child[71]",
+            "0157 SETTABLE   R3 K77='_InternalCreateItemByPropInfo' R5",
+            "0158 CLOSURE    R5 child[72]",
+            "0159 SETTABLE   R3 K78='IsRequireAmmoWeapon' R5",
+            "0160 NEWTABLE   R5 0 2",
+            "0161 SETTABLE   R5 K80='InGame' K81=0",
+            "0162 SETTABLE   R5 K82='Exchange' K83=1",
+            "0163 SETTABLE   R3 K79='ESpecialExchangeType' R5",
+            "0164 CLOSURE    R5 child[73]",
+            "0165 SETTABLE   R3 K84='GetSpecialExchangeInfo' R5",
+            "0166 CLOSURE    R5 child[74]",
+            "0167 SETTABLE   R3 K85='GetSpecialExchangeType' R5",
+            "0168 CLOSURE    R5 child[75]",
+            "0169 SETTABLE   R3 K86='GetSpecialExchangeID' R5",
+            "0170 CLOSURE    R5 child[76]",
+            "0171 SETTABLE   R3 K87='IsMPHeroItemSkinId' R5",
+            "0172 CLOSURE    R5 child[77]",
+            "0173 SETTABLE   R3 K88='MPSkinItemToItemSkin' R5",
+            "0174 CLOSURE    R5 child[78]",
+            "0175 SETTABLE   R3 K89='GetStashExpireConfigRaw' R5",
+            "0176 CLOSURE    R5 child[79]",
+            "0177 SETTABLE   R3 K90='IsExpiredItem4WeaponPartID' R5",
+            "0178 CLOSURE    R5 child[80]",
+            "0179 SETTABLE   R3 K91='IsExpiredByWeaponPartID' R5",
+            "0180 CLOSURE    R5 child[81]",
+            "0181 SETTABLE   R3 K92='IsExpiredByItemBase' R5",
+            "0182 CLOSURE    R5 child[82]",
+            "0183 SETTABLE   R3 K93='_InternalIsExpired' R5",
+            "0184 CLOSURE    R5 child[83]",
+            "0185 SETTABLE   R3 K94='CreateItembaseByPropInfo' R5",
+            "0186 CLOSURE    R5 child[84]",
+            "0187 SETTABLE   R3 K95='IsExpiredItemByPropInfo' R5",
+            "0188 CLOSURE    R5 child[85]",
+            "0189 SETTABLE   R3 K96='IsExpiredByPropInfo' R5",
+            "0190 CLOSURE    R5 child[86]",
+            "0191 SETTABLE   R3 K97='CheckItemIdInRange' R5",
+            "0192 CLOSURE    R5 child[87]",
+            "0193 SETTABLE   R3 K98='CheckItemIdInMultiRange' R5",
+            "0194 CLOSURE    R5 child[88]",
+            "0195 SETTABLE   R3 K99='CheckIsHighValueItem' R5",
+            "0196 CLOSURE    R5 child[89]",
+            "0197 SETTABLE   R3 K100='DisassemblyArmorCombination' R5",
+            "0198 CLOSURE    R5 child[90]",
+            "0199 SETTABLE   R3 K101='FindArmorCombinationPresetId' R5",
+            "0200 CLOSURE    R5 child[91]",
+            "0201 SETTABLE   R3 K102='TimeStringToTimeStamp' R5",
+            "0202 RETURN     R3 2 0",
+            "0203 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.0",
+          "first_line": 11,
+          "last_line": 13,
+          "constants": [
+            "IsEquipmentSlotType",
+            "IsContainerSlotType"
+          ],
+          "local_names": [
+            {
+              "name": "targetSlotType",
+              "start": 0,
+              "end": 10
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R1 U0 K0='IsEquipmentSlotType'",
+            "0002 MOVE       R2 0 0",
+            "0003 CALL       R1 2 2",
+            "0004 TEST       R1 0 1",
+            "0005 JMP        R0 jump=9",
+            "0006 GETTABUP   R1 U0 K1='IsContainerSlotType'",
+            "0007 MOVE       R2 0 0",
+            "0008 CALL       R1 2 2",
+            "0009 RETURN     R1 2 0",
+            "0010 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.1",
+          "first_line": 15,
+          "last_line": 17,
+          "constants": [
+            "ESlotType",
+            "EquipmentStart",
+            "EquipmentEnd"
+          ],
+          "local_names": [
+            {
+              "name": "targetSlotType",
+              "start": 0,
+              "end": 12
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R1 U0 K0='ESlotType'",
+            "0002 GETTABLE   R1 R1 K1='EquipmentStart'",
+            "0003 LT         R0 1 0",
+            "0004 JMP        R0 jump=9",
+            "0005 GETTABUP   R1 U0 K0='ESlotType'",
+            "0006 GETTABLE   R1 R1 K2='EquipmentEnd'",
+            "0007 LT         R1 0 1",
+            "0008 JMP        R0 jump=10",
+            "0009 LOADBOOL   R1 0 1",
+            "0010 LOADBOOL   R1 1 0",
+            "0011 RETURN     R1 2 0",
+            "0012 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.2",
+          "first_line": 19,
+          "last_line": 21,
+          "constants": [
+            "ESlotType",
+            "ContainerStart",
+            "ContainerEnd"
+          ],
+          "local_names": [
+            {
+              "name": "targetSlotType",
+              "start": 0,
+              "end": 12
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R1 U0 K0='ESlotType'",
+            "0002 GETTABLE   R1 R1 K1='ContainerStart'",
+            "0003 LT         R0 1 0",
+            "0004 JMP        R0 jump=9",
+            "0005 GETTABUP   R1 U0 K0='ESlotType'",
+            "0006 GETTABLE   R1 R1 K2='ContainerEnd'",
+            "0007 LT         R1 0 1",
+            "0008 JMP        R0 jump=10",
+            "0009 LOADBOOL   R1 0 1",
+            "0010 LOADBOOL   R1 1 0",
+            "0011 RETURN     R1 2 0",
+            "0012 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.3",
+          "first_line": 23,
+          "last_line": 25,
+          "constants": [
+            "ESlotType",
+            "ChestHanging",
+            "Bag",
+            "SafeBox"
+          ],
+          "local_names": [
+            {
+              "name": "targetSlotType",
+              "start": 0,
+              "end": 16
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R1 U0 K0='ESlotType'",
+            "0002 GETTABLE   R1 R1 K1='ChestHanging'",
+            "0003 EQ         R1 0 1",
+            "0004 JMP        R0 jump=14",
+            "0005 GETTABUP   R1 U0 K0='ESlotType'",
+            "0006 GETTABLE   R1 R1 K2='Bag'",
+            "0007 EQ         R1 0 1",
+            "0008 JMP        R0 jump=14",
+            "0009 GETTABUP   R1 U0 K0='ESlotType'",
+            "0010 GETTABLE   R1 R1 K3='SafeBox'",
+            "0011 EQ         R1 0 1",
+            "0012 JMP        R0 jump=14",
+            "0013 LOADBOOL   R1 0 1",
+            "0014 LOADBOOL   R1 1 0",
+            "0015 RETURN     R1 2 0",
+            "0016 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.4",
+          "first_line": 27,
+          "last_line": 29,
+          "constants": [
+            "ESlotType",
+            "DepositoryStart",
+            "DepositoryEnd"
+          ],
+          "local_names": [
+            {
+              "name": "targetSlotType",
+              "start": 0,
+              "end": 14
+            }
+          ],
+          "listing": [
+            "0001 TESTSET    R1 0 0",
+            "0002 JMP        R0 jump=13",
+            "0003 GETTABUP   R1 U0 K0='ESlotType'",
+            "0004 GETTABLE   R1 R1 K1='DepositoryStart'",
+            "0005 LT         R1 0 1",
+            "0006 JMP        R0 jump=12",
+            "0007 GETTABUP   R1 U0 K0='ESlotType'",
+            "0008 GETTABLE   R1 R1 K2='DepositoryEnd'",
+            "0009 LT         R1 1 0",
+            "0010 JMP        R0 jump=12",
+            "0011 LOADBOOL   R1 0 1",
+            "0012 LOADBOOL   R1 1 0",
+            "0013 RETURN     R1 2 0",
+            "0014 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.5",
+          "first_line": 31,
+          "last_line": 35,
+          "constants": [
+            "ESlotType",
+            "MainWeaponLeft",
+            "MainWeaponRight",
+            "PVEMainWeaponLeft",
+            "PVEMainWeaponRight",
+            "MP_MainWeapon",
+            "MP_SecondaryWeapon"
+          ],
+          "local_names": [
+            {
+              "name": "targetSlotType",
+              "start": 0,
+              "end": 28
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R1 U0 K0='ESlotType'",
+            "0002 GETTABLE   R1 R1 K1='MainWeaponLeft'",
+            "0003 LE         R0 1 0",
+            "0004 JMP        R0 jump=9",
+            "0005 GETTABUP   R1 U0 K0='ESlotType'",
+            "0006 GETTABLE   R1 R1 K2='MainWeaponRight'",
+            "0007 LE         R1 0 1",
+            "0008 JMP        R0 jump=26",
+            "0009 GETTABUP   R1 U0 K0='ESlotType'",
+            "0010 GETTABLE   R1 R1 K3='PVEMainWeaponLeft'",
+            "0011 LE         R0 1 0",
+            "0012 JMP        R0 jump=17",
+            "0013 GETTABUP   R1 U0 K0='ESlotType'",
+            "0014 GETTABLE   R1 R1 K4='PVEMainWeaponRight'",
+            "0015 LE         R1 0 1",
+            "0016 JMP        R0 jump=26",
+            "0017 GETTABUP   R1 U0 K0='ESlotType'",
+            "0018 GETTABLE   R1 R1 K5='MP_MainWeapon'",
+            "0019 LE         R0 1 0",
+            "0020 JMP        R0 jump=25",
+            "0021 GETTABUP   R1 U0 K0='ESlotType'",
+            "0022 GETTABLE   R1 R1 K6='MP_SecondaryWeapon'",
+            "0023 LE         R1 0 1",
+            "0024 JMP        R0 jump=26",
+            "0025 LOADBOOL   R1 0 1",
+            "0026 LOADBOOL   R1 1 0",
+            "0027 RETURN     R1 2 0",
+            "0028 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.6",
+          "first_line": 37,
+          "last_line": 39,
+          "constants": [
+            "ESlotType",
+            "MainWeaponLeft",
+            "MainWeaponRight",
+            "Pistrol"
+          ],
+          "local_names": [
+            {
+              "name": "targetSlotType",
+              "start": 0,
+              "end": 16
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R1 U0 K0='ESlotType'",
+            "0002 GETTABLE   R1 R1 K1='MainWeaponLeft'",
+            "0003 EQ         R1 0 1",
+            "0004 JMP        R0 jump=14",
+            "0005 GETTABUP   R1 U0 K0='ESlotType'",
+            "0006 GETTABLE   R1 R1 K2='MainWeaponRight'",
+            "0007 EQ         R1 0 1",
+            "0008 JMP        R0 jump=14",
+            "0009 GETTABUP   R1 U0 K0='ESlotType'",
+            "0010 GETTABLE   R1 R1 K3='Pistrol'",
+            "0011 EQ         R1 0 1",
+            "0012 JMP        R0 jump=14",
+            "0013 LOADBOOL   R1 0 1",
+            "0014 LOADBOOL   R1 1 0",
+            "0015 RETURN     R1 2 0",
+            "0016 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.7",
+          "first_line": 41,
+          "last_line": 43,
+          "constants": [
+            "ESlotType",
+            "MP_MainWeapon",
+            "MP_SecondaryWeapon"
+          ],
+          "local_names": [
+            {
+              "name": "targetSlotType",
+              "start": 0,
+              "end": 12
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R1 U0 K0='ESlotType'",
+            "0002 GETTABLE   R1 R1 K1='MP_MainWeapon'",
+            "0003 LE         R0 1 0",
+            "0004 JMP        R0 jump=9",
+            "0005 GETTABUP   R1 U0 K0='ESlotType'",
+            "0006 GETTABLE   R1 R1 K2='MP_SecondaryWeapon'",
+            "0007 LE         R1 0 1",
+            "0008 JMP        R0 jump=10",
+            "0009 LOADBOOL   R1 0 1",
+            "0010 LOADBOOL   R1 1 0",
+            "0011 RETURN     R1 2 0",
+            "0012 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.8",
+          "first_line": 45,
+          "last_line": 47,
+          "constants": [
+            "ESlotType",
+            "Medicine"
+          ],
+          "local_names": [
+            {
+              "name": "targetSlotType",
+              "start": 0,
+              "end": 12
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R1 U0 K0='ESlotType'",
+            "0002 GETTABLE   R1 R1 K1='Medicine'",
+            "0003 LE         R0 1 0",
+            "0004 JMP        R0 jump=9",
+            "0005 GETTABUP   R1 U0 K0='ESlotType'",
+            "0006 GETTABLE   R1 R1 K1='Medicine'",
+            "0007 LE         R1 0 1",
+            "0008 JMP        R0 jump=10",
+            "0009 LOADBOOL   R1 0 1",
+            "0010 LOADBOOL   R1 1 0",
+            "0011 RETURN     R1 2 0",
+            "0012 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.9",
+          "first_line": 49,
+          "last_line": 51,
+          "constants": [
+            "ESlotType",
+            "MP_Begin",
+            "MP_End"
+          ],
+          "local_names": [
+            {
+              "name": "targetSlotType",
+              "start": 0,
+              "end": 12
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R1 U0 K0='ESlotType'",
+            "0002 GETTABLE   R1 R1 K1='MP_Begin'",
+            "0003 LT         R0 1 0",
+            "0004 JMP        R0 jump=9",
+            "0005 GETTABUP   R1 U0 K0='ESlotType'",
+            "0006 GETTABLE   R1 R1 K2='MP_End'",
+            "0007 LT         R1 0 1",
+            "0008 JMP        R0 jump=10",
+            "0009 LOADBOOL   R1 0 1",
+            "0010 LOADBOOL   R1 1 0",
+            "0011 RETURN     R1 2 0",
+            "0012 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.10",
+          "first_line": 57,
+          "last_line": 59,
+          "constants": [
+            "ESlotType",
+            "MP_ArmedForceProp1",
+            "MP_ArmedForceProp2"
+          ],
+          "local_names": [
+            {
+              "name": "targetSlotType",
+              "start": 0,
+              "end": 12
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R1 U0 K0='ESlotType'",
+            "0002 GETTABLE   R1 R1 K1='MP_ArmedForceProp1'",
+            "0003 LE         R0 1 0",
+            "0004 JMP        R0 jump=9",
+            "0005 GETTABUP   R1 U0 K0='ESlotType'",
+            "0006 GETTABLE   R1 R1 K2='MP_ArmedForceProp2'",
+            "0007 LE         R1 0 1",
+            "0008 JMP        R0 jump=10",
+            "0009 LOADBOOL   R1 0 1",
+            "0010 LOADBOOL   R1 1 0",
+            "0011 RETURN     R1 2 0",
+            "0012 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.11",
+          "first_line": 61,
+          "last_line": 64,
+          "constants": [
+            "ESlotType",
+            "MP_ArmedForceProp1",
+            "MP_ArmedForceProp2",
+            "MP_ArmedForceTDMProp"
+          ],
+          "local_names": [
+            {
+              "name": "targetSlotType",
+              "start": 0,
+              "end": 16
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R1 U0 K0='ESlotType'",
+            "0002 GETTABLE   R1 R1 K1='MP_ArmedForceProp1'",
+            "0003 LE         R0 1 0",
+            "0004 JMP        R0 jump=9",
+            "0005 GETTABUP   R1 U0 K0='ESlotType'",
+            "0006 GETTABLE   R1 R1 K2='MP_ArmedForceProp2'",
+            "0007 LE         R1 0 1",
+            "0008 JMP        R0 jump=14",
+            "0009 GETTABUP   R1 U0 K0='ESlotType'",
+            "0010 GETTABLE   R1 R1 K3='MP_ArmedForceTDMProp'",
+            "0011 EQ         R1 0 1",
+            "0012 JMP        R0 jump=14",
+            "0013 LOADBOOL   R1 0 1",
+            "0014 LOADBOOL   R1 1 0",
+            "0015 RETURN     R1 2 0",
+            "0016 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.12",
+          "first_line": 69,
+          "last_line": 71,
+          "constants": [
+            "ESlotType",
+            "MP_ArmedForceProp1",
+            "MP_ArmedForceTDMProp"
+          ],
+          "local_names": [
+            {
+              "name": "targetSlotType",
+              "start": 0,
+              "end": 12
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R1 U0 K0='ESlotType'",
+            "0002 GETTABLE   R1 R1 K1='MP_ArmedForceProp1'",
+            "0003 EQ         R1 0 1",
+            "0004 JMP        R0 jump=10",
+            "0005 GETTABUP   R1 U0 K0='ESlotType'",
+            "0006 GETTABLE   R1 R1 K2='MP_ArmedForceTDMProp'",
+            "0007 EQ         R1 0 1",
+            "0008 JMP        R0 jump=10",
+            "0009 LOADBOOL   R1 0 1",
+            "0010 LOADBOOL   R1 1 0",
+            "0011 RETURN     R1 2 0",
+            "0012 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.13",
+          "first_line": 76,
+          "last_line": 78,
+          "constants": [
+            "ESlotType",
+            "MP_ArmedForceProp2",
+            "MP_ArmedForceTDMProp"
+          ],
+          "local_names": [
+            {
+              "name": "targetSlotType",
+              "start": 0,
+              "end": 12
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R1 U0 K0='ESlotType'",
+            "0002 GETTABLE   R1 R1 K1='MP_ArmedForceProp2'",
+            "0003 EQ         R1 0 1",
+            "0004 JMP        R0 jump=10",
+            "0005 GETTABUP   R1 U0 K0='ESlotType'",
+            "0006 GETTABLE   R1 R1 K2='MP_ArmedForceTDMProp'",
+            "0007 EQ         R1 0 1",
+            "0008 JMP        R0 jump=10",
+            "0009 LOADBOOL   R1 0 1",
+            "0010 LOADBOOL   R1 1 0",
+            "0011 RETURN     R1 2 0",
+            "0012 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.15",
+          "first_line": 90,
+          "last_line": 92,
+          "constants": [
+            "ESlotType",
+            "MP_ArmedForceProp1",
+            "MP_ArmedForceProp2"
+          ],
+          "local_names": [
+            {
+              "name": "targetSlotType",
+              "start": 0,
+              "end": 12
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R1 U0 K0='ESlotType'",
+            "0002 GETTABLE   R1 R1 K1='MP_ArmedForceProp1'",
+            "0003 LE         R0 1 0",
+            "0004 JMP        R0 jump=9",
+            "0005 GETTABUP   R1 U0 K0='ESlotType'",
+            "0006 GETTABLE   R1 R1 K2='MP_ArmedForceProp2'",
+            "0007 LE         R1 0 1",
+            "0008 JMP        R0 jump=10",
+            "0009 LOADBOOL   R1 0 1",
+            "0010 LOADBOOL   R1 1 0",
+            "0011 RETURN     R1 2 0",
+            "0012 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.16",
+          "first_line": 97,
+          "last_line": 99,
+          "constants": [
+            "ESlotType",
+            "BulletLeft",
+            "BulletRight"
+          ],
+          "local_names": [
+            {
+              "name": "targetSlotType",
+              "start": 0,
+              "end": 12
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R1 U0 K0='ESlotType'",
+            "0002 GETTABLE   R1 R1 K1='BulletLeft'",
+            "0003 LE         R0 1 0",
+            "0004 JMP        R0 jump=9",
+            "0005 GETTABUP   R1 U0 K0='ESlotType'",
+            "0006 GETTABLE   R1 R1 K2='BulletRight'",
+            "0007 LE         R1 0 1",
+            "0008 JMP        R0 jump=10",
+            "0009 LOADBOOL   R1 0 1",
+            "0010 LOADBOOL   R1 1 0",
+            "0011 RETURN     R1 2 0",
+            "0012 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.17",
+          "first_line": 104,
+          "last_line": 106,
+          "constants": [
+            "ESlotType",
+            "BlastSlotIdBegin",
+            "BlastSlotIdEnd"
+          ],
+          "local_names": [
+            {
+              "name": "targetSlotType",
+              "start": 0,
+              "end": 12
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R1 U0 K0='ESlotType'",
+            "0002 GETTABLE   R1 R1 K1='BlastSlotIdBegin'",
+            "0003 LT         R0 1 0",
+            "0004 JMP        R0 jump=9",
+            "0005 GETTABUP   R1 U0 K0='ESlotType'",
+            "0006 GETTABLE   R1 R1 K2='BlastSlotIdEnd'",
+            "0007 LT         R1 0 1",
+            "0008 JMP        R0 jump=10",
+            "0009 LOADBOOL   R1 0 1",
+            "0010 LOADBOOL   R1 1 0",
+            "0011 RETURN     R1 2 0",
+            "0012 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.18",
+          "first_line": 111,
+          "last_line": 113,
+          "constants": [
+            "ESlotType",
+            "BlastSlotIdPistolPos1",
+            "BlastSlotIdSpecialPos4"
+          ],
+          "local_names": [
+            {
+              "name": "targetSlotType",
+              "start": 0,
+              "end": 12
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R1 U0 K0='ESlotType'",
+            "0002 GETTABLE   R1 R1 K1='BlastSlotIdPistolPos1'",
+            "0003 LE         R0 1 0",
+            "0004 JMP        R0 jump=9",
+            "0005 GETTABUP   R1 U0 K0='ESlotType'",
+            "0006 GETTABLE   R1 R1 K2='BlastSlotIdSpecialPos4'",
+            "0007 LE         R1 0 1",
+            "0008 JMP        R0 jump=10",
+            "0009 LOADBOOL   R1 0 1",
+            "0010 LOADBOOL   R1 1 0",
+            "0011 RETURN     R1 2 0",
+            "0012 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.19",
+          "first_line": 118,
+          "last_line": 120,
+          "constants": [
+            "ESlotType",
+            "BlastSlotIdPistolPos1",
+            "BlastSlotIdPistolPos4"
+          ],
+          "local_names": [
+            {
+              "name": "targetSlotType",
+              "start": 0,
+              "end": 12
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R1 U0 K0='ESlotType'",
+            "0002 GETTABLE   R1 R1 K1='BlastSlotIdPistolPos1'",
+            "0003 LE         R0 1 0",
+            "0004 JMP        R0 jump=9",
+            "0005 GETTABUP   R1 U0 K0='ESlotType'",
+            "0006 GETTABLE   R1 R1 K2='BlastSlotIdPistolPos4'",
+            "0007 LE         R1 0 1",
+            "0008 JMP        R0 jump=10",
+            "0009 LOADBOOL   R1 0 1",
+            "0010 LOADBOOL   R1 1 0",
+            "0011 RETURN     R1 2 0",
+            "0012 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.20",
+          "first_line": 125,
+          "last_line": 127,
+          "constants": [
+            "ESlotType",
+            "BlastSlotIdPistolPos1"
+          ],
+          "local_names": [
+            {
+              "name": "targetSlotType",
+              "start": 0,
+              "end": 8
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R1 U0 K0='ESlotType'",
+            "0002 GETTABLE   R1 R1 K1='BlastSlotIdPistolPos1'",
+            "0003 EQ         R1 0 1",
+            "0004 JMP        R0 jump=6",
+            "0005 LOADBOOL   R1 0 1",
+            "0006 LOADBOOL   R1 1 0",
+            "0007 RETURN     R1 2 0",
+            "0008 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.21",
+          "first_line": 138,
+          "last_line": 197,
+          "constants": [
+            1,
+            "select",
+            "#",
+            null,
+            "BeginLobbyGameModeFence",
+            "EMainFlowStageType",
+            "Blasting"
+          ],
+          "local_names": [
+            {
+              "name": "itemBase",
+              "start": 0,
+              "end": 28
+            },
+            {
+              "name": "groupID",
+              "start": 0,
+              "end": 28
+            },
+            {
+              "name": "bBlocked",
+              "start": 1,
+              "end": 28
+            },
+            {
+              "name": "slotArgs",
+              "start": 2,
+              "end": 28
+            },
+            {
+              "name": "(for index)",
+              "start": 8,
+              "end": 19
+            },
+            {
+              "name": "(for limit)",
+              "start": 8,
+              "end": 19
+            },
+            {
+              "name": "(for step)",
+              "start": 8,
+              "end": 19
+            },
+            {
+              "name": "i",
+              "start": 9,
+              "end": 18
+            },
+            {
+              "name": "slotType",
+              "start": 13,
+              "end": 18
+            }
+          ],
+          "listing": [
+            "0001 LOADBOOL   R2 0 0",
+            "0002 NEWTABLE   R3 0 0",
+            "0003 LOADK      R4 K0=1",
+            "0004 GETTABUP   R5 U0 K1='select'",
+            "0005 LOADK      R6 K2='#'",
+            "0006 LOADNIL    R7 0 0",
+            "0007 CALL       R5 0 2",
+            "0008 LOADK      R6 K0=1",
+            "0009 FORPREP    R4 jump=19",
+            "0010 GETTABUP   R8 U0 K1='select'",
+            "0011 MOVE       R9 7 0",
+            "0012 LOADNIL    R10 0 0",
+            "0013 CALL       R8 0 2",
+            "0014 EQ         R1 8 259",
+            "0015 JMP        R0 jump=19",
+            "0016 LEN        R9 3 0",
+            "0017 ADD        R9 9 256",
+            "0018 SETTABLE   R3 R9 R8",
+            "0019 FORLOOP    R4 jump=10",
+            "0020 GETTABUP   R4 U0 K4='BeginLobbyGameModeFence'",
+            "0021 NEWTABLE   R5 1 0",
+            "0022 GETTABUP   R6 U0 K5='EMainFlowStageType'",
+            "0023 GETTABLE   R6 R6 K6='Blasting'",
+            "0024 SETLIST    R5 1 1",
+            "0025 CLOSURE    R6 child[0]",
+            "0026 CALL       R4 3 1",
+            "0027 RETURN     R2 2 0",
+            "0028 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.21.0",
+          "first_line": 148,
+          "last_line": 195,
+          "constants": [
+            null,
+            "ESlotGroup",
+            "Blasting",
+            "SafehouseRangeBlasting",
+            "BlastingEquipment_1",
+            "BlastingEquipment_4",
+            "SafeHouseRange",
+            "SafeHouseRangeMP",
+            "SOLChallengeRange",
+            1,
+            "IsBlastInitialPistolWeaponSlotType",
+            "isvalid",
+            "id",
+            "Server",
+            "BlastingEquipmentServer",
+            "GetCurOutfitID",
+            "GetSlot",
+            "ESlotType",
+            "BlastSlotIdPistolPos1",
+            "GetEquipItem"
+          ],
+          "local_names": [
+            {
+              "name": "bBlastingGroup",
+              "start": 26,
+              "end": 125
+            },
+            {
+              "name": "bRange",
+              "start": 48,
+              "end": 125
+            },
+            {
+              "name": "(for index)",
+              "start": 57,
+              "end": 67
+            },
+            {
+              "name": "(for limit)",
+              "start": 57,
+              "end": 67
+            },
+            {
+              "name": "(for step)",
+              "start": 57,
+              "end": 67
+            },
+            {
+              "name": "i",
+              "start": 58,
+              "end": 66
+            },
+            {
+              "name": "blastServer",
+              "start": 78,
+              "end": 125
+            },
+            {
+              "name": "curOutfitID",
+              "start": 86,
+              "end": 125
+            },
+            {
+              "name": "outfitGroupId",
+              "start": 92,
+              "end": 125
+            },
+            {
+              "name": "initialSlot",
+              "start": 97,
+              "end": 125
+            },
+            {
+              "name": "initialItem",
+              "start": 108,
+              "end": 125
+            }
+          ],
+          "listing": [
+            "0001 GETUPVAL   R0 0 0",
+            "0002 EQ         R0 0 256",
+            "0003 JMP        R0 jump=5",
+            "0004 RETURN     R0 1 0",
+            "0005 GETUPVAL   R0 0 0",
+            "0006 GETTABUP   R1 U1 K1='ESlotGroup'",
+            "0007 GETTABLE   R1 R1 K2='Blasting'",
+            "0008 EQ         R1 0 1",
+            "0009 JMP        R0 jump=26",
+            "0010 GETUPVAL   R0 0 0",
+            "0011 GETTABUP   R1 U1 K1='ESlotGroup'",
+            "0012 GETTABLE   R1 R1 K3='SafehouseRangeBlasting'",
+            "0013 EQ         R1 0 1",
+            "0014 JMP        R0 jump=26",
+            "0015 GETUPVAL   R0 0 0",
+            "0016 GETTABUP   R1 U1 K1='ESlotGroup'",
+            "0017 GETTABLE   R1 R1 K4='BlastingEquipment_1'",
+            "0018 LE         R0 1 0",
+            "0019 JMP        R0 jump=25",
+            "0020 GETUPVAL   R0 0 0",
+            "0021 GETTABUP   R1 U1 K1='ESlotGroup'",
+            "0022 GETTABLE   R1 R1 K5='BlastingEquipment_4'",
+            "0023 LE         R1 0 1",
+            "0024 JMP        R0 jump=26",
+            "0025 LOADBOOL   R0 0 1",
+            "0026 LOADBOOL   R0 1 0",
+            "0027 GETUPVAL   R1 0 0",
+            "0028 GETTABUP   R2 U1 K1='ESlotGroup'",
+            "0029 GETTABLE   R2 R2 K6='SafeHouseRange'",
+            "0030 EQ         R1 1 2",
+            "0031 JMP        R0 jump=48",
+            "0032 GETUPVAL   R1 0 0",
+            "0033 GETTABUP   R2 U1 K1='ESlotGroup'",
+            "0034 GETTABLE   R2 R2 K7='SafeHouseRangeMP'",
+            "0035 EQ         R1 1 2",
+            "0036 JMP        R0 jump=48",
+            "0037 GETUPVAL   R1 0 0",
+            "0038 GETTABUP   R2 U1 K1='ESlotGroup'",
+            "0039 GETTABLE   R2 R2 K8='SOLChallengeRange'",
+            "0040 EQ         R1 1 2",
+            "0041 JMP        R0 jump=48",
+            "0042 GETUPVAL   R1 0 0",
+            "0043 GETTABUP   R2 U1 K1='ESlotGroup'",
+            "0044 GETTABLE   R2 R2 K3='SafehouseRangeBlasting'",
+            "0045 EQ         R1 1 2",
+            "0046 JMP        R0 jump=48",
+            "0047 LOADBOOL   R1 0 1",
+            "0048 LOADBOOL   R1 1 0",
+            "0049 TEST       R0 0 0",
+            "0050 JMP        R0 jump=53",
+            "0051 TEST       R1 0 1",
+            "0052 JMP        R0 jump=54",
+            "0053 RETURN     R0 1 0",
+            "0054 LOADK      R2 K9=1",
+            "0055 GETUPVAL   R3 2 0",
+            "0056 LEN        R3 3 0",
+            "0057 LOADK      R4 K9=1",
+            "0058 FORPREP    R2 jump=67",
+            "0059 GETTABUP   R6 U3 K10='IsBlastInitialPistolWeaponSlotType'",
+            "0060 GETTABUP   R7 U2 R5",
+            "0061 CALL       R6 2 2",
+            "0062 TEST       R6 0 0",
+            "0063 JMP        R0 jump=67",
+            "0064 LOADBOOL   R6 1 0",
+            "0065 SETUPVAL   R6 4 0",
+            "0066 RETURN     R0 1 0",
+            "0067 FORLOOP    R2 jump=59",
+            "0068 GETTABUP   R2 U1 K11='isvalid'",
+            "0069 GETUPVAL   R3 5 0",
+            "0070 CALL       R2 2 2",
+            "0071 TEST       R2 0 0",
+            "0072 JMP        R0 jump=76",
+            "0073 GETTABUP   R2 U5 K12='id'",
+            "0074 TEST       R2 0 1",
+            "0075 JMP        R0 jump=77",
+            "0076 RETURN     R0 1 0",
+            "0077 GETTABUP   R2 U1 K13='Server'",
+            "0078 GETTABLE   R2 R2 K14='BlastingEquipmentServer'",
+            "0079 EQ         R1 2 256",
+            "0080 JMP        R0 jump=84",
+            "0081 GETTABLE   R3 R2 K15='GetCurOutfitID'",
+            "0082 EQ         R0 3 256",
+            "0083 JMP        R0 jump=85",
+            "0084 RETURN     R0 1 0",
+            "0085 SELF       R3 R2 K15='GetCurOutfitID'",
+            "0086 CALL       R3 2 2",
+            "0087 EQ         R0 3 256",
+            "0088 JMP        R0 jump=90",
+            "0089 RETURN     R0 1 0",
+            "0090 GETTABUP   R4 U1 K1='ESlotGroup'",
+            "0091 GETTABLE   R4 R4 K2='Blasting'",
+            "0092 ADD        R4 4 3",
+            "0093 SELF       R5 R2 K16='GetSlot'",
+            "0094 GETTABUP   R7 U1 K17='ESlotType'",
+            "0095 GETTABLE   R7 R7 K18='BlastSlotIdPistolPos1'",
+            "0096 MOVE       R8 4 0",
+            "0097 CALL       R5 4 2",
+            "0098 GETTABUP   R6 U1 K11='isvalid'",
+            "0099 MOVE       R7 5 0",
+            "0100 CALL       R6 2 2",
+            "0101 TEST       R6 0 0",
+            "0102 JMP        R0 jump=106",
+            "0103 GETTABLE   R6 R5 K19='GetEquipItem'",
+            "0104 EQ         R0 6 256",
+            "0105 JMP        R0 jump=107",
+            "0106 RETURN     R0 1 0",
+            "0107 SELF       R6 R5 K19='GetEquipItem'",
+            "0108 CALL       R6 2 2",
+            "0109 GETTABUP   R7 U1 K11='isvalid'",
+            "0110 MOVE       R8 6 0",
+            "0111 CALL       R7 2 2",
+            "0112 TEST       R7 0 0",
+            "0113 JMP        R0 jump=117",
+            "0114 GETTABLE   R7 R6 K12='id'",
+            "0115 TEST       R7 0 1",
+            "0116 JMP        R0 jump=118",
+            "0117 RETURN     R0 1 0",
+            "0118 GETTABLE   R7 R6 K12='id'",
+            "0119 GETTABUP   R8 U5 K12='id'",
+            "0120 EQ         R1 7 8",
+            "0121 JMP        R0 jump=123",
+            "0122 LOADBOOL   R7 0 1",
+            "0123 LOADBOOL   R7 1 0",
+            "0124 SETUPVAL   R7 4 0",
+            "0125 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.22",
+          "first_line": 202,
+          "last_line": 204,
+          "constants": [
+            "ESlotType",
+            "BlastSlotIdStandardPos1",
+            "BlastSlotIdStandardPos4"
+          ],
+          "local_names": [
+            {
+              "name": "targetSlotType",
+              "start": 0,
+              "end": 12
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R1 U0 K0='ESlotType'",
+            "0002 GETTABLE   R1 R1 K1='BlastSlotIdStandardPos1'",
+            "0003 LE         R0 1 0",
+            "0004 JMP        R0 jump=9",
+            "0005 GETTABUP   R1 U0 K0='ESlotType'",
+            "0006 GETTABLE   R1 R1 K2='BlastSlotIdStandardPos4'",
+            "0007 LE         R1 0 1",
+            "0008 JMP        R0 jump=10",
+            "0009 LOADBOOL   R1 0 1",
+            "0010 LOADBOOL   R1 1 0",
+            "0011 RETURN     R1 2 0",
+            "0012 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.23",
+          "first_line": 209,
+          "last_line": 211,
+          "constants": [
+            "ESlotType",
+            "BlastSlotIdElitePos1",
+            "BlastSlotIdElitePos4"
+          ],
+          "local_names": [
+            {
+              "name": "targetSlotType",
+              "start": 0,
+              "end": 12
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R1 U0 K0='ESlotType'",
+            "0002 GETTABLE   R1 R1 K1='BlastSlotIdElitePos1'",
+            "0003 LE         R0 1 0",
+            "0004 JMP        R0 jump=9",
+            "0005 GETTABUP   R1 U0 K0='ESlotType'",
+            "0006 GETTABLE   R1 R1 K2='BlastSlotIdElitePos4'",
+            "0007 LE         R1 0 1",
+            "0008 JMP        R0 jump=10",
+            "0009 LOADBOOL   R1 0 1",
+            "0010 LOADBOOL   R1 1 0",
+            "0011 RETURN     R1 2 0",
+            "0012 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.24",
+          "first_line": 216,
+          "last_line": 218,
+          "constants": [
+            "ESlotType",
+            "BlastSlotIdSpecialPos1",
+            "BlastSlotIdSpecialPos4"
+          ],
+          "local_names": [
+            {
+              "name": "targetSlotType",
+              "start": 0,
+              "end": 12
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R1 U0 K0='ESlotType'",
+            "0002 GETTABLE   R1 R1 K1='BlastSlotIdSpecialPos1'",
+            "0003 LE         R0 1 0",
+            "0004 JMP        R0 jump=9",
+            "0005 GETTABUP   R1 U0 K0='ESlotType'",
+            "0006 GETTABLE   R1 R1 K2='BlastSlotIdSpecialPos4'",
+            "0007 LE         R1 0 1",
+            "0008 JMP        R0 jump=10",
+            "0009 LOADBOOL   R1 0 1",
+            "0010 LOADBOOL   R1 1 0",
+            "0011 RETURN     R1 2 0",
+            "0012 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.25",
+          "first_line": 230,
+          "last_line": 232,
+          "constants": [
+            "ESlotType",
+            "BlastSlotIdKnifePos1"
+          ],
+          "local_names": [
+            {
+              "name": "targetSlotType",
+              "start": 0,
+              "end": 8
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R1 U0 K0='ESlotType'",
+            "0002 GETTABLE   R1 R1 K1='BlastSlotIdKnifePos1'",
+            "0003 EQ         R1 0 1",
+            "0004 JMP        R0 jump=6",
+            "0005 LOADBOOL   R1 0 1",
+            "0006 LOADBOOL   R1 1 0",
+            "0007 RETURN     R1 2 0",
+            "0008 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.26",
+          "first_line": 237,
+          "last_line": 239,
+          "constants": [
+            "ESlotType",
+            "BlastSlotIdArmorPos1"
+          ],
+          "local_names": [
+            {
+              "name": "targetSlotType",
+              "start": 0,
+              "end": 8
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R1 U0 K0='ESlotType'",
+            "0002 GETTABLE   R1 R1 K1='BlastSlotIdArmorPos1'",
+            "0003 EQ         R1 0 1",
+            "0004 JMP        R0 jump=6",
+            "0005 LOADBOOL   R1 0 1",
+            "0006 LOADBOOL   R1 1 0",
+            "0007 RETURN     R1 2 0",
+            "0008 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.27",
+          "first_line": 244,
+          "last_line": 263,
+          "constants": [
+            "IsBlastSlotType",
+            "BlastOutfitType",
+            "OUTFIT_TYPE_UNKOWN",
+            "IsBlastPistolWeaponSlotType",
+            "OUTFIT_TYPE_PISTOL",
+            "IsBlastStandardWeaponSlotType",
+            "OUTFIT_TYPE_STANDARD",
+            "IsBlastEliteWeaponSlotType",
+            "OUTFIT_TYPE_ELITE",
+            "IsBlastSpecialWeaponSlotType",
+            "OUTFIT_TYPE_SPECIAL",
+            "IsBlastArmorSlotType",
+            "OUTFIT_TYPE_ARMOR",
+            "IsBlastMeleeWeaponSlotType",
+            "OUTFIT_TYPE_KNIFE"
+          ],
+          "local_names": [
+            {
+              "name": "slotType",
+              "start": 0,
+              "end": 66
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R1 U0 K0='IsBlastSlotType'",
+            "0002 MOVE       R2 0 0",
+            "0003 CALL       R1 2 2",
+            "0004 TEST       R1 0 1",
+            "0005 JMP        R0 jump=9",
+            "0006 GETTABUP   R1 U1 K1='BlastOutfitType'",
+            "0007 GETTABLE   R1 R1 K2='OUTFIT_TYPE_UNKOWN'",
+            "0008 RETURN     R1 2 0",
+            "0009 GETTABUP   R1 U0 K3='IsBlastPistolWeaponSlotType'",
+            "0010 MOVE       R2 0 0",
+            "0011 CALL       R1 2 2",
+            "0012 TEST       R1 0 0",
+            "0013 JMP        R0 jump=18",
+            "0014 GETTABUP   R1 U1 K1='BlastOutfitType'",
+            "0015 GETTABLE   R1 R1 K4='OUTFIT_TYPE_PISTOL'",
+            "0016 RETURN     R1 2 0",
+            "0017 JMP        R0 jump=66",
+            "0018 GETTABUP   R1 U0 K5='IsBlastStandardWeaponSlotType'",
+            "0019 MOVE       R2 0 0",
+            "0020 CALL       R1 2 2",
+            "0021 TEST       R1 0 0",
+            "0022 JMP        R0 jump=27",
+            "0023 GETTABUP   R1 U1 K1='BlastOutfitType'",
+            "0024 GETTABLE   R1 R1 K6='OUTFIT_TYPE_STANDARD'",
+            "0025 RETURN     R1 2 0",
+            "0026 JMP        R0 jump=66",
+            "0027 GETTABUP   R1 U0 K7='IsBlastEliteWeaponSlotType'",
+            "0028 MOVE       R2 0 0",
+            "0029 CALL       R1 2 2",
+            "0030 TEST       R1 0 0",
+            "0031 JMP        R0 jump=36",
+            "0032 GETTABUP   R1 U1 K1='BlastOutfitType'",
+            "0033 GETTABLE   R1 R1 K8='OUTFIT_TYPE_ELITE'",
+            "0034 RETURN     R1 2 0",
+            "0035 JMP        R0 jump=66",
+            "0036 GETTABUP   R1 U0 K9='IsBlastSpecialWeaponSlotType'",
+            "0037 MOVE       R2 0 0",
+            "0038 CALL       R1 2 2",
+            "0039 TEST       R1 0 0",
+            "0040 JMP        R0 jump=45",
+            "0041 GETTABUP   R1 U1 K1='BlastOutfitType'",
+            "0042 GETTABLE   R1 R1 K10='OUTFIT_TYPE_SPECIAL'",
+            "0043 RETURN     R1 2 0",
+            "0044 JMP        R0 jump=66",
+            "0045 GETTABUP   R1 U0 K11='IsBlastArmorSlotType'",
+            "0046 MOVE       R2 0 0",
+            "0047 CALL       R1 2 2",
+            "0048 TEST       R1 0 0",
+            "0049 JMP        R0 jump=54",
+            "0050 GETTABUP   R1 U1 K1='BlastOutfitType'",
+            "0051 GETTABLE   R1 R1 K12='OUTFIT_TYPE_ARMOR'",
+            "0052 RETURN     R1 2 0",
+            "0053 JMP        R0 jump=66",
+            "0054 GETTABUP   R1 U0 K13='IsBlastMeleeWeaponSlotType'",
+            "0055 MOVE       R2 0 0",
+            "0056 CALL       R1 2 2",
+            "0057 TEST       R1 0 0",
+            "0058 JMP        R0 jump=63",
+            "0059 GETTABUP   R1 U1 K1='BlastOutfitType'",
+            "0060 GETTABLE   R1 R1 K14='OUTFIT_TYPE_KNIFE'",
+            "0061 RETURN     R1 2 0",
+            "0062 JMP        R0 jump=66",
+            "0063 GETTABUP   R1 U1 K1='BlastOutfitType'",
+            "0064 GETTABLE   R1 R1 K2='OUTFIT_TYPE_UNKOWN'",
+            "0065 RETURN     R1 2 0",
+            "0066 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.28",
+          "first_line": 273,
+          "last_line": 281,
+          "constants": [
+            "GetItemConfigById",
+            "assertlog",
+            "itemData is nil, please check item id;[",
+            "]",
+            "isvalid",
+            "GameItemType",
+            "EExtraGameItemType",
+            "ArmedForceProp1",
+            "ArmedForceProp2"
+          ],
+          "local_names": [
+            {
+              "name": "id",
+              "start": 0,
+              "end": 33
+            },
+            {
+              "name": "itemData",
+              "start": 3,
+              "end": 33
+            },
+            {
+              "name": "bIsValid",
+              "start": 15,
+              "end": 33
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R1 U0 K0='GetItemConfigById'",
+            "0002 MOVE       R2 0 0",
+            "0003 CALL       R1 2 2",
+            "0004 GETTABUP   R2 U1 K1='assertlog'",
+            "0005 MOVE       R3 1 0",
+            "0006 LOADK      R4 K2='itemData is nil, please check item id;['",
+            "0007 MOVE       R5 0 0",
+            "0008 LOADK      R6 K3=']'",
+            "0009 CALL       R2 5 1",
+            "0010 GETTABUP   R2 U1 K4='isvalid'",
+            "0011 MOVE       R3 1 0",
+            "0012 CALL       R2 2 2",
+            "0013 TEST       R2 0 0",
+            "0014 JMP        R0 jump=16",
+            "0015 GETTABLE   R2 R1 K5='GameItemType'",
+            "0016 TEST       R2 0 1",
+            "0017 JMP        R0 jump=20",
+            "0018 LOADBOOL   R3 0 0",
+            "0019 RETURN     R3 2 0",
+            "0020 GETTABLE   R3 R1 K5='GameItemType'",
+            "0021 GETTABUP   R4 U1 K6='EExtraGameItemType'",
+            "0022 GETTABLE   R4 R4 K7='ArmedForceProp1'",
+            "0023 EQ         R1 3 4",
+            "0024 JMP        R0 jump=31",
+            "0025 GETTABLE   R3 R1 K5='GameItemType'",
+            "0026 GETTABUP   R4 U1 K6='EExtraGameItemType'",
+            "0027 GETTABLE   R4 R4 K8='ArmedForceProp2'",
+            "0028 EQ         R1 3 4",
+            "0029 JMP        R0 jump=31",
+            "0030 LOADBOOL   R3 0 1",
+            "0031 LOADBOOL   R3 1 0",
+            "0032 RETURN     R3 2 0",
+            "0033 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.29",
+          "first_line": 283,
+          "last_line": 285,
+          "constants": [
+            "gameItemType",
+            "EExtraGameItemType",
+            "ArmedForceProp1",
+            "ArmedForceProp2"
+          ],
+          "local_names": [
+            {
+              "name": "item",
+              "start": 0,
+              "end": 14
+            }
+          ],
+          "listing": [
+            "0001 GETTABLE   R1 R0 K0='gameItemType'",
+            "0002 GETTABUP   R2 U0 K1='EExtraGameItemType'",
+            "0003 GETTABLE   R2 R2 K2='ArmedForceProp1'",
+            "0004 EQ         R1 1 2",
+            "0005 JMP        R0 jump=12",
+            "0006 GETTABLE   R1 R0 K0='gameItemType'",
+            "0007 GETTABUP   R2 U0 K1='EExtraGameItemType'",
+            "0008 GETTABLE   R2 R2 K3='ArmedForceProp2'",
+            "0009 EQ         R1 1 2",
+            "0010 JMP        R0 jump=12",
+            "0011 LOADBOOL   R1 0 1",
+            "0012 LOADBOOL   R1 1 0",
+            "0013 RETURN     R1 2 0",
+            "0014 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.30",
+          "first_line": 290,
+          "last_line": 298,
+          "constants": [
+            "GetItemConfigById",
+            "isvalid",
+            "GameItemType",
+            "assertlog",
+            "itemData is nil, please check item id;[",
+            "]",
+            "EExtraGameItemType",
+            "ArmedForceProp1"
+          ],
+          "local_names": [
+            {
+              "name": "id",
+              "start": 0,
+              "end": 28
+            },
+            {
+              "name": "itemData",
+              "start": 3,
+              "end": 28
+            },
+            {
+              "name": "bIsValid",
+              "start": 9,
+              "end": 28
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R1 U0 K0='GetItemConfigById'",
+            "0002 MOVE       R2 0 0",
+            "0003 CALL       R1 2 2",
+            "0004 GETTABUP   R2 U1 K1='isvalid'",
+            "0005 MOVE       R3 1 0",
+            "0006 CALL       R2 2 2",
+            "0007 TEST       R2 0 0",
+            "0008 JMP        R0 jump=10",
+            "0009 GETTABLE   R2 R1 K2='GameItemType'",
+            "0010 TEST       R2 0 1",
+            "0011 JMP        R0 jump=14",
+            "0012 LOADBOOL   R3 0 0",
+            "0013 RETURN     R3 2 0",
+            "0014 GETTABUP   R3 U1 K3='assertlog'",
+            "0015 MOVE       R4 1 0",
+            "0016 LOADK      R5 K4='itemData is nil, please check item id;['",
+            "0017 MOVE       R6 0 0",
+            "0018 LOADK      R7 K5=']'",
+            "0019 CALL       R3 5 1",
+            "0020 GETTABLE   R3 R1 K2='GameItemType'",
+            "0021 GETTABUP   R4 U1 K6='EExtraGameItemType'",
+            "0022 GETTABLE   R4 R4 K7='ArmedForceProp1'",
+            "0023 EQ         R1 3 4",
+            "0024 JMP        R0 jump=26",
+            "0025 LOADBOOL   R3 0 1",
+            "0026 LOADBOOL   R3 1 0",
+            "0027 RETURN     R3 2 0",
+            "0028 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.31",
+          "first_line": 300,
+          "last_line": 302,
+          "constants": [
+            "gameItemType",
+            "EExtraGameItemType",
+            "ArmedForceProp1"
+          ],
+          "local_names": [
+            {
+              "name": "item",
+              "start": 0,
+              "end": 9
+            }
+          ],
+          "listing": [
+            "0001 GETTABLE   R1 R0 K0='gameItemType'",
+            "0002 GETTABUP   R2 U0 K1='EExtraGameItemType'",
+            "0003 GETTABLE   R2 R2 K2='ArmedForceProp1'",
+            "0004 EQ         R1 1 2",
+            "0005 JMP        R0 jump=7",
+            "0006 LOADBOOL   R1 0 1",
+            "0007 LOADBOOL   R1 1 0",
+            "0008 RETURN     R1 2 0",
+            "0009 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.32",
+          "first_line": 306,
+          "last_line": 310,
+          "constants": [
+            "GetItemConfigById",
+            "assertlog",
+            "itemData is nil, please check item id;[",
+            "]",
+            "GameItemType",
+            "EExtraGameItemType",
+            "ArmedForceProp2"
+          ],
+          "local_names": [
+            {
+              "name": "id",
+              "start": 0,
+              "end": 18
+            },
+            {
+              "name": "itemData",
+              "start": 3,
+              "end": 18
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R1 U0 K0='GetItemConfigById'",
+            "0002 MOVE       R2 0 0",
+            "0003 CALL       R1 2 2",
+            "0004 GETTABUP   R2 U1 K1='assertlog'",
+            "0005 MOVE       R3 1 0",
+            "0006 LOADK      R4 K2='itemData is nil, please check item id;['",
+            "0007 MOVE       R5 0 0",
+            "0008 LOADK      R6 K3=']'",
+            "0009 CALL       R2 5 1",
+            "0010 GETTABLE   R2 R1 K4='GameItemType'",
+            "0011 GETTABUP   R3 U1 K5='EExtraGameItemType'",
+            "0012 GETTABLE   R3 R3 K6='ArmedForceProp2'",
+            "0013 EQ         R1 2 3",
+            "0014 JMP        R0 jump=16",
+            "0015 LOADBOOL   R2 0 1",
+            "0016 LOADBOOL   R2 1 0",
+            "0017 RETURN     R2 2 0",
+            "0018 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.33",
+          "first_line": 312,
+          "last_line": 314,
+          "constants": [
+            "gameItemType",
+            "EExtraGameItemType",
+            "ArmedForceProp2"
+          ],
+          "local_names": [
+            {
+              "name": "item",
+              "start": 0,
+              "end": 9
+            }
+          ],
+          "listing": [
+            "0001 GETTABLE   R1 R0 K0='gameItemType'",
+            "0002 GETTABUP   R2 U0 K1='EExtraGameItemType'",
+            "0003 GETTABLE   R2 R2 K2='ArmedForceProp2'",
+            "0004 EQ         R1 1 2",
+            "0005 JMP        R0 jump=7",
+            "0006 LOADBOOL   R1 0 1",
+            "0007 LOADBOOL   R1 1 0",
+            "0008 RETURN     R1 2 0",
+            "0009 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.34",
+          "first_line": 317,
+          "last_line": 319,
+          "constants": [
+            "math",
+            "modf",
+            1000
+          ],
+          "local_names": [
+            {
+              "name": "extId",
+              "start": 0,
+              "end": 6
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R1 U0 K0='math'",
+            "0002 GETTABLE   R1 R1 K1='modf'",
+            "0003 DIV        R2 0 258",
+            "0004 TAILCALL   R1 2 0",
+            "0005 RETURN     R1 0 0",
+            "0006 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.36",
+          "first_line": 326,
+          "last_line": 335,
+          "constants": [
+            null,
+            "string",
+            "len",
+            11,
+            "match",
+            "^%d+$"
+          ],
+          "local_names": [
+            {
+              "name": "itemId",
+              "start": 0,
+              "end": 23
+            }
+          ],
+          "listing": [
+            "0001 EQ         R0 0 256",
+            "0002 JMP        R0 jump=5",
+            "0003 LOADBOOL   R1 0 0",
+            "0004 RETURN     R1 2 0",
+            "0005 GETTABUP   R1 U0 K1='string'",
+            "0006 GETTABLE   R1 R1 K2='len'",
+            "0007 MOVE       R2 0 0",
+            "0008 CALL       R1 2 2",
+            "0009 EQ         R0 1 259",
+            "0010 JMP        R0 jump=21",
+            "0011 GETTABUP   R1 U0 K1='string'",
+            "0012 GETTABLE   R1 R1 K4='match'",
+            "0013 MOVE       R2 0 0",
+            "0014 LOADK      R3 K5='^%d+$'",
+            "0015 CALL       R1 3 2",
+            "0016 TEST       R1 0 0",
+            "0017 JMP        R0 jump=21",
+            "0018 LOADBOOL   R1 1 0",
+            "0019 RETURN     R1 2 0",
+            "0020 JMP        R0 jump=23",
+            "0021 LOADBOOL   R1 0 0",
+            "0022 RETURN     R1 2 0",
+            "0023 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.37",
+          "first_line": 337,
+          "last_line": 347,
+          "constants": [
+            null,
+            "tonumber",
+            "math",
+            "floor",
+            10000000.0
+          ],
+          "local_names": [
+            {
+              "name": "itemId",
+              "start": 0,
+              "end": 19
+            }
+          ],
+          "listing": [
+            "0001 EQ         R0 0 256",
+            "0002 JMP        R0 jump=4",
+            "0003 RETURN     R0 1 0",
+            "0004 GETTABUP   R1 U0 K1='tonumber'",
+            "0005 MOVE       R2 0 0",
+            "0006 CALL       R1 2 2",
+            "0007 MOVE       R0 1 0",
+            "0008 EQ         R0 0 256",
+            "0009 JMP        R0 jump=11",
+            "0010 RETURN     R0 1 0",
+            "0011 GETTABUP   R1 U0 K2='math'",
+            "0012 GETTABLE   R1 R1 K3='floor'",
+            "0013 GETTABUP   R2 U0 K1='tonumber'",
+            "0014 MOVE       R3 0 0",
+            "0015 CALL       R2 2 2",
+            "0016 DIV        R2 2 260",
+            "0017 TAILCALL   R1 2 0",
+            "0018 RETURN     R1 0 0",
+            "0019 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.38",
+          "first_line": 350,
+          "last_line": 357,
+          "constants": [
+            null,
+            "math",
+            "floor",
+            "tonumber",
+            1000000000.0
+          ],
+          "local_names": [
+            {
+              "name": "itemId",
+              "start": 0,
+              "end": 12
+            }
+          ],
+          "listing": [
+            "0001 EQ         R0 0 256",
+            "0002 JMP        R0 jump=4",
+            "0003 RETURN     R0 1 0",
+            "0004 GETTABUP   R1 U0 K1='math'",
+            "0005 GETTABLE   R1 R1 K2='floor'",
+            "0006 GETTABUP   R2 U0 K3='tonumber'",
+            "0007 MOVE       R3 0 0",
+            "0008 CALL       R2 2 2",
+            "0009 DIV        R2 2 260",
+            "0010 TAILCALL   R1 2 0",
+            "0011 RETURN     R1 0 0",
+            "0012 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.39",
+          "first_line": 360,
+          "last_line": 365,
+          "constants": [
+            null,
+            "math",
+            "floor",
+            "GetMainTypeById",
+            1000000000.0,
+            10000000.0
+          ],
+          "local_names": [
+            {
+              "name": "itemId",
+              "start": 0,
+              "end": 14
+            }
+          ],
+          "listing": [
+            "0001 EQ         R0 0 256",
+            "0002 JMP        R0 jump=4",
+            "0003 RETURN     R0 1 0",
+            "0004 GETTABUP   R1 U0 K1='math'",
+            "0005 GETTABLE   R1 R1 K2='floor'",
+            "0006 GETTABUP   R2 U1 K3='GetMainTypeById'",
+            "0007 MOVE       R3 0 0",
+            "0008 CALL       R2 2 2",
+            "0009 MUL        R2 2 260",
+            "0010 SUB        R2 0 2",
+            "0011 DIV        R2 2 261",
+            "0012 TAILCALL   R1 2 0",
+            "0013 RETURN     R1 0 0",
+            "0014 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.40",
+          "first_line": 368,
+          "last_line": 374,
+          "constants": [
+            null,
+            "string",
+            "sub",
+            "tostring",
+            5,
+            6,
+            "tonumber"
+          ],
+          "local_names": [
+            {
+              "name": "itemId",
+              "start": 0,
+              "end": 16
+            },
+            {
+              "name": "thirdIdStr",
+              "start": 11,
+              "end": 16
+            }
+          ],
+          "listing": [
+            "0001 EQ         R0 0 256",
+            "0002 JMP        R0 jump=4",
+            "0003 RETURN     R0 1 0",
+            "0004 GETTABUP   R1 U0 K1='string'",
+            "0005 GETTABLE   R1 R1 K2='sub'",
+            "0006 GETTABUP   R2 U0 K3='tostring'",
+            "0007 MOVE       R3 0 0",
+            "0008 CALL       R2 2 2",
+            "0009 LOADK      R3 K4=5",
+            "0010 LOADK      R4 K5=6",
+            "0011 CALL       R1 4 2",
+            "0012 GETTABUP   R2 U0 K6='tonumber'",
+            "0013 MOVE       R3 1 0",
+            "0014 TAILCALL   R2 2 0",
+            "0015 RETURN     R2 0 0",
+            "0016 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.41",
+          "first_line": 377,
+          "last_line": 384,
+          "constants": [
+            "tostring",
+            10,
+            "math",
+            "floor"
+          ],
+          "local_names": [
+            {
+              "name": "itemID",
+              "start": 0,
+              "end": 24
+            },
+            {
+              "name": "prefix",
+              "start": 0,
+              "end": 24
+            },
+            {
+              "name": "len",
+              "start": 13,
+              "end": 24
+            },
+            {
+              "name": "div",
+              "start": 14,
+              "end": 24
+            }
+          ],
+          "listing": [
+            "0001 EQ         R0 0 1",
+            "0002 JMP        R0 jump=5",
+            "0003 LOADBOOL   R2 1 0",
+            "0004 RETURN     R2 2 0",
+            "0005 GETTABUP   R2 U0 K0='tostring'",
+            "0006 MOVE       R3 0 0",
+            "0007 CALL       R2 2 2",
+            "0008 LEN        R2 2 0",
+            "0009 GETTABUP   R3 U0 K0='tostring'",
+            "0010 MOVE       R4 1 0",
+            "0011 CALL       R3 2 2",
+            "0012 LEN        R3 3 0",
+            "0013 SUB        R2 2 3",
+            "0014 POW        R3 257 2",
+            "0015 GETTABUP   R4 U0 K2='math'",
+            "0016 GETTABLE   R4 R4 K3='floor'",
+            "0017 DIV        R5 0 3",
+            "0018 CALL       R4 2 2",
+            "0019 EQ         R1 4 1",
+            "0020 JMP        R0 jump=22",
+            "0021 LOADBOOL   R4 0 1",
+            "0022 LOADBOOL   R4 1 0",
+            "0023 RETURN     R4 2 0",
+            "0024 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.42",
+          "first_line": 387,
+          "last_line": 393,
+          "constants": [
+            null,
+            "string",
+            "sub",
+            "tostring",
+            7,
+            "tonumber",
+            0
+          ],
+          "local_names": [
+            {
+              "name": "itemId",
+              "start": 0,
+              "end": 19
+            },
+            {
+              "name": "qualityIdStr",
+              "start": 11,
+              "end": 19
+            }
+          ],
+          "listing": [
+            "0001 EQ         R0 0 256",
+            "0002 JMP        R0 jump=4",
+            "0003 RETURN     R0 1 0",
+            "0004 GETTABUP   R1 U0 K1='string'",
+            "0005 GETTABLE   R1 R1 K2='sub'",
+            "0006 GETTABUP   R2 U0 K3='tostring'",
+            "0007 MOVE       R3 0 0",
+            "0008 CALL       R2 2 2",
+            "0009 LOADK      R3 K4=7",
+            "0010 LOADK      R4 K4=7",
+            "0011 CALL       R1 4 2",
+            "0012 GETTABUP   R2 U0 K5='tonumber'",
+            "0013 MOVE       R3 1 0",
+            "0014 CALL       R2 2 2",
+            "0015 TEST       R2 0 1",
+            "0016 JMP        R0 jump=18",
+            "0017 LOADK      R2 K6=0",
+            "0018 RETURN     R2 2 0",
+            "0019 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.43",
+          "first_line": 396,
+          "last_line": 402,
+          "constants": [
+            null,
+            "string",
+            "sub",
+            "tostring",
+            8,
+            "tonumber"
+          ],
+          "local_names": [
+            {
+              "name": "itemId",
+              "start": 0,
+              "end": 16
+            },
+            {
+              "name": "durableIdStr",
+              "start": 11,
+              "end": 16
+            }
+          ],
+          "listing": [
+            "0001 EQ         R0 0 256",
+            "0002 JMP        R0 jump=4",
+            "0003 RETURN     R0 1 0",
+            "0004 GETTABUP   R1 U0 K1='string'",
+            "0005 GETTABLE   R1 R1 K2='sub'",
+            "0006 GETTABUP   R2 U0 K3='tostring'",
+            "0007 MOVE       R3 0 0",
+            "0008 CALL       R2 2 2",
+            "0009 LOADK      R3 K4=8",
+            "0010 LOADK      R4 K4=8",
+            "0011 CALL       R1 4 2",
+            "0012 GETTABUP   R2 U0 K5='tonumber'",
+            "0013 MOVE       R3 1 0",
+            "0014 TAILCALL   R2 2 0",
+            "0015 RETURN     R2 0 0",
+            "0016 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.44",
+          "first_line": 404,
+          "last_line": 413,
+          "constants": [
+            null,
+            "Facade",
+            "TableManager",
+            "GetTable",
+            "ItemHealth",
+            "type",
+            "number",
+            "tostring"
+          ],
+          "local_names": [
+            {
+              "name": "itemId",
+              "start": 0,
+              "end": 20
+            },
+            {
+              "name": "ItemHealthTable",
+              "start": 8,
+              "end": 20
+            }
+          ],
+          "listing": [
+            "0001 EQ         R0 0 256",
+            "0002 JMP        R0 jump=4",
+            "0003 RETURN     R0 1 0",
+            "0004 GETTABUP   R1 U0 K1='Facade'",
+            "0005 GETTABLE   R1 R1 K2='TableManager'",
+            "0006 SELF       R1 R1 K3='GetTable'",
+            "0007 LOADK      R3 K4='ItemHealth'",
+            "0008 CALL       R1 3 2",
+            "0009 GETTABUP   R2 U0 K5='type'",
+            "0010 MOVE       R3 0 0",
+            "0011 CALL       R2 2 2",
+            "0012 EQ         R0 2 262",
+            "0013 JMP        R0 jump=18",
+            "0014 GETTABUP   R2 U0 K7='tostring'",
+            "0015 MOVE       R3 0 0",
+            "0016 CALL       R2 2 2",
+            "0017 MOVE       R0 2 0",
+            "0018 GETTABLE   R2 R1 R0",
+            "0019 RETURN     R2 2 0",
+            "0020 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.45",
+          "first_line": 416,
+          "last_line": 433,
+          "constants": [
+            null,
+            "Facade",
+            "TableManager",
+            "GetTable",
+            "Mall",
+            "Server",
+            "ShopServer",
+            "GetShopItemsForExchange",
+            "next",
+            "ipairs",
+            1,
+            "exchangeId",
+            "CostItem",
+            "ID"
+          ],
+          "local_names": [
+            {
+              "name": "itemId",
+              "start": 0,
+              "end": 53
+            },
+            {
+              "name": "mallCfg",
+              "start": 8,
+              "end": 53
+            },
+            {
+              "name": "exchangeShopItems",
+              "start": 12,
+              "end": 53
+            },
+            {
+              "name": "(for generator)",
+              "start": 22,
+              "end": 50
+            },
+            {
+              "name": "(for state)",
+              "start": 22,
+              "end": 50
+            },
+            {
+              "name": "(for control)",
+              "start": 22,
+              "end": 50
+            },
+            {
+              "name": "k",
+              "start": 23,
+              "end": 48
+            },
+            {
+              "name": "v",
+              "start": 23,
+              "end": 48
+            },
+            {
+              "name": "(for index)",
+              "start": 26,
+              "end": 48
+            },
+            {
+              "name": "(for limit)",
+              "start": 26,
+              "end": 48
+            },
+            {
+              "name": "(for step)",
+              "start": 26,
+              "end": 48
+            },
+            {
+              "name": "i",
+              "start": 27,
+              "end": 47
+            },
+            {
+              "name": "localInfo",
+              "start": 29,
+              "end": 47
+            }
+          ],
+          "listing": [
+            "0001 EQ         R0 0 256",
+            "0002 JMP        R0 jump=4",
+            "0003 RETURN     R0 1 0",
+            "0004 GETTABUP   R1 U0 K1='Facade'",
+            "0005 GETTABLE   R1 R1 K2='TableManager'",
+            "0006 SELF       R1 R1 K3='GetTable'",
+            "0007 LOADK      R3 K4='Mall'",
+            "0008 CALL       R1 3 2",
+            "0009 GETTABUP   R2 U0 K5='Server'",
+            "0010 GETTABLE   R2 R2 K6='ShopServer'",
+            "0011 SELF       R2 R2 K7='GetShopItemsForExchange'",
+            "0012 CALL       R2 2 2",
+            "0013 TEST       R2 0 0",
+            "0014 JMP        R0 jump=51",
+            "0015 GETTABUP   R3 U0 K8='next'",
+            "0016 MOVE       R4 2 0",
+            "0017 CALL       R3 2 2",
+            "0018 TEST       R3 0 0",
+            "0019 JMP        R0 jump=51",
+            "0020 GETTABUP   R3 U0 K9='ipairs'",
+            "0021 MOVE       R4 2 0",
+            "0022 CALL       R3 2 4",
+            "0023 JMP        R0 jump=49",
+            "0024 LOADK      R8 K10=1",
+            "0025 GETUPVAL   R9 1 0",
+            "0026 LOADK      R10 K10=1",
+            "0027 FORPREP    R8 jump=48",
+            "0028 GETTABLE   R12 R7 K11='exchangeId'",
+            "0029 GETTABLE   R12 R1 R12",
+            "0030 TEST       R12 0 0",
+            "0031 JMP        R0 jump=48",
+            "0032 LOADK      R13 K12='CostItem'",
+            "0033 MOVE       R14 11 0",
+            "0034 LOADK      R15 K13='ID'",
+            "0035 CONCAT     R13 13 15",
+            "0036 GETTABLE   R13 R12 R13",
+            "0037 TEST       R13 0 0",
+            "0038 JMP        R0 jump=48",
+            "0039 LOADK      R13 K12='CostItem'",
+            "0040 MOVE       R14 11 0",
+            "0041 LOADK      R15 K13='ID'",
+            "0042 CONCAT     R13 13 15",
+            "0043 GETTABLE   R13 R12 R13",
+            "0044 EQ         R0 13 0",
+            "0045 JMP        R0 jump=48",
+            "0046 LOADBOOL   R13 1 0",
+            "0047 RETURN     R13 2 0",
+            "0048 FORLOOP    R8 jump=28",
+            "0049 TFORCALL   R3 0 2",
+            "0050 TFORLOOP   R5 jump=24",
+            "0051 LOADBOOL   R3 0 0",
+            "0052 RETURN     R3 2 0",
+            "0053 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.46",
+          "first_line": 435,
+          "last_line": 454,
+          "constants": [
+            null,
+            "CacheExchangeList",
+            "Server",
+            "ShopServer",
+            "GetShopItemsForExchange",
+            "next",
+            "ipairs",
+            "CheckIsInCostList",
+            "table",
+            "insert",
+            "exchangeId"
+          ],
+          "local_names": [
+            {
+              "name": "itemId",
+              "start": 0,
+              "end": 43
+            },
+            {
+              "name": "canExchangeIdList",
+              "start": 10,
+              "end": 39
+            },
+            {
+              "name": "exchangeShopItems",
+              "start": 14,
+              "end": 39
+            },
+            {
+              "name": "(for generator)",
+              "start": 24,
+              "end": 37
+            },
+            {
+              "name": "(for state)",
+              "start": 24,
+              "end": 37
+            },
+            {
+              "name": "(for control)",
+              "start": 24,
+              "end": 37
+            },
+            {
+              "name": "k",
+              "start": 25,
+              "end": 35
+            },
+            {
+              "name": "v",
+              "start": 25,
+              "end": 35
+            }
+          ],
+          "listing": [
+            "0001 EQ         R0 0 256",
+            "0002 JMP        R0 jump=4",
+            "0003 RETURN     R0 1 0",
+            "0004 GETTABUP   R1 U0 K1='CacheExchangeList'",
+            "0005 GETTABLE   R1 R1 R0",
+            "0006 EQ         R0 1 256",
+            "0007 JMP        R0 jump=40",
+            "0008 NEWTABLE   R1 0 0",
+            "0009 SETTABUP   U0 K1='CacheExchangeList' R1",
+            "0010 NEWTABLE   R1 0 0",
+            "0011 GETTABUP   R2 U1 K2='Server'",
+            "0012 GETTABLE   R2 R2 K3='ShopServer'",
+            "0013 SELF       R2 R2 K4='GetShopItemsForExchange'",
+            "0014 CALL       R2 2 2",
+            "0015 TEST       R2 0 0",
+            "0016 JMP        R0 jump=38",
+            "0017 GETTABUP   R3 U1 K5='next'",
+            "0018 MOVE       R4 2 0",
+            "0019 CALL       R3 2 2",
+            "0020 TEST       R3 0 0",
+            "0021 JMP        R0 jump=38",
+            "0022 GETTABUP   R3 U1 K6='ipairs'",
+            "0023 MOVE       R4 2 0",
+            "0024 CALL       R3 2 4",
+            "0025 JMP        R0 jump=36",
+            "0026 SELF       R8 R7 K7='CheckIsInCostList'",
+            "0027 MOVE       R10 0 0",
+            "0028 CALL       R8 3 2",
+            "0029 TEST       R8 0 0",
+            "0030 JMP        R0 jump=36",
+            "0031 GETTABUP   R8 U1 K8='table'",
+            "0032 GETTABLE   R8 R8 K9='insert'",
+            "0033 MOVE       R9 1 0",
+            "0034 GETTABLE   R10 R7 K10='exchangeId'",
+            "0035 CALL       R8 3 1",
+            "0036 TFORCALL   R3 0 2",
+            "0037 TFORLOOP   R5 jump=26",
+            "0038 GETTABUP   R3 U0 K1='CacheExchangeList'",
+            "0039 SETTABLE   R3 R0 R1",
+            "0040 GETTABUP   R1 U0 K1='CacheExchangeList'",
+            "0041 GETTABLE   R1 R1 R0",
+            "0042 RETURN     R1 2 0",
+            "0043 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.47",
+          "first_line": 456,
+          "last_line": 463,
+          "constants": [
+            "GetMainTypeById",
+            "GetSubTypeById",
+            "ensure",
+            "EItemType",
+            "ExtendItem",
+            "ItemConfig",
+            "MapExtSubType2IconPath_Selected"
+          ],
+          "local_names": [
+            {
+              "name": "extItemId",
+              "start": 0,
+              "end": 19
+            },
+            {
+              "name": "itemMainType",
+              "start": 3,
+              "end": 19
+            },
+            {
+              "name": "itemSubType",
+              "start": 6,
+              "end": 19
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R1 U0 K0='GetMainTypeById'",
+            "0002 MOVE       R2 0 0",
+            "0003 CALL       R1 2 2",
+            "0004 GETTABUP   R2 U0 K1='GetSubTypeById'",
+            "0005 MOVE       R3 0 0",
+            "0006 CALL       R2 2 2",
+            "0007 GETTABUP   R3 U1 K2='ensure'",
+            "0008 GETTABUP   R4 U1 K3='EItemType'",
+            "0009 GETTABLE   R4 R4 K4='ExtendItem'",
+            "0010 EQ         R1 1 4",
+            "0011 JMP        R0 jump=13",
+            "0012 LOADBOOL   R4 0 1",
+            "0013 LOADBOOL   R4 1 0",
+            "0014 CALL       R3 2 1",
+            "0015 GETTABUP   R3 U1 K5='ItemConfig'",
+            "0016 GETTABLE   R3 R3 K6='MapExtSubType2IconPath_Selected'",
+            "0017 GETTABLE   R3 R3 R2",
+            "0018 RETURN     R3 2 0",
+            "0019 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.48",
+          "first_line": 465,
+          "last_line": 472,
+          "constants": [
+            "GetMainTypeById",
+            "GetSubTypeById",
+            "ensure",
+            "EItemType",
+            "ExtendItem",
+            "ItemConfig",
+            "MapExtSubType2IconPath_NonSelected"
+          ],
+          "local_names": [
+            {
+              "name": "extItemId",
+              "start": 0,
+              "end": 19
+            },
+            {
+              "name": "itemMainType",
+              "start": 3,
+              "end": 19
+            },
+            {
+              "name": "itemSubType",
+              "start": 6,
+              "end": 19
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R1 U0 K0='GetMainTypeById'",
+            "0002 MOVE       R2 0 0",
+            "0003 CALL       R1 2 2",
+            "0004 GETTABUP   R2 U0 K1='GetSubTypeById'",
+            "0005 MOVE       R3 0 0",
+            "0006 CALL       R2 2 2",
+            "0007 GETTABUP   R3 U1 K2='ensure'",
+            "0008 GETTABUP   R4 U1 K3='EItemType'",
+            "0009 GETTABLE   R4 R4 K4='ExtendItem'",
+            "0010 EQ         R1 1 4",
+            "0011 JMP        R0 jump=13",
+            "0012 LOADBOOL   R4 0 1",
+            "0013 LOADBOOL   R4 1 0",
+            "0014 CALL       R3 2 1",
+            "0015 GETTABUP   R3 U1 K5='ItemConfig'",
+            "0016 GETTABLE   R3 R3 K6='MapExtSubType2IconPath_NonSelected'",
+            "0017 GETTABLE   R3 R3 R2",
+            "0018 RETURN     R3 2 0",
+            "0019 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.49",
+          "first_line": 474,
+          "last_line": 488,
+          "constants": [
+            "Facade",
+            "TableManager",
+            "GetTable",
+            "ExtensionBoxDesc",
+            "ipairs",
+            "ItemID",
+            "logerror",
+            "ExtensionBoxDesc表格中传入的extItemId没有对应的配置，请检查",
+            "TypeIcon",
+            "TypeTips"
+          ],
+          "local_names": [
+            {
+              "name": "extItemId",
+              "start": 0,
+              "end": 27
+            },
+            {
+              "name": "extensionBoxDescTable",
+              "start": 5,
+              "end": 27
+            },
+            {
+              "name": "itemCfg",
+              "start": 6,
+              "end": 27
+            },
+            {
+              "name": "(for generator)",
+              "start": 9,
+              "end": 17
+            },
+            {
+              "name": "(for state)",
+              "start": 9,
+              "end": 17
+            },
+            {
+              "name": "(for control)",
+              "start": 9,
+              "end": 17
+            },
+            {
+              "name": "_",
+              "start": 10,
+              "end": 15
+            },
+            {
+              "name": "cfg",
+              "start": 10,
+              "end": 15
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R1 U0 K0='Facade'",
+            "0002 GETTABLE   R1 R1 K1='TableManager'",
+            "0003 SELF       R1 R1 K2='GetTable'",
+            "0004 LOADK      R3 K3='ExtensionBoxDesc'",
+            "0005 CALL       R1 3 2",
+            "0006 VARARG     R2 0 0",
+            "0007 GETTABUP   R3 U0 K4='ipairs'",
+            "0008 MOVE       R4 1 0",
+            "0009 CALL       R3 2 4",
+            "0010 JMP        R0 jump=16",
+            "0011 GETTABLE   R8 R7 K5='ItemID'",
+            "0012 EQ         R0 0 8",
+            "0013 JMP        R0 jump=16",
+            "0014 MOVE       R2 7 0",
+            "0015 JMP        R0 jump=18",
+            "0016 TFORCALL   R3 0 2",
+            "0017 TFORLOOP   R5 jump=11",
+            "0018 TEST       R2 0 1",
+            "0019 JMP        R0 jump=24",
+            "0020 GETTABUP   R3 U0 K6='logerror'",
+            "0021 LOADK      R4 K7='ExtensionBoxDesc表格中传入的extItemId没有对应的配置，请检查'",
+            "0022 CALL       R3 2 1",
+            "0023 RETURN     R0 1 0",
+            "0024 GETTABLE   R3 R2 K8='TypeIcon'",
+            "0025 GETTABLE   R4 R2 K9='TypeTips'",
+            "0026 RETURN     R3 3 0",
+            "0027 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.50",
+          "first_line": 519,
+          "last_line": 538,
+          "constants": [
+            "GetMainTypeById",
+            "EItemType",
+            "Equipment",
+            "GetSubTypeById",
+            "EEquipmentType",
+            "Bag",
+            "GetBagFuncTable",
+            "ChestHanging",
+            "GetChestHangingFuncTable",
+            "SafeBox",
+            "GetSafeBoxFuncTable",
+            "BagIncrementY",
+            0
+          ],
+          "local_names": [
+            {
+              "name": "id",
+              "start": 0,
+              "end": 45
+            },
+            {
+              "name": "itemMainType",
+              "start": 3,
+              "end": 45
+            },
+            {
+              "name": "itemSubType",
+              "start": 10,
+              "end": 41
+            },
+            {
+              "name": "row",
+              "start": 11,
+              "end": 41
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R1 U0 K0='GetMainTypeById'",
+            "0002 MOVE       R2 0 0",
+            "0003 CALL       R1 2 2",
+            "0004 GETTABUP   R2 U1 K1='EItemType'",
+            "0005 GETTABLE   R2 R2 K2='Equipment'",
+            "0006 EQ         R0 1 2",
+            "0007 JMP        R0 jump=42",
+            "0008 GETTABUP   R2 U0 K3='GetSubTypeById'",
+            "0009 MOVE       R3 0 0",
+            "0010 CALL       R2 2 2",
+            "0011 VARARG     R3 0 0",
+            "0012 GETTABUP   R4 U1 K4='EEquipmentType'",
+            "0013 GETTABLE   R4 R4 K5='Bag'",
+            "0014 EQ         R0 2 4",
+            "0015 JMP        R0 jump=21",
+            "0016 GETTABUP   R4 U2 K6='GetBagFuncTable'",
+            "0017 MOVE       R5 0 0",
+            "0018 CALL       R4 2 2",
+            "0019 MOVE       R3 4 0",
+            "0020 JMP        R0 jump=38",
+            "0021 GETTABUP   R4 U1 K4='EEquipmentType'",
+            "0022 GETTABLE   R4 R4 K7='ChestHanging'",
+            "0023 EQ         R0 2 4",
+            "0024 JMP        R0 jump=30",
+            "0025 GETTABUP   R4 U2 K8='GetChestHangingFuncTable'",
+            "0026 MOVE       R5 0 0",
+            "0027 CALL       R4 2 2",
+            "0028 MOVE       R3 4 0",
+            "0029 JMP        R0 jump=38",
+            "0030 GETTABUP   R4 U1 K4='EEquipmentType'",
+            "0031 GETTABLE   R4 R4 K9='SafeBox'",
+            "0032 EQ         R0 2 4",
+            "0033 JMP        R0 jump=38",
+            "0034 GETTABUP   R4 U2 K10='GetSafeBoxFuncTable'",
+            "0035 MOVE       R5 0 0",
+            "0036 CALL       R4 2 2",
+            "0037 MOVE       R3 4 0",
+            "0038 TEST       R3 0 0",
+            "0039 JMP        R0 jump=42",
+            "0040 GETTABLE   R4 R3 K11='BagIncrementY'",
+            "0041 RETURN     R4 2 0",
+            "0042 LOADK      R2 K12=0",
+            "0043 LOADK      R3 K12=0",
+            "0044 RETURN     R2 3 0",
+            "0045 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.51",
+          "first_line": 540,
+          "last_line": 546,
+          "constants": [
+            "string",
+            "sub",
+            1,
+            4,
+            "DFMGlobalConst",
+            "GetGlobalConst",
+            "ItemNotAllowedIntoDS",
+            "split",
+            ",",
+            "table",
+            "contains"
+          ],
+          "local_names": [
+            {
+              "name": "id",
+              "start": 0,
+              "end": 25
+            },
+            {
+              "name": "idstr",
+              "start": 6,
+              "end": 25
+            },
+            {
+              "name": "cantIntoDSstr",
+              "start": 11,
+              "end": 25
+            },
+            {
+              "name": "strList",
+              "start": 16,
+              "end": 25
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R1 U0 K0='string'",
+            "0002 GETTABLE   R1 R1 K1='sub'",
+            "0003 MOVE       R2 0 0",
+            "0004 LOADK      R3 K2=1",
+            "0005 LOADK      R4 K3=4",
+            "0006 CALL       R1 4 2",
+            "0007 GETTABUP   R2 U0 K4='DFMGlobalConst'",
+            "0008 GETTABLE   R2 R2 K5='GetGlobalConst'",
+            "0009 LOADK      R3 K6='ItemNotAllowedIntoDS'",
+            "0010 LOADK      R4 K2=1",
+            "0011 CALL       R2 3 2",
+            "0012 GETTABUP   R3 U0 K0='string'",
+            "0013 GETTABLE   R3 R3 K7='split'",
+            "0014 MOVE       R4 2 0",
+            "0015 LOADK      R5 K8=','",
+            "0016 CALL       R3 3 2",
+            "0017 GETTABUP   R4 U0 K9='table'",
+            "0018 GETTABLE   R4 R4 K10='contains'",
+            "0019 TESTSET    R5 3 1",
+            "0020 JMP        R0 jump=22",
+            "0021 NEWTABLE   R5 0 0",
+            "0022 MOVE       R6 1 0",
+            "0023 TAILCALL   R4 3 0",
+            "0024 RETURN     R4 0 0",
+            "0025 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.52",
+          "first_line": 548,
+          "last_line": 557,
+          "constants": [
+            "string",
+            "sub",
+            1,
+            4,
+            "1611"
+          ],
+          "local_names": [
+            {
+              "name": "id",
+              "start": 0,
+              "end": 14
+            },
+            {
+              "name": "idstr",
+              "start": 6,
+              "end": 14
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R1 U0 K0='string'",
+            "0002 GETTABLE   R1 R1 K1='sub'",
+            "0003 MOVE       R2 0 0",
+            "0004 LOADK      R3 K2=1",
+            "0005 LOADK      R4 K3=4",
+            "0006 CALL       R1 4 2",
+            "0007 EQ         R0 1 260",
+            "0008 JMP        R0 jump=12",
+            "0009 LOADBOOL   R2 1 0",
+            "0010 RETURN     R2 2 0",
+            "0011 JMP        R0 jump=14",
+            "0012 LOADBOOL   R2 0 0",
+            "0013 RETURN     R2 2 0",
+            "0014 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.53",
+          "first_line": 559,
+          "last_line": 568,
+          "constants": [
+            "Facade",
+            "TableManager",
+            "GetTable",
+            "SafeAndCardPackConfig",
+            "ipairs",
+            "tonumber",
+            "VirtualItemID"
+          ],
+          "local_names": [
+            {
+              "name": "id",
+              "start": 0,
+              "end": 20
+            },
+            {
+              "name": "permissionInfo",
+              "start": 5,
+              "end": 20
+            },
+            {
+              "name": "(for generator)",
+              "start": 10,
+              "end": 19
+            },
+            {
+              "name": "(for state)",
+              "start": 10,
+              "end": 19
+            },
+            {
+              "name": "(for control)",
+              "start": 10,
+              "end": 19
+            },
+            {
+              "name": "_",
+              "start": 11,
+              "end": 17
+            },
+            {
+              "name": "permissionItemInfo",
+              "start": 11,
+              "end": 17
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R1 U0 K0='Facade'",
+            "0002 GETTABLE   R1 R1 K1='TableManager'",
+            "0003 SELF       R1 R1 K2='GetTable'",
+            "0004 LOADK      R3 K3='SafeAndCardPackConfig'",
+            "0005 CALL       R1 3 2",
+            "0006 TEST       R1 0 0",
+            "0007 JMP        R0 jump=20",
+            "0008 GETTABUP   R2 U0 K4='ipairs'",
+            "0009 MOVE       R3 1 0",
+            "0010 CALL       R2 2 4",
+            "0011 JMP        R0 jump=18",
+            "0012 GETTABUP   R7 U0 K5='tonumber'",
+            "0013 GETTABLE   R8 R6 K6='VirtualItemID'",
+            "0014 CALL       R7 2 2",
+            "0015 EQ         R0 7 0",
+            "0016 JMP        R0 jump=18",
+            "0017 RETURN     R6 2 0",
+            "0018 TFORCALL   R2 0 2",
+            "0019 TFORLOOP   R4 jump=12",
+            "0020 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.54",
+          "first_line": 570,
+          "last_line": 581,
+          "constants": [
+            "Facade",
+            "TableManager",
+            "GetTable",
+            "SafeAndCardPackConfig",
+            "ipairs",
+            "Type",
+            "VirtualItemID"
+          ],
+          "local_names": [
+            {
+              "name": "type",
+              "start": 0,
+              "end": 21
+            },
+            {
+              "name": "permissionInfo",
+              "start": 5,
+              "end": 21
+            },
+            {
+              "name": "itemArr",
+              "start": 6,
+              "end": 21
+            },
+            {
+              "name": "(for generator)",
+              "start": 11,
+              "end": 19
+            },
+            {
+              "name": "(for state)",
+              "start": 11,
+              "end": 19
+            },
+            {
+              "name": "(for control)",
+              "start": 11,
+              "end": 19
+            },
+            {
+              "name": "_",
+              "start": 12,
+              "end": 17
+            },
+            {
+              "name": "permissionItemInfo",
+              "start": 12,
+              "end": 17
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R1 U0 K0='Facade'",
+            "0002 GETTABLE   R1 R1 K1='TableManager'",
+            "0003 SELF       R1 R1 K2='GetTable'",
+            "0004 LOADK      R3 K3='SafeAndCardPackConfig'",
+            "0005 CALL       R1 3 2",
+            "0006 NEWTABLE   R2 0 0",
+            "0007 TEST       R1 0 0",
+            "0008 JMP        R0 jump=20",
+            "0009 GETTABUP   R3 U0 K4='ipairs'",
+            "0010 MOVE       R4 1 0",
+            "0011 CALL       R3 2 4",
+            "0012 JMP        R0 jump=18",
+            "0013 GETTABLE   R8 R7 K5='Type'",
+            "0014 EQ         R0 8 0",
+            "0015 JMP        R0 jump=18",
+            "0016 GETTABLE   R8 R7 K6='VirtualItemID'",
+            "0017 SETTABLE   R2 R8 R7",
+            "0018 TFORCALL   R3 0 2",
+            "0019 TFORLOOP   R5 jump=13",
+            "0020 RETURN     R2 2 0",
+            "0021 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.55",
+          "first_line": 584,
+          "last_line": 594,
+          "constants": [
+            "Facade",
+            "TableManager",
+            "GetTable",
+            "SafeBoxSkin",
+            "ipairs",
+            "ItemBase",
+            "New",
+            "tonumber",
+            "SkinID",
+            "table",
+            "insert"
+          ],
+          "local_names": [
+            {
+              "name": "safeboxSkinInfos",
+              "start": 5,
+              "end": 27
+            },
+            {
+              "name": "safeboxSkinArr",
+              "start": 6,
+              "end": 27
+            },
+            {
+              "name": "(for generator)",
+              "start": 11,
+              "end": 25
+            },
+            {
+              "name": "(for state)",
+              "start": 11,
+              "end": 25
+            },
+            {
+              "name": "(for control)",
+              "start": 11,
+              "end": 25
+            },
+            {
+              "name": "_",
+              "start": 12,
+              "end": 23
+            },
+            {
+              "name": "skinInfo",
+              "start": 12,
+              "end": 23
+            },
+            {
+              "name": "skinItem",
+              "start": 18,
+              "end": 23
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R0 U0 K0='Facade'",
+            "0002 GETTABLE   R0 R0 K1='TableManager'",
+            "0003 SELF       R0 R0 K2='GetTable'",
+            "0004 LOADK      R2 K3='SafeBoxSkin'",
+            "0005 CALL       R0 3 2",
+            "0006 NEWTABLE   R1 0 0",
+            "0007 TEST       R0 0 0",
+            "0008 JMP        R0 jump=26",
+            "0009 GETTABUP   R2 U0 K4='ipairs'",
+            "0010 MOVE       R3 0 0",
+            "0011 CALL       R2 2 4",
+            "0012 JMP        R0 jump=24",
+            "0013 GETTABUP   R7 U0 K5='ItemBase'",
+            "0014 SELF       R7 R7 K6='New'",
+            "0015 GETTABUP   R9 U0 K7='tonumber'",
+            "0016 GETTABLE   R10 R6 K8='SkinID'",
+            "0017 CALL       R9 2 0",
+            "0018 CALL       R7 0 2",
+            "0019 GETTABUP   R8 U0 K9='table'",
+            "0020 GETTABLE   R8 R8 K10='insert'",
+            "0021 MOVE       R9 1 0",
+            "0022 MOVE       R10 7 0",
+            "0023 CALL       R8 3 1",
+            "0024 TFORCALL   R2 0 2",
+            "0025 TFORLOOP   R4 jump=13",
+            "0026 RETURN     R1 2 0",
+            "0027 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.56",
+          "first_line": 596,
+          "last_line": 605,
+          "constants": [
+            "Facade",
+            "TableManager",
+            "GetTable",
+            "SafeBoxSkin",
+            "ipairs",
+            "tonumber",
+            "SkinID"
+          ],
+          "local_names": [
+            {
+              "name": "SkinID",
+              "start": 0,
+              "end": 20
+            },
+            {
+              "name": "safeboxSkinInfo",
+              "start": 5,
+              "end": 20
+            },
+            {
+              "name": "(for generator)",
+              "start": 10,
+              "end": 19
+            },
+            {
+              "name": "(for state)",
+              "start": 10,
+              "end": 19
+            },
+            {
+              "name": "(for control)",
+              "start": 10,
+              "end": 19
+            },
+            {
+              "name": "_",
+              "start": 11,
+              "end": 17
+            },
+            {
+              "name": "safeboxSkin",
+              "start": 11,
+              "end": 17
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R1 U0 K0='Facade'",
+            "0002 GETTABLE   R1 R1 K1='TableManager'",
+            "0003 SELF       R1 R1 K2='GetTable'",
+            "0004 LOADK      R3 K3='SafeBoxSkin'",
+            "0005 CALL       R1 3 2",
+            "0006 TEST       R1 0 0",
+            "0007 JMP        R0 jump=20",
+            "0008 GETTABUP   R2 U0 K4='ipairs'",
+            "0009 MOVE       R3 1 0",
+            "0010 CALL       R2 2 4",
+            "0011 JMP        R0 jump=18",
+            "0012 GETTABUP   R7 U0 K5='tonumber'",
+            "0013 GETTABLE   R8 R6 K6='SkinID'",
+            "0014 CALL       R7 2 2",
+            "0015 EQ         R0 0 7",
+            "0016 JMP        R0 jump=18",
+            "0017 RETURN     R6 2 0",
+            "0018 TFORCALL   R2 0 2",
+            "0019 TFORLOOP   R4 jump=12",
+            "0020 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.57",
+          "first_line": 608,
+          "last_line": 617,
+          "constants": [
+            "Facade",
+            "TableManager",
+            "GetTable",
+            "Season",
+            "Index"
+          ],
+          "local_names": [
+            {
+              "name": "seasonid",
+              "start": 0,
+              "end": 20
+            },
+            {
+              "name": "seasonData",
+              "start": 9,
+              "end": 20
+            }
+          ],
+          "listing": [
+            "0001 TEST       R0 0 1",
+            "0002 JMP        R0 jump=5",
+            "0003 VARARG     R1 0 0",
+            "0004 RETURN     R1 2 0",
+            "0005 GETTABUP   R1 U0 K0='Facade'",
+            "0006 GETTABLE   R1 R1 K1='TableManager'",
+            "0007 SELF       R1 R1 K2='GetTable'",
+            "0008 LOADK      R3 K3='Season'",
+            "0009 CALL       R1 3 2",
+            "0010 TEST       R1 0 0",
+            "0011 JMP        R0 jump=18",
+            "0012 GETTABLE   R2 R1 R0",
+            "0013 TEST       R2 0 0",
+            "0014 JMP        R0 jump=18",
+            "0015 GETTABLE   R2 R1 R0",
+            "0016 GETTABLE   R2 R2 K4='Index'",
+            "0017 RETURN     R2 2 0",
+            "0018 VARARG     R2 0 0",
+            "0019 RETURN     R2 2 0",
+            "0020 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.58",
+          "first_line": 619,
+          "last_line": 632,
+          "constants": [
+            "GetMainTypeById",
+            "GetSubTypeById",
+            "GetThirdTypeById",
+            "EItemType",
+            "Gift",
+            "EGiftType",
+            "BlindBoxGift",
+            "EMandelBrickType",
+            "DecipheredBrick"
+          ],
+          "local_names": [
+            {
+              "name": "itemID",
+              "start": 0,
+              "end": 44
+            },
+            {
+              "name": "itemMainType",
+              "start": 3,
+              "end": 44
+            },
+            {
+              "name": "itemSubType",
+              "start": 6,
+              "end": 44
+            },
+            {
+              "name": "itemThirdType",
+              "start": 9,
+              "end": 44
+            },
+            {
+              "name": "bIsGift",
+              "start": 17,
+              "end": 44
+            },
+            {
+              "name": "bIsBlindBoxGift",
+              "start": 25,
+              "end": 44
+            },
+            {
+              "name": "bIsDecipheredBrick",
+              "start": 33,
+              "end": 44
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R1 U0 K0='GetMainTypeById'",
+            "0002 MOVE       R2 0 0",
+            "0003 CALL       R1 2 2",
+            "0004 GETTABUP   R2 U0 K1='GetSubTypeById'",
+            "0005 MOVE       R3 0 0",
+            "0006 CALL       R2 2 2",
+            "0007 GETTABUP   R3 U0 K2='GetThirdTypeById'",
+            "0008 MOVE       R4 0 0",
+            "0009 CALL       R3 2 2",
+            "0010 TESTSET    R4 1 0",
+            "0011 JMP        R0 jump=18",
+            "0012 GETTABUP   R4 U1 K3='EItemType'",
+            "0013 GETTABLE   R4 R4 K4='Gift'",
+            "0014 EQ         R1 1 4",
+            "0015 JMP        R0 jump=17",
+            "0016 LOADBOOL   R4 0 1",
+            "0017 LOADBOOL   R4 1 0",
+            "0018 TESTSET    R5 2 0",
+            "0019 JMP        R0 jump=26",
+            "0020 GETTABUP   R5 U1 K5='EGiftType'",
+            "0021 GETTABLE   R5 R5 K6='BlindBoxGift'",
+            "0022 EQ         R1 2 5",
+            "0023 JMP        R0 jump=25",
+            "0024 LOADBOOL   R5 0 1",
+            "0025 LOADBOOL   R5 1 0",
+            "0026 TESTSET    R6 3 0",
+            "0027 JMP        R0 jump=34",
+            "0028 GETTABUP   R6 U1 K7='EMandelBrickType'",
+            "0029 GETTABLE   R6 R6 K8='DecipheredBrick'",
+            "0030 EQ         R1 3 6",
+            "0031 JMP        R0 jump=33",
+            "0032 LOADBOOL   R6 0 1",
+            "0033 LOADBOOL   R6 1 0",
+            "0034 TEST       R4 0 0",
+            "0035 JMP        R0 jump=42",
+            "0036 TEST       R5 0 0",
+            "0037 JMP        R0 jump=42",
+            "0038 TEST       R6 0 0",
+            "0039 JMP        R0 jump=42",
+            "0040 LOADBOOL   R7 1 0",
+            "0041 RETURN     R7 2 0",
+            "0042 LOADBOOL   R7 0 0",
+            "0043 RETURN     R7 2 0",
+            "0044 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.60",
+          "first_line": 638,
+          "last_line": 646,
+          "constants": [
+            "GetMainTypeById",
+            "EItemType",
+            "WeaponSkin",
+            "GetThirdTypeById",
+            0
+          ],
+          "local_names": [
+            {
+              "name": "itemID",
+              "start": 0,
+              "end": 18
+            },
+            {
+              "name": "itemMainType",
+              "start": 3,
+              "end": 18
+            },
+            {
+              "name": "itemThirdType",
+              "start": 12,
+              "end": 18
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R1 U0 K0='GetMainTypeById'",
+            "0002 MOVE       R2 0 0",
+            "0003 CALL       R1 2 2",
+            "0004 GETTABUP   R2 U1 K1='EItemType'",
+            "0005 GETTABLE   R2 R2 K2='WeaponSkin'",
+            "0006 EQ         R1 1 2",
+            "0007 JMP        R0 jump=10",
+            "0008 LOADBOOL   R2 0 0",
+            "0009 RETURN     R2 2 0",
+            "0010 GETTABUP   R2 U0 K3='GetThirdTypeById'",
+            "0011 MOVE       R3 0 0",
+            "0012 CALL       R2 2 2",
+            "0013 EQ         R1 2 260",
+            "0014 JMP        R0 jump=16",
+            "0015 LOADBOOL   R3 0 1",
+            "0016 LOADBOOL   R3 1 0",
+            "0017 RETURN     R3 2 0",
+            "0018 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.61",
+          "first_line": 649,
+          "last_line": 652,
+          "constants": [
+            "GetMainTypeById",
+            "EItemType",
+            "WeaponSkin",
+            "GetThirdTypeById",
+            0
+          ],
+          "local_names": [
+            {
+              "name": "itemID",
+              "start": 0,
+              "end": 16
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R1 U0 K0='GetMainTypeById'",
+            "0002 MOVE       R2 0 0",
+            "0003 CALL       R1 2 2",
+            "0004 GETTABUP   R2 U1 K1='EItemType'",
+            "0005 GETTABLE   R2 R2 K2='WeaponSkin'",
+            "0006 EQ         R0 1 2",
+            "0007 JMP        R0 jump=13",
+            "0008 GETTABUP   R1 U0 K3='GetThirdTypeById'",
+            "0009 MOVE       R2 0 0",
+            "0010 CALL       R1 2 2",
+            "0011 EQ         R1 1 260",
+            "0012 JMP        R0 jump=14",
+            "0013 LOADBOOL   R1 0 1",
+            "0014 LOADBOOL   R1 1 0",
+            "0015 RETURN     R1 2 0",
+            "0016 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.62",
+          "first_line": 655,
+          "last_line": 664,
+          "constants": [
+            "GetMainTypeById",
+            "GetSubTypeById",
+            "EItemType",
+            "Adapter",
+            "ItemConfig",
+            "EAdapterItemType",
+            "Pendant",
+            "GetThirdTypeById",
+            64
+          ],
+          "local_names": [
+            {
+              "name": "itemID",
+              "start": 0,
+              "end": 26
+            },
+            {
+              "name": "itemMainType",
+              "start": 3,
+              "end": 26
+            },
+            {
+              "name": "itemSubType",
+              "start": 6,
+              "end": 26
+            },
+            {
+              "name": "itemThirdType",
+              "start": 20,
+              "end": 26
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R1 U0 K0='GetMainTypeById'",
+            "0002 MOVE       R2 0 0",
+            "0003 CALL       R1 2 2",
+            "0004 GETTABUP   R2 U0 K1='GetSubTypeById'",
+            "0005 MOVE       R3 0 0",
+            "0006 CALL       R2 2 2",
+            "0007 GETTABUP   R3 U1 K2='EItemType'",
+            "0008 GETTABLE   R3 R3 K3='Adapter'",
+            "0009 EQ         R0 1 3",
+            "0010 JMP        R0 jump=16",
+            "0011 GETTABUP   R3 U1 K4='ItemConfig'",
+            "0012 GETTABLE   R3 R3 K5='EAdapterItemType'",
+            "0013 GETTABLE   R3 R3 K6='Pendant'",
+            "0014 EQ         R1 2 3",
+            "0015 JMP        R0 jump=18",
+            "0016 LOADBOOL   R3 0 0",
+            "0017 RETURN     R3 2 0",
+            "0018 GETTABUP   R3 U0 K7='GetThirdTypeById'",
+            "0019 MOVE       R4 0 0",
+            "0020 CALL       R3 2 2",
+            "0021 EQ         R1 3 264",
+            "0022 JMP        R0 jump=24",
+            "0023 LOADBOOL   R4 0 1",
+            "0024 LOADBOOL   R4 1 0",
+            "0025 RETURN     R4 2 0",
+            "0026 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.63",
+          "first_line": 666,
+          "last_line": 675,
+          "constants": [
+            "IsMysticalPendant",
+            "GetQualityTypeById",
+            "Module",
+            "ItemDetail",
+            "Config",
+            "MysticalPendantPlusId"
+          ],
+          "local_names": [
+            {
+              "name": "itemID",
+              "start": 0,
+              "end": 24
+            },
+            {
+              "name": "level",
+              "start": 14,
+              "end": 24
+            }
+          ],
+          "listing": [
+            "0001 TEST       R0 0 1",
+            "0002 JMP        R0 jump=5",
+            "0003 LOADBOOL   R1 0 0",
+            "0004 RETURN     R1 2 0",
+            "0005 GETTABUP   R1 U0 K0='IsMysticalPendant'",
+            "0006 MOVE       R2 0 0",
+            "0007 CALL       R1 2 2",
+            "0008 TEST       R1 0 1",
+            "0009 JMP        R0 jump=12",
+            "0010 LOADBOOL   R1 0 0",
+            "0011 RETURN     R1 2 0",
+            "0012 GETTABUP   R1 U0 K1='GetQualityTypeById'",
+            "0013 MOVE       R2 0 0",
+            "0014 CALL       R1 2 2",
+            "0015 GETTABUP   R2 U1 K2='Module'",
+            "0016 GETTABLE   R2 R2 K3='ItemDetail'",
+            "0017 GETTABLE   R2 R2 K4='Config'",
+            "0018 GETTABLE   R2 R2 K5='MysticalPendantPlusId'",
+            "0019 EQ         R1 1 2",
+            "0020 JMP        R0 jump=22",
+            "0021 LOADBOOL   R2 0 1",
+            "0022 LOADBOOL   R2 1 0",
+            "0023 RETURN     R2 2 0",
+            "0024 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.64",
+          "first_line": 679,
+          "last_line": 685,
+          "constants": [
+            "GetMainTypeById",
+            "EItemType",
+            "CollectableItem",
+            "GetSubTypeById",
+            "ECollectableType",
+            "Activity",
+            "GetThirdTypeById",
+            "EFishType",
+            "LureType",
+            "LureAndTWStyle",
+            "TWStyle"
+          ],
+          "local_names": [
+            {
+              "name": "itemID",
+              "start": 0,
+              "end": 39
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R1 U0 K0='GetMainTypeById'",
+            "0002 MOVE       R2 0 0",
+            "0003 CALL       R1 2 2",
+            "0004 GETTABUP   R2 U1 K1='EItemType'",
+            "0005 GETTABLE   R2 R2 K2='CollectableItem'",
+            "0006 EQ         R0 1 2",
+            "0007 JMP        R0 jump=36",
+            "0008 GETTABUP   R1 U0 K3='GetSubTypeById'",
+            "0009 MOVE       R2 0 0",
+            "0010 CALL       R1 2 2",
+            "0011 GETTABUP   R2 U1 K4='ECollectableType'",
+            "0012 GETTABLE   R2 R2 K5='Activity'",
+            "0013 EQ         R0 1 2",
+            "0014 JMP        R0 jump=36",
+            "0015 GETTABUP   R1 U0 K6='GetThirdTypeById'",
+            "0016 MOVE       R2 0 0",
+            "0017 CALL       R1 2 2",
+            "0018 GETTABUP   R2 U1 K7='EFishType'",
+            "0019 GETTABLE   R2 R2 K8='LureType'",
+            "0020 EQ         R1 1 2",
+            "0021 JMP        R0 jump=37",
+            "0022 GETTABUP   R1 U0 K6='GetThirdTypeById'",
+            "0023 MOVE       R2 0 0",
+            "0024 CALL       R1 2 2",
+            "0025 GETTABUP   R2 U1 K7='EFishType'",
+            "0026 GETTABLE   R2 R2 K9='LureAndTWStyle'",
+            "0027 EQ         R1 1 2",
+            "0028 JMP        R0 jump=37",
+            "0029 GETTABUP   R1 U0 K6='GetThirdTypeById'",
+            "0030 MOVE       R2 0 0",
+            "0031 CALL       R1 2 2",
+            "0032 GETTABUP   R2 U1 K7='EFishType'",
+            "0033 GETTABLE   R2 R2 K10='TWStyle'",
+            "0034 EQ         R1 1 2",
+            "0035 JMP        R0 jump=37",
+            "0036 LOADBOOL   R1 0 1",
+            "0037 LOADBOOL   R1 1 0",
+            "0038 RETURN     R1 2 0",
+            "0039 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.65",
+          "first_line": 688,
+          "last_line": 694,
+          "constants": [
+            "GetMainTypeById",
+            "EItemType",
+            "Bullet",
+            "GetSubTypeById",
+            31,
+            32
+          ],
+          "local_names": [
+            {
+              "name": "itemID",
+              "start": 0,
+              "end": 20
+            },
+            {
+              "name": "itemSubType",
+              "start": 12,
+              "end": 20
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R1 U0 K0='GetMainTypeById'",
+            "0002 MOVE       R2 0 0",
+            "0003 CALL       R1 2 2",
+            "0004 GETTABUP   R2 U1 K1='EItemType'",
+            "0005 GETTABLE   R2 R2 K2='Bullet'",
+            "0006 EQ         R1 1 2",
+            "0007 JMP        R0 jump=10",
+            "0008 LOADBOOL   R1 0 0",
+            "0009 RETURN     R1 2 0",
+            "0010 GETTABUP   R1 U0 K3='GetSubTypeById'",
+            "0011 MOVE       R2 0 0",
+            "0012 CALL       R1 2 2",
+            "0013 EQ         R1 1 260",
+            "0014 JMP        R0 jump=18",
+            "0015 EQ         R1 1 261",
+            "0016 JMP        R0 jump=18",
+            "0017 LOADBOOL   R2 0 1",
+            "0018 LOADBOOL   R2 1 0",
+            "0019 RETURN     R2 2 0",
+            "0020 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.66",
+          "first_line": 697,
+          "last_line": 700,
+          "constants": [
+            "GetMainTypeById",
+            "EItemType",
+            "Adapter",
+            "GetSubTypeById",
+            "ItemConfig",
+            "EAdapterItemType",
+            "FishingLine"
+          ],
+          "local_names": [
+            {
+              "name": "itemID",
+              "start": 0,
+              "end": 19
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R1 U0 K0='GetMainTypeById'",
+            "0002 MOVE       R2 0 0",
+            "0003 CALL       R1 2 2",
+            "0004 GETTABUP   R2 U1 K1='EItemType'",
+            "0005 GETTABLE   R2 R2 K2='Adapter'",
+            "0006 EQ         R0 1 2",
+            "0007 JMP        R0 jump=16",
+            "0008 GETTABUP   R1 U0 K3='GetSubTypeById'",
+            "0009 MOVE       R2 0 0",
+            "0010 CALL       R1 2 2",
+            "0011 GETTABUP   R2 U1 K4='ItemConfig'",
+            "0012 GETTABLE   R2 R2 K5='EAdapterItemType'",
+            "0013 GETTABLE   R2 R2 K6='FishingLine'",
+            "0014 EQ         R1 1 2",
+            "0015 JMP        R0 jump=17",
+            "0016 LOADBOOL   R1 0 1",
+            "0017 LOADBOOL   R1 1 0",
+            "0018 RETURN     R1 2 0",
+            "0019 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.67",
+          "first_line": 703,
+          "last_line": 706,
+          "constants": [
+            "GetMainTypeById",
+            "EItemType",
+            "Adapter",
+            "GetSubTypeById",
+            "ItemConfig",
+            "EAdapterItemType",
+            "FishingReel"
+          ],
+          "local_names": [
+            {
+              "name": "itemID",
+              "start": 0,
+              "end": 19
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R1 U0 K0='GetMainTypeById'",
+            "0002 MOVE       R2 0 0",
+            "0003 CALL       R1 2 2",
+            "0004 GETTABUP   R2 U1 K1='EItemType'",
+            "0005 GETTABLE   R2 R2 K2='Adapter'",
+            "0006 EQ         R0 1 2",
+            "0007 JMP        R0 jump=16",
+            "0008 GETTABUP   R1 U0 K3='GetSubTypeById'",
+            "0009 MOVE       R2 0 0",
+            "0010 CALL       R1 2 2",
+            "0011 GETTABUP   R2 U1 K4='ItemConfig'",
+            "0012 GETTABLE   R2 R2 K5='EAdapterItemType'",
+            "0013 GETTABLE   R2 R2 K6='FishingReel'",
+            "0014 EQ         R1 1 2",
+            "0015 JMP        R0 jump=17",
+            "0016 LOADBOOL   R1 0 1",
+            "0017 LOADBOOL   R1 1 0",
+            "0018 RETURN     R1 2 0",
+            "0019 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.68",
+          "first_line": 711,
+          "last_line": 729,
+          "constants": [
+            "id",
+            0,
+            "IsFishingRod",
+            "IsFishItem",
+            "IsFishBaitItem",
+            "IsFishLine",
+            "IsFishReel"
+          ],
+          "local_names": [
+            {
+              "name": "item",
+              "start": 0,
+              "end": 45
+            },
+            {
+              "name": "itemID",
+              "start": 8,
+              "end": 45
+            }
+          ],
+          "listing": [
+            "0001 TEST       R0 0 0",
+            "0002 JMP        R0 jump=6",
+            "0003 GETTABLE   R1 R0 K0='id'",
+            "0004 TEST       R1 0 1",
+            "0005 JMP        R0 jump=8",
+            "0006 LOADBOOL   R1 0 0",
+            "0007 RETURN     R1 2 0",
+            "0008 GETTABLE   R1 R0 K0='id'",
+            "0009 TEST       R1 0 0",
+            "0010 JMP        R0 jump=13",
+            "0011 EQ         R0 1 257",
+            "0012 JMP        R0 jump=15",
+            "0013 LOADBOOL   R2 0 0",
+            "0014 RETURN     R2 2 0",
+            "0015 SELF       R2 R0 K2='IsFishingRod'",
+            "0016 CALL       R2 2 2",
+            "0017 TEST       R2 0 0",
+            "0018 JMP        R0 jump=21",
+            "0019 LOADBOOL   R2 1 0",
+            "0020 RETURN     R2 2 0",
+            "0021 GETTABUP   R2 U0 K3='IsFishItem'",
+            "0022 MOVE       R3 1 0",
+            "0023 CALL       R2 2 2",
+            "0024 TEST       R2 0 1",
+            "0025 JMP        R0 jump=41",
+            "0026 GETTABUP   R2 U0 K4='IsFishBaitItem'",
+            "0027 MOVE       R3 1 0",
+            "0028 CALL       R2 2 2",
+            "0029 TEST       R2 0 1",
+            "0030 JMP        R0 jump=41",
+            "0031 GETTABUP   R2 U0 K5='IsFishLine'",
+            "0032 MOVE       R3 1 0",
+            "0033 CALL       R2 2 2",
+            "0034 TEST       R2 0 1",
+            "0035 JMP        R0 jump=41",
+            "0036 GETTABUP   R2 U0 K6='IsFishReel'",
+            "0037 MOVE       R3 1 0",
+            "0038 CALL       R2 2 2",
+            "0039 TEST       R2 0 0",
+            "0040 JMP        R0 jump=43",
+            "0041 LOADBOOL   R2 1 0",
+            "0042 RETURN     R2 2 0",
+            "0043 LOADBOOL   R2 0 0",
+            "0044 RETURN     R2 2 0",
+            "0045 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.69",
+          "first_line": 731,
+          "last_line": 733,
+          "constants": [
+            "_InternalCreateItemByPropInfo"
+          ],
+          "local_names": [
+            {
+              "name": "propInfo",
+              "start": 0,
+              "end": 8
+            },
+            {
+              "name": "dataChange",
+              "start": 0,
+              "end": 8
+            },
+            {
+              "name": "bShouldSetSkinInfo",
+              "start": 0,
+              "end": 8
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R3 U0 K0='_InternalCreateItemByPropInfo'",
+            "0002 VARARG     R4 0 0",
+            "0003 MOVE       R5 0 0",
+            "0004 MOVE       R6 1 0",
+            "0005 MOVE       R7 2 0",
+            "0006 TAILCALL   R3 5 0",
+            "0007 RETURN     R3 0 0",
+            "0008 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.70",
+          "first_line": 735,
+          "last_line": 738,
+          "constants": [
+            "CreateLazyObject",
+            "_InternalCreateItemByPropInfo"
+          ],
+          "local_names": [
+            {
+              "name": "propInfo",
+              "start": 0,
+              "end": 8
+            },
+            {
+              "name": "dataChange",
+              "start": 0,
+              "end": 8
+            },
+            {
+              "name": "bShouldSetSkinInfo",
+              "start": 0,
+              "end": 8
+            },
+            {
+              "name": "lazyObj",
+              "start": 6,
+              "end": 8
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R3 U0 K0='CreateLazyObject'",
+            "0002 GETTABUP   R4 U1 K1='_InternalCreateItemByPropInfo'",
+            "0003 MOVE       R5 0 0",
+            "0004 MOVE       R6 1 0",
+            "0005 MOVE       R7 2 0",
+            "0006 CALL       R3 5 2",
+            "0007 RETURN     R3 2 0",
+            "0008 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.71",
+          "first_line": 740,
+          "last_line": 797,
+          "constants": [
+            "num",
+            1,
+            "gid",
+            0,
+            "weapon",
+            "ItemBase",
+            "NewFromOutIns",
+            "id",
+            "NewIns",
+            "itemMainType",
+            "EItemType",
+            "WeaponSkin",
+            "itemSubType",
+            "ItemConfig",
+            "EWeaponItemType",
+            "Melee",
+            "require",
+            "DFM.StandaloneLua.BusinessTool.WeaponHelperTool",
+            "GetWeaponDescriptionFromSkinID",
+            null,
+            "GetRawDescObj",
+            "DFM.StandaloneLua.BusinessTool.StructTool.WeaponAssemblyTool",
+            "Desc_To_PropInfo",
+            "skinInfo",
+            "color",
+            "quality",
+            10,
+            15,
+            "IsMysticalSkin",
+            "pb",
+            "WeaponSkinInfo",
+            "New",
+            "skin_id",
+            "skin_gid",
+            "SetWeaponSkinInfo2PropInfo",
+            "SetSkinDescFromrPropInfo",
+            "exceedPercent",
+            "exceed_percent",
+            "Weapon",
+            "SetRawPropInfo",
+            "bind_type",
+            "ForceSetBindType"
+          ],
+          "local_names": [
+            {
+              "name": "t",
+              "start": 0,
+              "end": 136
+            },
+            {
+              "name": "propInfo",
+              "start": 0,
+              "end": 136
+            },
+            {
+              "name": "dataChange",
+              "start": 0,
+              "end": 136
+            },
+            {
+              "name": "bShouldSetSkinInfo",
+              "start": 0,
+              "end": 136
+            },
+            {
+              "name": "item",
+              "start": 1,
+              "end": 136
+            },
+            {
+              "name": "WeaponHelperTool",
+              "start": 56,
+              "end": 84
+            },
+            {
+              "name": "weaponDescription",
+              "start": 59,
+              "end": 84
+            },
+            {
+              "name": "WeaponAssemblyTool",
+              "start": 67,
+              "end": 84
+            },
+            {
+              "name": "skinInfo",
+              "start": 102,
+              "end": 119
+            }
+          ],
+          "listing": [
+            "0001 MOVE       R4 0 0",
+            "0002 TEST       R1 0 0",
+            "0003 JMP        R0 jump=135",
+            "0004 GETTABLE   R5 R1 K0='num'",
+            "0005 TEST       R5 0 1",
+            "0006 JMP        R0 jump=8",
+            "0007 LOADK      R5 K1=1",
+            "0008 SETTABLE   R1 K0='num' R5",
+            "0009 GETTABLE   R5 R1 K2='gid'",
+            "0010 TEST       R5 0 1",
+            "0011 JMP        R0 jump=13",
+            "0012 LOADK      R5 K3=0",
+            "0013 SETTABLE   R1 K2='gid' R5",
+            "0014 GETTABLE   R5 R1 K4='weapon'",
+            "0015 TEST       R5 0 1",
+            "0016 JMP        R0 jump=18",
+            "0017 NEWTABLE   R5 0 0",
+            "0018 SETTABLE   R1 K4='weapon' R5",
+            "0019 TEST       R4 0 0",
+            "0020 JMP        R0 jump=33",
+            "0021 GETTABUP   R5 U0 K5='ItemBase'",
+            "0022 SELF       R5 R5 K6='NewFromOutIns'",
+            "0023 MOVE       R7 0 0",
+            "0024 GETTABLE   R8 R1 K7='id'",
+            "0025 GETTABLE   R9 R1 K0='num'",
+            "0026 TEST       R9 0 1",
+            "0027 JMP        R0 jump=29",
+            "0028 LOADK      R9 K1=1",
+            "0029 GETTABLE   R10 R1 K2='gid'",
+            "0030 CALL       R5 6 2",
+            "0031 MOVE       R4 5 0",
+            "0032 JMP        R0 jump=43",
+            "0033 GETTABUP   R5 U0 K5='ItemBase'",
+            "0034 SELF       R5 R5 K8='NewIns'",
+            "0035 GETTABLE   R7 R1 K7='id'",
+            "0036 GETTABLE   R8 R1 K0='num'",
+            "0037 TEST       R8 0 1",
+            "0038 JMP        R0 jump=40",
+            "0039 LOADK      R8 K1=1",
+            "0040 GETTABLE   R9 R1 K2='gid'",
+            "0041 CALL       R5 5 2",
+            "0042 MOVE       R4 5 0",
+            "0043 GETTABLE   R5 R4 K9='itemMainType'",
+            "0044 GETTABUP   R6 U0 K10='EItemType'",
+            "0045 GETTABLE   R6 R6 K11='WeaponSkin'",
+            "0046 EQ         R0 5 6",
+            "0047 JMP        R0 jump=120",
+            "0048 GETTABLE   R5 R4 K12='itemSubType'",
+            "0049 GETTABUP   R6 U0 K13='ItemConfig'",
+            "0050 GETTABLE   R6 R6 K14='EWeaponItemType'",
+            "0051 GETTABLE   R6 R6 K15='Melee'",
+            "0052 EQ         R0 5 6",
+            "0053 JMP        R0 jump=86",
+            "0054 GETTABUP   R5 U0 K16='require'",
+            "0055 LOADK      R6 K17='DFM.StandaloneLua.BusinessTool.WeaponHelperTool'",
+            "0056 CALL       R5 2 2",
+            "0057 GETTABLE   R6 R5 K18='GetWeaponDescriptionFromSkinID'",
+            "0058 GETTABLE   R7 R4 K7='id'",
+            "0059 CALL       R6 2 2",
+            "0060 EQ         R0 6 275",
+            "0061 JMP        R0 jump=65",
+            "0062 SELF       R7 R4 K20='GetRawDescObj'",
+            "0063 CALL       R7 2 2",
+            "0064 MOVE       R6 7 0",
+            "0065 GETTABUP   R7 U0 K16='require'",
+            "0066 LOADK      R8 K21='DFM.StandaloneLua.BusinessTool.StructTool.WeaponAssemblyTool'",
+            "0067 CALL       R7 2 2",
+            "0068 GETTABLE   R8 R7 K22='Desc_To_PropInfo'",
+            "0069 MOVE       R9 6 0",
+            "0070 CALL       R8 2 2",
+            "0071 MOVE       R1 8 0",
+            "0072 EQ         R1 1 275",
+            "0073 JMP        R0 jump=120",
+            "0074 GETTABLE   R8 R1 K4='weapon'",
+            "0075 EQ         R1 8 275",
+            "0076 JMP        R0 jump=120",
+            "0077 GETTABLE   R8 R1 K4='weapon'",
+            "0078 GETTABLE   R8 R8 K23='skinInfo'",
+            "0079 EQ         R1 8 275",
+            "0080 JMP        R0 jump=120",
+            "0081 GETTABLE   R8 R1 K4='weapon'",
+            "0082 GETTABLE   R8 R8 K23='skinInfo'",
+            "0083 GETTABLE   R9 R4 K25='quality'",
+            "0084 SETTABLE   R8 K24='color' R9",
+            "0085 JMP        R0 jump=120",
+            "0086 GETTABLE   R5 R4 K12='itemSubType'",
+            "0087 LT         R1 5 282",
+            "0088 JMP        R0 jump=92",
+            "0089 GETTABLE   R5 R4 K12='itemSubType'",
+            "0090 EQ         R0 5 283",
+            "0091 JMP        R0 jump=97",
+            "0092 GETTABUP   R5 U1 K28='IsMysticalSkin'",
+            "0093 GETTABLE   R6 R4 K7='id'",
+            "0094 CALL       R5 2 2",
+            "0095 TEST       R5 0 1",
+            "0096 JMP        R0 jump=99",
+            "0097 TEST       R3 0 0",
+            "0098 JMP        R0 jump=120",
+            "0099 GETTABUP   R5 U0 K29='pb'",
+            "0100 GETTABLE   R5 R5 K30='WeaponSkinInfo'",
+            "0101 SELF       R5 R5 K31='New'",
+            "0102 CALL       R5 2 2",
+            "0103 GETTABLE   R6 R1 K7='id'",
+            "0104 SETTABLE   R5 K32='skin_id' R6",
+            "0105 GETTABLE   R6 R1 K2='gid'",
+            "0106 SETTABLE   R5 K33='skin_gid' R6",
+            "0107 GETTABUP   R6 U0 K5='ItemBase'",
+            "0108 GETTABLE   R6 R6 K34='SetWeaponSkinInfo2PropInfo'",
+            "0109 MOVE       R7 1 0",
+            "0110 MOVE       R8 5 0",
+            "0111 CALL       R6 3 1",
+            "0112 SELF       R6 R4 K35='SetSkinDescFromrPropInfo'",
+            "0113 MOVE       R8 1 0",
+            "0114 LOADBOOL   R9 1 0",
+            "0115 CALL       R6 4 1",
+            "0116 TEST       R2 0 0",
+            "0117 JMP        R0 jump=120",
+            "0118 GETTABLE   R6 R2 K37='exceed_percent'",
+            "0119 SETTABLE   R4 K36='exceedPercent' R6",
+            "0120 GETTABLE   R5 R4 K9='itemMainType'",
+            "0121 GETTABUP   R6 U0 K10='EItemType'",
+            "0122 GETTABLE   R6 R6 K38='Weapon'",
+            "0123 EQ         R1 5 6",
+            "0124 JMP        R0 jump=129",
+            "0125 SELF       R5 R4 K39='SetRawPropInfo'",
+            "0126 MOVE       R7 1 0",
+            "0127 CALL       R5 3 1",
+            "0128 JMP        R0 jump=135",
+            "0129 GETTABLE   R5 R1 K40='bind_type'",
+            "0130 TEST       R5 0 0",
+            "0131 JMP        R0 jump=135",
+            "0132 SELF       R5 R4 K41='ForceSetBindType'",
+            "0133 GETTABLE   R7 R1 K40='bind_type'",
+            "0134 CALL       R5 3 1",
+            "0135 RETURN     R4 2 0",
+            "0136 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.72",
+          "first_line": 799,
+          "last_line": 811,
+          "constants": [
+            "GetMainTypeById",
+            "EItemType",
+            "Weapon",
+            "Receiver",
+            "GetSubTypeById",
+            "ItemConfig",
+            "EWeaponItemType",
+            "EmptyHand",
+            "Melee",
+            "Bow"
+          ],
+          "local_names": [
+            {
+              "name": "itemID",
+              "start": 0,
+              "end": 36
+            },
+            {
+              "name": "itemMainType",
+              "start": 3,
+              "end": 36
+            },
+            {
+              "name": "itemSubType",
+              "start": 14,
+              "end": 33
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R1 U0 K0='GetMainTypeById'",
+            "0002 MOVE       R2 0 0",
+            "0003 CALL       R1 2 2",
+            "0004 GETTABUP   R2 U1 K1='EItemType'",
+            "0005 GETTABLE   R2 R2 K2='Weapon'",
+            "0006 EQ         R1 1 2",
+            "0007 JMP        R0 jump=12",
+            "0008 GETTABUP   R2 U1 K1='EItemType'",
+            "0009 GETTABLE   R2 R2 K3='Receiver'",
+            "0010 EQ         R0 1 2",
+            "0011 JMP        R0 jump=34",
+            "0012 GETTABUP   R2 U0 K4='GetSubTypeById'",
+            "0013 MOVE       R3 0 0",
+            "0014 CALL       R2 2 2",
+            "0015 GETTABUP   R3 U1 K5='ItemConfig'",
+            "0016 GETTABLE   R3 R3 K6='EWeaponItemType'",
+            "0017 GETTABLE   R3 R3 K7='EmptyHand'",
+            "0018 EQ         R1 2 3",
+            "0019 JMP        R0 jump=30",
+            "0020 GETTABUP   R3 U1 K5='ItemConfig'",
+            "0021 GETTABLE   R3 R3 K6='EWeaponItemType'",
+            "0022 GETTABLE   R3 R3 K8='Melee'",
+            "0023 EQ         R1 2 3",
+            "0024 JMP        R0 jump=30",
+            "0025 GETTABUP   R3 U1 K5='ItemConfig'",
+            "0026 GETTABLE   R3 R3 K6='EWeaponItemType'",
+            "0027 GETTABLE   R3 R3 K9='Bow'",
+            "0028 EQ         R0 2 3",
+            "0029 JMP        R0 jump=32",
+            "0030 LOADBOOL   R3 0 0",
+            "0031 RETURN     R3 2 0",
+            "0032 LOADBOOL   R3 1 0",
+            "0033 RETURN     R3 2 0",
+            "0034 LOADBOOL   R2 0 0",
+            "0035 RETURN     R2 2 0",
+            "0036 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.73",
+          "first_line": 820,
+          "last_line": 833,
+          "constants": [
+            "Facade",
+            "TableManager",
+            "GetTable",
+            "SpecialExchangeConfig",
+            "isinvalid",
+            "pairs",
+            "tonumber",
+            "ItemID"
+          ],
+          "local_names": [
+            {
+              "name": "inItemID",
+              "start": 0,
+              "end": 26
+            },
+            {
+              "name": "specialExchangeConfigTable",
+              "start": 5,
+              "end": 26
+            },
+            {
+              "name": "(for generator)",
+              "start": 14,
+              "end": 23
+            },
+            {
+              "name": "(for state)",
+              "start": 14,
+              "end": 23
+            },
+            {
+              "name": "(for control)",
+              "start": 14,
+              "end": 23
+            },
+            {
+              "name": "_",
+              "start": 15,
+              "end": 21
+            },
+            {
+              "name": "exchangeConfig",
+              "start": 15,
+              "end": 21
+            },
+            {
+              "name": "itemID",
+              "start": 18,
+              "end": 21
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R1 U0 K0='Facade'",
+            "0002 GETTABLE   R1 R1 K1='TableManager'",
+            "0003 SELF       R1 R1 K2='GetTable'",
+            "0004 LOADK      R3 K3='SpecialExchangeConfig'",
+            "0005 CALL       R1 3 2",
+            "0006 GETTABUP   R2 U0 K4='isinvalid'",
+            "0007 MOVE       R3 1 0",
+            "0008 CALL       R2 2 2",
+            "0009 TEST       R2 0 0",
+            "0010 JMP        R0 jump=12",
+            "0011 RETURN     R0 1 0",
+            "0012 GETTABUP   R2 U0 K5='pairs'",
+            "0013 MOVE       R3 1 0",
+            "0014 CALL       R2 2 4",
+            "0015 JMP        R0 jump=22",
+            "0016 GETTABUP   R7 U0 K6='tonumber'",
+            "0017 GETTABLE   R8 R6 K7='ItemID'",
+            "0018 CALL       R7 2 2",
+            "0019 EQ         R0 7 0",
+            "0020 JMP        R0 jump=22",
+            "0021 RETURN     R6 2 0",
+            "0022 TFORCALL   R2 0 2",
+            "0023 TFORLOOP   R4 jump=16",
+            "0024 VARARG     R2 0 0",
+            "0025 RETURN     R2 2 0",
+            "0026 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.74",
+          "first_line": 836,
+          "last_line": 842,
+          "constants": [
+            "GetSpecialExchangeInfo",
+            "isinvalid",
+            "tonumber",
+            "Type"
+          ],
+          "local_names": [
+            {
+              "name": "inItemID",
+              "start": 0,
+              "end": 15
+            },
+            {
+              "name": "exchangeConfig",
+              "start": 3,
+              "end": 15
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R1 U0 K0='GetSpecialExchangeInfo'",
+            "0002 MOVE       R2 0 0",
+            "0003 CALL       R1 2 2",
+            "0004 GETTABUP   R2 U1 K1='isinvalid'",
+            "0005 MOVE       R3 1 0",
+            "0006 CALL       R2 2 2",
+            "0007 TEST       R2 0 0",
+            "0008 JMP        R0 jump=11",
+            "0009 VARARG     R2 0 0",
+            "0010 RETURN     R2 2 0",
+            "0011 GETTABUP   R2 U1 K2='tonumber'",
+            "0012 GETTABLE   R3 R1 K3='Type'",
+            "0013 TAILCALL   R2 2 0",
+            "0014 RETURN     R2 0 0",
+            "0015 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.75",
+          "first_line": 844,
+          "last_line": 850,
+          "constants": [
+            "GetSpecialExchangeInfo",
+            "isinvalid",
+            "tonumber",
+            "ExchangeID"
+          ],
+          "local_names": [
+            {
+              "name": "inItemID",
+              "start": 0,
+              "end": 15
+            },
+            {
+              "name": "exchangeConfig",
+              "start": 3,
+              "end": 15
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R1 U0 K0='GetSpecialExchangeInfo'",
+            "0002 MOVE       R2 0 0",
+            "0003 CALL       R1 2 2",
+            "0004 GETTABUP   R2 U1 K1='isinvalid'",
+            "0005 MOVE       R3 1 0",
+            "0006 CALL       R2 2 2",
+            "0007 TEST       R2 0 0",
+            "0008 JMP        R0 jump=11",
+            "0009 VARARG     R2 0 0",
+            "0010 RETURN     R2 2 0",
+            "0011 GETTABUP   R2 U1 K2='tonumber'",
+            "0012 GETTABLE   R3 R1 K3='ExchangeID'",
+            "0013 TAILCALL   R2 2 0",
+            "0014 RETURN     R2 0 0",
+            "0015 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.76",
+          "first_line": 854,
+          "last_line": 859,
+          "constants": [
+            "string",
+            "starts_with",
+            "tostring",
+            "2880"
+          ],
+          "local_names": [
+            {
+              "name": "inSkinId",
+              "start": 0,
+              "end": 14
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R1 U0 K0='string'",
+            "0002 GETTABLE   R1 R1 K1='starts_with'",
+            "0003 GETTABUP   R2 U0 K2='tostring'",
+            "0004 MOVE       R3 0 0",
+            "0005 CALL       R2 2 2",
+            "0006 LOADK      R3 K3='2880'",
+            "0007 CALL       R1 3 2",
+            "0008 TEST       R1 0 0",
+            "0009 JMP        R0 jump=12",
+            "0010 LOADBOOL   R1 1 0",
+            "0011 RETURN     R1 2 0",
+            "0012 LOADBOOL   R1 0 0",
+            "0013 RETURN     R1 2 0",
+            "0014 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.77",
+          "first_line": 861,
+          "last_line": 884,
+          "constants": [
+            "logerror",
+            "[ItemHelperTool.MPSkinItemToItemSkin] Item is nil",
+            "IsMPHeroItemSkinId",
+            "id",
+            "[ItemHelperTool.MPSkinItemToItemSkin] Item is not MPHeroItemSkinId. Item id:",
+            "tostring",
+            "Facade",
+            "TableManager",
+            "GetRowByKey",
+            "ArmProp/ArmedPropSkinDataTable",
+            "BaseArmedPropID",
+            "Server",
+            "InventoryServer",
+            "GetMPItemByID",
+            "ItemBase",
+            "NewIns",
+            1,
+            "gid",
+            "clone",
+            "GetRawPropInfo",
+            "SetRawPropInfo",
+            "SetWeaponSkinID2PropInfo",
+            "[ItemHelperTool.MPSkinItemToItemSkin] no config ArmedPropSkinDataTable. Item id:"
+          ],
+          "local_names": [
+            {
+              "name": "Item",
+              "start": 0,
+              "end": 68
+            },
+            {
+              "name": "armedSkinDataRow",
+              "start": 29,
+              "end": 68
+            },
+            {
+              "name": "Ret",
+              "start": 30,
+              "end": 68
+            },
+            {
+              "name": "ItemId",
+              "start": 33,
+              "end": 58
+            },
+            {
+              "name": "equipItem",
+              "start": 38,
+              "end": 58
+            },
+            {
+              "name": "newPropinfo",
+              "start": 49,
+              "end": 58
+            }
+          ],
+          "listing": [
+            "0001 TEST       R0 0 1",
+            "0002 JMP        R0 jump=8",
+            "0003 GETTABUP   R1 U0 K0='logerror'",
+            "0004 LOADK      R2 K1='[ItemHelperTool.MPSkinItemToItemSkin] Item is nil'",
+            "0005 CALL       R1 2 1",
+            "0006 VARARG     R1 0 0",
+            "0007 RETURN     R1 2 0",
+            "0008 GETTABUP   R1 U1 K2='IsMPHeroItemSkinId'",
+            "0009 GETTABLE   R2 R0 K3='id'",
+            "0010 CALL       R1 2 2",
+            "0011 TEST       R1 0 1",
+            "0012 JMP        R0 jump=22",
+            "0013 GETTABUP   R1 U0 K0='logerror'",
+            "0014 LOADK      R2 K4='[ItemHelperTool.MPSkinItemToItemSkin] Item is not MPHeroItemSkinId. Item id:'",
+            "0015 GETTABUP   R3 U0 K5='tostring'",
+            "0016 GETTABLE   R4 R0 K3='id'",
+            "0017 CALL       R3 2 2",
+            "0018 CONCAT     R2 2 3",
+            "0019 CALL       R1 2 1",
+            "0020 VARARG     R1 0 0",
+            "0021 RETURN     R1 2 0",
+            "0022 GETTABUP   R1 U0 K6='Facade'",
+            "0023 GETTABLE   R1 R1 K7='TableManager'",
+            "0024 SELF       R1 R1 K8='GetRowByKey'",
+            "0025 LOADK      R3 K9='ArmProp/ArmedPropSkinDataTable'",
+            "0026 GETTABUP   R4 U0 K5='tostring'",
+            "0027 GETTABLE   R5 R0 K3='id'",
+            "0028 CALL       R4 2 0",
+            "0029 CALL       R1 0 2",
+            "0030 VARARG     R2 0 0",
+            "0031 TEST       R1 0 0",
+            "0032 JMP        R0 jump=60",
+            "0033 GETTABLE   R3 R1 K10='BaseArmedPropID'",
+            "0034 GETTABUP   R4 U0 K11='Server'",
+            "0035 GETTABLE   R4 R4 K12='InventoryServer'",
+            "0036 SELF       R4 R4 K13='GetMPItemByID'",
+            "0037 MOVE       R6 3 0",
+            "0038 CALL       R4 3 2",
+            "0039 GETTABUP   R5 U0 K14='ItemBase'",
+            "0040 SELF       R5 R5 K15='NewIns'",
+            "0041 MOVE       R7 3 0",
+            "0042 LOADK      R8 K16=1",
+            "0043 GETTABLE   R9 R4 K17='gid'",
+            "0044 CALL       R5 5 2",
+            "0045 MOVE       R2 5 0",
+            "0046 GETTABUP   R5 U0 K18='clone'",
+            "0047 SELF       R6 R4 K19='GetRawPropInfo'",
+            "0048 CALL       R6 2 0",
+            "0049 CALL       R5 0 2",
+            "0050 SELF       R6 R2 K20='SetRawPropInfo'",
+            "0051 MOVE       R8 5 0",
+            "0052 CALL       R6 3 1",
+            "0053 GETTABUP   R6 U0 K14='ItemBase'",
+            "0054 GETTABLE   R6 R6 K21='SetWeaponSkinID2PropInfo'",
+            "0055 SELF       R7 R2 K19='GetRawPropInfo'",
+            "0056 CALL       R7 2 2",
+            "0057 GETTABLE   R8 R0 K3='id'",
+            "0058 CALL       R6 3 1",
+            "0059 JMP        R0 jump=67",
+            "0060 GETTABUP   R3 U0 K0='logerror'",
+            "0061 LOADK      R4 K22='[ItemHelperTool.MPSkinItemToItemSkin] no config ArmedPropSkinDataTable. Item id:'",
+            "0062 GETTABUP   R5 U0 K5='tostring'",
+            "0063 GETTABLE   R6 R0 K3='id'",
+            "0064 CALL       R5 2 2",
+            "0065 CONCAT     R4 4 5",
+            "0066 CALL       R3 2 1",
+            "0067 RETURN     R2 2 0",
+            "0068 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.78",
+          "first_line": 886,
+          "last_line": 899,
+          "constants": [
+            "Facade",
+            "TableManager",
+            "GetTable",
+            "StashExpireConfig",
+            "GameFlowManager",
+            "GetCurMainFlowType",
+            "EMainFlowStageType",
+            "Blasting",
+            "GetRowByColumn",
+            "PropID"
+          ],
+          "local_names": [
+            {
+              "name": "itemID",
+              "start": 0,
+              "end": 25
+            },
+            {
+              "name": "stashExpireTable",
+              "start": 5,
+              "end": 25
+            },
+            {
+              "name": "row",
+              "start": 23,
+              "end": 25
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R1 U0 K0='Facade'",
+            "0002 GETTABLE   R1 R1 K1='TableManager'",
+            "0003 SELF       R1 R1 K2='GetTable'",
+            "0004 LOADK      R3 K3='StashExpireConfig'",
+            "0005 CALL       R1 3 2",
+            "0006 TEST       R1 0 1",
+            "0007 JMP        R0 jump=10",
+            "0008 VARARG     R2 0 0",
+            "0009 RETURN     R2 2 0",
+            "0010 GETTABUP   R2 U0 K0='Facade'",
+            "0011 GETTABLE   R2 R2 K4='GameFlowManager'",
+            "0012 SELF       R2 R2 K5='GetCurMainFlowType'",
+            "0013 CALL       R2 2 2",
+            "0014 GETTABUP   R3 U0 K6='EMainFlowStageType'",
+            "0015 GETTABLE   R3 R3 K7='Blasting'",
+            "0016 EQ         R0 2 3",
+            "0017 JMP        R0 jump=20",
+            "0018 VARARG     R2 0 0",
+            "0019 RETURN     R2 2 0",
+            "0020 SELF       R2 R1 K8='GetRowByColumn'",
+            "0021 LOADK      R4 K9='PropID'",
+            "0022 MOVE       R5 0 0",
+            "0023 CALL       R2 4 2",
+            "0024 RETURN     R2 2 0",
+            "0025 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.79",
+          "first_line": 902,
+          "last_line": 919,
+          "constants": [
+            "GetStashExpireConfigRaw",
+            "isvalid",
+            0,
+            "ExpireType",
+            2,
+            "ParseTime",
+            "TheDateTime",
+            "logerror",
+            "ItemHelperTool.IsExpiredItem4WeaponPartID --- partID: ",
+            " expireType: ",
+            " is not 2!!!"
+          ],
+          "local_names": [
+            {
+              "name": "partID",
+              "start": 0,
+              "end": 37
+            },
+            {
+              "name": "row",
+              "start": 3,
+              "end": 37
+            },
+            {
+              "name": "bIsValid",
+              "start": 6,
+              "end": 37
+            },
+            {
+              "name": "expireType",
+              "start": 15,
+              "end": 37
+            },
+            {
+              "name": "expireTime",
+              "start": 20,
+              "end": 25
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R1 U0 K0='GetStashExpireConfigRaw'",
+            "0002 MOVE       R2 0 0",
+            "0003 CALL       R1 2 2",
+            "0004 GETTABUP   R2 U1 K1='isvalid'",
+            "0005 MOVE       R3 1 0",
+            "0006 CALL       R2 2 2",
+            "0007 TEST       R2 0 1",
+            "0008 JMP        R0 jump=12",
+            "0009 LOADBOOL   R3 0 0",
+            "0010 LOADK      R4 K2=0",
+            "0011 RETURN     R3 3 0",
+            "0012 GETTABLE   R3 R1 K3='ExpireType'",
+            "0013 TEST       R3 0 1",
+            "0014 JMP        R0 jump=16",
+            "0015 LOADK      R3 K2=0",
+            "0016 EQ         R0 3 260",
+            "0017 JMP        R0 jump=27",
+            "0018 GETTABUP   R4 U2 K5='ParseTime'",
+            "0019 GETTABLE   R5 R1 K6='TheDateTime'",
+            "0020 CALL       R4 2 2",
+            "0021 TEST       R4 0 0",
+            "0022 JMP        R0 jump=34",
+            "0023 LOADBOOL   R5 1 0",
+            "0024 MOVE       R6 4 0",
+            "0025 RETURN     R5 3 0",
+            "0026 JMP        R0 jump=34",
+            "0027 GETTABUP   R4 U1 K7='logerror'",
+            "0028 LOADK      R5 K8='ItemHelperTool.IsExpiredItem4WeaponPartID --- partID: '",
+            "0029 MOVE       R6 0 0",
+            "0030 LOADK      R7 K9=' expireType: '",
+            "0031 MOVE       R8 3 0",
+            "0032 LOADK      R9 K10=' is not 2!!!'",
+            "0033 CALL       R4 6 1",
+            "0034 LOADBOOL   R4 0 0",
+            "0035 LOADK      R5 K2=0",
+            "0036 RETURN     R4 3 0",
+            "0037 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.80",
+          "first_line": 921,
+          "last_line": 924,
+          "constants": [
+            "IsExpiredItem4WeaponPartID",
+            "_InternalIsExpired"
+          ],
+          "local_names": [
+            {
+              "name": "partID",
+              "start": 0,
+              "end": 9
+            },
+            {
+              "name": "bIsExpiredItem",
+              "start": 3,
+              "end": 9
+            },
+            {
+              "name": "expiredTime",
+              "start": 3,
+              "end": 9
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R1 U0 K0='IsExpiredItem4WeaponPartID'",
+            "0002 MOVE       R2 0 0",
+            "0003 CALL       R1 2 3",
+            "0004 GETTABUP   R3 U0 K1='_InternalIsExpired'",
+            "0005 MOVE       R4 1 0",
+            "0006 MOVE       R5 2 0",
+            "0007 TAILCALL   R3 3 0",
+            "0008 RETURN     R3 0 0",
+            "0009 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.81",
+          "first_line": 926,
+          "last_line": 934,
+          "constants": [
+            "isvalid",
+            "IsExpiredItem",
+            "_InternalIsExpired"
+          ],
+          "local_names": [
+            {
+              "name": "itemBase",
+              "start": 0,
+              "end": 18
+            },
+            {
+              "name": "bIsValid",
+              "start": 6,
+              "end": 18
+            },
+            {
+              "name": "bIsExpiredItem",
+              "start": 12,
+              "end": 18
+            },
+            {
+              "name": "expiredTime",
+              "start": 12,
+              "end": 18
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R1 U0 K0='isvalid'",
+            "0002 MOVE       R2 0 0",
+            "0003 CALL       R1 2 2",
+            "0004 TEST       R1 0 0",
+            "0005 JMP        R0 jump=7",
+            "0006 GETTABLE   R1 R0 K1='IsExpiredItem'",
+            "0007 TEST       R1 0 1",
+            "0008 JMP        R0 jump=11",
+            "0009 LOADBOOL   R2 0 0",
+            "0010 RETURN     R2 2 0",
+            "0011 SELF       R2 R0 K1='IsExpiredItem'",
+            "0012 CALL       R2 2 3",
+            "0013 GETTABUP   R4 U1 K2='_InternalIsExpired'",
+            "0014 MOVE       R5 2 0",
+            "0015 MOVE       R6 3 0",
+            "0016 TAILCALL   R4 3 0",
+            "0017 RETURN     R4 0 0",
+            "0018 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.82",
+          "first_line": 936,
+          "last_line": 940,
+          "constants": [
+            "Facade",
+            "ClockManager",
+            "GetServerTimestamp",
+            0
+          ],
+          "local_names": [
+            {
+              "name": "bIsExpiredItem",
+              "start": 0,
+              "end": 16
+            },
+            {
+              "name": "expiredTime",
+              "start": 0,
+              "end": 16
+            },
+            {
+              "name": "serverTimestamp",
+              "start": 4,
+              "end": 16
+            },
+            {
+              "name": "bIsExpired",
+              "start": 14,
+              "end": 16
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R2 U0 K0='Facade'",
+            "0002 GETTABLE   R2 R2 K1='ClockManager'",
+            "0003 SELF       R2 R2 K2='GetServerTimestamp'",
+            "0004 CALL       R2 2 2",
+            "0005 TESTSET    R3 0 0",
+            "0006 JMP        R0 jump=15",
+            "0007 TESTSET    R3 1 0",
+            "0008 JMP        R0 jump=15",
+            "0009 EQ         R1 1 259",
+            "0010 JMP        R0 jump=13",
+            "0011 LT         R1 1 2",
+            "0012 JMP        R0 jump=14",
+            "0013 LOADBOOL   R3 0 1",
+            "0014 LOADBOOL   R3 1 0",
+            "0015 RETURN     R3 2 0",
+            "0016 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.83",
+          "first_line": 942,
+          "last_line": 954,
+          "constants": [
+            "isvalid",
+            "id",
+            0,
+            "ItemBase",
+            "New",
+            "SetRawPropInfo"
+          ],
+          "local_names": [
+            {
+              "name": "propInfo",
+              "start": 0,
+              "end": 36
+            },
+            {
+              "name": "bIsValid",
+              "start": 13,
+              "end": 36
+            },
+            {
+              "name": "itemBase",
+              "start": 21,
+              "end": 36
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R1 U0 K0='isvalid'",
+            "0002 MOVE       R2 0 0",
+            "0003 CALL       R1 2 2",
+            "0004 TEST       R1 0 0",
+            "0005 JMP        R0 jump=14",
+            "0006 GETTABLE   R1 R0 K1='id'",
+            "0007 TEST       R1 0 0",
+            "0008 JMP        R0 jump=14",
+            "0009 GETTABLE   R1 R0 K1='id'",
+            "0010 EQ         R0 1 258",
+            "0011 JMP        R0 jump=13",
+            "0012 LOADBOOL   R1 0 1",
+            "0013 LOADBOOL   R1 1 0",
+            "0014 TEST       R1 0 1",
+            "0015 JMP        R0 jump=18",
+            "0016 LOADBOOL   R2 0 0",
+            "0017 RETURN     R2 2 0",
+            "0018 GETTABUP   R2 U0 K3='ItemBase'",
+            "0019 SELF       R2 R2 K4='New'",
+            "0020 GETTABLE   R4 R0 K1='id'",
+            "0021 CALL       R2 3 2",
+            "0022 GETTABUP   R3 U0 K0='isvalid'",
+            "0023 MOVE       R4 0 0",
+            "0024 CALL       R3 2 2",
+            "0025 TESTSET    R1 3 0",
+            "0026 JMP        R0 jump=28",
+            "0027 GETTABLE   R1 R2 K5='SetRawPropInfo'",
+            "0028 TEST       R1 0 1",
+            "0029 JMP        R0 jump=32",
+            "0030 LOADBOOL   R3 0 0",
+            "0031 RETURN     R3 2 0",
+            "0032 SELF       R3 R2 K5='SetRawPropInfo'",
+            "0033 MOVE       R5 0 0",
+            "0034 CALL       R3 3 1",
+            "0035 RETURN     R2 2 0",
+            "0036 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.84",
+          "first_line": 956,
+          "last_line": 963,
+          "constants": [
+            "CreateItembaseByPropInfo",
+            "isvalid",
+            "IsExpiredItem"
+          ],
+          "local_names": [
+            {
+              "name": "propInfo",
+              "start": 0,
+              "end": 17
+            },
+            {
+              "name": "itemBase",
+              "start": 3,
+              "end": 17
+            },
+            {
+              "name": "bIsValid",
+              "start": 9,
+              "end": 17
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R1 U0 K0='CreateItembaseByPropInfo'",
+            "0002 MOVE       R2 0 0",
+            "0003 CALL       R1 2 2",
+            "0004 GETTABUP   R2 U1 K1='isvalid'",
+            "0005 MOVE       R3 1 0",
+            "0006 CALL       R2 2 2",
+            "0007 TEST       R2 0 0",
+            "0008 JMP        R0 jump=10",
+            "0009 GETTABLE   R2 R1 K2='IsExpiredItem'",
+            "0010 TEST       R2 0 1",
+            "0011 JMP        R0 jump=14",
+            "0012 LOADBOOL   R3 0 0",
+            "0013 RETURN     R3 2 0",
+            "0014 SELF       R3 R1 K2='IsExpiredItem'",
+            "0015 TAILCALL   R3 2 0",
+            "0016 RETURN     R3 0 0",
+            "0017 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.85",
+          "first_line": 965,
+          "last_line": 968,
+          "constants": [
+            "CreateItembaseByPropInfo",
+            "IsExpiredByItemBase"
+          ],
+          "local_names": [
+            {
+              "name": "propInfo",
+              "start": 0,
+              "end": 8
+            },
+            {
+              "name": "itemBase",
+              "start": 3,
+              "end": 8
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R1 U0 K0='CreateItembaseByPropInfo'",
+            "0002 MOVE       R2 0 0",
+            "0003 CALL       R1 2 2",
+            "0004 GETTABUP   R2 U0 K1='IsExpiredByItemBase'",
+            "0005 MOVE       R3 1 0",
+            "0006 TAILCALL   R2 2 0",
+            "0007 RETURN     R2 0 0",
+            "0008 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.86",
+          "first_line": 971,
+          "last_line": 983,
+          "constants": [
+            11,
+            "tonumber",
+            "string",
+            "len",
+            "tostring",
+            10,
+            1
+          ],
+          "local_names": [
+            {
+              "name": "itemId",
+              "start": 0,
+              "end": 30
+            },
+            {
+              "name": "itemIdPrefix",
+              "start": 0,
+              "end": 30
+            },
+            {
+              "name": "ITEM_ID_LENGTH",
+              "start": 1,
+              "end": 30
+            },
+            {
+              "name": "prefix",
+              "start": 4,
+              "end": 30
+            },
+            {
+              "name": "prefixLength",
+              "start": 14,
+              "end": 30
+            },
+            {
+              "name": "start",
+              "start": 17,
+              "end": 30
+            },
+            {
+              "name": "stop",
+              "start": 22,
+              "end": 30
+            }
+          ],
+          "listing": [
+            "0001 LOADK      R2 K0=11",
+            "0002 GETTABUP   R3 U0 K1='tonumber'",
+            "0003 MOVE       R4 1 0",
+            "0004 CALL       R3 2 2",
+            "0005 TEST       R3 0 1",
+            "0006 JMP        R0 jump=9",
+            "0007 LOADBOOL   R4 0 0",
+            "0008 RETURN     R4 2 0",
+            "0009 GETTABUP   R4 U0 K2='string'",
+            "0010 GETTABLE   R4 R4 K3='len'",
+            "0011 GETTABUP   R5 U0 K4='tostring'",
+            "0012 MOVE       R6 3 0",
+            "0013 CALL       R5 2 0",
+            "0014 CALL       R4 0 2",
+            "0015 SUB        R5 2 4",
+            "0016 POW        R5 261 5",
+            "0017 MUL        R5 3 5",
+            "0018 ADD        R6 3 262",
+            "0019 SUB        R7 2 4",
+            "0020 POW        R7 261 7",
+            "0021 MUL        R6 6 7",
+            "0022 SUB        R6 6 262",
+            "0023 LE         R0 5 0",
+            "0024 JMP        R0 jump=27",
+            "0025 LE         R1 0 6",
+            "0026 JMP        R0 jump=28",
+            "0027 LOADBOOL   R7 0 1",
+            "0028 LOADBOOL   R7 1 0",
+            "0029 RETURN     R7 2 0",
+            "0030 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.87",
+          "first_line": 986,
+          "last_line": 1000,
+          "constants": [
+            "",
+            "string",
+            "split",
+            "tostring",
+            ",",
+            "ipairs",
+            "CheckItemIdInRange"
+          ],
+          "local_names": [
+            {
+              "name": "itemId",
+              "start": 0,
+              "end": 34
+            },
+            {
+              "name": "multiIdPrefix",
+              "start": 0,
+              "end": 34
+            },
+            {
+              "name": "prefixes",
+              "start": 13,
+              "end": 34
+            },
+            {
+              "name": "(for generator)",
+              "start": 20,
+              "end": 31
+            },
+            {
+              "name": "(for state)",
+              "start": 20,
+              "end": 31
+            },
+            {
+              "name": "(for control)",
+              "start": 20,
+              "end": 31
+            },
+            {
+              "name": "_",
+              "start": 21,
+              "end": 29
+            },
+            {
+              "name": "prefix",
+              "start": 21,
+              "end": 29
+            }
+          ],
+          "listing": [
+            "0001 TEST       R1 0 0",
+            "0002 JMP        R0 jump=5",
+            "0003 EQ         R0 1 256",
+            "0004 JMP        R0 jump=7",
+            "0005 LOADBOOL   R2 0 0",
+            "0006 RETURN     R2 2 0",
+            "0007 GETTABUP   R2 U0 K1='string'",
+            "0008 GETTABLE   R2 R2 K2='split'",
+            "0009 GETTABUP   R3 U0 K3='tostring'",
+            "0010 MOVE       R4 1 0",
+            "0011 CALL       R3 2 2",
+            "0012 LOADK      R4 K4=','",
+            "0013 CALL       R2 3 2",
+            "0014 TEST       R2 0 1",
+            "0015 JMP        R0 jump=18",
+            "0016 LOADBOOL   R3 0 0",
+            "0017 RETURN     R3 2 0",
+            "0018 GETTABUP   R3 U0 K5='ipairs'",
+            "0019 MOVE       R4 2 0",
+            "0020 CALL       R3 2 4",
+            "0021 JMP        R0 jump=30",
+            "0022 GETTABUP   R8 U1 K6='CheckItemIdInRange'",
+            "0023 MOVE       R9 0 0",
+            "0024 MOVE       R10 7 0",
+            "0025 CALL       R8 3 2",
+            "0026 TEST       R8 0 0",
+            "0027 JMP        R0 jump=30",
+            "0028 LOADBOOL   R8 1 0",
+            "0029 RETURN     R8 2 0",
+            "0030 TFORCALL   R3 0 2",
+            "0031 TFORLOOP   R5 jump=22",
+            "0032 LOADBOOL   R3 0 0",
+            "0033 RETURN     R3 2 0",
+            "0034 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.88",
+          "first_line": 1003,
+          "last_line": 1032,
+          "constants": [
+            "Facade",
+            "TableManager",
+            "GetTable",
+            "UncarryableItem",
+            "pairs",
+            "ItemId",
+            "CheckItemIdInRange",
+            "id",
+            "WhiteIDList",
+            "CheckItemIdInMultiRange",
+            "QualityFilter",
+            "tonumber",
+            0,
+            "ValueFilter",
+            "quality",
+            "GetTotalMallSellPrice",
+            "IsCarryInActive"
+          ],
+          "local_names": [
+            {
+              "name": "item",
+              "start": 0,
+              "end": 78
+            },
+            {
+              "name": "weaponPartsTable",
+              "start": 5,
+              "end": 78
+            },
+            {
+              "name": "partRow",
+              "start": 10,
+              "end": 78
+            },
+            {
+              "name": "(for generator)",
+              "start": 13,
+              "end": 27
+            },
+            {
+              "name": "(for state)",
+              "start": 13,
+              "end": 27
+            },
+            {
+              "name": "(for control)",
+              "start": 13,
+              "end": 27
+            },
+            {
+              "name": "_",
+              "start": 14,
+              "end": 25
+            },
+            {
+              "name": "row",
+              "start": 14,
+              "end": 25
+            },
+            {
+              "name": "qualityFilter",
+              "start": 49,
+              "end": 75
+            },
+            {
+              "name": "valueFilter",
+              "start": 58,
+              "end": 75
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R1 U0 K0='Facade'",
+            "0002 GETTABLE   R1 R1 K1='TableManager'",
+            "0003 SELF       R1 R1 K2='GetTable'",
+            "0004 LOADK      R3 K3='UncarryableItem'",
+            "0005 CALL       R1 3 2",
+            "0006 TEST       R1 0 1",
+            "0007 JMP        R0 jump=10",
+            "0008 LOADBOOL   R2 0 0",
+            "0009 RETURN     R2 2 0",
+            "0010 VARARG     R2 0 0",
+            "0011 GETTABUP   R3 U0 K4='pairs'",
+            "0012 MOVE       R4 1 0",
+            "0013 CALL       R3 2 4",
+            "0014 JMP        R0 jump=26",
+            "0015 GETTABLE   R8 R7 K5='ItemId'",
+            "0016 TEST       R8 0 0",
+            "0017 JMP        R0 jump=26",
+            "0018 GETTABUP   R8 U1 K6='CheckItemIdInRange'",
+            "0019 GETTABLE   R9 R0 K7='id'",
+            "0020 GETTABLE   R10 R7 K5='ItemId'",
+            "0021 CALL       R8 3 2",
+            "0022 TEST       R8 0 0",
+            "0023 JMP        R0 jump=26",
+            "0024 MOVE       R2 7 0",
+            "0025 JMP        R0 jump=28",
+            "0026 TFORCALL   R3 0 2",
+            "0027 TFORLOOP   R5 jump=15",
+            "0028 TEST       R2 0 0",
+            "0029 JMP        R0 jump=76",
+            "0030 GETTABLE   R3 R2 K8='WhiteIDList'",
+            "0031 TEST       R3 0 0",
+            "0032 JMP        R0 jump=41",
+            "0033 GETTABUP   R3 U1 K9='CheckItemIdInMultiRange'",
+            "0034 GETTABLE   R4 R0 K7='id'",
+            "0035 GETTABLE   R5 R2 K8='WhiteIDList'",
+            "0036 CALL       R3 3 2",
+            "0037 TEST       R3 0 0",
+            "0038 JMP        R0 jump=41",
+            "0039 LOADBOOL   R3 0 0",
+            "0040 RETURN     R3 2 0",
+            "0041 GETTABLE   R3 R2 K10='QualityFilter'",
+            "0042 TEST       R3 0 0",
+            "0043 JMP        R0 jump=49",
+            "0044 GETTABUP   R3 U0 K11='tonumber'",
+            "0045 GETTABLE   R4 R2 K10='QualityFilter'",
+            "0046 CALL       R3 2 2",
+            "0047 TEST       R3 0 1",
+            "0048 JMP        R0 jump=50",
+            "0049 LOADK      R3 K12=0",
+            "0050 GETTABLE   R4 R2 K13='ValueFilter'",
+            "0051 TEST       R4 0 0",
+            "0052 JMP        R0 jump=58",
+            "0053 GETTABUP   R4 U0 K11='tonumber'",
+            "0054 GETTABLE   R5 R2 K13='ValueFilter'",
+            "0055 CALL       R4 2 2",
+            "0056 TEST       R4 0 1",
+            "0057 JMP        R0 jump=59",
+            "0058 LOADK      R4 K12=0",
+            "0059 GETTABLE   R5 R0 K14='quality'",
+            "0060 TEST       R5 0 1",
+            "0061 JMP        R0 jump=63",
+            "0062 LOADK      R5 K12=0",
+            "0063 LT         R1 5 3",
+            "0064 JMP        R0 jump=72",
+            "0065 SELF       R5 R0 K15='GetTotalMallSellPrice'",
+            "0066 CALL       R5 2 2",
+            "0067 TEST       R5 0 1",
+            "0068 JMP        R0 jump=70",
+            "0069 LOADK      R5 K12=0",
+            "0070 LT         R0 5 4",
+            "0071 JMP        R0 jump=74",
+            "0072 LOADBOOL   R5 0 0",
+            "0073 RETURN     R5 2 0",
+            "0074 GETTABLE   R5 R2 K16='IsCarryInActive'",
+            "0075 RETURN     R5 2 0",
+            "0076 LOADBOOL   R3 0 0",
+            "0077 RETURN     R3 2 0",
+            "0078 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.89",
+          "first_line": 1038,
+          "last_line": 1056,
+          "constants": [
+            "GetMainTypeById",
+            "GetSubTypeById",
+            "EItemType",
+            "Equipment",
+            "EEquipmentType",
+            "ArmorCombination",
+            "Facade",
+            "TableManager",
+            "GetTable",
+            "ArmoryPresetData",
+            "table",
+            "find",
+            "ItemID",
+            1,
+            2
+          ],
+          "local_names": [
+            {
+              "name": "id",
+              "start": 0,
+              "end": 40
+            },
+            {
+              "name": "helmetID",
+              "start": 1,
+              "end": 40
+            },
+            {
+              "name": "breastPlateID",
+              "start": 1,
+              "end": 40
+            },
+            {
+              "name": "itemMainType",
+              "start": 6,
+              "end": 36
+            },
+            {
+              "name": "itemSubType",
+              "start": 9,
+              "end": 36
+            },
+            {
+              "name": "armoryPresetTable",
+              "start": 22,
+              "end": 36
+            },
+            {
+              "name": "armoryPreset",
+              "start": 27,
+              "end": 36
+            }
+          ],
+          "listing": [
+            "0001 VARARG     R1 1 0",
+            "0002 TEST       R0 0 0",
+            "0003 JMP        R0 jump=37",
+            "0004 GETTABUP   R3 U0 K0='GetMainTypeById'",
+            "0005 MOVE       R4 0 0",
+            "0006 CALL       R3 2 2",
+            "0007 GETTABUP   R4 U0 K1='GetSubTypeById'",
+            "0008 MOVE       R5 0 0",
+            "0009 CALL       R4 2 2",
+            "0010 GETTABUP   R5 U1 K2='EItemType'",
+            "0011 GETTABLE   R5 R5 K3='Equipment'",
+            "0012 EQ         R0 3 5",
+            "0013 JMP        R0 jump=37",
+            "0014 GETTABUP   R5 U1 K4='EEquipmentType'",
+            "0015 GETTABLE   R5 R5 K5='ArmorCombination'",
+            "0016 EQ         R0 4 5",
+            "0017 JMP        R0 jump=37",
+            "0018 GETTABUP   R5 U1 K6='Facade'",
+            "0019 GETTABLE   R5 R5 K7='TableManager'",
+            "0020 SELF       R5 R5 K8='GetTable'",
+            "0021 LOADK      R7 K9='ArmoryPresetData'",
+            "0022 CALL       R5 3 2",
+            "0023 GETTABUP   R6 U1 K10='table'",
+            "0024 GETTABLE   R6 R6 K11='find'",
+            "0025 MOVE       R7 5 0",
+            "0026 CLOSURE    R8 child[0]",
+            "0027 CALL       R6 3 2",
+            "0028 TEST       R6 0 0",
+            "0029 JMP        R0 jump=37",
+            "0030 GETTABLE   R7 R6 K12='ItemID'",
+            "0031 TEST       R7 0 0",
+            "0032 JMP        R0 jump=37",
+            "0033 GETTABLE   R7 R6 K12='ItemID'",
+            "0034 GETTABLE   R1 R7 K13=1",
+            "0035 GETTABLE   R7 R6 K12='ItemID'",
+            "0036 GETTABLE   R2 R7 K14=2",
+            "0037 MOVE       R3 1 0",
+            "0038 MOVE       R4 2 0",
+            "0039 RETURN     R3 3 0",
+            "0040 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.89.0",
+          "first_line": 1047,
+          "last_line": 1047,
+          "constants": [
+            "PresetID"
+          ],
+          "local_names": [
+            {
+              "name": "v",
+              "start": 0,
+              "end": 8
+            },
+            {
+              "name": "k",
+              "start": 0,
+              "end": 8
+            }
+          ],
+          "listing": [
+            "0001 GETTABLE   R2 R0 K0='PresetID'",
+            "0002 GETUPVAL   R3 0 0",
+            "0003 EQ         R1 2 3",
+            "0004 JMP        R0 jump=6",
+            "0005 LOADBOOL   R2 0 1",
+            "0006 LOADBOOL   R2 1 0",
+            "0007 RETURN     R2 2 0",
+            "0008 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.90",
+          "first_line": 1059,
+          "last_line": 1079,
+          "constants": [
+            "tonumber",
+            0,
+            "logwarning",
+            "[BuyMenuItemDetail] FindArmorCombinationPresetId invalid args helmet=",
+            "breast=",
+            "Facade",
+            "TableManager",
+            "GetTable",
+            "ArmoryPresetData",
+            "[BuyMenuItemDetail] FindArmorCombinationPresetId ArmoryPresetData table nil",
+            "pairs",
+            "ItemID",
+            1,
+            2,
+            "PresetID"
+          ],
+          "local_names": [
+            {
+              "name": "helmetID",
+              "start": 0,
+              "end": 62
+            },
+            {
+              "name": "breastPlateID",
+              "start": 0,
+              "end": 62
+            },
+            {
+              "name": "armoryPresetTable",
+              "start": 29,
+              "end": 62
+            },
+            {
+              "name": "(for generator)",
+              "start": 39,
+              "end": 59
+            },
+            {
+              "name": "(for state)",
+              "start": 39,
+              "end": 59
+            },
+            {
+              "name": "(for control)",
+              "start": 39,
+              "end": 59
+            },
+            {
+              "name": "_",
+              "start": 40,
+              "end": 57
+            },
+            {
+              "name": "armoryPreset",
+              "start": 40,
+              "end": 57
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R2 U0 K0='tonumber'",
+            "0002 MOVE       R3 0 0",
+            "0003 CALL       R2 2 2",
+            "0004 MOVE       R0 2 0",
+            "0005 GETTABUP   R2 U0 K0='tonumber'",
+            "0006 MOVE       R3 1 0",
+            "0007 CALL       R2 2 2",
+            "0008 MOVE       R1 2 0",
+            "0009 TEST       R0 0 0",
+            "0010 JMP        R0 jump=17",
+            "0011 TEST       R1 0 0",
+            "0012 JMP        R0 jump=17",
+            "0013 EQ         R1 0 257",
+            "0014 JMP        R0 jump=17",
+            "0015 EQ         R0 1 257",
+            "0016 JMP        R0 jump=25",
+            "0017 GETTABUP   R2 U0 K2='logwarning'",
+            "0018 LOADK      R3 K3='[BuyMenuItemDetail] FindArmorCombinationPresetId invalid args helmet='",
+            "0019 MOVE       R4 0 0",
+            "0020 LOADK      R5 K4='breast='",
+            "0021 MOVE       R6 1 0",
+            "0022 CALL       R2 5 1",
+            "0023 VARARG     R2 0 0",
+            "0024 RETURN     R2 2 0",
+            "0025 GETTABUP   R2 U0 K5='Facade'",
+            "0026 GETTABLE   R2 R2 K6='TableManager'",
+            "0027 SELF       R2 R2 K7='GetTable'",
+            "0028 LOADK      R4 K8='ArmoryPresetData'",
+            "0029 CALL       R2 3 2",
+            "0030 TEST       R2 0 1",
+            "0031 JMP        R0 jump=37",
+            "0032 GETTABUP   R3 U0 K2='logwarning'",
+            "0033 LOADK      R4 K9='[BuyMenuItemDetail] FindArmorCombinationPresetId ArmoryPresetData table nil'",
+            "0034 CALL       R3 2 1",
+            "0035 VARARG     R3 0 0",
+            "0036 RETURN     R3 2 0",
+            "0037 GETTABUP   R3 U0 K10='pairs'",
+            "0038 MOVE       R4 2 0",
+            "0039 CALL       R3 2 4",
+            "0040 JMP        R0 jump=58",
+            "0041 GETTABLE   R8 R7 K11='ItemID'",
+            "0042 TEST       R8 0 0",
+            "0043 JMP        R0 jump=58",
+            "0044 GETTABUP   R8 U0 K0='tonumber'",
+            "0045 GETTABLE   R9 R7 K11='ItemID'",
+            "0046 GETTABLE   R9 R9 K12=1",
+            "0047 CALL       R8 2 2",
+            "0048 EQ         R0 8 0",
+            "0049 JMP        R0 jump=58",
+            "0050 GETTABUP   R8 U0 K0='tonumber'",
+            "0051 GETTABLE   R9 R7 K11='ItemID'",
+            "0052 GETTABLE   R9 R9 K13=2",
+            "0053 CALL       R8 2 2",
+            "0054 EQ         R0 8 1",
+            "0055 JMP        R0 jump=58",
+            "0056 GETTABLE   R8 R7 K14='PresetID'",
+            "0057 RETURN     R8 2 0",
+            "0058 TFORCALL   R3 0 2",
+            "0059 TFORLOOP   R5 jump=41",
+            "0060 VARARG     R3 0 0",
+            "0061 RETURN     R3 2 0",
+            "0062 RETURN     R0 1 0"
+          ]
+        },
+        {
+          "function_id": "0.91",
+          "first_line": 1082,
+          "last_line": 1092,
+          "constants": [
+            "string",
+            "match",
+            "(%d+)-(%d+)-(%d+) (%d+):(%d+):(%d+)",
+            "04",
+            "25",
+            "00",
+            "TimeUtil",
+            "GetClientTimeZone",
+            2,
+            3,
+            "01",
+            "os",
+            "time",
+            "year",
+            "month",
+            "day",
+            "hour",
+            "min",
+            "sec"
+          ],
+          "local_names": [
+            {
+              "name": "timeString",
+              "start": 0,
+              "end": 31
+            },
+            {
+              "name": "year",
+              "start": 5,
+              "end": 31
+            },
+            {
+              "name": "month",
+              "start": 5,
+              "end": 31
+            },
+            {
+              "name": "day",
+              "start": 5,
+              "end": 31
+            },
+            {
+              "name": "hour",
+              "start": 5,
+              "end": 31
+            },
+            {
+              "name": "minute",
+              "start": 5,
+              "end": 31
+            },
+            {
+              "name": "second",
+              "start": 5,
+              "end": 31
+            },
+            {
+              "name": "timeZone",
+              "start": 14,
+              "end": 19
+            },
+            {
+              "name": "timeStamp",
+              "start": 29,
+              "end": 31
+            }
+          ],
+          "listing": [
+            "0001 GETTABUP   R1 U0 K0='string'",
+            "0002 GETTABLE   R1 R1 K1='match'",
+            "0003 MOVE       R2 0 0",
+            "0004 LOADK      R3 K2='(%d+)-(%d+)-(%d+) (%d+):(%d+):(%d+)'",
+            "0005 CALL       R1 3 7",
+            "0006 EQ         R0 2 259",
+            "0007 JMP        R0 jump=20",
+            "0008 EQ         R0 3 260",
+            "0009 JMP        R0 jump=20",
+            "0010 EQ         R0 4 261",
+            "0011 JMP        R0 jump=20",
+            "0012 GETTABUP   R7 U0 K6='TimeUtil'",
+            "0013 GETTABLE   R7 R7 K7='GetClientTimeZone'",
+            "0014 CALL       R7 1 2",
+            "0015 EQ         R1 7 264",
+            "0016 JMP        R0 jump=19",
+            "0017 EQ         R0 7 265",
+            "0018 JMP        R0 jump=20",
+            "0019 LOADK      R4 K10='01'",
+            "0020 GETTABUP   R7 U0 K11='os'",
+            "0021 GETTABLE   R7 R7 K12='time'",
+            "0022 NEWTABLE   R8 0 6",
+            "0023 SETTABLE   R8 K13='year' R1",
+            "0024 SETTABLE   R8 K14='month' R2",
+            "0025 SETTABLE   R8 K15='day' R3",
+            "0026 SETTABLE   R8 K16='hour' R4",
+            "0027 SETTABLE   R8 K17='min' R5",
+            "0028 SETTABLE   R8 K18='sec' R6",
+            "0029 CALL       R7 2 2",
+            "0030 RETURN     R7 2 0",
+            "0031 RETURN     R0 1 0"
+          ]
+        }
+      ]
+    }
+  ],
+  "index_sha256": "b0b6b1308e5aa83f92c02288091cd1994b2f7e9ac724b4fd040e8fe6f232b47d",
+  "lua_executed": false,
+  "process_access": false,
+  "client_launched": false,
+  "game_written": false,
+  "hotfix_override_absence_proven": false
+}

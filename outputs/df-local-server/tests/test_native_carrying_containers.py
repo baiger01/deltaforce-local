@@ -53,11 +53,13 @@ class NativeCarryingContainerTests(unittest.TestCase):
             target_position=107)
 
     def fill_warehouse(self, *, leave=0):
+        from dfserver.native_warehouse_extensions import warehouse_grid
         with self.backend.connection() as connection:
             player_id = self.backend._authorize(connection, self.token)
-            for index in range(360 - leave):
+            columns, rows = warehouse_grid(connection, player_id, 2)
+            for index in range(columns * rows - leave):
                 connection.execute('INSERT INTO native_lobby_props VALUES (?,?,?,?,?,?,?,?,?)',
-                    (10000 + index, player_id, MEDICINE_ID, 1, 2, index % 9, index // 9, 1, 1))
+                    (10000 + index, player_id, MEDICINE_ID, 1, 2, index % columns, index // columns, 1, 1))
             connection.commit()
 
     def receipt_count(self):

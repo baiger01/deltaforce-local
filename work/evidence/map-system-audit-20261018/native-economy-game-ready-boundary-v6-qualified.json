@@ -1,0 +1,90 @@
+{
+  "client_launched": false,
+  "client_sha256": "4254fbe66585f260f1f9dbfc5e302887842552e7baed8939e023160a5e250be0",
+  "excluded_ready_sources": [
+    "Elapsed delay",
+    "Transport packet ACK",
+    "ServerNotifyLoadingFinish index224 alone",
+    "Log observation without an actual admitted RPC receipt",
+    "Incomplete PC partial fragment"
+  ],
+  "kind": "source_qualified_native_seamless_finished_inventory_refresh_boundary_v5",
+  "lua_boundary": {
+    "baseline_game_state_only_publishes_local_event": true,
+    "baseline_lua_blocks_verified": 5707,
+    "check_server_enabled_accepts": [
+      "Game",
+      "LobbyToGame",
+      "GameSettlement"
+    ],
+    "first_events_discarded_by_safehouse_flow_in_this_trial_proven": false,
+    "ordinary_game_enter_does_not_refetch_inventory": true,
+    "ordinary_inventory_ui_root_cause_proven": false
+  },
+  "native_causality": {
+    "client_real_in_game_flag_write": "0xd448884 byte PC+a51=1",
+    "new_finish_stage_alternative": "0xd428e20 -> 0xd4292b7 -> 0xced6130",
+    "normal_loading_flow_success": "0xd44fde0(result=0) -> 0xd4483d0",
+    "normal_rpc_call": "0xd44887f -> 0xced6130",
+    "signal_is_inventory_ui_completion": false,
+    "signal_is_seamless_loading_completion": true
+  },
+  "native_refresh_acceptance_verified": false,
+  "process_access": false,
+  "production_modified": false,
+  "receiver": {
+    "class_path": "/Game/BluePrints/Characters/BP_DFMPlayerController.BP_DFMPlayerController_C",
+    "event_wrapper_rva": "0xced6130",
+    "exclusive_index_maximum": 245,
+    "field_checksum": 3802576422,
+    "function_flags": "0x220cc0",
+    "function_index": 225,
+    "function_name": "ServerNotifySeamlessFinish",
+    "function_params_rva": "0x1d1f0db0",
+    "parameter_bits": 0,
+    "reliable": true,
+    "server": true
+  },
+  "refresh_candidate": {
+    "callback": "InventoryManager.OnRep_RepItemArray -> OnGameInventoryClientInitialize -> Lua inventory rebuild",
+    "claims": "Source-qualified candidate; not a verified Tab fix or inventory UI-ready acknowledgement",
+    "ordering": "Only after initial inventory stages actual ACK and exclusive current array revision",
+    "retransmission": "Reuse identical content/key until ACK; commit cursor only on exact receipt",
+    "trigger": "Actual admitted ordered complete reliable empty function225 on current PC channel",
+    "values": "One unchanged current original FastArray element; no new GID/count/features"
+  },
+  "same_trial": {
+    "capture": "1792343957590810500",
+    "client_rpc_call_at": "01:21:31.302",
+    "complete_received_rpc_225_saved": false,
+    "first_partial_declared_actor_block_bits": 132312,
+    "first_partial_declared_field_bits": 132280,
+    "first_partial_field_index": 84,
+    "first_partial_field_name": "ServerUpdateMultipleLevelsVisibility",
+    "initial_inventory_count": 52,
+    "initial_inventory_onrep_interval": [
+      "01:21:14.008",
+      "01:21:15.029"
+    ],
+    "native_game_at": "01:21:18.539",
+    "native_lobby_to_game_at": "01:21:13.191",
+    "partial_first_at": "01:21:31.313380",
+    "partial_first_sequence": 57,
+    "runtime_reassembly_failure_proven": false,
+    "saved_capture_truncates_pc_reliable_partial": true
+  },
+  "source_pins": {
+    "work/evidence/map-system-audit-20261018/native-economy-controller-game-ready-declarations-v4.json": "e28e83c8e4f7bf6658657ebfd1fcd48c73989364273671fa77b69d3162a3a79a",
+    "work/evidence/map-system-audit-20261018/native-economy-game-ready-installed-lua-v4.json": "cdd831c709fda6df0d3b6c64f63b2ce049cdc986012905643c01a40eab854c25",
+    "work/evidence/map-system-audit-20261018/native-economy-game-ready-log-1792343957590810500-v4.json": "4be17517c6ca7940f4a01aa493cbcbf1331489965d712b1ff36eb1a216065dce",
+    "work/evidence/map-system-audit-20261018/native-economy-game-ready-lua-xrefs-v4.json": "a850bfedddae0911bb83189b72c4700ea15150a9ee8003beb25e4a09467fab69",
+    "work/evidence/map-system-audit-20261018/native-economy-ready-rpc-packet-receipt-1792343957590810500-v4.json": "cc5810f84ac33a2da278cfbbfc0788aa7f1c5095319bf872bfdeae1b9520b1b9",
+    "work/evidence/map-system-audit-20261018/native-economy-seamless-succeed-entry-gates-v4.json": "368ff16d12c9fd551ea9622b7d7c36afa0efcd047bd1d9cd0f7acfefc1a792a3",
+    "work/evidence/map-system-audit-20261018/native-economy-seamlessfinish-normal-callers-v4.json": "a05764dba02736aba8bb51e43397f18441be7034ff7165008c5bc6dab56376e6",
+    "work/native-client-tests/1792337436036819800/world-interaction-rpc-metadata.json": "56d64f3cc8dab71d6b62f7e7cb98f6f63584b503af8340be40a295ded314f50c",
+    "work/native-client-tests/1792343957590810500/game-server-packets/pc-restart-packets/119-udp.bin": "b094c5230bd2d384cfaccd625195f8e84420224e1df2124291f466fbc3c8930d",
+    "work/native-client-tests/1792343957590810500/game-server-packets/report.json": "24494e615f542d6cbc270786a3965c6e614cac49866c9850ef40289a38ba3558",
+    "work/native-client-tests/1792343957590810500/portable-runtime-after-possession.json": "ba74858b94c8983a06ddc2b0be361ab68c31a180664071eb1664566afa6758de",
+    "work/qualify_economy_game_ready_boundary_v5.py": "b08bacb6fd25be2f89fa163b17d8a575b49be2d3dad165a0bfeaeafc7060221e"
+  }
+}

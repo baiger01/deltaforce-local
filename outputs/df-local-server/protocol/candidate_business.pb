@@ -1,5 +1,5 @@
 
-µÅ:
+œí;
 local_candidate_business.protopb"þ
 ABTagQueryFlow
 	GameSvrId (	
@@ -1494,7 +1494,115 @@ EnumAction (
 num (
 time (
 	gain_type (
-extra_value ("þ
+extra_value ("…
+ActivityInfo
+actv_id (
+	actv_type (
+
+start_date (
+end_date (
+is_tracking (#
+attend_info (2.pb.AttendInfo'
+	task_info (2.pb.ActivityTaskInfo
+content (	
+currency_id	 (
+currency_num
+ (
+tab_belonging (
+manual_tracking (
+order_weight (3
+milestone_award (2.pb.ActivityMilestoneAward&
+final_award (2.pb.ActivityAward/
+exchange_item (2.pb.ActivityExchangeProp5
+prop_exchange_items (2.pb.ActivityExchangeProp
+final_award_received (.
+recruit_ms_tasks (2.pb.ActivityTaskInfo
+next_refresh_time (
+mode_leaning  (
+mode_tag! (
+card_display" (
+info1# (	
+info2$ (	
+name% (	
+desc& (	
+details' (	
+reward_showed1( (
+reward_showed2) (
+reward_showed3* (
+manual_track+ (
+available_refresh_times, (
+details_show_way. (
+info3/ (	
+time_show_way0 (
+task_show_way1 (:
+classify_config2 (2!.pb.NewbieGoalTypesClassifyConfig+
+answers3 (2.pb.ActivityQuestionAnswer0
+exchange_pages4 (2.pb.ActivityExchangePage
+entrance_title5 (	
+mainpage_title6 (	
+	survey_id7 (
+survey_state8 (/
+expired_task_infoc (2.pb.ActivityTaskInfo
+invalidd (
+finishede (
+listing_tipsf (
+
+label_descg (	
+end_notice_timeh (
+is_importanti (
+important_picj (	
+important_videok (	
+second_important_picl (	
+module_typem (
+important_descn (	
+cooperation_labelo (	
+interact_punishedp (
+first_show_rulesq (
+panel_icon_typer (
+
+cdn_prefixs (	.
+kol_weaponsÈ (2.pb.KOLWeaponTasteConfig/
+jump_to_configÒ (2.pb.ActivityJumpConfig(
+password_boxesÜ (2.pb.PasswordBox
+	chip_mapsÝ (2.pb.MapInfo3
+moss_construct_infoÞ (2.pb.MossConstructInfo7
+newbie_challenge_infoß (2.pb.NewbieChallengeInfo&
+lottery_infoà (2.pb.LotteryInfo)
+star_fire_infoá (2.pb.StarFireInfo&
+archive_infoâ (2.pb.ArchiveInfo$
+relink_infoã (2.pb.RelinkInfo$
+return_infoä (2.pb.ReturnInfo?
+act_theme_eavesdroppingå (2.pb.ActThemeEavesdroppingInfo-
+survey_boss_infoæ (2.pb.SurveyBossInfo-
+act_theme_starç (2.pb.ActThemeStarInfo+
+make_drink_infoè (2.pb.MakeDrinkInfo@
+act_theme_she_one_card_infoé (2.pb.ActThemeSheOneCardInfo5
+weapon_delivery_infoê (2.pb.WeaponDeliveryInfo
+sbc_infoë (2.pb.SBCInfo/
+mp_commander_infoì (2.pb.MPCommanderInfo7
+simple_milestone_infoí (2.pb.SimpleMilestoneInfo&
+pandora_infoî (2.pb.PandoraInfo;
+arknights_exchange_infoï (2.pb.ArknightsExchangeInfo9
+arknights_recruit_infoð (2.pb.ArknightsRecruitInfo3
+arknights_game_infoñ (2.pb.ArknightsGameInfo3
+ahsarah_travel_infoò (2.pb.AhsarahTravelInfo:
+hero_skin_exchange_infoó (2.pb.HeroSkinExchangeInfo)
+play_boss_infoô (2.pb.PlayBossInfo:
+ahsarah_eve_dinner_infoõ (2.pb.AhsarahEveDinnerInfo@
+multi_act_aggregation_infoö (2.pb.MultiActAggregationInfo6
+play_boss_weekly_info÷ (2.pb.PlayBossWeeklyInfo6
+ma1_red_envelope_infoø (2.pb.Ma1RedEnvelopeInfo:
+dog_tag_collection_infoù (2.pb.DogTagCollectionInfo5
+haavk_operation_infoú (2.pb.HaavkOperationInfo<
+mp_point_difference_infoû (2.pb.MPPointDifferenceInfo3
+roll_challenge_infoü (2.pb.RollChallengeInfo-
+rainbow_six_infoý (2.pb.RainbowSixInfo;
+whiteout_operation_infoþ (2.pb.WhiteoutOperationInfo
+aniversary_sub_tab_idÿ (
+	mode_tags€ (B !
+aniversary_main_activity (+
+haavk_site_info‚ (2.pb.HaavkSiteInfo7
+operator_profile_infoƒ (2.pb.OperatorProfileInfo"þ
 ActivityItemReport
 	GameSvrId (	
 DtEventTime (	
@@ -1534,7 +1642,29 @@ ServerTime (
 image (	
 need_choose (
 choose_prop_id (
-banner_image (	"©
+banner_image (	"ø
+ActivityObjective
+
+id (
+	completed (
+progress (
+progress_max (3
+
+conditions (2.pb.ActivityObjectiveConditions
+window (B 
+	goal_type (
+	pay_props (2.pb.PropInfo
+	get_props	 (2.pb.PropInfo"©
+ActivityObjectiveConditions
+check_basic_condition1 (
+check_basic_condition2 (
+check_basic_condition3 (
+check_basic_condition4 (
+check_basic_condition5 (
+check_basic_condition6 (J
+ext_conditions
+ (22.pb.ActivityObjectiveConditions_ExtConditionsEntry"0
+.ActivityObjectiveConditions_ExtConditionsEntry"©
 ActivityPreviewInfo
 activity_id (
 
@@ -1630,7 +1760,40 @@ TabLevelId (
  (	
 RewardBindType (	
 
-RewardTime ("A
+RewardTime ("£
+ActivityTaskInfo
+task_id (
+	task_type (
+state (
+accept_time (
+complete_time (
+var (B )
+
+objectives (2.pb.ActivityObjective#
+child (2.pb.ActivityTaskInfo 
+award	 (2.pb.ActivityAward
+
+start_time
+ (
+end_time (
+	task_line (
+sequence_order (
+start_limit_time (
+end_limit_time (
+is_last_sequence (
+invalid (!
+awards (2.pb.ActivityAward
+jump_id (
+mode_tag (
+info1 (	
+info2 (	
+name (	
+desc (	
+weight  (
+required_tasks! (B 
+required_condition" (
+	task_slot( ($
+required_props2 (2.pb.PropInfo"A
 AddButtonStatus
 situation_id (	
 has_been_clicked ("”
@@ -9117,7 +9280,10 @@ achieve_id (
 !CSActivityAggregationSetReturnReq
 activity_id (
 sub_activity_id (
-want_return ("S
+want_return ("\
+!CSActivityAggregationSetReturnRes
+result ('
+activity_info (2.pb.ActivityInfo"S
 +CSActivityAhsarahEveDinnerCardEventFlowsReq
 activity_id (
 card_id ("W
@@ -9141,49 +9307,108 @@ card_flows (2.pb.ActItemFlow"A
 result ('
 unread_cards (2.pb.ActItemUnread"8
 !CSActivityAhsarahEveDinnerDrawReq
-activity_id ("q
+activity_id ("o
+!CSActivityAhsarahEveDinnerDrawRes
+result (
+cards (B '
+activity_info (2.pb.ActivityInfo"q
 #CSActivityAhsarahEveDinnerExcuteReq
 activity_id (
 event_id (#
 
-slot_infos (2.pb.ActSlotInfo"P
+slot_infos (2.pb.ActSlotInfo"¾
+#CSActivityAhsarahEveDinnerExcuteRes
+result ('
+activity_info (2.pb.ActivityInfo
+	ending_id (
+animation_id (0
+currency_infos (2.pb.ActivityCurrencyInfo
+desc (	#
+
+slot_infos (2.pb.ActSlotInfo#
+data_change	 (2.pb.DataChange+
+new_card_list
+ (2.pb.ActItemBriefInfo"P
 &CSActivityAhsarahEveDinnerGetRewardReq
 activity_id (
-	reward_id (";
+	reward_id ("¹
+&CSActivityAhsarahEveDinnerGetRewardRes
+result ('
+activity_info (2.pb.ActivityInfo#
+data_change (2.pb.DataChange1
+expand_info (2.pb.ActivityRewardExpandInfo";
 $CSActivityAhsarahEveDinnerNewCardNtf
 activity_id ("X
 /CSActivityAhsarahEveDinnerReceiveReplyRewardReq
 activity_id (
-reply_id ("x
+reply_id ("ô
+/CSActivityAhsarahEveDinnerReceiveReplyRewardRes
+result ('
+activity_info (2.pb.ActivityInfo#
+data_change (2.pb.DataChange1
+expand_info (2.pb.ActivityRewardExpandInfo0
+currency_infos (2.pb.ActivityCurrencyInfo"x
 "CSActivityAhsarahEveDinnerReplyReq
 activity_id (
 
 message_id (
 reply_id (
-player_reply_id ("g
+player_reply_id ("]
+"CSActivityAhsarahEveDinnerReplyRes
+result ('
+activity_info (2.pb.ActivityInfo"g
 %CSActivityAhsarahEveDinnerSendCardReq
 activity_id (
 target_player_id (
-card_id ("I
+card_id ("`
+%CSActivityAhsarahEveDinnerSendCardRes
+result ('
+activity_info (2.pb.ActivityInfo"I
 CSActivityAhsarahTravelLikeReq
 activity_id (
 
-message_id ("S
+message_id ("˜
+CSActivityAhsarahTravelLikeRes
+result ('
+activity_info (2.pb.ActivityInfo#
+data_change (2.pb.DataChange0
+currency_infos (2.pb.ActivityCurrencyInfo1
+expand_info (2.pb.ActivityRewardExpandInfo
+gain_currency_num (
+gain_currency_id ("S
 +CSActivityAhsarahTravelReceiveLineRewardReq
 activity_id (
-hero_id ("U
+hero_id ("ð
++CSActivityAhsarahTravelReceiveLineRewardRes
+result ('
+activity_info (2.pb.ActivityInfo#
+data_change (2.pb.DataChange0
+currency_infos (2.pb.ActivityCurrencyInfo1
+expand_info (2.pb.ActivityRewardExpandInfo"U
 ,CSActivityAhsarahTravelReceiveReplyRewardReq
 activity_id (
-reply_id ("u
+reply_id ("ñ
+,CSActivityAhsarahTravelReceiveReplyRewardRes
+result ('
+activity_info (2.pb.ActivityInfo#
+data_change (2.pb.DataChange0
+currency_infos (2.pb.ActivityCurrencyInfo1
+expand_info (2.pb.ActivityRewardExpandInfo"u
 CSActivityAhsarahTravelReplyReq
 activity_id (
 
 message_id (
 reply_id (
-player_reply_id ("G
+player_reply_id ("Z
+CSActivityAhsarahTravelReplyRes
+result ('
+activity_info (2.pb.ActivityInfo"G
 CSActivityAhsarahTravelTrackReq
 activity_id (
-hero_id ("3
+hero_id ("Z
+CSActivityAhsarahTravelTrackRes
+result ('
+activity_info (2.pb.ActivityInfo"3
 CSActivityAnimationUpdateReq
 activity_id ("b
 CSActivityAnimationUpdateRes
@@ -9205,7 +9430,10 @@ message_id (
 activity_id (
 task_id (
 goal_id (
-answer ("a
+answer ("N
+CSActivityAnswerRes
+result ('
+activity_info (2.pb.ActivityInfo"a
 CSActivityArchiveAudioFinishReq
 activity_id (
 	task_line (
@@ -9219,7 +9447,13 @@ message_id (
  CSActivityArknightsChooseHeroReq
 activity_id (
 type (
-hero_id ("Ï
+hero_id ("å
+ CSActivityArknightsChooseHeroRes
+result ('
+activity_info (2.pb.ActivityInfo#
+data_change (2.pb.DataChange0
+currency_infos (2.pb.ActivityCurrencyInfo1
+expand_infod (2.pb.ActivityRewardExpandInfo"Ï
 CSActivityArknightsGameEndReq
 activity_id (
 cost_san_num (
@@ -9230,10 +9464,23 @@ message_id (
 meet_reward_npc (
 checksum (	
 
-game_state	 ("M
+game_state	 ("ú
+CSActivityArknightsGameEndRes
+result ('
+activity_info (2.pb.ActivityInfo#
+data_change (2.pb.DataChange0
+currency_infos (2.pb.ActivityCurrencyInfo1
+expand_info (2.pb.ActivityRewardExpandInfo
+gain_money_num ("M
 $CSActivityArknightsGameExploreEndReq
 activity_id (
-event_id ("=
+event_id ("é
+$CSActivityArknightsGameExploreEndRes
+result ('
+activity_info (2.pb.ActivityInfo#
+data_change (2.pb.DataChange0
+currency_infos (2.pb.ActivityCurrencyInfo1
+expand_info (2.pb.ActivityRewardExpandInfo"=
 &CSActivityArknightsGameExploreStartReq
 activity_id ("i
 &CSActivityArknightsGameExploreStartRes
@@ -9242,7 +9489,13 @@ $CSActivityArknightsGameExploreEndReq
 ,CSActivityArknightsGameReceiveCycleRewardReq
 activity_id (
 cycle (
-	reward_id ("6
+	reward_id ("ñ
+,CSActivityArknightsGameReceiveCycleRewardRes
+result ('
+activity_info (2.pb.ActivityInfo#
+data_change (2.pb.DataChange0
+currency_infos (2.pb.ActivityCurrencyInfo1
+expand_info (2.pb.ActivityRewardExpandInfo"6
 CSActivityArknightsGameStartReq
 activity_id ("1
 CSActivityArknightsGameStartRes
@@ -9251,15 +9504,29 @@ $CSActivityArknightsGameExploreEndReq
 activity_id (
 isAll (
 
-collect_id ("V
+collect_id ("ï
+*CSActivityArknightsReceiveCollectRewardRes
+result ('
+activity_info (2.pb.ActivityInfo#
+data_change (2.pb.DataChange0
+currency_infos (2.pb.ActivityCurrencyInfo1
+expand_infod (2.pb.ActivityRewardExpandInfo"V
 CSActivityArknightsRecruitReq
 activity_id (
 type (
 
-recruit_ad ("D
+recruit_ad ("Š
+CSActivityArknightsRecruitRes
+result ('
+activity_info (2.pb.ActivityInfo0
+currency_infos (2.pb.ActivityCurrencyInfo"D
 CSActivityArknightsRefreshAdReq
 activity_id (
-type ("@
+type ("Œ
+CSActivityArknightsRefreshAdRes
+result ('
+activity_info (2.pb.ActivityInfo0
+currency_infos (2.pb.ActivityCurrencyInfo"@
 )CSActivityArknightsUpdateMPMoneyNoticeReq
 activity_id ("Y
 )CSActivityArknightsUpdateMPMoneyNoticeRes
@@ -9267,7 +9534,14 @@ recruit_ad ("D
 mp_money_update_time ("?
 CSActivityAttendReq
 actv_id (B 
-activity_id ("\
+activity_id ("Å
+CSActivityAttendRes
+result ($
+
+actv_infos (2.pb.ActivityInfo#
+data_change (2.pb.DataChange*
+mp_data_change (2.pb.CSMPDataChange'
+activity_info (2.pb.ActivityInfo"\
 CSActivityChangeExchangePlanReq
 activity_id (
 exchange_id (
@@ -9283,31 +9557,60 @@ recruit_ad ("D
 "CSActivityCollectionSubmitPropsReq
 activity_id (
 task_id (
-props (2.pb.PropInfo"F
+props (2.pb.PropInfo"Y
+"CSActivityCollectionSubmitPropsRes
+result (#
+	actv_info (2.pb.ActivityInfo"F
 CSActivityCurrencyChangeNtf'
 infos (2.pb.ActivityCurrencyInfo"h
 &CSActivityDogTagCollectionGetRewardReq
 activity_id ()
-reward_info (2.pb.DogTagRewardInfo"f
+reward_info (2.pb.DogTagRewardInfo"†
+&CSActivityDogTagCollectionGetRewardRes
+result ('
+activity_info (2.pb.ActivityInfo#
+data_change (2.pb.DataChange"f
 &CSActivityDogTagCollectionModifyPosReq
 activity_id (
 dog_tag_gid (
 
-dog_tag_id ("p
+dog_tag_id ("†
+&CSActivityDogTagCollectionModifyPosRes
+result ('
+activity_info (2.pb.ActivityInfo#
+data_change (2.pb.DataChange"p
 ,CSActivityDogTagCollectionPreSelectRewardReq
 activity_id (+
-select_reward (2.pb.DogTagRewardInfo":
+select_reward (2.pb.DogTagRewardInfo"g
+,CSActivityDogTagCollectionPreSelectRewardRes
+result ('
+activity_info (2.pb.ActivityInfo":
 #CSActivityDogTagCollectionSubmitReq
-activity_id ("T
+activity_id ("q
+#CSActivityDogTagCollectionSubmitRes
+result ('
+activity_info (2.pb.ActivityInfo
+	reward_id ("T
  CSActivityEavesdroppingAnswerReq
 act_id (
 case_num (
-answer ("N
+answer ("W
+ CSActivityEavesdroppingAnswerRes
+result (#
+	actv_info (2.pb.ActivityInfo"N
 *CSActivityEavesdroppingReceiveCaseAwardReq
 act_id (
-case_num ("E
+case_num ("†
+*CSActivityEavesdroppingReceiveCaseAwardRes
+result (#
+	actv_info (2.pb.ActivityInfo#
+data_change (2.pb.DataChange"E
 3CSActivityEavesdroppingReceiveSpecialAnswerAwardReq
-act_id ("+
+act_id ("
+3CSActivityEavesdroppingReceiveSpecialAnswerAwardRes
+result (#
+	actv_info (2.pb.ActivityInfo#
+data_change (2.pb.DataChange"+
 CSActivityEvaluateGetReq
 actv_id ("n
 CSActivityEvaluateGetRes
@@ -9329,16 +9632,40 @@ dog_tag_id ("p
  ("J
 #CSActivityExchangeMilestoneAwardReq
 actv_id (
-stages (B "S
+stages (B "Ø
+#CSActivityExchangeMilestoneAwardRes
+result (#
+	actv_info (2.pb.ActivityInfo#
+data_change (2.pb.DataChange$
+
+actv_infos (2.pb.ActivityInfo1
+expand_infod (2.pb.ActivityRewardExpandInfo"S
 CSActivityExchangePasswordReq
 actv_id (
 box_id (
-	digit_idx ("B
+	digit_idx ("T
+CSActivityExchangePasswordRes
+result (#
+	actv_info (2.pb.ActivityInfo"B
 CSActivityExchangePropsReq
 activity_id (
-task_id ("B
+task_id ("ß
+CSActivityExchangePropsRes
+result ('
+activity_info (2.pb.ActivityInfo#
+data_change (2.pb.DataChange0
+currency_infos (2.pb.ActivityCurrencyInfo1
+expand_infod (2.pb.ActivityRewardExpandInfo"B
 CSActivityExchangeReq)
-	exchanges (2.pb.CSActivityExchange"X
+	exchanges (2.pb.CSActivityExchange"ƒ
+CSActivityExchangeRes
+result ($
+
+actv_infos (2.pb.ActivityInfo#
+data_change (2.pb.DataChange*
+mp_data_change (2.pb.CSMPDataChange0
+currency_infos (2.pb.ActivityCurrencyInfo1
+expand_infod (2.pb.ActivityRewardExpandInfo"X
 CSActivityFocusExchangeReq
 activity_id (
 exchange_id (
@@ -9368,39 +9695,100 @@ dog_tag_id ("p
 prop_jump_infos (2.pb.ActivityPropJumpInfo"=
 CSActivityGetReq
 activity_ids (B 
-is_part ("K
+is_part ("·
+CSActivityGetRes
+result ($
+
+actv_infos (2.pb.ActivityInfo
+max_tracking_num (0
+currency_infos (2.pb.ActivityCurrencyInfo.
+preview_infos (2.pb.ActivityPreviewInfo1
+prop_jump_infos (2.pb.ActivityPropJumpInfo*
+extra_infos (2.pb.ActivityExtraInfo
+
+cdn_prefix (	"K
 !CSActivityHaavkOperationChooseReq
 activity_id (
-	choice_id ("P
+	choice_id ("‘
+!CSActivityHaavkOperationChooseRes
+result ('
+activity_info (2.pb.ActivityInfo#
+data_change (2.pb.DataChange0
+currency_infos (2.pb.ActivityCurrencyInfo1
+expand_info (2.pb.ActivityRewardExpandInfo)
+	operation (2.pb.HaavkOperationItem"P
 #CSActivityHaavkOperationExchangeReq
 activity_id (
-operation_id ("W
+operation_id ("è
+#CSActivityHaavkOperationExchangeRes
+result ('
+activity_info (2.pb.ActivityInfo#
+data_change (2.pb.DataChange0
+currency_infos (2.pb.ActivityCurrencyInfo1
+expand_info (2.pb.ActivityRewardExpandInfo"W
 CSActivityHaavkOperationLockReq
 activity_id (
 	choice_id (
-lock ("D
+lock ("Z
+CSActivityHaavkOperationLockRes
+result ('
+activity_info (2.pb.ActivityInfo"D
 -CSActivityHaavkOperationReceiveDailyRewardReq
-activity_id ("F
+activity_id ("ò
+-CSActivityHaavkOperationReceiveDailyRewardRes
+result ('
+activity_info (2.pb.ActivityInfo#
+data_change (2.pb.DataChange0
+currency_infos (2.pb.ActivityCurrencyInfo1
+expand_info (2.pb.ActivityRewardExpandInfo"F
 /CSActivityHaavkOperationReceiveFreeOperationReq
-activity_id ("9
+activity_id ("ô
+/CSActivityHaavkOperationReceiveFreeOperationRes
+result ('
+activity_info (2.pb.ActivityInfo#
+data_change (2.pb.DataChange0
+currency_infos (2.pb.ActivityCurrencyInfo1
+expand_info (2.pb.ActivityRewardExpandInfo"9
 "CSActivityHaavkOperationRefreshReq
-activity_id ("H
+activity_id ("]
+"CSActivityHaavkOperationRefreshRes
+result ('
+activity_info (2.pb.ActivityInfo"H
  CSActivityHaavkOperationStartReq
 activity_id (
-pay_way ("X
+pay_way ("[
+ CSActivityHaavkOperationStartRes
+result ('
+activity_info (2.pb.ActivityInfo"X
 CSActivityHaavkSiteForumLikeReq
 activity_id (
 post_id (	
-is_like ("Y
+is_like ("Z
+CSActivityHaavkSiteForumLikeRes
+result ('
+activity_info (2.pb.ActivityInfo"Y
 CSActivityHaavkSiteForumReadReq
 activity_id (
 post_id (	
-reply_id (	"V
+reply_id (	"Z
+CSActivityHaavkSiteForumReadRes
+result ('
+activity_info (2.pb.ActivityInfo"V
 -CSActivityHaavkSiteForumReceiveReplyRewardReq
 activity_id (
-reply_id (	"9
+reply_id (	"À
+-CSActivityHaavkSiteForumReceiveReplyRewardRes
+result ('
+activity_info (2.pb.ActivityInfo#
+data_change (2.pb.DataChange1
+expand_info (2.pb.ActivityRewardExpandInfo"9
 "CSActivityHaavkSiteForumRefreshReq
-activity_id ("d
+activity_id ("Ü
+"CSActivityHaavkSiteForumRefreshRes
+result ('
+activity_info (2.pb.ActivityInfo?
+reply_hack_point_list (2 .pb.HaavkSiteForumReplyHackPoint<
+event_reward_info_list (2.pb.HaavkSiteEventRewardInfo"d
 #CSActivityHaavkSiteGetCandidatesReq
 activity_id (
 related_type (
@@ -9411,28 +9799,72 @@ related_id (	"o
 candidate_infos (2.pb.HaavkSiteForumCandidateInfo"Z
 +CSActivityHaavkSiteHackOptionReducePriceReq
 activity_id (
-hack_option_id (	"I
+hack_option_id (	"‚
++CSActivityHaavkSiteHackOptionReducePriceRes
+result ('
+activity_info (2.pb.ActivityInfo
+tips (	
+code (	"I
 CSActivityHaavkSiteHackReq
 activity_id (
-hack_option_id (	"†
+hack_option_id (	"ä
+CSActivityHaavkSiteHackRes
+result ('
+activity_info (2.pb.ActivityInfo<
+event_reward_info_list (2.pb.HaavkSiteEventRewardInfo#
+data_change (2.pb.DataChange1
+expand_info (2.pb.ActivityRewardExpandInfo?
+reply_hack_point_list (2 .pb.HaavkSiteForumReplyHackPoint
+code (	
+tips (	
+dialogue_triggered	 (	"†
 !CSActivityHaavkSiteProvideClueReq
 activity_id (
 provide_clue_noname (
 
 click_zoya (
-provide_clue_wululu ("h
+provide_clue_wululu ("Û
+!CSActivityHaavkSiteProvideClueRes
+result ('
+activity_info (2.pb.ActivityInfo<
+event_reward_info_list (2.pb.HaavkSiteEventRewardInfo?
+reply_hack_point_list (2 .pb.HaavkSiteForumReplyHackPoint"h
 &CSActivityHaavkSitePublishCandidateReq
 activity_id (
 candidate_id (	
-selected_id (	"J
+selected_id (	"ü
+&CSActivityHaavkSitePublishCandidateRes
+result ('
+activity_info (2.pb.ActivityInfo?
+reply_hack_point_list (2 .pb.HaavkSiteForumReplyHackPoint<
+event_reward_info_list (2.pb.HaavkSiteEventRewardInfo
+dialogue_triggered (	"J
 CSActivityHaavkSiteShopBuyReq
 activity_id (
-shop_item_id (	"L
+shop_item_id (	"¯
+CSActivityHaavkSiteShopBuyRes
+result ('
+activity_info (2.pb.ActivityInfo#
+data_change (2.pb.DataChange1
+expand_info (2.pb.ActivityRewardExpandInfo<
+event_reward_info_list (2.pb.HaavkSiteEventRewardInfo?
+reply_hack_point_list (2 .pb.HaavkSiteForumReplyHackPoint"L
 $CSActivityHaavkSiteTopologyUnlockReq
 activity_id (
-node_id (	"F
+node_id (	"·
+$CSActivityHaavkSiteTopologyUnlockRes
+result ('
+activity_info (2.pb.ActivityInfo#
+data_change (2.pb.DataChange1
+expand_info (2.pb.ActivityRewardExpandInfo"F
 /CSActivityHeroSkinExchangeReceiveDailyRewardReq
-activity_id ("w
+activity_id ("ô
+/CSActivityHeroSkinExchangeReceiveDailyRewardRes
+result ('
+activity_info (2.pb.ActivityInfo#
+data_change (2.pb.DataChange0
+currency_infos (2.pb.ActivityCurrencyInfo1
+expand_info (2.pb.ActivityRewardExpandInfo"w
 CSActivityInstallPropReq
 activity_id ( 
 props (2.pb.InstalledProp$
@@ -9457,36 +9889,88 @@ $CSActivityHaavkSiteTopologyUnlockReq
 CSActivityMa1RedEnvelopeMakeReq
 activity_id (
 type (
-num ("?
+num ("ä
+CSActivityMa1RedEnvelopeMakeRes
+result ('
+activity_info (2.pb.ActivityInfo#
+data_change (2.pb.DataChange0
+currency_infos (2.pb.ActivityCurrencyInfo1
+expand_info (2.pb.ActivityRewardExpandInfo"?
 (CSActivityMa1RedEnvelopeReceiveRewardReq
-activity_id ("Ž
+activity_id ("í
+(CSActivityMa1RedEnvelopeReceiveRewardRes
+result ('
+activity_info (2.pb.ActivityInfo#
+data_change (2.pb.DataChange0
+currency_infos (2.pb.ActivityCurrencyInfo1
+expand_info (2.pb.ActivityRewardExpandInfo"Ž
 "CSActivityMa1RedEnvelopeSavePicReq
 activity_id (
 chosen_content_id (8
-pic_player_info (2.pb.Ma1RedEnvelopePicPlayerInfo"8
+pic_player_info (2.pb.Ma1RedEnvelopePicPlayerInfo"]
+"CSActivityMa1RedEnvelopeSavePicRes
+result ('
+activity_info (2.pb.ActivityInfo"8
 !CSActivityMakeDrinkDailyRewardReq
-activity_id ("5
+activity_id ("æ
+!CSActivityMakeDrinkDailyRewardRes
+result ('
+activity_info (2.pb.ActivityInfo#
+data_change (2.pb.DataChange0
+currency_infos (2.pb.ActivityCurrencyInfo1
+expand_infod (2.pb.ActivityRewardExpandInfo"5
 CSActivityMakeDrinkOpenPackReq
-activity_id ("…
+activity_id ("Î
+CSActivityMakeDrinkOpenPackRes
+result ('
+activity_info (2.pb.ActivityInfo0
+currency_infos (2.pb.ActivityCurrencyInfo#
+data_change (2.pb.DataChange
+new_currency_ids (B "…
 CSActivityMakeDrinkReq
 activity_id (
 base_drink_id (
 material_ids (B 
 	move_time (
 
-make_times (":
+make_times ("Œ
+CSActivityMakeDrinkRes
+result ('
+activity_info (2.pb.ActivityInfo#
+data_change (2.pb.DataChange0
+currency_infos (2.pb.ActivityCurrencyInfo
+
+first_make (
+first_make_drink_id (1
+expand_infod (2.pb.ActivityRewardExpandInfo":
 CSActivityMilestone
 actv_id (
 stages (B "6
 CSActivityMossReceiveMSAwardReq
-activity_id ("F
+activity_id ("
+CSActivityMossReceiveMSAwardRes
+result ('
+activity_info (2.pb.ActivityInfo#
+data_change (2.pb.DataChange"F
  CSActivityOneClickRewardClaimReq
 actv_id (
-	task_line ("T
+	task_line ("â
+ CSActivityOneClickRewardClaimRes
+result (#
+data_change (2.pb.DataChange$
+
+actv_infos (2.pb.ActivityInfo0
+currency_infos (2.pb.ActivityCurrencyInfo1
+expand_infod (2.pb.ActivityRewardExpandInfo"T
 )CSActivityOperatorProfileUnlockChapterReq
 activity_id (
 
-chapter_id ("­
+chapter_id ("¼
+)CSActivityOperatorProfileUnlockChapterRes
+result ('
+activity_info (2.pb.ActivityInfo#
+data_change (2.pb.DataChange1
+expand_info (2.pb.ActivityRewardExpandInfo"­
 CSActivityPlayBossAutoRewardNtf
 activity_id (
 level (
@@ -9495,61 +9979,141 @@ chapter_id ("­
 data_change (2.pb.DataChange"H
  CSActivityPlayBossRefreshTaskReq
 activity_id (
-task_id ("d
+task_id ("[
+ CSActivityPlayBossRefreshTaskRes
+result ('
+activity_info (2.pb.ActivityInfo"d
 CSActivityPropExchangeReq
 activity_id (
 exchange_id (
 plan_id (
-time ("@
+time ("ß
+CSActivityPropExchangeRes
+result ((
+activity_infos (2.pb.ActivityInfo#
+data_change (2.pb.DataChange0
+currency_infos (2.pb.ActivityCurrencyInfo1
+expand_infod (2.pb.ActivityRewardExpandInfo"@
 )CSActivityRainbowSixReceiveDailyRewardReq
-activity_id ("T
+activity_id ("î
+)CSActivityRainbowSixReceiveDailyRewardRes
+result ('
+activity_info (2.pb.ActivityInfo#
+data_change (2.pb.DataChange0
+currency_infos (2.pb.ActivityCurrencyInfo1
+expand_info (2.pb.ActivityRewardExpandInfo"T
 CSActivityReceiveFinalAwardReq
 actv_ids (B 
-newbie_type_list (B "q
+newbie_type_list (B "à
+CSActivityReceiveFinalAwardRes
+result ($
+
+actv_infos (2.pb.ActivityInfo#
+data_change (2.pb.DataChange0
+currency_infos (2.pb.ActivityCurrencyInfo1
+expand_infod (2.pb.ActivityRewardExpandInfo"q
 "CSActivityReceiveMilestoneAwardReq&
 actvs (2.pb.CSActivityMilestone
 actv_id (
-stages (B "c
+stages (B "ä
+"CSActivityReceiveMilestoneAwardRes
+result ($
+
+actv_infos (2.pb.ActivityInfo#
+data_change (2.pb.DataChange0
+currency_infos (2.pb.ActivityCurrencyInfo1
+expand_infod (2.pb.ActivityRewardExpandInfo"c
 !CSActivityReceiveSequenceAwardReq
 activity_id (
 	task_line (
-sequence_order ("j
+sequence_order ("ç
+!CSActivityReceiveSequenceAwardRes
+result ((
+activity_infos (2.pb.ActivityInfo#
+data_change (2.pb.DataChange0
+currency_infos (2.pb.ActivityCurrencyInfo1
+expand_info (2.pb.ActivityRewardExpandInfo"j
 CSActivityRecvAttendAwardReq
 activity_id (
 
 day_number (
 type
  (
-mode_config ("E
+mode_config ("·
+CSActivityRecvAttendAwardRes
+result (#
+data_change (2.pb.DataChange*
+mp_data_change (2.pb.CSMPDataChange'
+activity_info (2.pb.ActivityInfo(
+activity_infos (2.pb.ActivityInfo0
+currency_infos (2.pb.ActivityCurrencyInfo1
+expand_infod (2.pb.ActivityRewardExpandInfo"E
 !CSActivityRefreshDailyActivityReq
 actv_id (
-task_id ("2
+task_id ("X
+!CSActivityRefreshDailyActivityRes
+result (#
+	actv_info (2.pb.ActivityInfo"2
 CSActivityRelinkExchangeReq
-activity_id ("8
+activity_id ("|
+CSActivityRelinkExchangeRes
+result ((
+activity_infos (2.pb.ActivityInfo#
+data_change (2.pb.DataChange"8
 !CSActivityRelinkReceiveMSAwardReq
-activity_id ("
-CSActivityReturnGetReq"O
+activity_id ("
+!CSActivityRelinkReceiveMSAwardRes
+result ('
+activity_info (2.pb.ActivityInfo#
+data_change (2.pb.DataChange"
+CSActivityReturnGetReq"R
+CSActivityReturnGetRes
+result ((
+activity_infos (2.pb.ActivityInfo"O
 CSActivitySBCAdjustReq
 activity_id (
 news_id (
-is_auto ("s
+is_auto ("Q
+CSActivitySBCAdjustRes
+result ('
+activity_info (2.pb.ActivityInfo"s
 CSActivitySBCChangeRewardReq
 activity_id (
 	reward_id (
 change_type (
 
-reward_ids (B "H
+reward_ids (B "W
+CSActivitySBCChangeRewardRes
+result ('
+activity_info (2.pb.ActivityInfo"H
 CSActivitySOCCompositeReq
 activity_id (
-composite_type (">
+composite_type ("e
+CSActivitySOCCompositeRes
+result (
+card_id ('
+activity_info (2.pb.ActivityInfo">
 CSActivitySOCDrawReq
 activity_id (
-	draw_type ("@
+	draw_type ("b
+CSActivitySOCDrawRes
+result (
+cards (B '
+activity_info (2.pb.ActivityInfo"@
 CSActivitySOCExchangeReq
 activity_id (
-shop_id ("3
+shop_id ("x
+CSActivitySOCExchangeRes
+result (#
+data_change (2.pb.DataChange'
+activity_info (2.pb.ActivityInfo"3
 CSActivitySOCGetRecvCardsReq
-activity_id (".
+activity_id ("‹
+CSActivitySOCGetRecvCardsRes
+result ('
+activity_info (2.pb.ActivityInfo2
+
+recv_cards (2.pb.ActThemeSheOneCardRecvCard".
 CSActivitySOCGetShopReq
 activity_id ("V
 CSActivitySOCGetShopRes
@@ -9568,25 +10132,62 @@ shop_items (2.pb.ActThemeSOCShopItem".
 CSActivitySOCSendCardReq
 activity_id (
 target_player_id (
-card_id ("4
+card_id ("S
+CSActivitySOCSendCardRes
+result ('
+activity_info (2.pb.ActivityInfo"4
 CSActivitySOCSendRecvFlowsReq
 activity_id ("l
 CSActivitySOCSendRecvFlowsRes
 result (;
 send_recv_flows (2".pb.ActThemeSheOneCardSendRecvFlow"*
 CSActivityStarDecryptReq
-act_id ("H
+act_id ("f
+CSActivityStarDecryptRes
+result (
+decryption_id (#
+	actv_info (2.pb.ActivityInfo"H
  CSActivityStarFireChargeTowerReq
 activity_id (
-task_id (";
+task_id ("[
+ CSActivityStarFireChargeTowerRes
+result ('
+activity_info (2.pb.ActivityInfo"l
+CSActivityTask
+actv_id (
+task_id (
+state ()
+
+objectives (2.pb.ActivityObjective";
 CSActivityTaskAcceptReq
 actv_id (
-task_id (")
+task_id ("K
+CSActivityTaskAcceptRes
+result ( 
+task (2.pb.CSActivityTask"B
+CSActivityTaskReceiveAwardReq!
+tasks (2.pb.CSActivityTask"‚
+CSActivityTaskReceiveAwardRes
+result (!
+tasks (2.pb.CSActivityTask#
+data_change (2.pb.DataChange$
+
+actv_infos (2.pb.ActivityInfo0
+currency_infos (2.pb.ActivityCurrencyInfo1
+expand_infod (2.pb.ActivityRewardExpandInfo")
 CSActivityTrackReq
-actv_id (B "@
+actv_id (B "c
+CSActivityTrackRes
+result ($
+
+actv_infos (2.pb.ActivityInfo
+max_tracing_num ("@
 CSActivityTriggerReq
 activity_id (
-sequence_id ("S
+sequence_id ("O
+CSActivityTriggerRes
+result ('
+activity_info (2.pb.ActivityInfo"S
 CSActivityUninstallPropReq
 activity_id ( 
 props (2.pb.InstalledProp"`
@@ -9595,21 +10196,40 @@ shop_items (2.pb.ActThemeSOCShopItem".
 moss_construct_info (2.pb.MossConstructInfo"G
 CSActivityUnlockExchangeReq
 activity_id (
-exchange_id ("+
+exchange_id ("ˆ
+CSActivityUnlockExchangeRes
+result ('
+activity_info (2.pb.ActivityInfo0
+currency_infos (2.pb.ActivityCurrencyInfo"+
 CSActivityUntrackReq
-actv_id (B "^
+actv_id (B "L
+CSActivityUntrackRes
+result ($
+
+actv_infos (2.pb.ActivityInfo"^
 CSActivityUpdateExtraInfoReq
 activity_id ()
 
 extra_info (2.pb.ActivityExtraInfo".
 CSActivityUpdateExtraInfoRes
-result ("O
+result ("?
+CSActivityUpdateProgressNtf 
+data (2.pb.CSActivityTask"O
 'CSActivityWhiteoutOperationBacktrackReq
 activity_id (
-node_id ("U
+node_id ("”
+'CSActivityWhiteoutOperationBacktrackRes
+result ('
+activity_info (2.pb.ActivityInfo0
+currency_infos (2.pb.ActivityCurrencyInfo"U
 +CSActivityWhiteoutOperationConfirmEndingReq
 activity_id (
-	ending_id ("F
+	ending_id ("¾
++CSActivityWhiteoutOperationConfirmEndingRes
+result ('
+activity_info (2.pb.ActivityInfo#
+data_change (2.pb.DataChange1
+expand_info (2.pb.ActivityRewardExpandInfo"F
 /CSActivityWhiteoutOperationGetEndingPathInfoReq
 activity_id ("³
 /CSActivityWhiteoutOperationGetEndingPathInfoRes
@@ -9618,12 +10238,21 @@ extra_info (2.pb.ActivityExtraInfo".
 ending_list (2#.pb.WhiteoutOperationPercentageInfo"U
 +CSActivityWhiteoutOperationReceiveAvatarReq
 activity_id (
-	ending_id ("k
+	ending_id ("¾
++CSActivityWhiteoutOperationReceiveAvatarRes
+result ('
+activity_info (2.pb.ActivityInfo#
+data_change (2.pb.DataChange1
+expand_info (2.pb.ActivityRewardExpandInfo"k
 +CSActivityWhiteoutOperationSelectAndMoveReq
 activity_id (
 node_id (
 
-option_ids (B "@
+option_ids (B "˜
++CSActivityWhiteoutOperationSelectAndMoveRes
+result ('
+activity_info (2.pb.ActivityInfo0
+currency_infos (2.pb.ActivityCurrencyInfo"@
 CSAqNotifyNtf
 title (	
 
@@ -16179,7 +16808,13 @@ ds_ip_list (2.pb.HostInfo"#
 %CSStressTestActivityCurrencyChangeNtf&
 deposit_change (2.pb.DataChange"<
 %CSStressTestActivityGetPandoraInfoReq
-activity_id ("k
+activity_id ("“
+%CSStressTestActivityGetPandoraInfoRes
+result ((
+
+task_infos (2.pb.ActivityTaskInfo
+next_refresh_time (
+task_show_way ("k
 %CSStressTestActivityMatchingChangeNtf
 PlayerID (
 IsJoin (
@@ -41329,12 +41964,26 @@ VGameAppid (	
 task_line_index (
 pic_url (	
 current_sequence (
-tower_pic_url (	"]
+tower_pic_url (	"ƒ
+StarFireInfo*
+
+map_config (2.pb.StarFireAreaConfig*
+
+daily_info (2.pb.StartFireDailyInfo
+current_phase (
+once_got_key ('
+	task_info (2.pb.StarFireTaskInfo&
+david_award (2.pb.ActivityAward
+david_charge_task_num ("]
 StarFireTaskInfo
 task_id (
 	clue_text (	
 clue_signature (	
-stage ("Û
+stage ("m
+StartFireDailyInfo'
+	task_info (2.pb.ActivityTaskInfo
+next_refresh_time (
+activity_id ("Û
 StateChangeFlow
 	GameSvrId (	
 DtEventTime (	

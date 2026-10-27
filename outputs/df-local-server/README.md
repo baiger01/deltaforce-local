@@ -1,4 +1,10 @@
-# 三角洲行动本地服务端重写项目
+# 三角洲行动自建服务端
+
+当前源码已经按领域整理。请从[源码目录](dfserver/README.md)、[目录与维护说明](../../docs/architecture/SERVER_LAYOUT.md)、[运行命令](../../docs/RUNNING.md)及项目根[完成进度](../../README.md)进入。实际实现放在`dfserver`子目录，根包同名模块只作旧路径兼容；配置、协议、网页与数据库位置保持原路径。
+
+本页下面保留的是2026-09-28及前后的历史记录，其中“尚未接入”等表述描述当时状态，不代表当前所有模块的进度；当前范围以上述根README和玩法调研为准。
+
+## 历史记录
 
 迁移到另一台 Windows 电脑的文件、账号数据库和相对目录说明见项目根目录的 [MIGRATION.md](../../MIGRATION.md)。数据来源见 [DATA_PROVENANCE.md](../../DATA_PROVENANCE.md)，最新待修问题见 [CURRENT_STATE.md](../../CURRENT_STATE.md)。本页后半部分保留了各阶段的历史调查记录，以迁移文档和最新测试记录为准。
 

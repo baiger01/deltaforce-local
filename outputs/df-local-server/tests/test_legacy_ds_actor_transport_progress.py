@@ -90,7 +90,10 @@ class RegisteredSetProgressTests(unittest.TestCase):
         self._complete_first()
         self._send(OTHER, 1259, 221, history=(7,))
         self.assertEqual(self.server.actor_transport_progress['fully_delivered_sets'], 2)
-        self.server._admissions._clock = lambda: self.ticket.expires_at
+        # Both joined tickets remain valid through their bounded sessions.
+        deadline = max(self.ticket.expires_at, self.other_ticket.expires_at,
+            *self.server._admissions._joined_until.values())
+        self.server._admissions._clock = lambda: deadline
         progress = self.server.actor_transport_progress
         self.assertEqual(progress['fully_delivered_sets'], 0)
         self.assertEqual(self.server._registered_bootstraps, {})
@@ -105,7 +108,7 @@ class RegisteredSetProgressTests(unittest.TestCase):
 
     def test_expired_verified_generation_is_not_counted_before_poll_runs(self):
         self._complete_first()
-        self.server._started_at = time.monotonic() - 601
+        self.server._started_at = time.perf_counter() - 601
         self.assertEqual(self.server.actor_transport_progress['fully_delivered_sets'], 0)
         self.assertNotIn(PEER, self.connection.control_peers)
 

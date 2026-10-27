@@ -1,0 +1,482 @@
+{
+  "archive_version": {
+    "archive_engine_offset": "0x54",
+    "archive_game_offset": "0x58",
+    "connection_engine_offset": "0x1528",
+    "connection_game_offset": "0x152c",
+    "engine_default_cell_rva": "0x1d59de7c",
+    "engine_default_file_value": 13,
+    "engine_default_reaches_existing_current_wire_gates": true,
+    "game_cell_file_value": null,
+    "game_cell_file_value_reason": "not raw-backed; live value not observed",
+    "game_default_cell_rva": "0x1e3188d4",
+    "runtime_connection_values_observed": false
+  },
+  "client_launched": false,
+  "client_sha256": "79fb7b105170141ed863331d36833a73062e66bf5291b2364fe3a64c18336203",
+  "control_welcome_maps": {
+    "2201": {
+      "game": "",
+      "level": "Iris_Entry",
+      "redirect": "SubWorld=Dam_Iris_Level1"
+    }
+  },
+  "current_engine_loadmap_binding": {
+    "bytes_hex": "80ca9b4401000000",
+    "constructor_reference": {
+      "kind": "rip_reference",
+      "new_instruction": "0x499924e",
+      "new_target": "0x15e73760",
+      "old_instruction": "0x499963e",
+      "old_target": "0x15e73910"
+    },
+    "constructor_rva": "0x4999240",
+    "current_runtime_engine_instance_observed": false,
+    "exact_derived_cpp_class_name_not_inferred": true,
+    "sha256": "a840c24326dce7a7a79192f6c0c0c2fdeb40b0722fd8719355ee0e65fe744e15",
+    "slot": "0x448",
+    "table_rva": "0x15e73760",
+    "target_rva": "0x49bca80"
+  },
+  "current_native_control": {
+    "arbitrary_notify_overrides_qualified": false,
+    "concrete_pending_messages": {
+      "1": [
+        "FString Level",
+        "FString Game",
+        "FString RedirectURL"
+      ],
+      "18": [
+        "packed_u32",
+        "FString"
+      ],
+      "2": [
+        "u32"
+      ],
+      "21": [],
+      "3": [
+        "FString Challenge"
+      ],
+      "6": [
+        "FString Failure"
+      ]
+    },
+    "driver_interface_offset": "0x218",
+    "full_pending_notify_body_qualified": true,
+    "interface_dispatch_slot": "0x18",
+    "join_gate": "TickWorldTravel validates Map and requires actual Engine virtual448 LoadMap success, then Pending post-load virtual270 invokes SendJoin virtual268.",
+    "outgoing_hello0": [
+      "u8 endian",
+      "u32 current10b03eb0 checksum",
+      "FString EncryptionToken URL option"
+    ],
+    "outgoing_login5": [
+      "FString Response",
+      "FString URL",
+      "delegated identity",
+      "FString Platform"
+    ],
+    "welcome_connected_marker": "Pending object+a8; successful parse only"
+  },
+  "current_native_subworld": {
+    "current_native_redirect_subworld_consumer_qualified": true,
+    "disable_device_seamless": {
+      "current_registered_getter_rva": "0xd41b800",
+      "current_registration_rva": "0x49cea0",
+      "effective_runtime_value_observed": false,
+      "interface_cell_rva": "0x1de7e7b0",
+      "name": "Game.DisableDeviceSeamless",
+      "native_default": 0,
+      "requested_trial_value": 1,
+      "required_existing_launcher_flag": "--disable-device-seamless",
+      "required_ini": "[ConsoleVariables]\nGame.DisableDeviceSeamless=1"
+    },
+    "normal_loadmap": "Engine slot448 ->49bca80; copies RedirectURL+38 into space-delimited options, splits each at equals, selects SubWorld value, invokes base13062d60, then if World/typedWorldSettings/nonempty value are available converts to FName and calls1c02b30.",
+    "redirect_key_value_separator": "=",
+    "redirect_option_key": "SubWorld",
+    "redirect_option_separator": " ",
+    "seamless_loadmap": "Engine override first tries current seamless object4961250; its RedirectURL+38 option parser selects the same SubWorld key, converts value to FName, and stores native subworld-name fields.",
+    "startup_command_line_fallback": "Separate GetWorldName4d088f0 parses -SUBWORLD= only after its existing seamless-cache path; this does not authorize a global startup override.",
+    "url_copy_preserves_redirecturl": true,
+    "welcome_third_fstring": "Pending interface+50 -> Pending object+78 -> FURL RedirectURL+38"
+  },
+  "current_packaged_map_sources": {
+    "archive_reports": [
+      {
+        "archive": "pak-0-0-pakchunk2-WindowsClient.pak",
+        "directory": {
+          "directory_count": 785,
+          "directory_file_count": 10782,
+          "encoded_entry_bytes": 202196,
+          "entry_count": 10782,
+          "mount_point": "../../../DeltaForce/Content/",
+          "remaining_directory_bytes": 2,
+          "remaining_primary_bytes": 11,
+          "secondary_indices": [
+            {
+              "bytes": 357712,
+              "decoded_sha256": "3e6f16270871134a41b0768c054968d6082ac841814246ce15c930aa4409a01f",
+              "kind": "path_hash",
+              "offset": 89441056,
+              "sha1_valid": true
+            },
+            {
+              "bytes": 441104,
+              "decoded_sha256": "592943a5f0cbcce3467ed724fb0939a4edb5bbc8093f133317e1567091f349af",
+              "kind": "full_directory",
+              "offset": 89798768,
+              "sha1_valid": true
+            }
+          ]
+        },
+        "path": "DeltaForce/Content/Paks/pak-0-0-pakchunk2-WindowsClient.pak",
+        "selected_entries": [
+          {
+            "archive_payload_sha1_valid": true,
+            "asset": "../../../DeltaForce/Content/R13N/Common/Base/DataTables/MapConfig.uasset",
+            "decoded_bytes": 9603,
+            "decoded_sha256": "e41784765610dfde36cbd23d99c37f26c42448af2f43b6482bb845da0459d372",
+            "encoded_offset": 141472,
+            "entry_offset": 49543168
+          },
+          {
+            "archive_payload_sha1_valid": true,
+            "asset": "../../../DeltaForce/Content/R13N/Common/Base/DataTables/MapConfig.uexp",
+            "decoded_bytes": 398086,
+            "decoded_sha256": "5486a2b773a5a387b8d835f2693be17ca4b21eebf1444282a0734cb110590221",
+            "encoded_offset": 141496,
+            "entry_offset": 49548361
+          }
+        ],
+        "selected_entries_absent": false,
+        "validation": {
+          "decoded_index_sha256": "6203f02e04093d563cc4b1f158bb349bca6aff6943d3047d4c6fef1f0ecf3ba1",
+          "encrypted_index": true,
+          "encrypted_index_sha256": "7964bcb9594daec56bfd67557da76af585f4ca422e588db08280564232a90a00",
+          "encryption_guid_is_zero": false,
+          "first_signed_int32": 0,
+          "footer_sha256": "e66ac1ac5a8a8c7ab767d54e48af721e88229e87ebb3d4f1d61f715589994b96",
+          "index_sha1_valid": true,
+          "methods": [
+            "Oodle"
+          ],
+          "offset": 89238720,
+          "pak": "DeltaForce/Content/Paks/pak-0-0-pakchunk2-WindowsClient.pak",
+          "size": 202336,
+          "version": 11
+        }
+      },
+      {
+        "archive": "pak-0-1-pakchunk73-WindowsClient.pak",
+        "directory": {
+          "directory_count": 843,
+          "directory_file_count": 4161,
+          "encoded_entry_bytes": 88748,
+          "entry_count": 4161,
+          "mount_point": "../../../DeltaForce/Content/",
+          "remaining_directory_bytes": 5,
+          "remaining_primary_bytes": 19,
+          "secondary_indices": [
+            {
+              "bytes": 50464,
+              "decoded_sha256": "e6ce31503d1d1014f211f3846aa091597355819558fe2e3c5e73566f2416e244",
+              "kind": "path_hash",
+              "offset": 240517175,
+              "sha1_valid": true
+            },
+            {
+              "bytes": 233008,
+              "decoded_sha256": "cbd0050d226388995fcfecfa8b09a67943497717f09818461b929976fc9c685b",
+              "kind": "full_directory",
+              "offset": 240567639,
+              "sha1_valid": true
+            }
+          ]
+        },
+        "path": "DeltaForce/Content/Paks/pak-0-1-pakchunk73-WindowsClient.pak",
+        "selected_entries": [
+          {
+            "archive_payload_sha1_valid": true,
+            "asset": "../../../DeltaForce/Content/DataTables/SubWorld/DT_SubWorldConfig_Iris_Entry.uasset",
+            "decoded_bytes": 9053,
+            "decoded_sha256": "78103cc76430791b6d40e19116d9878d16ba2f149049f246482b177bc965cfcf",
+            "encoded_offset": 23328,
+            "entry_offset": 14882816
+          },
+          {
+            "archive_payload_sha1_valid": true,
+            "asset": "../../../DeltaForce/Content/DataTables/SubWorld/DT_SubWorldConfig_Iris_Entry.uexp",
+            "decoded_bytes": 53266,
+            "decoded_sha256": "8f55c19e62c061f0427b172b32175dedd53b41bbbabccb2eea5ebd1deaf49199",
+            "encoded_offset": 23352,
+            "entry_offset": 14885641
+          }
+        ],
+        "selected_entries_absent": false,
+        "validation": {
+          "decoded_index_sha256": "3c0ea9f5e7872e73074adc6741d287f09dcd81377754ad8b5ea6a11fb2d02fe3",
+          "encrypted_index": true,
+          "encrypted_index_sha256": "3f11713f4211ca11fc4d46d50de34e4482ed712c506df3ee85f71729b989e634",
+          "encryption_guid_is_zero": false,
+          "first_signed_int32": 0,
+          "footer_sha256": "47a037fa87dd38c9d6edd8024afca848f3f5fcb342051f3f11409eca54d0eb8a",
+          "index_sha1_valid": true,
+          "methods": [
+            "Oodle"
+          ],
+          "offset": 240428279,
+          "pak": "DeltaForce/Content/Paks/pak-0-1-pakchunk73-WindowsClient.pak",
+          "size": 88896,
+          "version": 11
+        }
+      },
+      {
+        "archive": "1.101.37117.36.14_WindowsNoEditor_37131_P.pak",
+        "directory": {
+          "directory_count": 7,
+          "directory_file_count": 24,
+          "encoded_entry_bytes": 1800,
+          "entry_count": 24,
+          "mount_point": "../../../DeltaForce/Content/Models/Weapons/Parts/Sco/",
+          "remaining_directory_bytes": 2,
+          "remaining_primary_bytes": 14,
+          "secondary_indices": [
+            {
+              "bytes": 304,
+              "decoded_sha256": "cbdf8461119d3738965e60e3c0da770f43eafc661cb2f71bfd89c4725ec411ed",
+              "kind": "path_hash",
+              "offset": 19354791,
+              "sha1_valid": true
+            },
+            {
+              "bytes": 1552,
+              "decoded_sha256": "04c50a5c819793b00f2c2643cd4fde4ff980118834c751edc79e1f5ada52114c",
+              "kind": "full_directory",
+              "offset": 19355095,
+              "sha1_valid": true
+            }
+          ]
+        },
+        "path": "DeltaForce/Content/Paks/1.101.37117.36.14_WindowsNoEditor_37131_P.pak",
+        "selected_entries": [],
+        "selected_entries_absent": true,
+        "validation": {
+          "decoded_index_sha256": "3afa84c3f8095bdb7d521427738fad5f4cab2c03bb1139a9c6f4fefdda69626d",
+          "encrypted_index": true,
+          "encrypted_index_sha256": "5f326f949059c588c09a74dfd5dac5e1e7924ad4e20c329be4f71ce115d783da",
+          "encryption_guid_is_zero": true,
+          "first_signed_int32": 0,
+          "footer_sha256": "2d8f3c98f0809cf55db52844e0f2f5c6052c96e04a533c0fb14daa21321ca65a",
+          "index_sha1_valid": true,
+          "methods": [
+            "Oodle"
+          ],
+          "offset": 19352823,
+          "pak": "DeltaForce/Content/Paks/1.101.37117.36.14_WindowsNoEditor_37131_P.pak",
+          "size": 1968,
+          "version": 11
+        }
+      }
+    ],
+    "archive_scope": "Exact current chunk2/chunk73 entries and absence of these four entries from the selected current _P hotfix; all other mounted archives/runtime replacements are not resolved",
+    "derivation": {
+      "game": "explicit empty optional Welcome Game string; no GameMode path is inferred",
+      "level": "leaf of current MapConfig2201.LevelFullPath",
+      "redirect_option_key": "Current full native engine49bca80 and seamless4961250 bodies split FURL.RedirectURL by space and equals and select the exact SubWorld key; see sealed updated-subworld report",
+      "redirect_value": "current MapConfig2201.SubWorldName, also a current DT_SubWorldConfig_Iris_Entry row"
+    },
+    "executable": {
+      "path": "DeltaForce/Binaries/Win64/DeltaForceClient-Win64-Shipping.exe",
+      "sha256": "79fb7b105170141ed863331d36833a73062e66bf5291b2364fe3a64c18336203"
+    },
+    "key_provenance": {
+      "array_copy_function_rva": "0x151b710",
+      "bootstrap_bytes": 74803,
+      "bootstrap_code_sha256": "0814ba3e90f6b699b936b96f1ff8445f10a4e9c4797d9bd4e1f437d4215d4fb4",
+      "bootstrap_rva": "0x2f29650",
+      "default_callback_binding_rva": "0x307760",
+      "default_callback_bytes": 86,
+      "default_callback_code_sha256": "883df8b4112c1c5d872df074d1cc66b27b07bc0201e7020beca9b8fb33bb0416",
+      "default_callback_rva": "0x2f3ba90",
+      "default_callback_setter_rva": "0x10b0f460",
+      "first_registration_call_rva": "0x2f297f1",
+      "historical_guid_associations_discarded": true,
+      "key_array_constructions": 200,
+      "last_registration_call_rva": "0x2f3ba53",
+      "registration_calls": 200,
+      "registration_function_rva": "0x12454630"
+    },
+    "keys_disclosed": false,
+    "map_config": {
+      "complete_row_coverage": true,
+      "row_count": 640,
+      "rows": {
+        "2201": {
+          "fields": {
+            "LevelFullPath": "/Game/Maps/Iris_Entry/Iris_Entry",
+            "LevelName": "Dam_Iris_Level1",
+            "MapID": 2201,
+            "MaxMatchDuration": 1800,
+            "SubWorldName": "Dam_Iris_Level1",
+            "bStreamingLevel": true
+          },
+          "serialized_sha256": "75f33acecea3d1f0733695114e57f2bc96ea9fff92cb9401628361d770abbe7b",
+          "serialized_uexp_offset": 71931
+        }
+      },
+      "table": "/Game/R13N/Common/Base/DataTables/MapConfig",
+      "uasset_sha256": "e41784765610dfde36cbd23d99c37f26c42448af2f43b6482bb845da0459d372",
+      "uexp_sha256": "5486a2b773a5a387b8d835f2693be17ca4b21eebf1444282a0734cb110590221"
+    },
+    "subworld_config": {
+      "complete_row_coverage": true,
+      "row_count": 81,
+      "rows": {
+        "Dam_Iris_Level1": {
+          "fields": {
+            "Category": "SOL",
+            "MapType": 10
+          },
+          "serialized_sha256": "f4c3d295195cb6a9a89b6afb8aeceeb6f427455e3c8f0f61acbec73635d86fc1",
+          "serialized_uexp_offset": 2673
+        }
+      },
+      "table": "/Game/DataTables/SubWorld/DT_SubWorldConfig_Iris_Entry",
+      "uasset_sha256": "78103cc76430791b6d40e19116d9878d16ba2f149049f246482b177bc965cfcf",
+      "uexp_sha256": "8f55c19e62c061f0427b172b32175dedd53b41bbbabccb2eea5ebd1deaf49199"
+    }
+  },
+  "generator_and_parser_sources": [
+    {
+      "relative_path": "work/build_updated_control_profile.py",
+      "sha256": "734ec14e72e9bd01b5540d4210dc229fdc90cd6e029cbb31645acbc6b8de02b5"
+    },
+    {
+      "relative_path": "work/research_updated_content_resources.py",
+      "sha256": "91f260a018bb5362112ac8cfd7d38a8de038cd4eea4bf0d0d321ed09194549df"
+    },
+    {
+      "relative_path": "work/research_updated_map_rule_sources.py",
+      "sha256": "33a00108c6d01ec776c4bbb5cd11a6a5e7d5ef391d446262f250c1184ac65360"
+    },
+    {
+      "relative_path": "work/recover_economy_pak_access.py",
+      "sha256": "834c0caabf81316c690a9297207c04181b78ff0d73dea69708f0ee5519de91a0"
+    },
+    {
+      "relative_path": "work/scan_weapon_tables.py",
+      "sha256": "1c462bd80bd02d91b790c8d40ab2524663d47bc5b57445c49a9d702c18a2d160"
+    },
+    {
+      "relative_path": "work/oodle_payload_reader.py",
+      "sha256": "076551c0f6d6c09b9c8799913ac67c76b9791932693e0b478a86c97857c12197"
+    },
+    {
+      "relative_path": "work/research_updated_subworld.py",
+      "sha256": "deb88dd34a5a5bfb53c85f4baa472215c202c9b82ed143e44fc0b0be93d7a59d"
+    }
+  ],
+  "hello": {
+    "candidate_outer_prefix_bytes": 8,
+    "capture": "work/native-client-tests/1792984987382326700/game-server-packets/05-udp.bin",
+    "capture_bytes": 35,
+    "capture_sha256": "3e10e018138dd51128c9d6cd986a0f6d4fa543575fba6a12b23600b095d68ec5",
+    "channel_hardcoded_name_index": 255,
+    "channel_index": 0,
+    "channel_sequence": 31,
+    "endian": 1,
+    "executable_build_attribution": "updated-build trial supplied by enclosing research task; packet bytes do not contain executable SHA",
+    "live_protocol_acceptance": false,
+    "message_id": 0,
+    "network_version_u32": 1077088301,
+    "opaque_outer_routing_semantics_verified": false,
+    "packet_sequence": 10270,
+    "payload_bits": 80,
+    "payload_sha256": "8aea96fc825c793df5b6e692d627e99463e4c0b1cce44925d7a3e09a641bc0bc",
+    "reliable": true,
+    "report": "work/native-client-tests/1792984987382326700/game-server-packets/report.json",
+    "report_sha256": "3fcfba8a0133183cef2dd23972c3c99859205f17896bbfa35df65b5efed699ac",
+    "token_values_recorded": false,
+    "trailing_string_units": 0
+  },
+  "kind": "source_backed_updated_control_profile_evidence",
+  "launch_scope": {
+    "account_or_inventory_mutation": false,
+    "actor_associations": false,
+    "actor_content": false,
+    "disable_device_seamless": true,
+    "ds_control_probe": true,
+    "game_server_probe": true,
+    "initial_actor_bootstrap": false,
+    "kind": "control_only_diagnostic",
+    "native_metadata_getters": false,
+    "native_protocol_compatibility_verified": false,
+    "observation_seconds": 1800,
+    "playable_map_verified": false,
+    "replication_metadata_export": false,
+    "required_entry_flag": "--disable-device-seamless",
+    "required_entry_setting": "[ConsoleVariables]\nGame.DisableDeviceSeamless=1",
+    "selected_map_id": 2201,
+    "shipping_shadow": "DF_LOCAL_SHADOW_GAME",
+    "startup_subworld_override": false,
+    "world_settings_channel": false
+  },
+  "maximum_packet_bytes": {
+    "actual_runtime_connection_cap_observed": false,
+    "basis": "explicit diagnostic setting matching current ordinary wrapper default",
+    "native_universal_maximum": false,
+    "value": 1024
+  },
+  "native_challenge_acceptance_verified": false,
+  "native_connection_completed": false,
+  "native_protocol_compatibility_verified": false,
+  "packets_emitted": false,
+  "playable_map_verified": false,
+  "process_accessed": false,
+  "residuals": [
+    "Current source qualification is not a current native LoadMap observation or a new Welcome/Join acceptance trial.",
+    "The third Welcome FString to FURL.RedirectURL+38 and concrete updated engine/seamless SubWorld option parsers are qualified; actual current engine/WorldSettings instances and loading results remain unobserved.",
+    "Game.DisableDeviceSeamless native name/default/getter are qualified. The required launch flag requests value1; effective application and entry-mode effect must be verified in the owned client log.",
+    "Archive version13 is the current native file-backed default, not an observed live connection value.",
+    "No actor, replication schema, GameMode, pawn, WorldSettings, map authority, or playable gameplay is authorized by this control-only profile.",
+    "The selected archive sources are validated independently. All mount priority, DLC/optional replacement, and runtime hot-replacement behavior remain unobserved."
+  ],
+  "source_pins": [
+    {
+      "bytes": 1278862,
+      "relative_path": "work/evidence/updated-control-contract-79fb7b10.json",
+      "sha256": "e176ef7d2d33771d1f2573331f64bbfd8797e76242f9c0d1af3827ea61e6d40b"
+    },
+    {
+      "bytes": 832843,
+      "relative_path": "work/research_updated_transport_profile_79fb7b10.json",
+      "sha256": "2e55c4989ddb28f7ae75a6ddfd62e92f50d77bc523a99aebbf84ffd65ccd43c8"
+    },
+    {
+      "bytes": 1605791,
+      "relative_path": "work/research_updated_transport_79fb7b10.json",
+      "sha256": "d127c9b551192ba1a126f3b5f5e2c90f9a9a6a0e6d4ff806b6d037941fb73e92"
+    },
+    {
+      "bytes": 831669,
+      "relative_path": "work/research_updated_stateless_handshake_79fb7b10.json",
+      "sha256": "eb77c89cd90717df7f49f18c0e47610460933d32b474cf7168c1742a9025330c"
+    },
+    {
+      "bytes": 1312744,
+      "relative_path": "work/evidence/updated-subworld-79fb7b10.json",
+      "sha256": "0ea823df0e5b3aae0d348310888a3b25b351e4a99eb1a780c4ff652c7afc1544"
+    },
+    {
+      "bytes": 35,
+      "relative_path": "work/native-client-tests/1792984987382326700/game-server-packets/05-udp.bin",
+      "sha256": "3e10e018138dd51128c9d6cd986a0f6d4fa543575fba6a12b23600b095d68ec5"
+    },
+    {
+      "bytes": 31459,
+      "relative_path": "work/native-client-tests/1792984987382326700/game-server-packets/report.json",
+      "sha256": "3fcfba8a0133183cef2dd23972c3c99859205f17896bbfa35df65b5efed699ac"
+    }
+  ],
+  "status": "source_backed_diagnostic"
+}

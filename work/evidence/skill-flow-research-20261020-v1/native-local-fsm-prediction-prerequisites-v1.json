@@ -1,0 +1,111 @@
+{
+  "kind": "source_qualified_local_fsm_prediction_prerequisites_v1",
+  "client_sha256": "4254fbe66585f260f1f9dbfc5e302887842552e7baed8939e023160a5e250be0",
+  "cache_manifest_sha256": "dfd5c279d7db45842cee2bbc485ac8bf3cab03e4249ef5fe36bc9e8d6cd14754",
+  "process_access": false,
+  "process_memory_written": false,
+  "native_methods_invoked": false,
+  "client_launched": false,
+  "native_gameplay_verified": false,
+  "source_files": {
+    "work/native-client-tests/1792478435036855300/owned-fsm-metadata.json": "1cecf3eb9b10a2cdb21370d7257af9a11c98ceed6504db488d30adb9a5891590",
+    "work/evidence/model-init-chain-20261018/native-current-fsm-instance-notify-class-bodies-v1.json": "5e23fef2ee4fd300f4b90682e8d75a31b987a1955baca46782cc10a8c2138f6d",
+    "work/evidence/model-init-chain-20261018/native-current-fsm-databoard-network-initializer-v1.json": "3d5ecc8191f6c4c9a4ee93a5508f1dd3ad659fe453fc263f2cca695c4dcf5fdd",
+    "work/evidence/model-init-chain-20261018/native-current-fsm-databoard-dfm-constructor-body-v1.json": "f8ca56f0eca1a8667975f2114f09d79496885fbf2f42e293df16a5ebe0570b89"
+  },
+  "typed_fields": [
+    {
+      "class_path": "/Script/DFMGameplay.DFMBlackboardComponent",
+      "declaring_class": "GPNetworkComponent",
+      "name": "isAutonomous",
+      "storage_offset": 259,
+      "element_bytes": 1,
+      "array_dimension": 1,
+      "field_vtable_rva": "0x15a868a0",
+      "meaning": "cached autonomous owner identity; its current value is not inferred from Actor.Role"
+    },
+    {
+      "class_path": "/Game/BluePrints/Characters/CharacterFSM/DFMCharacterFSM_Main.DFMCharacterFSM_Main_C",
+      "declaring_class": "GPFSMInstanceNetworkBase",
+      "name": "GPFSMComponent",
+      "storage_offset": 1824,
+      "element_bytes": 8,
+      "array_dimension": 1,
+      "native_property_type": "FObjectProperty",
+      "declared_native_class": "GPFSMStateMachineComponent",
+      "declared_native_class_path": "/Script/GPGameplay.GPFSMStateMachineComponent"
+    }
+  ],
+  "qualified_native_functions": [
+    {
+      "rva": "0x409c7f0",
+      "code_bytes": 6013,
+      "code_sha256": "00a0638a4772b56feee02d2e368492ccdcaa9821c2c4dc09aede49fcfc84f9d9",
+      "role": "GPNetworkComponent RefreshIdentity derives cached identity from current owner and net mode"
+    },
+    {
+      "rva": "0x48872e0",
+      "code_bytes": 373,
+      "code_sha256": "e8435760da60acefea99f976a29c0d6148c5d983e93868877203e2e76ef82bcb",
+      "role": "local FSM prediction requires component, autonomous identity and character before event broadcast"
+    },
+    {
+      "rva": "0x4025f80",
+      "code_bytes": 176,
+      "code_sha256": "3a09f26cdfecb34b3eb9a92e522f67b574514ac5026a89c6380ceb0d98098916",
+      "role": "GPNetworkComponent OnPossess invokes identity refresh virtual slot 0x450 then slot 0x440"
+    },
+    {
+      "rva": "0x3c0fcc0",
+      "code_bytes": 4846,
+      "code_sha256": "3809a203d92f0b3354e05b5824d859238efca1014830cc175d02e5f21b208b5e",
+      "role": "GPBlackboardComponent OnPossess calls GPNetworkComponent OnPossess"
+    },
+    {
+      "rva": "0x48e9bc0",
+      "code_bytes": 292,
+      "code_sha256": "c3a948ada88ef9f8ed4c6c56cd288fa1719e5078b40a646a5b1ce5bd37f30d94",
+      "role": "component post-initialize binds its current typed network FSM instance back-reference"
+    }
+  ],
+  "qualified_native_code_ranges": [
+    {
+      "rva": "0x3c63980",
+      "code_bytes": 16384,
+      "code_sha256": "9f2bedcd889ce63a234bb9a9c8ee6d6a7e879a9459e9821e35e74824ffabfc9e",
+      "complete_function_claimed": false,
+      "role": "bounded GPBlackboard RefreshIdentity entry and the explicitly listed call/store sites"
+    }
+  ],
+  "immutable_vtable_entries": [
+    {
+      "vtable_rva": "0x1862be30",
+      "slot": "0x450",
+      "entry_rva": "0x1862c280",
+      "target_rva": "0x3c63980",
+      "bytes": "8039c64301000000",
+      "sha256": "595fbf89828994f7764d3e67f7ea4b07689f3199b289c645c163dd60a64bc389",
+      "constructor_vtable_assignment_rva": "0xce30fd8"
+    }
+  ],
+  "verified_instruction_facts": [
+    {"rva": "0x409da25", "bytes": "80bb3001000002", "mnemonic": "cmp", "operands": "byte ptr [rbx + 0x130], 2"},
+    {"rva": "0x409da2f", "bytes": "41888603010000", "mnemonic": "mov", "operands": "byte ptr [r14 + 0x103], al"},
+    {"rva": "0x4887358", "bytes": "4883bb2007000000", "mnemonic": "cmp", "operands": "qword ptr [rbx + 0x720], 0"},
+    {"rva": "0x488736d", "bytes": "80b80301000000", "mnemonic": "cmp", "operands": "byte ptr [rax + 0x103], 0"},
+    {"rva": "0x488737a", "bytes": "488b8b18070000", "mnemonic": "mov", "operands": "rcx, qword ptr [rbx + 0x718]"},
+    {"rva": "0x4887391", "bytes": "4881c130130000", "mnemonic": "add", "operands": "rcx, 0x1330"},
+    {"rva": "0x4887398", "bytes": "e863f050fc", "mnemonic": "call", "operands": "0xd96400"},
+    {"rva": "0x4025fd9", "bytes": "ff9050040000", "mnemonic": "call", "operands": "qword ptr [rax + 0x450]"},
+    {"rva": "0x3c10f6a", "bytes": "e811504100", "mnemonic": "call", "operands": "0x4025f80"},
+    {"rva": "0x3c639e3", "bytes": "e8088e4300", "mnemonic": "call", "operands": "0x409c7f0"},
+    {"rva": "0x3c65a68", "bytes": "41888503010000", "mnemonic": "mov", "operands": "byte ptr [r13 + 0x103], al"},
+    {"rva": "0x48e9c97", "bytes": "48899f20070000", "mnemonic": "mov", "operands": "qword ptr [rdi + 0x720], rbx"}
+  ],
+  "observation_limits": [
+    "current isAutonomous is read as a canonical boolean, never inferred from Role or possession",
+    "GPFSMComponent is followed through the existing typed FObjectProperty and current weak identity machinery",
+    "same-component equality requires the full current identity including weak generation",
+    "normal callbacks, prediction, active states and gameplay success are not inferred from these observations"
+  ]
+}
